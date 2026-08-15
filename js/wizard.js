@@ -492,14 +492,19 @@ const Wizard = {
   renderQRPaymentGateway: function() {
     const pricing = this.calculatePricing();
     const tempStudentId = `AI-2026-${Math.floor(1000 + Math.random() * 9000)}`;
-    const qrSvg = IDCardGenerator.generatePaymentQRCodeSVG(pricing.total, tempStudentId);
 
     const qrContainer = document.getElementById('wizardPaymentQrSlot');
     const amountDisplay = document.getElementById('qrPaymentTotalDisplay');
     const studentDisplay = document.getElementById('qrPaymentCandidateName');
     const trackDisplay = document.getElementById('qrPaymentTrackName');
 
-    if (qrContainer) qrContainer.innerHTML = qrSvg;
+    if (qrContainer) {
+      qrContainer.innerHTML = `
+        <div style="width:100%; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+          <img src="images/phonepe-qr.png" alt="PhonePe QR Code - Abdul Wahid" class="phonepe-qr-img" onerror="this.outerHTML=IDCardGenerator.generatePaymentQRCodeSVG(${pricing.total}, '${tempStudentId}')" style="width:100%; max-width:260px; height:auto; display:block; border-radius:12px;" />
+        </div>
+      `;
+    }
     if (amountDisplay) amountDisplay.textContent = `₹${pricing.total.toLocaleString()}`;
     if (studentDisplay) studentDisplay.textContent = this.formData.fullName || "Candidate";
     if (trackDisplay) trackDisplay.textContent = pricing.course.title;

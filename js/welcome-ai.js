@@ -202,6 +202,16 @@ const AIWelcome = {
       overlay.classList.add('hidden');
     }
 
+    // Immediately stop particle canvas loop to free 100% CPU/GPU on mobile
+    if (this.canvasAnimId) {
+      cancelAnimationFrame(this.canvasAnimId);
+      this.canvasAnimId = null;
+    }
+    if (this.typingInterval) {
+      clearInterval(this.typingInterval);
+      this.typingInterval = null;
+    }
+
     if (typeof App !== 'undefined' && App.showToast) {
       App.showToast("Welcome to AI Nexus Academy! ✨", "Enjoy exploring our 4 AI course specializations and live labs.", "success");
     }
@@ -226,6 +236,7 @@ const AIWelcome = {
     const overlay = document.getElementById('aiWelcomeIntroScreen');
     if (overlay) {
       overlay.classList.remove('hidden');
+      this.initCanvasStarfield();
       this.startAIGreetingSequence();
     }
   },

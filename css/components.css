@@ -2362,20 +2362,29 @@
 }
 
 .qr-code-display-wrap {
-  width: 232px;
-  height: 232px;
+  width: 280px;
   max-width: 100%;
-  aspect-ratio: 1;
-  margin: 0 auto 18px auto;
-  padding: 10px;
-  background: #ffffff;
-  border: 2px solid #0284c7;
+  margin: 0 auto 16px auto;
+  padding: 8px;
+  background: #0a0a0f;
+  border: 2px solid #5f259f;
   border-radius: 18px;
-  box-shadow: 0 10px 25px rgba(2, 132, 199, 0.15);
+  box-shadow: 0 10px 30px rgba(95, 37, 159, 0.22), 0 0 15px rgba(2, 132, 199, 0.15);
   position: relative;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+}
+
+.qr-code-display-wrap img.phonepe-qr-img {
+  width: 100%;
+  height: auto;
+  max-height: 420px;
+  object-fit: contain;
+  display: block;
+  border-radius: 12px;
 }
 
 .qr-code-display-wrap svg {
@@ -2388,21 +2397,22 @@
 
 .qr-scanline {
   position: absolute;
-  top: 10px;
-  left: 10px;
-  right: 10px;
+  top: 8px;
+  left: 8px;
+  right: 8px;
   height: 3px;
-  background: linear-gradient(90deg, transparent, #0284c7, #38bdf8, transparent);
-  box-shadow: 0 0 10px #0284c7;
+  background: linear-gradient(90deg, transparent, #5f259f, #a855f7, #38bdf8, transparent);
+  box-shadow: 0 0 12px #a855f7;
   border-radius: 2px;
-  animation: scanlineMove 2.4s ease-in-out infinite alternate;
+  animation: scanlineMove 2.5s ease-in-out infinite alternate;
   pointer-events: none;
+  z-index: 5;
 }
 
 @keyframes scanlineMove {
-  0% { top: 12px; opacity: 0.8; }
+  0% { top: 10px; opacity: 0.85; }
   50% { opacity: 1; }
-  100% { top: 215px; opacity: 0.8; }
+  100% { top: calc(100% - 15px); opacity: 0.85; }
 }
 
 .pay-apps-grid {
@@ -2501,6 +2511,34 @@
 .cyber-hud-val {
   color: #38bdf8;
   font-weight: 700;
+}
+
+/* Specialization Explorer Chip Row */
+.specialization-explorer-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 36px;
+  position: relative;
+  z-index: 1;
+}
+
+.specialization-title-tag {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.specialization-chips-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 /* 4-Tier Holographic Cyber Cards Grid */

@@ -1,11 +1,13 @@
 // AI Nexus Academy - Interactive 3D AI Hologram Background (Three.js)
-// Optimized for Crisp Light / White Theme
+// Optimized for Crisp Light / White Theme with Ultra High Performance on Mobile
 
 const ThreeBackground = {
   scene: null,
   camera: null,
   renderer: null,
   canvas: null,
+  animId: null,
+  isPaused: false,
   
   // 3D Objects
   coreGroup: null,
@@ -26,8 +28,13 @@ const ThreeBackground = {
     this.canvas = document.getElementById('bg-3d-canvas');
     if (!this.canvas) return;
 
+    // Skip heavy 3D WebGL computation on mobile devices for smooth 120Hz/60Hz touch scrolling
+    if (window.innerWidth <= 768) {
+      if (this.canvas) this.canvas.style.display = 'none';
+      return;
+    }
+
     if (typeof THREE === 'undefined') {
-      console.warn("Three.js not loaded. Retrying in 500ms...");
       setTimeout(() => this.init(), 500);
       return;
     }
@@ -42,14 +49,20 @@ const ThreeBackground = {
     );
     this.camera.position.z = 26;
 
-    // 2. Create WebGL Renderer
-    this.renderer = new THREE.WebGLRenderer({
-      canvas: this.canvas,
-      alpha: true,
-      antialias: true
-    });
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    // 2. Create WebGL Renderer with performance budget
+    try {
+      this.renderer = new THREE.WebGLRenderer({
+        canvas: this.canvas,
+        alpha: true,
+        antialias: false,
+        powerPreference: "low-power"
+      });
+      this.renderer.setSize(window.innerWidth, window.innerHeight);
+      this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    } catch (e) {
+      console.warn("WebGL initialization skipped:", e);
+      return;
+    }
 
     this.clock = new THREE.Clock();
 
@@ -63,17 +76,27 @@ const ThreeBackground = {
     const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
     this.scene.add(ambientLight);
 
-    const pointLightBlue = new THREE.PointLight(0x0284c7, 3.0, 60);
+    const pointLightBlue = new THREE.PointLight(0x0284c7, 2.5, 50);
     pointLightBlue.position.set(12, 16, 18);
     this.scene.add(pointLightBlue);
 
-    const pointLightIndigo = new THREE.PointLight(0x6366f1, 2.5, 60);
-    pointLightIndigo.position.set(-12, -16, 12);
-    this.scene.add(pointLightIndigo);
-
     // 6. Event Listeners
-    window.addEventListener('resize', () => this.onWindowResize());
-    window.addEventListener('mousemove', (e) => this.onMouseMove(e));
+    window.addEventListener('resize', () => this.onWindowResize(), { passive: true });
+    window.addEventListener('mousemove', (e) => this.onMouseMove(e), { passive: true });
+    
+    // Pause rendering when tab is hidden or user scrolls deep to save GPU
+    document.addEventListener('visibilitychange', () => {
+      this.isPaused = document.hidden;
+    });
+
+    let scrollTimeout = null;
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > window.innerHeight * 1.5) {
+        this.isPaused = true;
+      } else {
+        this.isPaused = false;
+      }
+    }, { passive: true });
 
     // 7. Start Animation Loop
     this.animate();
@@ -90,8 +113,8 @@ const ThreeBackground = {
       emissive: 0xbae6fd,
       wireframe: true,
       transparent: true,
-      opacity: 0.5,
-      shininess: 80
+      opacity: 0.45,
+      shininess: 60
     });
     this.innerCore = new THREE.Mesh(innerGeo, innerMat);
     this.coreGroup.add(this.innerCore);
@@ -102,13 +125,13 @@ const ThreeBackground = {
       color: 0x6366f1,
       wireframe: true,
       transparent: true,
-      opacity: 0.35
+      opacity: 0.3
     });
     this.outerCage = new THREE.Mesh(outerGeo, outerMat);
     this.coreGroup.add(this.outerCage);
 
     // C. Glowing Node Vertices on Outer Cage
-    const sphereGeo = new THREE.SphereGeometry(0.22, 8, 8);
+    const sphereGeo = new THREE.SphereGeometry(0.2, 6, 6);
     const sphereMat = new THREE.MeshBasicMaterial({
       color: 0x0284c7
     });
@@ -122,14 +145,14 @@ const ThreeBackground = {
       this.coreGroup.add(nodeMesh);
     }
 
-    // D. Orbital Rings (Holographic Energy Gyroscopes)
+    // D. Orbital Rings
     const createRing = (radius, tube, color, rotX, rotY) => {
-      const ringGeo = new THREE.TorusGeometry(radius, tube, 16, 100);
+      const ringGeo = new THREE.TorusGeometry(radius, tube, 8, 48);
       const ringMat = new THREE.MeshBasicMaterial({
         color: color,
         wireframe: true,
         transparent: true,
-        opacity: 0.4
+        opacity: 0.35
       });
       const ring = new THREE.Mesh(ringGeo, ringMat);
       ring.rotation.x = rotX;
@@ -137,8 +160,8 @@ const ThreeBackground = {
       return ring;
     };
 
-    this.orbitalRing1 = createRing(10.5, 0.06, 0x0284c7, Math.PI / 3, 0);
-    this.orbitalRing2 = createRing(12.0, 0.05, 0xdb2777, -Math.PI / 4, Math.PI / 6);
+    this.orbitalRing1 = createRing(10.5, 0.05, 0x0284c7, Math.PI / 3, 0);
+    this.orbitalRing2 = createRing(12.0, 0.04, 0xdb2777, -Math.PI / 4, Math.PI / 6);
     this.orbitalRing3 = createRing(13.5, 0.04, 0x7c3aed, Math.PI / 2, -Math.PI / 4);
 
     this.coreGroup.add(this.orbitalRing1);
@@ -149,7 +172,7 @@ const ThreeBackground = {
   },
 
   buildParticleConstellation: function() {
-    const particleCount = 600;
+    const particleCount = 180; // Optimized from 600 for performance
     const geometry = new THREE.BufferGeometry();
     const positions = new Float32Array(particleCount * 3);
     const colors = new Float32Array(particleCount * 3);
@@ -159,8 +182,7 @@ const ThreeBackground = {
     const color3 = new THREE.Color(0xdb2777);
 
     for (let i = 0; i < particleCount; i++) {
-      // Spherical distribution
-      const radius = 12 + Math.random() * 22;
+      const radius = 12 + Math.random() * 20;
       const theta = Math.random() * Math.PI * 2;
       const phi = Math.acos((Math.random() * 2) - 1);
 
@@ -177,12 +199,11 @@ const ThreeBackground = {
     geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
     geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
-    // Particle Material
     const pMaterial = new THREE.PointsMaterial({
-      size: 0.45,
+      size: 0.4,
       vertexColors: true,
       transparent: true,
-      opacity: 0.35
+      opacity: 0.3
     });
 
     this.particleCloud = new THREE.Points(geometry, pMaterial);
@@ -190,15 +211,23 @@ const ThreeBackground = {
   },
 
   onMouseMove: function(e) {
-    // Normalize coordinates (-1 to 1)
     this.mouseX = (e.clientX / window.innerWidth) * 2 - 1;
     this.mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
 
-    this.targetRotationX = this.mouseY * 0.4;
-    this.targetRotationY = this.mouseX * 0.4;
+    this.targetRotationX = this.mouseY * 0.3;
+    this.targetRotationY = this.mouseX * 0.3;
   },
 
   onWindowResize: function() {
+    if (window.innerWidth <= 768) {
+      if (this.canvas) this.canvas.style.display = 'none';
+      this.isPaused = true;
+      return;
+    } else {
+      if (this.canvas) this.canvas.style.display = 'block';
+      this.isPaused = false;
+    }
+
     if (!this.camera || !this.renderer) return;
     this.camera.aspect = window.innerWidth / window.innerHeight;
     this.camera.updateProjectionMatrix();
@@ -206,35 +235,32 @@ const ThreeBackground = {
   },
 
   animate: function() {
-    requestAnimationFrame(() => this.animate());
+    this.animId = requestAnimationFrame(() => this.animate());
+
+    if (this.isPaused) return;
 
     const delta = this.clock ? this.clock.getDelta() : 0.016;
     const elapsedTime = this.clock ? this.clock.getElapsedTime() : 0;
 
     if (this.coreGroup) {
-      // Rotation physics
-      this.coreGroup.rotation.y += 0.006;
-      this.coreGroup.rotation.x += 0.003;
+      this.coreGroup.rotation.y += 0.005;
+      this.coreGroup.rotation.x += 0.002;
 
-      // Mouse Parallax interpolation
-      this.coreGroup.rotation.x += (this.targetRotationX - this.coreGroup.rotation.x) * 0.04;
-      this.coreGroup.rotation.y += (this.targetRotationY - this.coreGroup.rotation.y) * 0.04;
+      this.coreGroup.rotation.x += (this.targetRotationX - this.coreGroup.rotation.x) * 0.03;
+      this.coreGroup.rotation.y += (this.targetRotationY - this.coreGroup.rotation.y) * 0.03;
 
-      // Gyroscope multi-axis rotation
-      if (this.orbitalRing1) this.orbitalRing1.rotation.z += 0.012;
-      if (this.orbitalRing2) this.orbitalRing2.rotation.y -= 0.015;
-      if (this.orbitalRing3) this.orbitalRing3.rotation.x += 0.018;
+      if (this.orbitalRing1) this.orbitalRing1.rotation.z += 0.01;
+      if (this.orbitalRing2) this.orbitalRing2.rotation.y -= 0.012;
+      if (this.orbitalRing3) this.orbitalRing3.rotation.x += 0.014;
 
-      // Breathing / Pulse animation
-      const scale = 1 + Math.sin(elapsedTime * 1.5) * 0.05;
+      const scale = 1 + Math.sin(elapsedTime * 1.5) * 0.04;
       if (this.innerCore) {
         this.innerCore.scale.set(scale, scale, scale);
       }
     }
 
     if (this.particleCloud) {
-      this.particleCloud.rotation.y -= 0.0015;
-      this.particleCloud.rotation.x -= 0.0008;
+      this.particleCloud.rotation.y -= 0.001;
     }
 
     if (this.renderer && this.scene && this.camera) {

@@ -226,14 +226,14 @@
 
       <!-- Action Buttons on Right (Public Facing Only) -->
       <div class="nav-actions">
-        <button class="btn btn-secondary btn-sm" onclick="AIWelcome.replayIntro()" style="background:rgba(2,132,199,0.08); color:var(--neon-cyan); border-color:rgba(2,132,199,0.3);" title="Replay AI Welcome Greeting">
-          <i class="fas fa-robot"></i> AI Guide
+        <button class="btn btn-secondary btn-sm nav-btn-guide" onclick="AIWelcome.replayIntro()" style="background:rgba(2,132,199,0.08); color:var(--neon-cyan); border-color:rgba(2,132,199,0.3);" title="Replay AI Welcome Greeting">
+          <i class="fas fa-robot"></i> <span class="nav-btn-text">AI Guide</span>
         </button>
-        <button class="btn btn-secondary btn-sm" onclick="App.showView('auth')">
-          <i class="fas fa-sign-in-alt"></i> Sign In
+        <button class="btn btn-secondary btn-sm nav-btn-signin" onclick="App.showView('auth')">
+          <i class="fas fa-sign-in-alt"></i> <span class="nav-btn-text">Sign In</span>
         </button>
-        <button class="btn btn-primary btn-sm" data-route="register" onclick="App.showView('register')">
-          <i class="fas fa-bolt"></i> Register Now
+        <button class="btn btn-primary btn-sm nav-btn-register" data-route="register" onclick="App.showView('register')">
+          <i class="fas fa-bolt"></i> <span class="nav-btn-text">Register Now</span>
         </button>
       </div>
     </div>
@@ -259,7 +259,7 @@
         <div class="cyber-hud-telemetry" id="cyberTelemetryHud">
           <div class="cyber-hud-item">
             <span class="cyber-hud-dot"></span>
-            <span>SYSTEM: <span class="cyber-hud-val">ONLINE</span> // LATENCY: <span class="cyber-hud-val" id="hudLatencyVal">14ms</span></span>
+            <span>SYSTEM: <span class="cyber-hud-val">ONLINE</span> // <span class="hud-lat-text">LATENCY:</span> <span class="cyber-hud-val" id="hudLatencyVal">14ms</span></span>
           </div>
           <div class="cyber-hud-item">
             <i class="fas fa-users" style="color:var(--neon-cyan);"></i>
@@ -271,7 +271,7 @@
           </div>
           <div class="cyber-hud-item">
             <i class="fas fa-award" style="color:#ffd700;"></i>
-            <span>GOOGLE CREDS: <span class="cyber-hud-val">4,900+ ISSUED</span></span>
+            <span>GOOGLE CREDS: <span class="cyber-hud-val">4,900+</span></span>
           </div>
         </div>
 
@@ -289,20 +289,22 @@
         </p>
 
         <!-- Interactive AI Prompt Explorer Pill Selector -->
-        <div style="display:flex; justify-content:center; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:36px;">
-          <span style="font-size:0.8rem; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.06em;">Explore Specializations:</span>
-          <button class="filter-chip active" style="font-size:0.8rem; padding:6px 14px;" onclick="App.startEnrollment('ai-beginners')">
-            <i class="fas fa-robot" style="color:#0284c7;"></i> Low Tier: Foundation (₹1,500)
-          </button>
-          <button class="filter-chip" style="font-size:0.8rem; padding:6px 14px;" onclick="App.startEnrollment('applied-ml-ds')">
-            <i class="fas fa-brain" style="color:#7c3aed;"></i> Mid Tier: PyTorch ML (₹2,500)
-          </button>
-          <button class="filter-chip" style="font-size:0.8rem; padding:6px 14px;" onclick="App.startEnrollment('genai-agents')">
-            <i class="fas fa-network-wired" style="color:#e11d48;"></i> High Tier: LLMs & Agents (₹3,500)
-          </button>
-          <button class="filter-chip" style="font-size:0.8rem; padding:6px 14px;" onclick="App.startEnrollment('fullstack-ai-engineer')">
-            <i class="fas fa-microchip" style="color:#059669;"></i> Highest: Full-Stack Pro (₹5,000)
-          </button>
+        <div class="specialization-explorer-wrap">
+          <div class="specialization-title-tag">Explore Specializations:</div>
+          <div class="specialization-chips-row">
+            <button class="filter-chip active" onclick="App.startEnrollment('ai-beginners')">
+              <i class="fas fa-robot" style="color:#0284c7;"></i> Low Tier: Foundation (₹1,500)
+            </button>
+            <button class="filter-chip" onclick="App.startEnrollment('applied-ml-ds')">
+              <i class="fas fa-brain" style="color:#7c3aed;"></i> Mid Tier: PyTorch ML (₹2,500)
+            </button>
+            <button class="filter-chip" onclick="App.startEnrollment('genai-agents')">
+              <i class="fas fa-network-wired" style="color:#e11d48;"></i> High Tier: LLMs & Agents (₹3,500)
+            </button>
+            <button class="filter-chip" onclick="App.startEnrollment('fullstack-ai-engineer')">
+              <i class="fas fa-microchip" style="color:#059669;"></i> Highest: Full-Stack Pro (₹5,000)
+            </button>
+          </div>
         </div>
 
         <div class="hero-actions" style="margin-bottom:48px;">
@@ -1020,36 +1022,33 @@
                   ₹0
                 </div>
 
-                <!-- High-Definition QR Code Frame -->
+                <!-- High-Definition PhonePe QR Code Frame -->
                 <div class="qr-code-display-wrap">
                   <div class="qr-scanline"></div>
-                  <div id="wizardPaymentQrSlot" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
-                    <!-- Dynamic Crisp 25x25 Matrix QR Code SVG rendered here -->
+                  <div id="wizardPaymentQrSlot" style="width:100%; display:flex; align-items:center; justify-content:center;">
+                    <img src="images/phonepe-qr.png" alt="PhonePe QR Code - Abdul Wahid" class="phonepe-qr-img" style="width:100%; max-width:260px; height:auto; display:block; border-radius:12px;" />
                   </div>
                 </div>
 
-                <div style="font-size:0.825rem; color:#475569; font-weight:600; margin-bottom:6px;">
-                  Official Merchant UPI ID:
-                </div>
-                <div style="display:inline-flex; align-items:center; gap:10px; background:#f1f5f9; border:1px solid #cbd5e1; padding:8px 18px; border-radius:24px; font-family:var(--font-mono); font-size:0.85rem; font-weight:700; color:#0284c7; margin-bottom:14px;">
-                  <span>admissions.nexus@okaxis</span>
-                  <button onclick="navigator.clipboard.writeText('admissions.nexus@okaxis'); App.showToast('Copied!', 'UPI ID copied to clipboard', 'info');" style="border:none; background:none; color:#64748b; cursor:pointer; font-size:0.9rem;" title="Copy UPI ID">
-                    <i class="fas fa-copy"></i>
-                  </button>
+                <div style="font-size:0.825rem; color:#475569; font-weight:700; margin-bottom:6px;">
+                  <i class="fas fa-check-circle" style="color:#059669;"></i> Verified Merchant: <span style="color:#0f172a;">ABDUL WAHID</span>
                 </div>
 
-                <!-- 1-Tap Mobile UPI Instant Payment Button (For single device checkout) -->
-                <div style="margin-bottom:14px;">
-                  <a href="upi://pay?pa=admissions.nexus@okaxis&pn=AI%20Nexus%20Academy&cu=INR" class="btn btn-secondary btn-sm" style="display:inline-flex; width:100%; justify-content:center; gap:8px; font-size:0.825rem; background:#f0f9ff; color:#0284c7; border-color:#0284c7; font-weight:700; text-decoration:none; padding:8px 12px;">
-                    <i class="fas fa-mobile-alt"></i> 📱 On Mobile? Tap to Open UPI App
+                <!-- Quick Download / View QR Buttons -->
+                <div style="display:flex; gap:8px; justify-content:center; margin-bottom:14px;">
+                  <a href="images/phonepe-qr.png" download="PhonePe-QR-AbdulWahid.png" class="btn btn-secondary btn-sm" style="font-size:0.775rem; padding:6px 12px; gap:6px; text-decoration:none;">
+                    <i class="fas fa-download"></i> Save QR
+                  </a>
+                  <a href="images/phonepe-qr.png" target="_blank" class="btn btn-secondary btn-sm" style="font-size:0.775rem; padding:6px 12px; gap:6px; text-decoration:none;">
+                    <i class="fas fa-expand"></i> Full View
                   </a>
                 </div>
 
                 <div class="pay-apps-grid">
+                  <span class="pay-app-chip" style="border:1px solid #5f259f; color:#5f259f; background:#fbf7ff;"><i class="fas fa-wallet" style="color:#5f259f;"></i> PhonePe Accepted</span>
                   <span class="pay-app-chip"><i class="fab fa-google-pay" style="font-size:1.1rem; color:#4285f4;"></i> Google Pay</span>
-                  <span class="pay-app-chip"><i class="fas fa-wallet" style="color:#5f259f;"></i> PhonePe</span>
                   <span class="pay-app-chip"><i class="fas fa-money-bill-wave" style="color:#00b9f5;"></i> Paytm</span>
-                  <span class="pay-app-chip"><i class="fas fa-university" style="color:#059669;"></i> Any Bank UPI</span>
+                  <span class="pay-app-chip"><i class="fas fa-university" style="color:#059669;"></i> All UPI Apps</span>
                 </div>
               </div>
 
