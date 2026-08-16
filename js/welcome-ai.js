@@ -103,23 +103,36 @@ const AIWelcome = {
 
       const now = ctx.currentTime;
 
-      // Chord 1: Futuristic sci-fi shimmer
-      [523.25, 659.25, 783.99, 1046.50].forEach((f, idx) => {
+      // 1. Resonant Sub-Bass Energy Charge Sweep
+      const bassOsc = ctx.createOscillator();
+      const bassGain = ctx.createGain();
+      bassOsc.type = 'sine';
+      bassOsc.frequency.setValueAtTime(160, now);
+      bassOsc.frequency.exponentialRampToValueAtTime(880, now + 0.45);
+      bassGain.gain.setValueAtTime(0.08, now);
+      bassGain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+      bassOsc.connect(bassGain);
+      bassGain.connect(ctx.destination);
+      bassOsc.start(now);
+      bassOsc.stop(now + 0.6);
+
+      // 2. Futuristic Sci-Fi Harmonic Shimmer Chords
+      [523.25, 659.25, 783.99, 1046.50, 1318.51].forEach((f, idx) => {
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
 
         osc.type = 'triangle';
-        osc.frequency.setValueAtTime(f, now + idx * 0.08);
-        osc.frequency.exponentialRampToValueAtTime(f * 1.3, now + 0.6 + idx * 0.08);
+        osc.frequency.setValueAtTime(f, now + idx * 0.06);
+        osc.frequency.exponentialRampToValueAtTime(f * 1.35, now + 0.5 + idx * 0.06);
 
-        gain.gain.setValueAtTime(0.08, now + idx * 0.08);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.8 + idx * 0.08);
+        gain.gain.setValueAtTime(0.06, now + idx * 0.06);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.75 + idx * 0.06);
 
         osc.connect(gain);
         gain.connect(ctx.destination);
 
-        osc.start(now + idx * 0.08);
-        osc.stop(now + 0.9 + idx * 0.08);
+        osc.start(now + idx * 0.06);
+        osc.stop(now + 0.85 + idx * 0.06);
       });
     } catch (e) {}
   },
@@ -145,36 +158,30 @@ const AIWelcome = {
 
     if (!headingEl || !subtextEl) return;
 
-    headingEl.innerHTML = "";
-    subtextEl.innerHTML = "";
+    headingEl.innerHTML = '';
+    subtextEl.innerHTML = '';
+    if (ctaWrap) ctaWrap.style.opacity = '1';
 
-    const headingText = "Hi there! 👋 I am Nexus AI";
-    const subText = "Welcome to AI Nexus Academy! Step into the premier institution for Artificial Intelligence, Autonomous Agent Swarms, and production MLOps.";
+    const greetingText = "Welcome to AI Nexus Academy.";
+    const subtext = "Pioneering the Next Era of Pure Artificial Intelligence Education, Autonomous Agents, Neural Engineering & Global Accreditations.";
 
-    let hIndex = 0;
-    if (this.typingInterval) clearInterval(this.typingInterval);
-
-    // Type Heading
+    let charIdx = 0;
     this.typingInterval = setInterval(() => {
-      if (hIndex < headingText.length) {
-        headingEl.innerHTML = headingText.slice(0, hIndex + 1) + `<span style="color:#0284c7; animation:beaconPulse 0.5s infinite;">|</span>`;
-        if (hIndex % 3 === 0) {
-          this.playAITextChime(500 + (hIndex * 15));
+      if (charIdx < greetingText.length) {
+        headingEl.innerHTML = greetingText.slice(0, charIdx + 1) + `<span style="color:#00f0ff; animation:beaconPulse 0.6s infinite;">|</span>`;
+        if (charIdx % 3 === 0) {
+          this.playAITextChime(420 + (charIdx % 5) * 60);
         }
-        hIndex++;
+        charIdx++;
       } else {
         clearInterval(this.typingInterval);
-        headingEl.innerHTML = `Hi there! 👋 I am <span class="highlight-name">Nexus AI</span>`;
-
-        // Type Subtext after a short pause
-        setTimeout(() => {
-          this.typeSubtext(subText, subtextEl);
-        }, 300);
+        headingEl.innerHTML = greetingText;
+        this.typewriterSubtext(subtext, subtextEl);
       }
-    }, 45);
+    }, 38);
   },
 
-  typeSubtext: function(text, targetEl) {
+  typewriterSubtext: function(text, targetEl) {
     let sIndex = 0;
     const subInterval = setInterval(() => {
       if (sIndex < text.length) {
@@ -194,27 +201,44 @@ const AIWelcome = {
     }, 22);
   },
 
-  // Enter Site Transition
+  // Enter Site Transition (Rich Multi-Stage Cinematic Warp)
   enterSite: function() {
-    this.playPortalEnterSound();
     const overlay = document.getElementById('aiWelcomeIntroScreen');
-    if (overlay) {
+    if (!overlay || overlay.classList.contains('hidden') || this.isTransitioning) return;
+
+    this.isTransitioning = true;
+    this.isWarping = true;
+    this.playPortalEnterSound();
+
+    // 1. Trigger energetic portal shockwave and entity overdrive
+    overlay.classList.add('portal-warping');
+
+    // 2. Warp-dissolve welcome overlay and trigger homepage entrance cascade
+    setTimeout(() => {
       overlay.classList.add('hidden');
-    }
+      document.body.classList.add('portal-entering-active');
 
-    // Immediately stop particle canvas loop to free 100% CPU/GPU on mobile
-    if (this.canvasAnimId) {
-      cancelAnimationFrame(this.canvasAnimId);
-      this.canvasAnimId = null;
-    }
-    if (this.typingInterval) {
-      clearInterval(this.typingInterval);
-      this.typingInterval = null;
-    }
+      // Stop starfield animation to save CPU/GPU on mobile
+      if (this.canvasAnimId) {
+        cancelAnimationFrame(this.canvasAnimId);
+        this.canvasAnimId = null;
+      }
+      if (this.typingInterval) {
+        clearInterval(this.typingInterval);
+        this.typingInterval = null;
+      }
+      this.isWarping = false;
+    }, 450);
 
-    if (typeof App !== 'undefined' && App.showToast) {
-      App.showToast("Welcome to AI Nexus Academy! ✨", "Enjoy exploring our 4 AI course specializations and live labs.", "success");
-    }
+    // 3. Clean up active entrance cascade classes after animation completes
+    setTimeout(() => {
+      document.body.classList.remove('portal-entering-active');
+      this.isTransitioning = false;
+
+      if (typeof App !== 'undefined' && App.showToast) {
+        App.showToast("Welcome to AI Nexus Academy! ✨", "Enjoy exploring our 4 AI course specializations and live labs.", "success");
+      }
+    }, 1500);
   },
 
   // Enter Site and immediately route to specific view
@@ -228,7 +252,7 @@ const AIWelcome = {
           App.showView(viewId);
         }
       }
-    }, 200);
+    }, 500);
   },
 
   // Replay AI Welcome Intro
@@ -236,12 +260,16 @@ const AIWelcome = {
     const overlay = document.getElementById('aiWelcomeIntroScreen');
     if (overlay) {
       overlay.classList.remove('hidden');
+      overlay.classList.remove('portal-warping');
+      document.body.classList.remove('portal-entering-active');
+      this.isTransitioning = false;
+      this.isWarping = false;
       this.initCanvasStarfield();
       this.startAIGreetingSequence();
     }
   },
 
-  // Starfield Particle Canvas Background (Theme-aware)
+  // Starfield Particle Canvas Background (Theme-aware with Warp Speed)
   initCanvasStarfield: function() {
     const canvas = document.getElementById('neuralMeshCanvas');
     if (!canvas) return;
@@ -251,12 +279,14 @@ const AIWelcome = {
     let height = canvas.height = window.innerHeight;
 
     window.addEventListener('resize', () => {
+      if (!canvas) return;
       width = canvas.width = window.innerWidth;
       height = canvas.height = window.innerHeight;
-    });
+    }, { passive: true });
 
     const particles = [];
-    const numParticles = Math.min(65, Math.floor((width * height) / 16000));
+    const maxP = window.innerWidth <= 768 ? 22 : 65;
+    const numParticles = Math.min(maxP, Math.max(12, Math.floor((width * height) / 18000)));
 
     for (let i = 0; i < numParticles; i++) {
       particles.push({
@@ -272,38 +302,58 @@ const AIWelcome = {
     const animate = () => {
       ctx.clearRect(0, 0, width, height);
       const isLight = this.currentTheme === 'light';
+      const centerX = width / 2;
+      const centerY = height / 2;
 
       // Draw particle nodes
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
-        p.x += p.vx;
-        p.y += p.vy;
 
-        if (p.x < 0) p.x = width;
-        if (p.x > width) p.x = 0;
-        if (p.y < 0) p.y = height;
-        if (p.y > height) p.y = 0;
+        if (this.isWarping) {
+          // Warp Speed Particle Acceleration
+          const dx = p.x - centerX || 1;
+          const dy = p.y - centerY || 1;
+          const dist = Math.hypot(dx, dy) || 1;
+          p.x += (dx / dist) * 20;
+          p.y += (dy / dist) * 20;
 
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fillStyle = isLight 
-          ? `rgba(2, 132, 199, ${p.alpha * 0.7})` 
-          : `rgba(56, 189, 248, ${p.alpha})`;
-        ctx.fill();
+          // Draw warp light streak
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(p.x - (dx / dist) * 40, p.y - (dy / dist) * 40);
+          ctx.strokeStyle = isLight ? `rgba(2, 132, 199, 0.85)` : `rgba(0, 240, 255, 0.9)`;
+          ctx.lineWidth = p.radius * 1.5;
+          ctx.stroke();
+        } else {
+          p.x += p.vx;
+          p.y += p.vy;
 
-        // Connect nearby nodes
-        for (let j = i + 1; j < particles.length; j++) {
-          const p2 = particles[j];
-          const dist = Math.hypot(p.x - p2.x, p.y - p2.y);
-          if (dist < 125) {
-            ctx.beginPath();
-            ctx.moveTo(p.x, p.y);
-            ctx.lineTo(p2.x, p2.y);
-            ctx.strokeStyle = isLight
-              ? `rgba(2, 132, 199, ${0.18 * (1 - dist / 125)})`
-              : `rgba(2, 132, 199, ${0.25 * (1 - dist / 125)})`;
-            ctx.lineWidth = 0.8;
-            ctx.stroke();
+          if (p.x < 0) p.x = width;
+          if (p.x > width) p.x = 0;
+          if (p.y < 0) p.y = height;
+          if (p.y > height) p.y = 0;
+
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+          ctx.fillStyle = isLight 
+            ? `rgba(2, 132, 199, ${p.alpha * 0.7})` 
+            : `rgba(56, 189, 248, ${p.alpha})`;
+          ctx.fill();
+
+          // Connect nearby nodes
+          for (let j = i + 1; j < particles.length; j++) {
+            const p2 = particles[j];
+            const dist = Math.hypot(p.x - p2.x, p.y - p2.y);
+            if (dist < 125) {
+              ctx.beginPath();
+              ctx.moveTo(p.x, p.y);
+              ctx.lineTo(p2.x, p2.y);
+              ctx.strokeStyle = isLight
+                ? `rgba(2, 132, 199, ${0.18 * (1 - dist / 125)})`
+                : `rgba(2, 132, 199, ${0.25 * (1 - dist / 125)})`;
+              ctx.lineWidth = 0.8;
+              ctx.stroke();
+            }
           }
         }
       }

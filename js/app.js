@@ -17,18 +17,21 @@ const App = {
     this.setupScrollListener();
     this.startCyberTelemetry();
     
-    // Initialize child modules
-    Auth.init();
-    Wizard.init();
-    AdminDashboard.init();
-    StudentHub.init();
+    // Initialize child modules safely
+    if (typeof Auth !== 'undefined' && Auth.init) Auth.init();
+    if (typeof Wizard !== 'undefined' && Wizard.init) Wizard.init();
+    if (typeof AdminDashboard !== 'undefined' && AdminDashboard.init) AdminDashboard.init();
+    if (typeof StudentHub !== 'undefined' && StudentHub.init) StudentHub.init();
 
     // Check URL hash for direct routing if present
-    const hash = window.location.hash.replace('#', '');
-    if (hash && ['home', 'courses', 'certificate', 'auth', 'register', 'student-hub', 'admin-portal'].includes(hash)) {
-      this.showView(hash);
-    } else {
-      this.showView('home');
+    const homeView = document.getElementById('view-home');
+    if (homeView) {
+      const hash = window.location.hash.replace('#', '');
+      if (hash && ['home', 'courses', 'certificate', 'auth', 'register', 'student-hub', 'admin-portal'].includes(hash)) {
+        this.showView(hash);
+      } else {
+        this.showView('home');
+      }
     }
   },
 
@@ -48,10 +51,10 @@ const App = {
 
     // Admin Route Protection Guard
     if (viewId === 'admin-portal') {
-      if (!Auth.currentUser || Auth.currentUser.role !== 'admin') {
+      if (typeof Auth !== 'undefined' && (!Auth.currentUser || Auth.currentUser.role !== 'admin')) {
         this.showToast("Administrator Authentication Required", "Please sign in with Admin credentials to access the CRM console.", "error");
-        Auth.setAuthTab('signin');
-        Auth.fillDemoCreds('admin');
+        if (Auth.setAuthTab) Auth.setAuthTab('signin');
+        if (Auth.fillDemoCreds) Auth.fillDemoCreds('admin');
         viewId = 'auth';
       }
     }
@@ -75,13 +78,13 @@ const App = {
     });
 
     // Sub-module refresh when view activates
-    if (viewId === 'admin-portal') {
+    if (viewId === 'admin-portal' && typeof AdminDashboard !== 'undefined') {
       AdminDashboard.render();
-    } else if (viewId === 'student-hub') {
+    } else if (viewId === 'student-hub' && typeof StudentHub !== 'undefined') {
       StudentHub.render();
     } else if (viewId === 'certificate') {
       this.initCertificateView();
-    } else if (viewId === 'register') {
+    } else if (viewId === 'register' && typeof Wizard !== 'undefined') {
       Wizard.renderTrackOptions();
       Wizard.renderBatchOptions();
       Wizard.renderAddonOptions();
@@ -126,7 +129,7 @@ const App = {
     const student = StorageService.getCurrentStudent() || {
       id: "AI-2026-9182",
       fullName: "Alex Rivera",
-      trackTitle: "Generative AI, LLMs & Autonomous AI Agents",
+      trackTitle: "API Architecture, Backend Services & AI Engine APIs",
       registeredAt: "2026-08-14"
     };
 

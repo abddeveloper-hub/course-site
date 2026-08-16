@@ -132,29 +132,29 @@ const StudentHub = {
       content = `=====================================================
 AI NEXUS ACADEMY - OFFICIAL MASTER CURRICULUM
 =====================================================
-Track 1: AI Literacy & GenAI for Beginners & Business (AI-101)
-- Week 1: Prompt Engineering Foundations & Advanced LLM Tactics
-- Week 2: Multimodal AI: Audio, Vision & Creative Generation (Midjourney)
-- Week 3: No-Code AI Automation with Zapier, Make & Custom GPTs
-- Week 4: Capstone: Building an Automated AI Business System
+Track 1: Vibe Coding Softwares & AI-Assisted App Development (AI-101) - Low Tier (₹1,500)
+- Week 1: Vibe Coding Setup: Cursor AI, Windsurf & Natural Language Development
+- Week 2: AI-Powered UI & App Builders: v0.dev, Lovable & Bolt.new Workflows
+- Week 3: Multi-File Project Architecture with Replit Agent & Claude Artifacts
+- Week 4: Capstone: Building & Shipping a Live SaaS App Purely via Vibe Coding
 
-Track 2: Applied Machine Learning & Data Science (AI-201)
-- Week 1-2: Modern Python for AI & Exploratory Data Analysis
-- Week 3-4: Classical ML Algorithms & Production Scikit-Learn
-- Week 5-6: Neural Networks & PyTorch Deep Learning Pipelines
-- Week 7-8: Capstone: Production ML Model on Cloud (FastAPI + Streamlit)
+Track 2: Cloud Hosting, Deployment & Software Integration (AI-201) - Mid Tier (₹2,500)
+- Week 1-2: Cloud Hosting Platforms: Deploying Next.js, React & Node on Vercel & Render
+- Week 3-4: Cloud Database Hosting: Supabase, Firebase, Realtime DB & PostgreSQL
+- Week 5-6: Custom Domains, SSL, Environment Secrets & Production Security
+- Week 7-8: Capstone: Deploying a Scalable Multi-Service Production Web System
 
-Track 3: Generative AI, LLMs & Autonomous AI Agents (AI-301)
-- Week 1-2: Deep Dive into LLM Architecture & Embeddings
-- Week 3-4: Enterprise RAG: Chunking, Vectors & Re-ranking (Pinecone/ChromaDB)
-- Week 5-7: Autonomous Multi-Agent Architecture (CrewAI & LangGraph)
-- Week 8-10: Capstone: Enterprise Autonomous AI Copilot in Production
+Track 3: API Architecture, Backend Services & AI Engine APIs (AI-301) - High Tier (₹3,500)
+- Week 1-2: API Fundamentals: JSON Payloads, Headers & Python FastAPI Endpoints
+- Week 3-4: Direct AI Engine API Integration (OpenAI, Claude, Gemini & DeepSeek)
+- Week 5-7: Vector DB APIs (Pinecone), Webhooks & Third-Party Software Connections
+- Week 8-10: Capstone: Building a Production API-Driven AI SaaS Application
 
-Track 4: Full-Stack AI Engineer & MLOps Masterclass (AI-401)
-- Week 1-4: Core ML & Modern Generative AI Engineering
-- Week 5-8: Full-Stack AI Interfaces & Async FastAPI Backends
-- Week 9-11: MLOps, Containerization, Model Monitoring & Scaling
-- Week 12-14: Grand Capstone & Career Placement Accelerator
+Track 4: Advanced AI Architecture, Autonomous Agents & MLOps (AI-401) - Highest Tier (₹5,000)
+- Week 1-4: Advanced LLM Architecture, Prompt Optimization & Local Models (Ollama)
+- Week 5-8: Enterprise RAG Pipelines & High-Precision Hybrid Search
+- Week 9-11: Autonomous Multi-Agent Swarms (CrewAI & LangGraph) in Production
+- Week 12-14: Grand Capstone: Full-Scale Autonomous AI Enterprise System & Placement
 `;
     } else if (type === 'python-guide') {
       title = "Python_and_GPU_Setup_Guide.txt";

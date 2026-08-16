@@ -1,6 +1,6 @@
 /* ==========================================================================
    AI NEXUS ACADEMY - COMPREHENSIVE RESPONSIVE DESIGN & MOBILE STYLESHEET
-   Theme: High-Clarity Modern White / Crisp Typography Aesthetic
+   Theme: High-Clarity Modern White / Crisp Luxury Light Aesthetic
    Optimized for: Desktops, Tablets, Phablets & Mobile Phones (320px - 1024px)
    ========================================================================== */
 
@@ -9,10 +9,32 @@
    -------------------------------------------------------------------------- */
 html {
   -webkit-text-size-adjust: 100%;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden !important;
+  box-sizing: border-box;
+}
+
+body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden !important;
+  position: relative;
+  box-sizing: border-box;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+img, svg, video {
+  max-width: 100%;
+  height: auto;
 }
 
 button, input, select, textarea {
   touch-action: manipulation;
+  font-family: inherit;
 }
 
 /* --------------------------------------------------------------------------
@@ -32,7 +54,7 @@ button, input, select, textarea {
   cursor: pointer;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
   transition: all var(--trans-fast);
-  margin-right: 12px;
+  margin-right: 10px;
   flex-shrink: 0;
 }
 
@@ -41,6 +63,21 @@ button, input, select, textarea {
   color: #ffffff;
   border-color: #0f172a;
   transform: scale(1.04);
+}
+
+.mobile-nav-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #0f172a;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-left: 6px;
 }
 
 .mobile-drawer {
@@ -57,7 +94,7 @@ button, input, select, textarea {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 28px 20px;
+  padding: 24px 18px;
   transition: left 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: 10px 0 40px rgba(15, 23, 42, 0.15);
   overflow-y: auto;
@@ -90,7 +127,7 @@ button, input, select, textarea {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   padding: 0;
   margin: 0;
 }
@@ -102,12 +139,13 @@ button, input, select, textarea {
   padding: 12px 14px;
   border-radius: 10px;
   color: #334155;
-  font-size: 0.95rem;
+  font-size: 0.925rem;
   font-weight: 600;
   background: #f8fafc;
   border: 1px solid #e2e8f0;
   transition: all var(--trans-fast);
   cursor: pointer;
+  text-decoration: none;
 }
 
 .mobile-nav-item a:hover,
@@ -125,9 +163,13 @@ button, input, select, textarea {
 }
 
 /* --------------------------------------------------------------------------
-   3. TABLET & MEDIUM LAPTOPS (<= 1024px)
+   3. TABLETS & LAPTOPS (<= 1024px)
    -------------------------------------------------------------------------- */
-@media (max-width: 1024px) {
+@media screen and (max-width: 1024px) {
+  .container {
+    padding: 0 16px;
+  }
+
   .hero-stats {
     grid-template-columns: repeat(2, 1fr);
     gap: 16px;
@@ -136,7 +178,7 @@ button, input, select, textarea {
   .course-grid,
   .cyber-cards-grid {
     grid-template-columns: repeat(2, 1fr) !important;
-    gap: 20px;
+    gap: 18px;
   }
 
   .batch-schedule-grid {
@@ -168,10 +210,10 @@ button, input, select, textarea {
 }
 
 /* --------------------------------------------------------------------------
-   4. MOBILE DEVICES & PHABLETS (<= 768px)
+   4. MOBILE PHONES & PHABLETS (<= 768px) - CRITICAL RESPONSIVE ENGINE
    -------------------------------------------------------------------------- */
-@media (max-width: 768px) {
-  /* Disable heavy 3D WebGL canvas on mobile for buttery-smooth 120Hz/60Hz touch scrolling */
+@media screen and (max-width: 768px) {
+  /* Disable heavy 3D WebGL canvas on mobile for maximum touch fluidity */
   #bg-3d-canvas {
     display: none !important;
     pointer-events: none !important;
@@ -182,43 +224,75 @@ button, input, select, textarea {
     -webkit-tap-highlight-color: transparent;
   }
 
-  .cyber-holo-card, .btn, .filter-chip {
-    transform: translateZ(0);
-    backface-visibility: hidden;
+  /* Containers & Padding */
+  .container {
+    padding: 0 14px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .section {
+    padding: 45px 0 !important;
+    overflow: hidden;
+  }
+
+  .section-header {
+    margin-bottom: 28px !important;
+  }
+
+  .section-title {
+    font-size: 1.75rem !important;
+    line-height: 1.25 !important;
+    margin-bottom: 10px !important;
+  }
+
+  .section-desc {
+    font-size: 0.925rem !important;
+    line-height: 1.55 !important;
+  }
+
+  .view-banner {
+    padding: 28px 0 20px 0 !important;
+  }
+
+  .view-banner h1 {
+    font-size: 1.75rem !important;
+    line-height: 1.25 !important;
   }
 
   /* Navigation Bar */
   .navbar {
-    padding: 8px 0;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
+    padding: 8px 0 !important;
     background: rgba(255, 255, 255, 0.98) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
   }
 
   .nav-container {
-    padding: 0 12px;
+    padding: 0 12px !important;
   }
 
   .public-left-menu-btn {
-    width: 38px;
-    height: 38px;
+    width: 36px;
+    height: 36px;
     font-size: 1rem;
     margin-right: 8px;
   }
 
   .nav-logo span {
-    font-size: 1rem;
+    font-size: 0.95rem !important;
     letter-spacing: -0.01em;
   }
 
   .nav-logo-icon {
-    width: 30px;
-    height: 30px;
-    font-size: 0.85rem;
+    width: 28px;
+    height: 28px;
+    font-size: 0.8rem;
   }
 
   .nav-actions {
-    gap: 6px;
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
   }
 
   .nav-btn-guide {
@@ -226,30 +300,44 @@ button, input, select, textarea {
   }
 
   .nav-actions .btn {
-    padding: 6px 10px;
-    font-size: 0.775rem;
-    border-radius: 8px;
+    padding: 7px 12px !important;
+    font-size: 0.775rem !important;
+    border-radius: 8px !important;
+  }
+
+  .mobile-nav-toggle {
+    display: none !important;
   }
 
   /* Cyber Welcoming Hero Section */
   .cyber-welcome-hero,
   .hero {
-    padding: 95px 0 45px 0 !important;
-    min-height: auto;
+    padding: 80px 0 35px 0 !important;
+    min-height: auto !important;
+    overflow: hidden !important;
+  }
+
+  .hero-glow-1,
+  .hero-glow-2,
+  .ai-glow-1,
+  .ai-glow-2 {
+    max-width: 80vw !important;
+    max-height: 80vw !important;
+    opacity: 0.4 !important;
   }
 
   .hero-title {
-    font-size: 1.95rem !important;
+    font-size: 1.85rem !important;
     line-height: 1.22 !important;
     letter-spacing: -0.03em;
-    margin-bottom: 14px !important;
+    margin-bottom: 12px !important;
   }
 
   .hero-description {
     font-size: 0.925rem !important;
     line-height: 1.55 !important;
-    margin-bottom: 22px !important;
-    padding: 0 4px;
+    margin-bottom: 20px !important;
+    padding: 0 4px !important;
   }
 
   /* Live Hologram Telemetry HUD Bar */
@@ -257,24 +345,24 @@ button, input, select, textarea {
     display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 8px 10px !important;
-    padding: 10px 14px !important;
-    border-radius: 16px !important;
+    padding: 10px 12px !important;
+    border-radius: 14px !important;
     font-size: 0.72rem !important;
     margin: 0 auto 20px auto !important;
     width: 100% !important;
-    box-sizing: border-box;
+    box-sizing: border-box !important;
   }
 
   .cyber-hud-item {
-    justify-content: flex-start;
-    gap: 6px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    justify-content: flex-start !important;
+    gap: 6px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
   }
 
   .hud-lat-text {
-    display: none;
+    display: none !important;
   }
 
   /* Specialization Exploration Chips */
@@ -282,14 +370,14 @@ button, input, select, textarea {
     flex-direction: column !important;
     align-items: stretch !important;
     gap: 8px !important;
-    margin-bottom: 28px !important;
+    margin-bottom: 24px !important;
     width: 100% !important;
   }
 
   .specialization-title-tag {
     font-size: 0.75rem !important;
-    margin-bottom: 4px;
-    text-align: center;
+    margin-bottom: 4px !important;
+    text-align: center !important;
   }
 
   .specialization-chips-row {
@@ -306,16 +394,17 @@ button, input, select, textarea {
     padding: 8px 6px !important;
     white-space: normal !important;
     text-align: center !important;
-    line-height: 1.3;
+    line-height: 1.3 !important;
     border-radius: 10px !important;
   }
 
   /* Hero Action CTAs */
   .hero-actions {
+    display: flex !important;
     flex-direction: column !important;
     width: 100% !important;
     gap: 10px !important;
-    margin-bottom: 36px !important;
+    margin-bottom: 32px !important;
   }
 
   .hero-actions .btn {
@@ -327,32 +416,36 @@ button, input, select, textarea {
   }
 
   .hero-stats {
-    grid-template-columns: 1fr;
-    gap: 12px;
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
   }
 
-  /* 4-Tier Holographic Cards Grid (Single Column on Mobile) */
+  /* 4-Tier Holographic Cards Grid (Clean Single Column on Mobile) */
   .cyber-cards-grid,
   .course-grid {
+    display: flex !important;
+    flex-direction: column !important;
     grid-template-columns: 1fr !important;
     gap: 16px !important;
-    margin: 24px auto !important;
+    margin: 20px auto !important;
     width: 100% !important;
   }
 
   .cyber-holo-card {
+    width: 100% !important;
     padding: 20px 18px !important;
     border-radius: 18px !important;
+    box-sizing: border-box !important;
   }
 
   .cyber-holo-card h4 {
-    font-size: 1.1rem !important;
-    line-height: 1.35;
+    font-size: 1.15rem !important;
+    line-height: 1.35 !important;
   }
 
   .cyber-holo-card p {
-    font-size: 0.825rem !important;
-    margin-bottom: 12px;
+    font-size: 0.85rem !important;
+    margin-bottom: 12px !important;
   }
 
   .cyber-card-price {
@@ -364,72 +457,178 @@ button, input, select, textarea {
   }
 
   .course-filter-bar {
-    justify-content: flex-start;
-    overflow-x: auto;
-    padding-bottom: 8px;
-    flex-wrap: nowrap;
-    width: 100%;
-    -webkit-overflow-scrolling: touch;
+    justify-content: flex-start !important;
+    overflow-x: auto !important;
+    padding-bottom: 8px !important;
+    flex-wrap: nowrap !important;
+    width: 100% !important;
+    -webkit-overflow-scrolling: touch !important;
   }
 
   .filter-btn {
-    white-space: nowrap;
-    font-size: 0.8rem;
-    padding: 6px 14px;
+    white-space: nowrap !important;
+    font-size: 0.8rem !important;
+    padding: 6px 14px !important;
   }
 
   /* Visitor Pass Generator Panel */
   .cyber-pass-generator-panel {
-    padding: 24px 16px !important;
+    padding: 22px 16px !important;
     border-radius: 18px !important;
     margin-top: 24px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   .cyber-pass-grid {
+    display: flex !important;
+    flex-direction: column !important;
     grid-template-columns: 1fr !important;
-    gap: 22px !important;
+    gap: 20px !important;
+    width: 100% !important;
   }
 
   .cyber-pass-input-row {
     flex-direction: column !important;
     gap: 10px !important;
+    width: 100% !important;
   }
 
+  .cyber-pass-input-row input,
   .cyber-pass-input-row .btn {
     width: 100% !important;
     justify-content: center !important;
   }
 
-  .visitor-badge-mini-preview {
-    max-width: 100% !important;
-    overflow-x: auto !important;
-    margin: 0 auto;
+  .cyber-pass-result-badge {
+    width: 100% !important;
+    padding: 16px 14px !important;
+    box-sizing: border-box !important;
   }
 
-  /* Payment QR Code Mobile Sizing */
-  .payment-qr-card {
+  /* Certificate Showcase Section */
+  #certShowcaseSection .glass-panel {
     padding: 20px 16px !important;
   }
 
-  .qr-code-display-wrap {
+  #certShowcaseSection .glass-panel > div {
+    display: flex !important;
+    flex-direction: column !important;
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+
+  /* Testimonials Grid */
+  #testimonialsGrid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
     width: 100% !important;
-    max-width: 250px !important;
-    padding: 6px !important;
   }
 
-  .qr-code-display-wrap img.phonepe-qr-img {
-    max-height: 340px !important;
+  /* AI Welcome Intro Splash */
+  .ai-welcome-overlay {
+    padding: 16px 12px !important;
   }
 
-  /* Interactive Wizard (5-Step) */
+  .ai-welcome-box {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .ai-hologram-character {
+    width: 110px !important;
+    height: 110px !important;
+    margin-bottom: 14px !important;
+  }
+
+  .ai-orbit-ring-outer {
+    width: 118px !important;
+    height: 118px !important;
+  }
+
+  .ai-orbit-ring-inner {
+    width: 95px !important;
+    height: 95px !important;
+  }
+
+  .ai-sphere-core {
+    width: 66px !important;
+    height: 66px !important;
+  }
+
+  .ai-sphere-inner {
+    width: 50px !important;
+    height: 50px !important;
+  }
+
+  .ai-speech-container {
+    width: 100% !important;
+    margin-bottom: 20px !important;
+  }
+
+  .ai-speech-bubble {
+    padding: 18px 14px !important;
+    border-radius: 18px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .ai-typed-heading {
+    font-size: 1.4rem !important;
+    min-height: auto !important;
+    line-height: 1.3 !important;
+    margin-bottom: 8px !important;
+  }
+
+  .ai-typed-subtext {
+    font-size: 0.875rem !important;
+    min-height: auto !important;
+    line-height: 1.5 !important;
+    margin-bottom: 12px !important;
+  }
+
+  .btn-ai-enter-glow {
+    padding: 14px 22px !important;
+    font-size: 1.025rem !important;
+    width: 100% !important;
+    max-width: 320px !important;
+    box-sizing: border-box !important;
+    margin-bottom: 16px !important;
+  }
+
+  .ai-welcome-quick-links {
+    gap: 8px !important;
+  }
+
+  .ai-quick-chip {
+    padding: 7px 12px !important;
+    font-size: 0.75rem !important;
+  }
+
+  /* 5-Step Interactive Enrollment Wizard */
   .wizard-wrapper {
-    padding: 20px 14px;
-    border-radius: 16px;
+    padding: 18px 12px !important;
+    border-radius: 16px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .mode-pill-container {
+    flex-direction: column !important;
+    gap: 6px !important;
+    width: 100% !important;
+  }
+
+  .mode-pill {
+    width: 100% !important;
+    justify-content: center !important;
+    font-size: 0.775rem !important;
+    padding: 8px 10px !important;
   }
 
   .wizard-progress,
   .wizard-progress-bar {
-    margin-bottom: 24px !important;
+    margin-bottom: 20px !important;
     padding: 0 4px !important;
   }
 
@@ -437,21 +636,21 @@ button, input, select, textarea {
   .wizard-progress-bar::before,
   .wizard-progress-bar-fill,
   .wizard-progress-fill {
-    top: 17px !important;
-    left: 15px !important;
-    right: 15px !important;
+    top: 15px !important;
+    left: 10px !important;
+    right: 10px !important;
     height: 3px !important;
   }
 
   .step-node {
-    min-width: 44px;
-    gap: 4px;
+    min-width: 42px !important;
+    gap: 4px !important;
   }
 
   .step-circle {
-    width: 32px !important;
-    height: 32px !important;
-    font-size: 0.8rem !important;
+    width: 30px !important;
+    height: 30px !important;
+    font-size: 0.75rem !important;
     border-width: 2px !important;
   }
 
@@ -461,111 +660,279 @@ button, input, select, textarea {
     letter-spacing: 0 !important;
   }
 
-  .big-select-custom {
-    min-height: 52px !important;
-    padding: 10px 38px 10px 14px !important;
-    font-size: 0.9rem !important;
+  /* Wizard Step 2: Course Square Grid Tiles */
+  .interactive-track-picker,
+  .course-square-grid,
+  #wizardTrackContainer {
+    display: flex !important;
+    flex-direction: column !important;
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+    width: 100% !important;
   }
 
-  .wizard-mode-toggle {
-    margin-bottom: 20px;
+  .track-square-card {
+    padding: 16px 14px !important;
+    border-radius: 16px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
 
-  .mode-pill {
-    padding: 6px 10px;
-    font-size: 0.725rem;
+  .square-title {
+    font-size: 1.05rem !important;
+    line-height: 1.35 !important;
+  }
+
+  .square-fee-box {
+    padding: 12px !important;
+    border-radius: 12px !important;
+    margin: 12px 0 !important;
+  }
+
+  .square-price {
+    font-size: 1.45rem !important;
   }
 
   .form-grid-2 {
     grid-template-columns: 1fr !important;
-    gap: 14px;
+    gap: 12px !important;
+    width: 100% !important;
   }
 
   .wizard-footer-nav {
-    flex-direction: column-reverse;
-    gap: 10px;
+    flex-direction: column-reverse !important;
+    gap: 10px !important;
+    width: 100% !important;
   }
 
   .wizard-footer-nav .btn {
-    width: 100%;
-    justify-content: center;
+    width: 100% !important;
+    justify-content: center !important;
   }
 
-  /* Student Hub & Pass */
-  .student-portal-grid {
-    grid-template-columns: 1fr;
-    gap: 20px;
+  /* Wizard Step 5: QR Payment Checkout */
+  .payment-grid-responsive {
+    display: flex !important;
+    flex-direction: column !important;
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+    width: 100% !important;
   }
 
-  .id-card-wrapper {
-    display: flex;
-    justify-content: center;
-    overflow-x: auto;
-    padding: 10px 0;
+  .payment-qr-card {
+    padding: 18px 14px !important;
+    border-radius: 16px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
 
-  .mentorship-chat-box {
-    height: 400px;
+  .qr-code-display-wrap {
+    width: 100% !important;
+    max-width: 240px !important;
+    padding: 6px !important;
+    margin: 0 auto 12px auto !important;
   }
 
-  .chat-bubble {
-    max-width: 90%;
-    font-size: 0.85rem;
+  .qr-code-display-wrap img.phonepe-qr-img {
+    max-height: 320px !important;
+    width: 100% !important;
   }
 
-  /* Google Certificate Scaling */
+  .pay-apps-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 6px !important;
+  }
+
+  .pay-app-chip {
+    font-size: 0.72rem !important;
+    padding: 6px 8px !important;
+    justify-content: center !important;
+  }
+
+  /* Waiting For Approval Screen */
+  #stepPanePendingApproval .glass-panel {
+    padding: 18px 14px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  #stepPanePendingApproval .glass-panel > div:nth-child(2) {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  /* Digital Student ID Card */
+  .student-id-card-wrapper,
+  #idCardWrapper {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    overflow-x: hidden !important;
+  }
+
+  .student-id-card,
+  .digital-student-id-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 20px 16px !important;
+    border-radius: 18px !important;
+    box-sizing: border-box !important;
+  }
+
+  .id-card-body {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 12px !important;
+    margin-bottom: 16px !important;
+  }
+
+  .id-card-avatar {
+    width: 52px !important;
+    height: 52px !important;
+    font-size: 1.2rem !important;
+    flex-shrink: 0 !important;
+  }
+
+  .id-card-info h4 {
+    font-size: 1.05rem !important;
+    word-break: break-word !important;
+  }
+
+  .id-card-footer {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: flex-end !important;
+    gap: 10px !important;
+    padding-top: 14px !important;
+  }
+
+  .id-actions-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+    margin-top: 14px !important;
+    width: 100% !important;
+  }
+
+  .id-actions-grid .btn {
+    width: 100% !important;
+    justify-content: center !important;
+    font-size: 0.775rem !important;
+    padding: 8px 6px !important;
+  }
+
+  /* Google Career Certificate Component */
   .google-cert-outer-wrapper {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    padding: 10px 0;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding: 10px 0 !important;
+    box-sizing: border-box !important;
   }
 
   .google-cert-card {
-    min-width: 640px;
+    min-width: 600px !important;
+    margin: 0 auto !important;
   }
 
   .google-cert-actions-bar {
-    flex-direction: column;
-    gap: 8px;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    width: 100% !important;
   }
 
   .google-cert-actions-bar .btn {
-    width: 100%;
-    justify-content: center;
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  /* Certificate Generator Bar (View 2) */
+  #view-certificate .glass-panel > div {
+    display: flex !important;
+    flex-direction: column !important;
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+
+  #view-certificate .glass-panel > div .btn {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  /* Student Hub Portal */
+  .student-portal-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+    width: 100% !important;
+  }
+
+  .mentorship-chat-box {
+    height: 380px !important;
+    width: 100% !important;
+  }
+
+  .chat-bubble {
+    max-width: 90% !important;
+    font-size: 0.85rem !important;
+  }
+
+  .countdown-timer-display {
+    gap: 6px !important;
+  }
+
+  .countdown-box {
+    min-width: 55px !important;
+    padding: 8px 4px !important;
+  }
+
+  .countdown-val {
+    font-size: 1.25rem !important;
+  }
+
+  .countdown-lbl {
+    font-size: 0.6rem !important;
   }
 
   /* Admin CRM Dashboard */
   .admin-top-header {
-    padding: 12px 14px;
-    flex-wrap: wrap;
-    gap: 10px;
+    padding: 12px 14px !important;
+    flex-wrap: wrap !important;
+    gap: 10px !important;
   }
 
   .admin-breadcrumbs {
-    font-size: 0.8rem;
+    font-size: 0.8rem !important;
   }
 
   .admin-top-actions {
-    gap: 8px;
+    gap: 8px !important;
   }
 
   .admin-top-actions .btn {
-    padding: 6px 10px;
-    font-size: 0.75rem;
+    padding: 6px 10px !important;
+    font-size: 0.75rem !important;
   }
 
   .admin-kpi-grid {
     grid-template-columns: 1fr !important;
-    gap: 12px;
+    gap: 12px !important;
   }
 
   .admin-table-container {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    width: 100% !important;
   }
 
   .admin-table {
-    min-width: 600px;
+    min-width: 560px !important;
   }
 
   .admin-slide-drawer {
@@ -579,72 +946,70 @@ button, input, select, textarea {
 
   /* Modals */
   .modal-box {
-    padding: 20px 14px;
-    width: 95%;
-    max-height: 90vh;
-    overflow-y: auto;
+    padding: 20px 14px !important;
+    width: 94% !important;
+    max-height: 88vh !important;
+    overflow-y: auto !important;
+    box-sizing: border-box !important;
   }
 
   /* Footer */
   .footer-grid {
+    display: flex !important;
+    flex-direction: column !important;
     grid-template-columns: 1fr !important;
-    gap: 28px;
+    gap: 28px !important;
+  }
+
+  .footer-bottom {
+    flex-direction: column !important;
+    gap: 12px !important;
+    text-align: center !important;
   }
 }
 
 /* --------------------------------------------------------------------------
    5. SMALL PHONES (<= 480px)
    -------------------------------------------------------------------------- */
-@media (max-width: 480px) {
+@media screen and (max-width: 480px) {
   .container {
-    padding: 0 12px;
+    padding: 0 10px !important;
   }
 
   .hero-title {
-    font-size: 1.75rem !important;
+    font-size: 1.65rem !important;
   }
 
   .section {
-    padding: 40px 0;
+    padding: 35px 0 !important;
   }
 
   .section-title {
-    font-size: 1.5rem;
-  }
-
-  .nav-logo span {
-    display: none;
-  }
-
-  .nav-logo::after {
-    content: "AI NEXUS";
-    font-weight: 800;
-    color: #0f172a;
-    font-size: 1rem;
+    font-size: 1.45rem !important;
   }
 
   .auth-wrapper {
-    padding: 20px 12px;
+    padding: 18px 12px !important;
   }
 
   .social-auth-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
   }
 
-  .countdown-timer-display {
-    gap: 6px;
+  .cyber-hud-telemetry {
+    grid-template-columns: 1fr !important;
+    gap: 6px !important;
   }
 
-  .countdown-box {
-    min-width: 50px;
-    padding: 8px 4px;
+  .specialization-chips-row {
+    grid-template-columns: 1fr !important;
   }
 
-  .countdown-val {
-    font-size: 1.25rem;
+  .id-actions-grid {
+    grid-template-columns: 1fr !important;
   }
 
-  .countdown-lbl {
-    font-size: 0.6rem;
+  .pay-apps-grid {
+    grid-template-columns: 1fr !important;
   }
 }

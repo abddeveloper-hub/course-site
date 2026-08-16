@@ -64,34 +64,30 @@ const Auth = {
 
       // Desktop Nav Action
       navActions.innerHTML = `
-        <div style="display:flex; align-items:center; gap:10px;">
+        <div style="display:flex; align-items:center; gap:8px;">
           ${isAdmin ? `
             <button class="btn btn-accent btn-sm" onclick="App.showView('admin-portal')" title="Access Admin CRM">
-              <i class="fas fa-shield-alt"></i> Admin CRM
+              <i class="fas fa-shield-alt"></i> <span class="nav-btn-text">Admin CRM</span>
             </button>
           ` : `
             <button class="btn btn-primary btn-sm" onclick="App.showView('student-hub')" title="My Learning Portal">
-              <i class="fas fa-graduation-cap"></i> My Portal
+              <i class="fas fa-graduation-cap"></i> <span class="nav-btn-text">My Portal</span>
             </button>
           `}
           
           <!-- User Profile Dropdown Pill -->
-          <div style="display:flex; align-items:center; gap:8px; background:#ffffff; padding:4px 12px 4px 6px; border-radius:var(--border-radius-full); border:1px solid var(--border-subtle); box-shadow:var(--shadow-sm);">
-            <div style="width:30px; height:30px; border-radius:50%; background:var(--grad-primary); color:#ffffff; font-weight:800; font-size:0.75rem; display:flex; align-items:center; justify-content:center;">
+          <div style="display:flex; align-items:center; gap:6px; background:#ffffff; padding:4px 10px 4px 6px; border-radius:var(--border-radius-full); border:1px solid var(--border-subtle); box-shadow:var(--shadow-sm);">
+            <div style="width:28px; height:28px; border-radius:50%; background:var(--grad-primary); color:#ffffff; font-weight:800; font-size:0.75rem; display:flex; align-items:center; justify-content:center;">
               ${initials}
             </div>
             <div style="text-align:left;">
-              <div style="font-size:0.8rem; font-weight:700; color:#0f172a; line-height:1.1;">${this.currentUser.name.split(' ')[0]}</div>
+              <div style="font-size:0.775rem; font-weight:700; color:#0f172a; line-height:1.1;">${this.currentUser.name.split(' ')[0]}</div>
               <div style="font-size:0.65rem; font-weight:700; color:${roleColor}; text-transform:uppercase;">${roleBadge}</div>
             </div>
-            <button onclick="Auth.logout()" title="Sign Out" style="color:var(--neon-rose); font-size:0.85rem; margin-left:6px; padding:4px; cursor:pointer;" aria-label="Sign Out">
+            <button onclick="Auth.logout()" title="Sign Out" style="color:var(--neon-rose); font-size:0.85rem; margin-left:4px; padding:2px; cursor:pointer;" aria-label="Sign Out">
               <i class="fas fa-sign-out-alt"></i>
             </button>
           </div>
-
-          <button class="mobile-nav-toggle" id="mobileNavToggle" onclick="App.toggleMobileDrawer(true)" aria-label="Toggle Menu">
-            <i class="fas fa-bars"></i>
-          </button>
         </div>
       `;
 
@@ -125,13 +121,10 @@ const Auth = {
       // User is logged out
       navActions.innerHTML = `
         <button class="btn btn-secondary btn-sm" onclick="App.showView('auth')" style="font-weight:700;">
-          <i class="fas fa-sign-in-alt" style="color:var(--neon-cyan);"></i> Sign In
+          <i class="fas fa-sign-in-alt" style="color:var(--neon-cyan);"></i> <span class="nav-btn-text">Sign In</span>
         </button>
-        <button class="btn btn-primary btn-sm" data-route="register">
-          <i class="fas fa-bolt"></i> Register Now
-        </button>
-        <button class="mobile-nav-toggle" id="mobileNavToggle" onclick="App.toggleMobileDrawer(true)" aria-label="Toggle Menu">
-          <i class="fas fa-bars"></i>
+        <button class="btn btn-primary btn-sm" onclick="App.showView('register')">
+          <i class="fas fa-bolt"></i> <span class="nav-btn-text">Register Now</span>
         </button>
       `;
 

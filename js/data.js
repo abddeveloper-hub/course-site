@@ -7,81 +7,80 @@ const ACADEMY_DATA = {
   contactPhones: ["+91 9844691633", "+91 9061106019", "+91 9061106009"],
   contactPhone: "+91 9844691633 / +91 9061106019 / +91 9061106009",
   
-  // 1. Pure AI Course Tracks & Specializations
+  // 1. Pure AI Course Tracks & Specializations (4 Tiers)
   courses: [
     {
       id: "ai-beginners",
       code: "AI-101",
       tier: "Low Tier (Foundation)",
-      title: "Generative AI & No-Code AI Automation",
-      category: "Generative AI & Prompt Engineering",
+      title: "Vibe Coding Softwares & AI-Assisted App Development",
+      category: "Vibe Coding & AI Software Tools",
       level: "Beginner",
-      badge: "🌱 Low Tier · Foundation AI",
+      badge: "🌱 Low Tier · Vibe Coding Softwares",
       duration: "4 Weeks (32 Hours)",
       format: "Live Interactive AI Cohort",
       price: 1500,
       originalPrice: 2200,
       rating: 4.9,
       reviewCount: 340,
-      icon: "fa-robot",
+      icon: "fa-magic",
       gradient: "linear-gradient(135deg, #00f0ff 0%, #0072ff 100%)",
       accentColor: "#00f0ff",
-      description: "Master everyday Generative AI tools for productivity, creative multimodal generation, business workflows, and building custom AI bots without writing code.",
+      description: "Master the art of Vibe Coding: build complete websites, web applications, and software tools purely with AI prompts using Cursor AI, Windsurf, Lovable, Bolt.new, and v0.dev without manual syntax coding.",
       highlights: [
-        "Advanced Prompt Engineering with ChatGPT-4o, Claude 3.5 & Perplexity AI",
-        "Multimodal AI Generation: High-res visual & video creation with Midjourney v6",
-        "No-Code AI Automation: Connect LLMs to workflows with Zapier & Make AI",
-        "Build Custom Enterprise AI Chatbots & Vector Knowledge Bases"
+        "Vibe Coding Foundations: Cursor AI, Windsurf IDE & Natural Language Code Generation",
+        "AI Full-Stack App Builders: Instant generation with Lovable, Bolt.new & v0.dev",
+        "AI Coding Agents: Multi-file project generation with Replit Agent & Claude 3.5 Sonnet",
+        "Debugging with AI: ChatGPT Canvas, GitHub Copilot & Rapid AI Prototyping"
       ],
       syllabus: [
-        { week: "Week 1", title: "Prompt Engineering & Advanced Large Language Model Strategies" },
-        { week: "Week 2", title: "Multimodal AI: Image, Video & Voice Generation (Midjourney v6)" },
-        { week: "Week 3", title: "Autonomous No-Code AI Agents & Business Automation" },
-        { week: "Week 4", title: "Capstone: Deploying a Multi-Tool AI Business Assistant" }
+        { week: "Week 1", title: "Vibe Coding Setup: Cursor AI, Windsurf & Natural Language Development" },
+        { week: "Week 2", title: "AI-Powered UI & App Builders: v0.dev, Lovable & Bolt.new Workflows" },
+        { week: "Week 3", title: "Multi-File Project Architecture with Replit Agent & Claude Artifacts" },
+        { week: "Week 4", title: "Capstone: Building & Shipping a Live SaaS App Purely via Vibe Coding" }
       ],
-      prerequisites: "No coding or math required. Designed for all professionals and creators."
+      prerequisites: "Zero coding experience required. Designed for creators, founders, and absolute beginners."
     },
     {
       id: "applied-ml-ds",
       code: "AI-201",
       tier: "Mid Tier (Professional)",
-      title: "Applied Machine Learning & Deep Learning AI",
-      category: "Core AI Algorithms & Neural Networks",
+      title: "Cloud Hosting, Deployment & Software Integration",
+      category: "Cloud Hosting, Production Deployment & DevOps",
       level: "Intermediate",
-      badge: "⭐ Mid Tier · Professional ML",
+      badge: "⭐ Mid Tier · Hosting & Deployment",
       duration: "8 Weeks (64 Hours)",
       format: "Live AI Cohort + Cloud GPU Mentorship",
       price: 2500,
       originalPrice: 3500,
       rating: 4.95,
       reviewCount: 520,
-      icon: "fa-brain",
+      icon: "fa-cloud-upload-alt",
       gradient: "linear-gradient(135deg, #a855f7 0%, #6366f1 100%)",
       accentColor: "#a855f7",
-      description: "Learn to build, train, and optimize machine learning and deep learning neural networks using Python, PyTorch, Scikit-learn, and computer vision / NLP models.",
+      description: "Take your vibe-coded and custom applications live to the world: learn modern cloud hosting (Vercel, Netlify, Render, Railway), database setups (Supabase, Firebase), custom domain routing, SSL, and software integration.",
       highlights: [
-        "Python for AI: Vectorized computation with NumPy, Pandas & Data Pipelines",
-        "Classical Machine Learning: Supervised, Unsupervised & XGBoost Models",
-        "Deep Neural Networks & Backpropagation with PyTorch",
-        "Computer Vision & NLP: Image classification, object detection & text embeddings",
-        "Deploying Predictive AI Models via Cloud REST APIs (FastAPI)"
+        "1-Click Production Hosting & Deployment: Vercel, Netlify, Render & Railway",
+        "Cloud Databases & Backend Setup: Supabase, Firebase & Managed PostgreSQL",
+        "Custom Domain Setup, DNS Management, SSL Certificates & CDN Acceleration",
+        "Modern Software Stacks: Docker Containers, Environment Configs & GitHub CI/CD"
       ],
       syllabus: [
-        { week: "Week 1-2", title: "Python for AI & High-Performance Data Processing" },
-        { week: "Week 3-4", title: "Supervised & Unsupervised Machine Learning Algorithms" },
-        { week: "Week 5-6", title: "Deep Learning Foundations & PyTorch Neural Networks" },
-        { week: "Week 7-8", title: "Capstone: Production Deep Learning AI System on Cloud" }
+        { week: "Week 1-2", title: "Cloud Hosting Platforms: Deploying Next.js, React & Node on Vercel & Render" },
+        { week: "Week 3-4", title: "Cloud Database Hosting: Supabase, Firebase, Realtime DB & PostgreSQL" },
+        { week: "Week 5-6", title: "Custom Domains, SSL, Environment Secrets & Production Security" },
+        { week: "Week 7-8", title: "Capstone: Deploying a Scalable Multi-Service Production Web System" }
       ],
-      prerequisites: "Basic programming logic (any language) and high-school math."
+      prerequisites: "Basic computer literacy and understanding of web pages."
     },
     {
       id: "genai-agents",
       code: "AI-301",
       tier: "High Tier (Advanced)",
-      title: "LLMs, Enterprise RAG & Autonomous AI Agents",
-      category: "Advanced Generative AI & Multi-Agent Swarms",
+      title: "API Architecture, Backend Services & AI Engine APIs",
+      category: "REST APIs, Backend Services & AI Engine APIs",
       level: "Advanced",
-      badge: "🔥 High Tier · Enterprise LLMs",
+      badge: "🔥 High Tier · APIs & Backend Integration",
       duration: "10 Weeks (80 Hours)",
       format: "Live AI Lab + 1-on-1 AI Architecture Reviews",
       price: 3500,
@@ -91,30 +90,29 @@ const ACADEMY_DATA = {
       icon: "fa-network-wired",
       gradient: "linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%)",
       accentColor: "#ec4899",
-      description: "Architect cutting-edge enterprise AI systems: Retrieval-Augmented Generation (RAG), Vector DBs, LangChain, LangGraph, and Autonomous Multi-Agent Swarms with CrewAI.",
+      description: "Connect software to external intelligence and services using APIs: master REST APIs, OpenAI & Claude APIs, Google Gemini, Webhooks, FastAPI backends, vector search APIs (Pinecone), and payment gateway integrations.",
       highlights: [
-        "Enterprise RAG Architecture: Chunking strategies, hybrid search & re-ranking",
-        "Vector Databases in Production: Pinecone, ChromaDB, Qdrant & Embeddings",
-        "Multi-Agent AI Swarms: Autonomous reasoning with CrewAI & LangGraph",
-        "Open-Source LLM Fine-Tuning with LoRA / QLoRA (Llama 3 & Mistral)",
-        "Real-time Multimodal AI Agents with Voice, Vision & Function Calling"
+        "RESTful API Architecture: Building Async APIs with Python FastAPI & Node.js",
+        "AI Engine API Integrations: OpenAI GPT-4o, Anthropic Claude 3.5, Gemini & DeepSeek",
+        "Vector Search & Retrieval APIs: Pinecone, ChromaDB & Webhook Automations",
+        "Authentication APIs, Secure Token Auth & Stripe/UPI Payment Gateway APIs"
       ],
       syllabus: [
-        { week: "Week 1-2", title: "LLM Architectures, Attention Mechanisms & Token Optimization" },
-        { week: "Week 3-4", title: "Production RAG Pipelines: Vector Search & Knowledge Retrieval" },
-        { week: "Week 5-7", title: "Autonomous Multi-Agent AI Systems (CrewAI & LangGraph)" },
-        { week: "Week 8-10", title: "Capstone: Enterprise Autonomous AI Copilot in Production" }
+        { week: "Week 1-2", title: "API Fundamentals: JSON Payloads, Headers & Python FastAPI Endpoints" },
+        { week: "Week 3-4", title: "Direct AI Engine API Integration (OpenAI, Claude, Gemini & DeepSeek)" },
+        { week: "Week 5-7", title: "Vector DB APIs (Pinecone), Webhooks & Third-Party Software Connections" },
+        { week: "Week 8-10", title: "Capstone: Building a Production API-Driven AI SaaS Application" }
       ],
-      prerequisites: "Python proficiency and basic understanding of REST APIs."
+      prerequisites: "Basic programming concepts or completion of Tier 1 & 2."
     },
     {
       id: "fullstack-ai-engineer",
       code: "AI-401",
       tier: "Highest Tier (Masterclass)",
-      title: "Full-Stack AI Engineering & Cloud MLOps",
-      category: "Production AI Infrastructure & AI SaaS",
+      title: "Advanced AI Architecture, Autonomous Agents & MLOps",
+      category: "Autonomous AI Agents, Enterprise RAG & Cloud MLOps",
       level: "All Levels to AI Pro",
-      badge: "🚀 Highest Tier · Full-Stack AI Pro",
+      badge: "🚀 Highest Tier · Advanced AI & Agents",
       duration: "14 Weeks (120 Hours)",
       format: "Intensive Live AI Bootcamp + Career Placement",
       price: 5000,
@@ -124,21 +122,20 @@ const ACADEMY_DATA = {
       icon: "fa-microchip",
       gradient: "linear-gradient(135deg, #10b981 0%, #00f0ff 100%)",
       accentColor: "#10b981",
-      description: "Master the complete lifecycle of production AI software: from training and fine-tuning models to building full-stack AI web interfaces, containerization, and cloud GPU MLOps.",
+      description: "Advance to cutting-edge AI engineering: architect autonomous multi-agent swarms (CrewAI, LangGraph), enterprise RAG with hybrid search, local model serving (Ollama/vLLM), and scalable cloud GPU MLOps pipelines.",
       highlights: [
-        "Full AI Stack: Async FastAPI Backends + Next.js React AI SDK Interfaces",
-        "Production AI MLOps: Docker, Kubernetes, Weights & Biases, MLflow",
-        "Low-Latency Cloud GPU Serving: vLLM, TensorRT-LLM on AWS & GCP GPUs",
-        "AI Safety, Guardrails, Latency Optimization & Token Cost Management",
-        "1-on-1 AI Portfolio Review, Mock AI Tech Interviews & Hiring Referrals"
+        "Autonomous Multi-Agent AI Swarms with CrewAI, LangGraph & Tool Calling",
+        "Enterprise RAG Architecture: Vector DBs, Hybrid Search, Chunking & Rerankers",
+        "Local & Cloud LLM Serving: Fine-tuning, Ollama, vLLM on Cloud GPUs (A100)",
+        "Production MLOps, Containerization, Agent Guardrails & 1-on-1 Career Placement"
       ],
       syllabus: [
-        { week: "Week 1-4", title: "Core ML & Modern Generative AI Engineering" },
-        { week: "Week 5-8", title: "Full-Stack AI SaaS: FastAPI, Next.js & Streaming UI" },
-        { week: "Week 9-11", title: "Production MLOps: Cloud GPU Inference, Docker & Scaling" },
-        { week: "Week 12-14", title: "Grand Capstone & AI Career Placement Accelerator" }
+        { week: "Week 1-4", title: "Advanced LLM Architecture, Prompt Optimization & Local Models (Ollama)" },
+        { week: "Week 5-8", title: "Enterprise RAG Pipelines & High-Precision Hybrid Search" },
+        { week: "Week 9-11", title: "Autonomous Multi-Agent Swarms (CrewAI & LangGraph) in Production" },
+        { week: "Week 12-14", title: "Grand Capstone: Full-Scale Autonomous AI Enterprise System & Placement" }
       ],
-      prerequisites: "Open to all motivated learners. Includes complete AI foundation module."
+      prerequisites: "Open to all motivated learners. Includes progressive foundations."
     }
   ],
 

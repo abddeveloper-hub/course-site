@@ -61,17 +61,17 @@ const Wizard = {
     if (!container) return;
 
     const courseTechMap = {
-      'ai-beginners': ['ChatGPT-4o', 'Claude 3.5 Sonnet', 'Midjourney v6', 'Perplexity AI', 'Zapier AI Agents'],
-      'applied-ml-ds': ['PyTorch Deep Learning', 'Scikit-Learn AI', 'Computer Vision', 'NLP Transformers', 'FastAPI'],
-      'genai-agents': ['LangChain & LangGraph', 'CrewAI Multi-Agents', 'Pinecone Vector DB', 'Llama 3 Fine-Tuning', 'Enterprise RAG'],
-      'fullstack-ai-engineer': ['FastAPI for LLMs', 'Docker AI Containers', 'Cloud GPUs (A100)', 'vLLM Serving', 'MLflow MLOps']
+      'ai-beginners': ['Cursor AI', 'Windsurf IDE', 'Lovable.dev', 'Bolt.new', 'v0.dev', 'Replit Agent'],
+      'applied-ml-ds': ['Vercel Cloud', 'Render / Netlify', 'Supabase DB', 'Firebase Backend', 'Docker', 'GitHub CI/CD'],
+      'genai-agents': ['Python FastAPI', 'OpenAI GPT-4o API', 'Claude 3.5 API', 'Google Gemini API', 'Pinecone Vector DB', 'Webhooks'],
+      'fullstack-ai-engineer': ['CrewAI Multi-Agents', 'LangGraph Swarms', 'Enterprise RAG', 'Ollama Local LLM', 'vLLM Serving', 'Cloud GPUs']
     };
 
     const courseBadgeMap = {
-      'ai-beginners': { class: 'track-badge-zero', text: '🌱 Low Tier (₹1,500)' },
-      'applied-ml-ds': { class: 'track-badge-popular', text: '⭐ Mid Tier (₹2,500)' },
-      'genai-agents': { class: 'track-badge-trending', text: '🔥 High Tier (₹3,500)' },
-      'fullstack-ai-engineer': { class: 'track-badge-career', text: '🚀 Highest Tier (₹5,000)' }
+      'ai-beginners': { class: 'track-badge-zero', text: '🌱 Low Tier · Vibe Coding Softwares (₹1,500)' },
+      'applied-ml-ds': { class: 'track-badge-popular', text: '⭐ Mid Tier · Hosting & Deployment (₹2,500)' },
+      'genai-agents': { class: 'track-badge-trending', text: '🔥 High Tier · APIs & Backend (₹3,500)' },
+      'fullstack-ai-engineer': { class: 'track-badge-career', text: '🚀 Highest Tier · Advanced AI & Agents (₹5,000)' }
     };
 
     let html = '';

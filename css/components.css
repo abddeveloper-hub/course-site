@@ -586,6 +586,21 @@
   margin-bottom: 24px;
 }
 
+.pending-dossier-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  font-size: 0.875rem;
+  margin-bottom: 18px;
+}
+
+@media (max-width: 768px) {
+  .pending-dossier-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+}
+
 .form-group-custom {
   display: flex;
   flex-direction: column;
@@ -1149,10 +1164,12 @@
    -------------------------------------------------------------------------- */
 .student-id-card-wrapper {
   max-width: 480px;
+  width: 100%;
   margin: 0 auto;
 }
 
-.student-id-card {
+.student-id-card,
+.digital-student-id-card {
   background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
   border: 2px solid rgba(2, 132, 199, 0.4);
   border-radius: var(--border-radius-xl);
@@ -1163,7 +1180,8 @@
   color: #0f172a;
 }
 
-.student-id-card::after {
+.student-id-card::after,
+.digital-student-id-card::after {
   content: '';
   position: absolute;
   top: 0;
@@ -1280,6 +1298,19 @@
 
 .id-actions-bar .btn {
   flex: 1;
+}
+
+.id-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 18px;
+  width: 100%;
+}
+
+.id-actions-grid .btn {
+  width: 100%;
+  justify-content: center;
 }
 
 /* --------------------------------------------------------------------------
@@ -1714,11 +1745,35 @@
   display: block;
 }
 
+/* Certificate Showcase & Customizer Grids */
+.cert-showcase-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 36px;
+  align-items: center;
+}
+
+.cert-customizer-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 16px;
+  align-items: flex-end;
+}
+
+@media (max-width: 768px) {
+  .cert-showcase-grid,
+  .cert-customizer-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+}
+
 /* --------------------------------------------------------------------------
    8. GOOGLE PROFESSIONAL CAREER CERTIFICATE
    -------------------------------------------------------------------------- */
 .google-cert-outer-wrapper {
   max-width: 920px;
+  width: 100%;
   margin: 0 auto 40px auto;
 }
 
@@ -3304,5 +3359,229 @@
 
 .ai-welcome-overlay.theme-light .ai-skip-btn:hover {
   color: #0284c7;
+}
+
+/* ==========================================================================
+   PORTAL WARP & CINEMATIC TRANSITION ANIMATIONS (Welcome Screen -> Index Page)
+   ========================================================================== */
+
+/* 1. Welcoming Screen Warp State */
+.ai-welcome-overlay.portal-warping {
+  pointer-events: none;
+}
+
+.ai-welcome-overlay.portal-warping .ai-welcome-box {
+  animation: portalBoxDissolve 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.ai-welcome-overlay.portal-warping .ai-hologram-character {
+  animation: portalCoreHyperdrive 0.65s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.ai-welcome-overlay.portal-warping .portal-shockwave-ring {
+  opacity: 1;
+  animation: portalShockwavePulse 0.75s cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
+}
+
+.ai-welcome-overlay.portal-warping .portal-light-flash {
+  opacity: 1;
+  animation: portalFlashPulse 0.5s ease-out forwards;
+}
+
+.portal-shockwave-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.05);
+  width: 900px;
+  height: 900px;
+  max-width: 100vw;
+  max-height: 100vw;
+  border-radius: 50%;
+  border: 4px solid #00f0ff;
+  box-shadow: 0 0 60px #0284c7, inset 0 0 50px rgba(99, 102, 241, 0.6);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.portal-light-flash {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.95) 0%, rgba(2, 132, 199, 0.35) 50%, transparent 80%);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 9;
+}
+
+@keyframes portalShockwavePulse {
+  0% {
+    transform: translate(-50%, -50%) scale(0.05);
+    opacity: 0.95;
+    border-width: 8px;
+    filter: blur(0px);
+  }
+  50% {
+    opacity: 0.85;
+    border-width: 5px;
+    filter: blur(2px);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2.8);
+    opacity: 0;
+    border-width: 1px;
+    filter: blur(8px);
+  }
+}
+
+@keyframes portalFlashPulse {
+  0% { opacity: 0; transform: scale(0.8); }
+  25% { opacity: 0.9; transform: scale(1.05); }
+  100% { opacity: 0; transform: scale(1.2); }
+}
+
+@keyframes portalCoreHyperdrive {
+  0% {
+    transform: scale(1) rotate(0deg);
+    filter: brightness(1) drop-shadow(0 0 15px rgba(2, 132, 199, 0.4));
+  }
+  40% {
+    transform: scale(1.35) rotate(180deg);
+    filter: brightness(2) drop-shadow(0 0 45px #00f0ff) drop-shadow(0 0 80px #6366f1);
+  }
+  100% {
+    transform: scale(0) rotate(720deg);
+    opacity: 0;
+    filter: brightness(3) drop-shadow(0 0 100px #00f0ff);
+  }
+}
+
+@keyframes portalBoxDissolve {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+    filter: blur(0);
+  }
+  30% {
+    transform: translateY(-8px) scale(1.03);
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateY(24px) scale(0.92);
+    opacity: 0;
+    filter: blur(10px);
+  }
+}
+
+/* 2. Index Homepage Cinematic Entrance Cascades */
+body.portal-entering-active {
+  overflow-x: hidden !important;
+}
+
+body.portal-entering-active .navbar {
+  animation: portalNavDrop 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+body.portal-entering-active .cyber-hud-telemetry {
+  animation: portalHudReveal 0.8s 0.12s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+body.portal-entering-active .hero-title {
+  animation: portalTitleSweep 0.9s 0.18s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+body.portal-entering-active .hero-description {
+  animation: portalFadeUp 0.8s 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+body.portal-entering-active .specialization-explorer-wrap {
+  animation: portalFadeUp 0.8s 0.34s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+body.portal-entering-active .hero-actions {
+  animation: portalFadeUp 0.8s 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+body.portal-entering-active .cyber-cards-grid .cyber-holo-card:nth-child(1) {
+  animation: portalCardLift 0.8s 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+body.portal-entering-active .cyber-cards-grid .cyber-holo-card:nth-child(2) {
+  animation: portalCardLift 0.8s 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+body.portal-entering-active .cyber-cards-grid .cyber-holo-card:nth-child(3) {
+  animation: portalCardLift 0.8s 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+body.portal-entering-active .cyber-cards-grid .cyber-holo-card:nth-child(4) {
+  animation: portalCardLift 0.8s 0.65s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes portalNavDrop {
+  0% {
+    transform: translateY(-40px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes portalHudReveal {
+  0% {
+    transform: scale(0.92) translateY(-14px);
+    opacity: 0;
+    box-shadow: 0 0 0 rgba(2, 132, 199, 0);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(2, 132, 199, 0.4), 0 0 45px rgba(99, 102, 241, 0.2);
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  }
+}
+
+@keyframes portalTitleSweep {
+  0% {
+    transform: translateY(24px) scale(0.97);
+    opacity: 0;
+    filter: blur(4px);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+@keyframes portalFadeUp {
+  0% {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes portalCardLift {
+  0% {
+    transform: translateY(36px) scale(0.94);
+    opacity: 0;
+    filter: blur(3px);
+  }
+  60% {
+    box-shadow: 0 15px 35px rgba(2, 132, 199, 0.18), 0 0 20px rgba(99, 102, 241, 0.15);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+    filter: blur(0);
+  }
 }
 

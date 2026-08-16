@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
   <title>AI Nexus Academy | Advanced AI Education & Course Registration</title>
   <meta name="description" content="Join AI Nexus Academy. World-class AI education for beginners, developers, and leaders. Hands-on Generative AI, Machine Learning, AI Agents & MLOps cohorts.">
   
@@ -103,6 +103,10 @@
     <!-- Starfield Neural Mesh Canvas -->
     <canvas id="neuralMeshCanvas" class="neural-mesh-canvas"></canvas>
     
+    <!-- Portal Warp Shockwave & Flash Effects -->
+    <div class="portal-shockwave-ring" id="portalShockwaveRing"></div>
+    <div class="portal-light-flash" id="portalLightFlash"></div>
+
     <!-- Ambient Neon Cyber Glows -->
     <div class="ai-glow-orb ai-glow-1"></div>
     <div class="ai-glow-orb ai-glow-2"></div>
@@ -293,16 +297,16 @@
           <div class="specialization-title-tag">Explore Specializations:</div>
           <div class="specialization-chips-row">
             <button class="filter-chip active" onclick="App.startEnrollment('ai-beginners')">
-              <i class="fas fa-robot" style="color:#0284c7;"></i> Low Tier: Foundation (₹1,500)
+              <i class="fas fa-magic" style="color:#0284c7;"></i> Low Tier: Vibe Coding Softwares (₹1,500)
             </button>
             <button class="filter-chip" onclick="App.startEnrollment('applied-ml-ds')">
-              <i class="fas fa-brain" style="color:#7c3aed;"></i> Mid Tier: PyTorch ML (₹2,500)
+              <i class="fas fa-cloud-upload-alt" style="color:#7c3aed;"></i> Mid Tier: Hosting & Deploy (₹2,500)
             </button>
             <button class="filter-chip" onclick="App.startEnrollment('genai-agents')">
-              <i class="fas fa-network-wired" style="color:#e11d48;"></i> High Tier: LLMs & Agents (₹3,500)
+              <i class="fas fa-network-wired" style="color:#e11d48;"></i> High Tier: APIs & Backend (₹3,500)
             </button>
             <button class="filter-chip" onclick="App.startEnrollment('fullstack-ai-engineer')">
-              <i class="fas fa-microchip" style="color:#059669;"></i> Highest: Full-Stack Pro (₹5,000)
+              <i class="fas fa-microchip" style="color:#059669;"></i> Highest: Advanced AI & Agents (₹5,000)
             </button>
           </div>
         </div>
@@ -325,12 +329,13 @@
           <!-- Card 1: Low Tier -->
           <div class="cyber-holo-card" style="--holo-accent:linear-gradient(90deg, #00f0ff, #0072ff);" onclick="App.startEnrollment('ai-beginners')">
             <div>
-              <span class="cyber-tier-tag tier-tag-cyan">🌱 Low Tier &bull; Foundation</span>
+              <span class="cyber-tier-tag tier-tag-cyan">🌱 Low Tier &bull; Vibe Coding Softwares</span>
               <div style="font-size:0.8rem; font-weight:700; color:#0284c7; font-family:var(--font-mono);">AI-101</div>
-              <h4 style="font-size:1.15rem; font-weight:800; color:#0f172a; margin:4px 0 8px 0;">Generative AI & No-Code Automation</h4>
-              <p style="font-size:0.825rem; color:#64748b; line-height:1.5; margin-bottom:12px;">Prompt engineering (ChatGPT-4o, Claude 3.5), Midjourney v6, Zapier AI bots.</p>
+              <h4 style="font-size:1.15rem; font-weight:800; color:#0f172a; margin:4px 0 8px 0;">Vibe Coding & AI App Development</h4>
+              <p style="font-size:0.825rem; color:#64748b; line-height:1.5; margin-bottom:12px;">Build complete apps & websites purely with AI prompts using Cursor AI, Windsurf, Lovable, Bolt.new & v0.dev.</p>
               <div style="display:flex; gap:6px; flex-wrap:wrap;">
-                <span class="tech-chip" style="font-size:0.7rem;"><i class="fas fa-check" style="color:#059669;"></i> Zero Code</span>
+                <span class="tech-chip" style="font-size:0.7rem;"><i class="fas fa-magic" style="color:#0284c7;"></i> Cursor / Windsurf</span>
+                <span class="tech-chip" style="font-size:0.7rem;">Lovable & Bolt</span>
                 <span class="tech-chip" style="font-size:0.7rem;">4 Weeks</span>
               </div>
             </div>
@@ -348,12 +353,13 @@
           <!-- Card 2: Mid Tier -->
           <div class="cyber-holo-card" style="--holo-accent:linear-gradient(90deg, #a855f7, #6366f1);" onclick="App.startEnrollment('applied-ml-ds')">
             <div>
-              <span class="cyber-tier-tag tier-tag-violet">⭐ Mid Tier &bull; Professional</span>
+              <span class="cyber-tier-tag tier-tag-violet">⭐ Mid Tier &bull; Hosting & Deployment</span>
               <div style="font-size:0.8rem; font-weight:700; color:#7c3aed; font-family:var(--font-mono);">AI-201</div>
-              <h4 style="font-size:1.15rem; font-weight:800; color:#0f172a; margin:4px 0 8px 0;">Applied Machine & Deep Learning</h4>
-              <p style="font-size:0.825rem; color:#64748b; line-height:1.5; margin-bottom:12px;">Python for AI, PyTorch neural networks, computer vision, FastAPI models.</p>
+              <h4 style="font-size:1.15rem; font-weight:800; color:#0f172a; margin:4px 0 8px 0;">Cloud Hosting & Software Integration</h4>
+              <p style="font-size:0.825rem; color:#64748b; line-height:1.5; margin-bottom:12px;">Take apps live to production: Vercel, Netlify, Render, Supabase databases, custom domains & Docker.</p>
               <div style="display:flex; gap:6px; flex-wrap:wrap;">
-                <span class="tech-chip" style="font-size:0.7rem;"><i class="fas fa-brain" style="color:#7c3aed;"></i> PyTorch</span>
+                <span class="tech-chip" style="font-size:0.7rem;"><i class="fas fa-cloud-upload-alt" style="color:#7c3aed;"></i> Vercel & Render</span>
+                <span class="tech-chip" style="font-size:0.7rem;">Supabase DB</span>
                 <span class="tech-chip" style="font-size:0.7rem;">8 Weeks</span>
               </div>
             </div>
@@ -371,12 +377,13 @@
           <!-- Card 3: High Tier -->
           <div class="cyber-holo-card" style="--holo-accent:linear-gradient(90deg, #ec4899, #8b5cf6);" onclick="App.startEnrollment('genai-agents')">
             <div>
-              <span class="cyber-tier-tag tier-tag-rose">🔥 High Tier &bull; Advanced</span>
+              <span class="cyber-tier-tag tier-tag-rose">🔥 High Tier &bull; APIs & Backend</span>
               <div style="font-size:0.8rem; font-weight:700; color:#e11d48; font-family:var(--font-mono);">AI-301</div>
-              <h4 style="font-size:1.15rem; font-weight:800; color:#0f172a; margin:4px 0 8px 0;">Enterprise LLMs, RAG & Agents</h4>
-              <p style="font-size:0.825rem; color:#64748b; line-height:1.5; margin-bottom:12px;">Enterprise RAG, Pinecone vector DBs, LangGraph, CrewAI multi-agent swarms.</p>
+              <h4 style="font-size:1.15rem; font-weight:800; color:#0f172a; margin:4px 0 8px 0;">API Architecture & AI Engine APIs</h4>
+              <p style="font-size:0.825rem; color:#64748b; line-height:1.5; margin-bottom:12px;">RESTful APIs, OpenAI & Claude APIs, Google Gemini, Webhooks, FastAPI backends & vector search.</p>
               <div style="display:flex; gap:6px; flex-wrap:wrap;">
-                <span class="tech-chip" style="font-size:0.7rem;"><i class="fas fa-network-wired" style="color:#e11d48;"></i> CrewAI</span>
+                <span class="tech-chip" style="font-size:0.7rem;"><i class="fas fa-network-wired" style="color:#e11d48;"></i> FastAPI Endpoints</span>
+                <span class="tech-chip" style="font-size:0.7rem;">OpenAI & Claude</span>
                 <span class="tech-chip" style="font-size:0.7rem;">10 Weeks</span>
               </div>
             </div>
@@ -394,12 +401,13 @@
           <!-- Card 4: Highest Tier -->
           <div class="cyber-holo-card" style="--holo-accent:linear-gradient(90deg, #10b981, #00f0ff);" onclick="App.startEnrollment('fullstack-ai-engineer')">
             <div>
-              <span class="cyber-tier-tag tier-tag-emerald">🚀 Highest Tier &bull; Masterclass</span>
+              <span class="cyber-tier-tag tier-tag-emerald">🚀 Highest Tier &bull; Advanced AI</span>
               <div style="font-size:0.8rem; font-weight:700; color:#059669; font-family:var(--font-mono);">AI-401</div>
-              <h4 style="font-size:1.15rem; font-weight:800; color:#0f172a; margin:4px 0 8px 0;">Full-Stack AI Engineering & MLOps</h4>
-              <p style="font-size:0.825rem; color:#64748b; line-height:1.5; margin-bottom:12px;">FastAPI + Next.js AI SDK, Docker, Cloud GPUs (vLLM inference), MLOps pipelines.</p>
+              <h4 style="font-size:1.15rem; font-weight:800; color:#0f172a; margin:4px 0 8px 0;">Advanced AI Architecture & MLOps</h4>
+              <p style="font-size:0.825rem; color:#64748b; line-height:1.5; margin-bottom:12px;">Autonomous multi-agent swarms (CrewAI, LangGraph), Enterprise RAG, local models (Ollama) & cloud GPUs.</p>
               <div style="display:flex; gap:6px; flex-wrap:wrap;">
-                <span class="tech-chip" style="font-size:0.7rem;"><i class="fas fa-microchip" style="color:#059669;"></i> A100 GPU</span>
+                <span class="tech-chip" style="font-size:0.7rem;"><i class="fas fa-microchip" style="color:#059669;"></i> CrewAI & LangGraph</span>
+                <span class="tech-chip" style="font-size:0.7rem;">Enterprise RAG</span>
                 <span class="tech-chip" style="font-size:0.7rem;">14 Weeks</span>
               </div>
             </div>
@@ -506,31 +514,31 @@
 
         <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:24px;">
           <div class="glass-panel" style="padding: 28px; position:relative;">
-            <span class="course-code" style="color:var(--neon-cyan); margin-bottom:12px; display:inline-block;">STAGE 01</span>
-            <h4 style="font-size:1.2rem; margin-bottom:8px; color:#0f172a;">AI Foundations & Tools</h4>
-            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:16px;">Python for Data Science, Prompt Engineering, ChatGPT, Claude, Midjourney & Automation workflows.</p>
-            <div style="font-size:0.75rem; color:var(--neon-cyan); font-weight:600;"><i class="fas fa-check"></i> 10+ Practical Exercises</div>
+            <span class="course-code" style="color:var(--neon-cyan); margin-bottom:12px; display:inline-block;">STAGE 01 &bull; LOW TIER</span>
+            <h4 style="font-size:1.2rem; margin-bottom:8px; color:#0f172a;">Vibe Coding & AI Softwares</h4>
+            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:16px;">Cursor AI, Windsurf, Lovable, Bolt.new, v0.dev, Replit Agent, natural language prompt-to-app coding.</p>
+            <div style="font-size:0.75rem; color:var(--neon-cyan); font-weight:600;"><i class="fas fa-check"></i> Zero Code App Building</div>
           </div>
 
           <div class="glass-panel" style="padding: 28px; position:relative;">
-            <span class="course-code" style="color:var(--neon-violet); margin-bottom:12px; display:inline-block;">STAGE 02</span>
-            <h4 style="font-size:1.2rem; margin-bottom:8px; color:#0f172a;">Machine & Deep Learning</h4>
-            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:16px;">Supervised algorithms, PyTorch neural networks, feature engineering, loss optimization & evaluation.</p>
-            <div style="font-size:0.75rem; color:var(--neon-violet); font-weight:600;"><i class="fas fa-check"></i> Predictive ML Capstone</div>
+            <span class="course-code" style="color:var(--neon-violet); margin-bottom:12px; display:inline-block;">STAGE 02 &bull; MID TIER</span>
+            <h4 style="font-size:1.2rem; margin-bottom:8px; color:#0f172a;">Cloud Hosting & Deployment</h4>
+            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:16px;">Deploying live on Vercel, Netlify, Render, Supabase database setups, custom domains, SSL & Docker.</p>
+            <div style="font-size:0.75rem; color:var(--neon-violet); font-weight:600;"><i class="fas fa-check"></i> Live Production Deployment</div>
           </div>
 
           <div class="glass-panel" style="padding: 28px; position:relative;">
-            <span class="course-code" style="color:var(--neon-magenta); margin-bottom:12px; display:inline-block;">STAGE 03</span>
-            <h4 style="font-size:1.2rem; margin-bottom:8px; color:#0f172a;">Generative AI & Agents</h4>
-            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:16px;">Enterprise RAG pipelines, Vector Databases (Pinecone/Chroma), LangChain & Autonomous Multi-Agent Swarms.</p>
-            <div style="font-size:0.75rem; color:var(--neon-magenta); font-weight:600;"><i class="fas fa-check"></i> Custom Enterprise Agent</div>
+            <span class="course-code" style="color:var(--neon-magenta); margin-bottom:12px; display:inline-block;">STAGE 03 &bull; HIGH TIER</span>
+            <h4 style="font-size:1.2rem; margin-bottom:8px; color:#0f172a;">APIs & Backend Services</h4>
+            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:16px;">RESTful APIs with FastAPI, OpenAI & Claude APIs, Google Gemini, Webhooks & Pinecone Vector DB APIs.</p>
+            <div style="font-size:0.75rem; color:var(--neon-magenta); font-weight:600;"><i class="fas fa-check"></i> AI Engine API Integration</div>
           </div>
 
           <div class="glass-panel" style="padding: 28px; position:relative;">
-            <span class="course-code" style="color:var(--neon-emerald); margin-bottom:12px; display:inline-block;">STAGE 04</span>
-            <h4 style="font-size:1.2rem; margin-bottom:8px; color:#0f172a;">MLOps & Cloud Deployment</h4>
-            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:16px;">Containerization with Docker, FastAPI asynchronous backends, Cloud GPU deployment, monitoring & scale.</p>
-            <div style="font-size:0.75rem; color:var(--neon-emerald); font-weight:600;"><i class="fas fa-check"></i> Certified AI Engineer Pass</div>
+            <span class="course-code" style="color:var(--neon-emerald); margin-bottom:12px; display:inline-block;">STAGE 04 &bull; HIGHEST TIER</span>
+            <h4 style="font-size:1.2rem; margin-bottom:8px; color:#0f172a;">Autonomous Agents & MLOps</h4>
+            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:16px;">Autonomous swarms with CrewAI & LangGraph, Enterprise RAG, local models (Ollama/vLLM) & Cloud GPUs.</p>
+            <div style="font-size:0.75rem; color:var(--neon-emerald); font-weight:600;"><i class="fas fa-check"></i> Multi-Agent AI Masterclass</div>
           </div>
         </div>
       </div>
@@ -547,8 +555,8 @@
           <p class="section-desc">Every graduate receives an officially verifiable, cryptographic digital certificate embedded with a unique verification QR code and holographic security seal.</p>
         </div>
 
-        <div class="glass-panel" style="padding: 40px; border-color: rgba(2, 132, 199, 0.3); box-shadow: var(--shadow-md);">
-          <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 36px; align-items: center;">
+        <div class="glass-panel" style="padding: 32px 24px; border-color: rgba(2, 132, 199, 0.3); box-shadow: var(--shadow-md);">
+          <div class="cert-showcase-grid">
             <div>
               <span class="section-tag" style="background:rgba(2, 132, 199, 0.08); border-color:rgba(2, 132, 199, 0.25); color:var(--neon-cyan); margin-bottom:12px;">
                 <i class="fas fa-fingerprint"></i> Cryptographically Verifiable
@@ -671,8 +679,8 @@
     <div class="container section" style="padding-top: 20px;">
       
       <!-- Interactive Generator Customizer Bar -->
-      <div class="glass-panel" style="padding: 24px 28px; margin-bottom: 36px; border-color: rgba(255,215,0,0.3);">
-        <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 16px; align-items: flex-end;">
+      <div class="glass-panel" style="padding: 24px 20px; margin-bottom: 36px; border-color: rgba(255,215,0,0.3);">
+        <div class="cert-customizer-grid">
           <div class="form-group-custom">
             <label class="form-label-custom"><i class="fas fa-user-graduate" style="color:var(--neon-cyan);"></i> Certificate Recipient Full Name</label>
             <input type="text" class="input-custom" id="certInputName" placeholder="Enter student or graduate name" value="Alex Rivera">
@@ -681,10 +689,10 @@
           <div class="form-group-custom">
             <label class="form-label-custom"><i class="fas fa-microchip" style="color:var(--neon-violet);"></i> Accredited Specialization Track</label>
             <select class="select-custom" id="certInputTrack">
-              <option value="AI Literacy & GenAI for Beginners & Business">AI-101: AI Literacy & GenAI for Beginners</option>
-              <option value="Applied Machine Learning & Data Science">AI-201: Applied Machine Learning & Data Science</option>
-              <option value="Generative AI, LLMs & Autonomous AI Agents" selected>AI-301: Generative AI, LLMs & Autonomous AI Agents</option>
-              <option value="Full-Stack AI Engineer & MLOps Masterclass">AI-401: Full-Stack AI Engineer & MLOps Masterclass</option>
+              <option value="Vibe Coding Softwares & AI-Assisted App Development">AI-101: Vibe Coding Softwares & AI Development</option>
+              <option value="Cloud Hosting, Deployment & Software Integration">AI-201: Cloud Hosting & Software Integration</option>
+              <option value="API Architecture, Backend Services & AI Engine APIs" selected>AI-301: API Architecture & AI Engine APIs</option>
+              <option value="Advanced AI Architecture, Autonomous Agents & MLOps">AI-401: Advanced AI Architecture & MLOps</option>
             </select>
           </div>
 
@@ -1125,7 +1133,7 @@
                 </div>
               </div>
 
-              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px; font-size:0.875rem; margin-bottom:18px;">
+              <div class="pending-dossier-grid">
                 <div>
                   <span style="color:#64748b; font-size:0.775rem;">Selected AI Track:</span>
                   <div style="font-weight:700; color:#0f172a;" id="pendingTrackTitle">Track</div>
@@ -1543,10 +1551,10 @@
           <div style="display:flex; gap:10px; flex-wrap:wrap;">
             <select class="select-custom" id="adminTrackFilter" style="width:auto; padding:10px 14px; font-size:0.85rem;">
               <option value="ALL">All Tracks</option>
-              <option value="ai-beginners">1C: Beginners & Business</option>
-              <option value="applied-ml-ds">Data Science & ML</option>
-              <option value="genai-agents">GenAI & Agents</option>
-              <option value="fullstack-ai-engineer">Full-Stack AI Track</option>
+              <option value="ai-beginners">Tier 1: Vibe Coding Softwares</option>
+              <option value="applied-ml-ds">Tier 2: Hosting & Deployment</option>
+              <option value="genai-agents">Tier 3: APIs & Backend Services</option>
+              <option value="fullstack-ai-engineer">Tier 4: Advanced AI & MLOps</option>
             </select>
 
             <select class="select-custom" id="adminStatusFilter" style="width:auto; padding:10px 14px; font-size:0.85rem;">
