@@ -1,4 +1,4 @@
-/* ==========================================================================
+﻿/* ==========================================================================
    AI NEXUS ACADEMY - CORE DESIGN SYSTEM & CRISP LIGHT THEME
    Theme: Luxury Modern White / Light Mode Aesthetic
    ========================================================================== */
@@ -152,7 +152,7 @@ button {
 /* Container & Section Layouts */
 .container {
   width: 100%;
-  max-width: 1280px;
+  max-width: min(1280px, 100%);
   margin: 0 auto;
   padding: 0 24px;
 }
@@ -165,7 +165,7 @@ button {
 
 .section-header {
   text-align: center;
-  max-width: 780px;
+  max-width: min(780px, 100%);
   margin: 0 auto 56px auto;
 }
 
@@ -444,7 +444,7 @@ button {
 .toast {
   pointer-events: auto;
   min-width: 320px;
-  max-width: 420px;
+  max-width: min(420px, 100%);
   padding: 16px 20px;
   background: #ffffff;
   backdrop-filter: blur(16px);
@@ -529,7 +529,7 @@ button {
 
 .modal-card {
   width: 100%;
-  max-width: 650px;
+  max-width: min(650px, 100%);
   max-height: 90vh;
   overflow-y: auto;
   background: #ffffff;
@@ -597,7 +597,7 @@ button {
 
 .footer-brand p {
   margin-top: 14px;
-  max-width: 320px;
+  max-width: min(320px, 100%);
   font-size: 0.9rem;
   line-height: 1.6;
   color: var(--text-muted);
@@ -660,3 +660,4 @@ button {
     text-align: center;
   }
 }
+

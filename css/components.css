@@ -1,4 +1,4 @@
-/* ==========================================================================
+﻿/* ==========================================================================
    AI NEXUS ACADEMY - COMPONENTS STYLING
    Theme: Luxury Modern White / Light Mode Aesthetic
    ========================================================================== */
@@ -43,7 +43,7 @@
   position: relative;
   z-index: 1;
   text-align: center;
-  max-width: 920px;
+  max-width: min(920px, 100%);
   margin: 0 auto;
 }
 
@@ -84,7 +84,7 @@
 .hero-description {
   font-size: clamp(1.05rem, 2vw, 1.25rem);
   color: var(--text-muted);
-  max-width: 720px;
+  max-width: min(720px, 100%);
   margin: 0 auto 36px auto;
   line-height: 1.7;
 }
@@ -102,7 +102,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr));
   gap: 20px;
-  max-width: 900px;
+  max-width: min(900px, 100%);
   margin: 0 auto;
 }
 
@@ -353,7 +353,7 @@
    3. MULTI-STEP WIZARD (Features 4A, 4B, 4C)
    -------------------------------------------------------------------------- */
 .wizard-wrapper {
-  max-width: 960px;
+  max-width: min(960px, 100%);
   margin: 0 auto;
   background: #ffffff;
   border: 1px solid var(--border-subtle);
@@ -402,7 +402,7 @@
   align-items: center !important;
   position: relative !important;
   margin: 0 auto 46px auto;
-  max-width: 720px;
+  max-width: min(720px, 100%);
   width: 100%;
   padding: 12px 14px;
   background: #f8fafc;
@@ -1175,7 +1175,7 @@
    4. DIGITAL STUDENT ID CARD (Feature 3B)
    -------------------------------------------------------------------------- */
 .student-id-card-wrapper {
-  max-width: 480px;
+  max-width: min(480px, 100%);
   width: 100%;
   margin: 0 auto;
 }
@@ -1705,7 +1705,7 @@
    7. TESTIMONIALS & FAQ ACCORDION
    -------------------------------------------------------------------------- */
 .faq-accordion {
-  max-width: 840px;
+  max-width: min(840px, 100%);
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -1784,7 +1784,7 @@
    8. GOOGLE PROFESSIONAL CAREER CERTIFICATE
    -------------------------------------------------------------------------- */
 .google-cert-outer-wrapper {
-  max-width: 920px;
+  max-width: min(920px, 100%);
   width: 100%;
   margin: 0 auto 40px auto;
 }
@@ -2083,7 +2083,7 @@
    9. AUTHENTICATION & LOGIN PORTAL STYLING
    -------------------------------------------------------------------------- */
 .auth-wrapper {
-  max-width: 480px;
+  max-width: min(480px, 100%);
   margin: 0 auto;
   background: #ffffff;
   border: 1px solid var(--border-subtle);
@@ -2538,7 +2538,7 @@
   border: 1px solid rgba(2, 132, 199, 0.4);
   border-radius: 40px;
   padding: 10px 24px;
-  max-width: 980px;
+  max-width: min(980px, 100%);
   margin: 0 auto 32px auto;
   box-shadow: 0 10px 30px rgba(2, 132, 199, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
   color: #ffffff;
@@ -2614,7 +2614,7 @@
   grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
   gap: 22px;
   margin: 40px auto;
-  max-width: 1140px;
+  max-width: min(1140px, 100%);
   position: relative;
   z-index: 1;
 }
@@ -2702,7 +2702,7 @@
   border-radius: 24px;
   padding: 36px 40px;
   color: #0f172a;
-  max-width: 980px;
+  max-width: min(980px, 100%);
   margin: 40px auto 0 auto;
   position: relative;
   overflow: hidden;
@@ -2884,7 +2884,7 @@
 .ai-welcome-box {
   position: relative;
   z-index: 2;
-  max-width: 780px;
+  max-width: min(780px, 100%);
   width: 100%;
   text-align: center;
   margin: auto;
@@ -3124,7 +3124,7 @@
   font-size: 1.1rem;
   color: #cbd5e1;
   line-height: 1.6;
-  max-width: 640px;
+  max-width: min(640px, 100%);
   margin: 0 auto 16px auto;
   min-height: 3.5rem;
 }
@@ -3597,4 +3597,5 @@ body.portal-entering-active .cyber-cards-grid .cyber-holo-card:nth-child(4) {
     filter: blur(0);
   }
 }
+
 
