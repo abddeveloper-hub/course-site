@@ -1,4 +1,4 @@
-﻿/* ==========================================================================
+/* ==========================================================================
    AI NEXUS ACADEMY - CORE DESIGN SYSTEM & CRISP LIGHT THEME
    Theme: Luxury Modern White / Light Mode Aesthetic
    ========================================================================== */
@@ -39,10 +39,10 @@
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
   
-  /* Text Colors */
-  --text-main: #0f172a;
-  --text-muted: #475569;
-  --text-dim: #64748b;
+  /* Text Colors - High Contrast & Razor Sharp Legibility */
+  --text-main: #090d16;
+  --text-muted: #1e293b;
+  --text-dim: #334155;
   --text-highlight: #0284c7;
   
   /* Borders & Shadows */

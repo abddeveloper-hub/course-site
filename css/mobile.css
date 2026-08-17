@@ -1,270 +1,1285 @@
-﻿/* AI NEXUS ACADEMY - MOBILE-FIRST RESPONSIVE CSS */
-html,body{width:100%;max-width:100%;overflow-x:hidden;box-sizing:border-box;-webkit-text-size-adjust:100%}
-*,*::before,*::after{box-sizing:border-box;min-width:0}
-img,svg,video,canvas,iframe{max-width:100%;height:auto}
-button,input,select,textarea{touch-action:manipulation;font-family:inherit;max-width:100%}
-.public-left-menu-btn{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;min-width:42px;border-radius:10px;background:#fff;border:1px solid #e2e8f0;color:#0f172a;font-size:1.15rem;cursor:pointer;margin-right:10px;flex-shrink:0}
-.mobile-drawer{position:fixed;top:0;left:-100%;width:86%;max-width:360px;height:100vh;background:#fff;border-right:1px solid #e2e8f0;z-index:1200;display:flex;flex-direction:column;justify-content:space-between;padding:24px 18px;transition:left .35s cubic-bezier(.16,1,.3,1);box-shadow:10px 0 40px rgba(15,23,42,.15);overflow-y:auto}
-.mobile-drawer.open{left:0}
-.mobile-drawer-overlay{position:fixed;inset:0;background:rgba(15,23,42,.5);backdrop-filter:blur(6px);z-index:1150;display:none;opacity:0;transition:opacity .3s}
-.mobile-drawer-overlay.open{display:block;opacity:1}
-.mobile-nav-list{list-style:none;display:flex;flex-direction:column;gap:8px;padding:0;margin:0}
-.mobile-nav-item a{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:10px;color:#334155;font-size:.925rem;font-weight:600;background:#f8fafc;border:1px solid #e2e8f0;cursor:pointer;text-decoration:none;word-break:break-word;transition:all .18s}
-.mobile-nav-item a:hover,.mobile-nav-item a.active{background:rgba(2,132,199,.08);border-color:rgba(2,132,199,.3);color:var(--neon-cyan);transform:translateX(4px)}
-.mobile-nav-item a i{width:22px;min-width:22px;text-align:center}
-.toast-container{bottom:16px;right:12px;left:12px;max-width:100%}
-.toast{min-width:0;max-width:100%}
+/* ==========================================================================
+   AI NEXUS ACADEMY - CRYSTAL CLEAR MOBILE-FIRST STYLESHEET
+   Ultra-Crisp Typography, Bold High-Contrast Numbers, Perfect Stacking
+   ========================================================================== */
 
-/* <= 1024px */
-@media(max-width:1024px){
-.container{padding:0 20px}
-.hero-stats{grid-template-columns:repeat(2,1fr);gap:16px}
-.course-grid{grid-template-columns:repeat(2,1fr);gap:20px}
-.cyber-cards-grid,.roadmap-grid,.testimonials-grid{grid-template-columns:repeat(2,1fr) !important;gap:18px}
-.student-portal-grid,.student-hub-grid{grid-template-columns:1fr !important}
-.admin-kpi-grid{grid-template-columns:repeat(2,1fr) !important}
-.admin-grid-2,.cyber-pass-grid,.cert-showcase-grid{grid-template-columns:1fr !important}
-.interactive-track-picker,.track-selection-grid,.course-square-grid{grid-template-columns:1fr 1fr !important}
-.batch-schedule-grid{grid-template-columns:repeat(2,1fr)}
-.cert-customizer-grid{grid-template-columns:1fr 1fr !important;gap:14px}
-.footer-grid{grid-template-columns:1fr 1fr;gap:32px}
-.hub-welcome-banner{flex-direction:column;align-items:flex-start;gap:16px}
-section,main,article,aside,header,footer,nav,div{max-width:100%}
-.input-custom,.select-custom,.textarea-custom,.big-select-custom{max-width:100% !important;width:100%}
-.course-filters,.nav-links{flex-wrap:wrap}
+/* --------------------------------------------------------------------------
+   0. GLOBAL RESETS & CRISP FONT RENDERING
+   -------------------------------------------------------------------------- */
+html, body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  color: #090d16;
 }
 
-/* <= 768px */
-@media(max-width:768px){
-#bg-3d-canvas{display:none !important}
-*,*::before,*::after{-webkit-tap-highlight-color:transparent}
-.glass-panel,.navbar,.hero-badge,.auth-wrapper{backdrop-filter:none !important;-webkit-backdrop-filter:none !important}
-.hero-glow-1,.hero-glow-2,.ai-glow-1,.ai-glow-2,.ai-glow-orb{filter:none !important;opacity:.2 !important}
-.cyber-holo-card,.course-card,.glass-panel,.digital-student-id-card,.google-cert-card{box-shadow:0 2px 8px rgba(15,23,42,.06) !important;transform:none !important}
-.container{padding:0 14px !important;width:100% !important;max-width:100% !important}
-.section{padding:48px 0 !important;overflow:hidden}
-.section-header{margin-bottom:28px !important}
-.section-tag{font-size:.75rem !important;padding:5px 12px !important;text-align:center}
-.section-title{font-size:clamp(1.5rem,5vw,2rem) !important;line-height:1.25 !important;margin-bottom:10px !important}
-.section-desc{font-size:.9rem !important;line-height:1.6 !important}
-.view-banner{padding:100px 0 24px 0 !important}
-.view-banner h1{font-size:clamp(1.6rem,5vw,2rem) !important;line-height:1.25 !important}
-.view-banner p{font-size:.875rem !important}
-.navbar{padding:8px 0 !important;background:rgba(255,255,255,.98) !important;box-shadow:0 2px 8px rgba(0,0,0,.05) !important}
-.nav-container{padding:0 12px !important;gap:8px}
-.public-left-menu-btn{width:36px !important;height:36px !important;min-width:36px !important;font-size:1rem !important;margin-right:8px !important}
-.nav-logo span{font-size:.9rem !important}
-.nav-logo-icon{width:28px !important;height:28px !important;min-width:28px !important;font-size:.8rem !important}
-.nav-actions{display:flex !important;align-items:center !important;gap:6px !important;flex-shrink:0}
-.nav-btn-guide{display:none !important}
-.nav-actions .btn{padding:7px 10px !important;font-size:.75rem !important;border-radius:8px !important}
-.nav-btn-text{display:none !important}
-.ai-welcome-overlay{padding:28px 16px 36px !important;min-height:100vh !important;height:auto !important;display:flex !important;flex-direction:column !important;justify-content:flex-start !important;align-items:center !important;overflow-y:auto !important;background:radial-gradient(circle at 50% 20%,#f0f9ff,#e0f2fe 50%,#fff 90%) !important}
-.ai-welcome-box{width:100% !important;max-width:440px !important;display:flex !important;flex-direction:column !important;align-items:center !important;margin:auto !important;padding:16px 0 !important}
-.ai-hologram-character{width:90px !important;height:90px !important;margin-bottom:14px !important}
-.ai-orbit-ring-outer{width:100px !important;height:100px !important;border:2px dashed rgba(2,132,199,.45) !important}
-.ai-orbit-ring-inner{width:80px !important;height:80px !important}
-.ai-sphere-core{width:58px !important;height:58px !important;background:#fff !important}
-.ai-sphere-inner{width:46px !important;height:46px !important;background:#f8fafc !important}
-.ai-eye,.mouth-bar{background:#0284c7 !important}
-.ai-tag-badge{padding:4px 12px !important;font-size:.65rem !important;margin-bottom:10px !important;text-align:center;max-width:100%}
-.ai-speech-container{width:100% !important;margin-bottom:14px !important}
-.ai-speech-bubble{padding:20px 16px !important;border-radius:20px !important;background:#fff !important;border:1.5px solid #cbd5e1 !important;width:100% !important;box-sizing:border-box !important;text-align:center !important}
-.ai-speech-header{font-size:.7rem !important;margin-bottom:12px !important;padding-bottom:10px !important;flex-wrap:wrap !important;gap:8px !important}
-.ai-typed-heading{font-size:clamp(1.3rem,5vw,1.65rem) !important;font-weight:900 !important;min-height:auto !important;line-height:1.25 !important;margin-bottom:10px !important}
-.ai-typed-subtext{font-size:.875rem !important;margin-bottom:12px !important;min-height:auto !important}
-.ai-welcome-cta-wrap{width:100% !important;display:flex !important;flex-direction:column !important;align-items:center !important;gap:10px !important}
-.btn-ai-enter-glow{background:linear-gradient(135deg,#0284c7,#2563eb) !important;color:#fff !important;font-size:1rem !important;font-weight:700 !important;padding:15px 20px !important;border-radius:14px !important;width:100% !important;box-shadow:0 8px 25px rgba(2,132,199,.35) !important;display:flex !important;align-items:center !important;justify-content:center !important;gap:10px !important}
-.ai-welcome-quick-links{display:grid !important;grid-template-columns:repeat(2,1fr) !important;gap:8px !important;width:100% !important}
-.ai-quick-chip{background:#fff !important;border:1.5px solid #e2e8f0 !important;border-radius:12px !important;padding:11px 8px !important;font-size:.73rem !important;font-weight:600 !important;color:#0f172a !important;display:flex !important;align-items:center !important;justify-content:center !important;gap:5px !important;width:100% !important;text-align:center !important}
-.ai-skip-btn{font-size:.8rem !important;color:#64748b !important;margin-top:12px !important}
-.cyber-welcome-hero,.hero{padding:80px 0 36px !important;min-height:auto !important;overflow:hidden !important}
-.cyber-hud-telemetry{display:flex !important;flex-direction:column !important;gap:8px !important;padding:14px 16px !important;border-radius:16px !important;font-size:.75rem !important;margin:0 auto 20px !important;width:100% !important;background:#0b1120 !important;border:1.5px solid rgba(2,132,199,.35) !important;box-sizing:border-box !important}
-.cyber-hud-item{display:flex !important;align-items:center !important;gap:8px !important;color:#e2e8f0 !important;flex-wrap:wrap}
-.hud-lat-text{display:inline !important}
-.hero-badge{display:flex !important;align-items:center !important;justify-content:center !important;gap:8px !important;padding:10px 16px !important;border-radius:30px !important;background:#fff !important;border:1.5px solid rgba(2,132,199,.3) !important;font-size:.78rem !important;font-weight:600 !important;color:#0284c7 !important;margin-bottom:18px !important;width:100% !important;box-sizing:border-box !important;flex-wrap:wrap !important}
-.hero-title{font-size:clamp(1.75rem,6vw,2.1rem) !important;font-weight:900 !important;line-height:1.2 !important;margin-bottom:14px !important;text-align:center !important;letter-spacing:-.02em !important}
-.hero-description{font-size:.925rem !important;line-height:1.6 !important;margin-bottom:22px !important;text-align:center !important;padding:0 !important}
-.specialization-explorer-wrap{display:flex !important;flex-direction:column !important;align-items:stretch !important;gap:10px !important;margin-bottom:24px !important;width:100% !important}
-.specialization-title-tag{display:block !important;font-size:.75rem !important;font-weight:800 !important;color:#64748b !important;letter-spacing:.08em !important;text-transform:uppercase !important;margin-bottom:6px !important;text-align:center !important}
-.specialization-chips-row{display:flex !important;flex-direction:column !important;gap:10px !important;width:100% !important}
-.specialization-chips-row .filter-chip{width:100% !important;display:flex !important;align-items:center !important;justify-content:flex-start !important;font-size:.85rem !important;padding:12px 14px !important;border-radius:12px !important;background:#fff !important;border:1.5px solid #e2e8f0 !important;color:#1e293b !important;gap:10px !important;text-align:left !important}
-.hero-actions{display:flex !important;flex-direction:column !important;width:100% !important;gap:10px !important;margin-bottom:30px !important}
-.hero-actions .btn{width:100% !important;justify-content:center !important;padding:13px 16px !important;font-size:.95rem !important;border-radius:12px !important}
-.hero-stats{grid-template-columns:repeat(2,1fr) !important;gap:12px !important}
-.cyber-cards-grid{display:grid !important;grid-template-columns:1fr !important;gap:16px !important;margin:20px auto !important;width:100% !important}
-.cyber-holo-card{width:100% !important;padding:20px 16px !important;border-radius:18px !important;box-sizing:border-box !important}
-.cyber-holo-card h4{font-size:1.05rem !important;line-height:1.35 !important}
-.cyber-holo-card p{font-size:.825rem !important}
-.cyber-card-price{font-size:1.4rem !important}
-.cyber-card-orig{font-size:.85rem !important}
-.course-grid{grid-template-columns:1fr !important;gap:16px !important}
-.course-card{padding:22px 18px !important}
-.course-title{font-size:1.15rem !important}
-.course-price{font-size:1.5rem !important}
-.course-filter-bar,.course-filters{display:flex !important;flex-wrap:nowrap !important;overflow-x:auto !important;-webkit-overflow-scrolling:touch !important;gap:8px !important;padding:4px 0 12px !important;justify-content:flex-start !important;width:100% !important;scrollbar-width:none}
-.course-filter-bar::-webkit-scrollbar,.course-filters::-webkit-scrollbar{display:none}
-.filter-btn{white-space:nowrap !important;flex-shrink:0 !important;padding:8px 16px !important;font-size:.8rem !important;border-radius:20px !important}
-.roadmap-grid{grid-template-columns:1fr !important;gap:14px !important;width:100% !important}
-.testimonials-grid,#testimonialsGrid{grid-template-columns:1fr !important;gap:16px !important;width:100% !important}
-.cyber-pass-generator-panel{padding:20px 14px !important;border-radius:20px !important;margin-top:20px !important;width:100% !important;box-sizing:border-box !important;border:1.5px solid #e2e8f0 !important}
-.cyber-pass-grid{display:flex !important;flex-direction:column !important;gap:16px !important;width:100% !important}
-.cyber-pass-input-row{flex-direction:column !important;gap:10px !important;width:100% !important}
-.cyber-pass-input-row input,.cyber-pass-input-row .btn,.cyber-pass-btn{width:100% !important;justify-content:center !important;flex:none !important}
-.cyber-pass-result-badge{width:100% !important;padding:18px 14px !important;border-radius:18px !important;box-sizing:border-box !important}
-.cert-showcase-grid{grid-template-columns:1fr !important;gap:20px !important}
-.cert-customizer-grid{grid-template-columns:1fr !important;gap:14px !important}
-.cert-customizer-grid .btn{width:100% !important;justify-content:center !important}
-#certShowcaseSection .glass-panel{padding:20px 14px !important}
-.faq-question{font-size:.925rem !important;padding:16px 18px !important}
-.faq-answer{padding:0 18px 16px !important;font-size:.875rem !important}
-.btn-lg{padding:13px 22px !important;font-size:.95rem !important}
-.btn{gap:7px !important}
-.modal-backdrop{padding:12px !important;align-items:flex-end !important}
-.modal-card{max-width:100% !important;width:100% !important;padding:24px 18px !important;border-radius:20px 20px 0 0 !important;max-height:90vh !important}
-.modal-close-btn{top:16px !important;right:16px !important}
-.modal-box{padding:20px 14px !important;width:94% !important;max-height:88vh !important;overflow-y:auto !important;border-radius:16px !important}
-.wizard-wrapper{padding:18px 14px !important;border-radius:16px !important;width:100% !important;box-sizing:border-box !important}
-.wizard-mode-toggle{margin-bottom:20px !important}
-.mode-pill-container{flex-direction:column !important;gap:6px !important;width:100% !important;border-radius:14px !important}
-.mode-pill{width:100% !important;justify-content:center !important;font-size:.8rem !important;padding:10px 12px !important;text-align:center !important;border-radius:12px !important}
-.wizard-progress,.wizard-progress-bar{margin-bottom:20px !important;padding:8px 4px !important;overflow-x:auto !important;scrollbar-width:none}
-.wizard-progress::-webkit-scrollbar,.wizard-progress-bar::-webkit-scrollbar{display:none}
-.wizard-progress::before,.wizard-progress-bar::before,.wizard-progress-bar-fill,.wizard-progress-fill{top:23px !important;left:8px !important;right:8px !important;height:3px !important}
-.step-node{min-width:48px !important;gap:4px !important}
-.step-circle{width:34px !important;height:34px !important;font-size:.8rem !important;border-width:2px !important}
-.step-name,.step-label{font-size:.6rem !important;letter-spacing:0 !important;white-space:normal !important;text-align:center !important;max-width:52px !important;line-height:1.2 !important}
-.interactive-track-picker,.course-square-grid,#wizardTrackContainer{display:flex !important;flex-direction:column !important;gap:14px !important;width:100% !important}
-.track-square-card,.track-select-card{padding:18px 14px !important;border-radius:16px !important;width:100% !important;box-sizing:border-box !important}
-.square-title{font-size:1rem !important;line-height:1.35 !important}
-.square-fee-box{padding:12px !important;border-radius:12px !important;margin:10px 0 !important}
-.square-price{font-size:1.45rem !important}
-.batch-schedule-grid{grid-template-columns:1fr !important;gap:10px !important}
-.form-grid-2{grid-template-columns:1fr !important;gap:12px !important;width:100% !important}
-.voucher-input-wrap{flex-direction:column !important;gap:10px !important}
-.voucher-input-wrap .btn{width:100% !important;justify-content:center !important}
-.wizard-footer-nav{flex-direction:column-reverse !important;gap:10px !important;width:100% !important}
-.wizard-footer-nav .btn{width:100% !important;justify-content:center !important}
-.payment-grid-responsive{display:flex !important;flex-direction:column !important;gap:16px !important;width:100% !important}
-.payment-qr-card{padding:18px 14px !important;border-radius:16px !important;width:100% !important;box-sizing:border-box !important}
-.qr-code-display-wrap{width:100% !important;max-width:250px !important;padding:6px !important;margin:0 auto 12px !important}
-.qr-code-display-wrap img.phonepe-qr-img{max-height:300px !important;width:100% !important}
-.pay-apps-grid{display:grid !important;grid-template-columns:repeat(2,1fr) !important;gap:6px !important}
-.pay-app-chip{font-size:.72rem !important;padding:6px 8px !important;justify-content:center !important}
-#stepPanePendingApproval .glass-panel{padding:18px 14px !important;width:100% !important;box-sizing:border-box !important}
-.pending-dossier-grid{grid-template-columns:1fr !important;gap:10px !important}
-.student-id-card-wrapper,#idCardWrapper{width:100% !important;max-width:100% !important;padding:0 !important;overflow-x:hidden !important}
-.student-id-card,.digital-student-id-card{width:100% !important;max-width:100% !important;padding:18px 14px !important;border-radius:18px !important;box-sizing:border-box !important}
-.id-card-body{display:flex !important;flex-direction:row !important;align-items:center !important;gap:12px !important;margin-bottom:16px !important}
-.id-card-avatar{width:52px !important;height:52px !important;min-width:52px !important;font-size:1.2rem !important;flex-shrink:0 !important}
-.id-card-info h4{font-size:1rem !important;word-break:break-word !important}
-.id-card-footer{display:flex !important;flex-direction:row !important;justify-content:space-between !important;align-items:flex-end !important;gap:10px !important;padding-top:12px !important;flex-wrap:wrap}
-.id-actions-grid{display:grid !important;grid-template-columns:repeat(2,1fr) !important;gap:8px !important;margin-top:12px !important;width:100% !important}
-.id-actions-grid .btn{width:100% !important;justify-content:center !important;font-size:.775rem !important;padding:8px 6px !important}
-.id-actions-bar{flex-direction:column !important;gap:8px !important}
-.id-actions-bar .btn{flex:none !important;width:100% !important;justify-content:center !important}
-.google-cert-outer-wrapper{width:100% !important;max-width:100% !important;overflow-x:hidden !important;padding:0 !important;box-sizing:border-box !important}
-.google-cert-card{min-width:0 !important;width:100% !important;max-width:100% !important;margin:0 auto !important}
-.google-cert-inner{padding:24px 16px 20px !important}
-.google-cert-header{flex-direction:column !important;align-items:flex-start !important;gap:12px !important;margin-bottom:24px !important}
-.google-cert-meta-top{text-align:left !important}
-.google-cert-recipient-name{font-size:clamp(1.5rem,5vw,2rem) !important}
-.google-cert-course-name{font-size:clamp(1.1rem,4vw,1.4rem) !important}
-.google-cert-footer{flex-direction:column !important;align-items:center !important;gap:20px !important;padding-top:16px !important}
-.google-sig-column{width:100% !important;max-width:220px !important}
-.google-cert-security-band{padding:10px 16px !important;flex-direction:column !important;gap:4px !important;text-align:center !important}
-.google-cert-actions-bar{display:flex !important;flex-direction:column !important;gap:8px !important;width:100% !important}
-.google-cert-actions-bar .btn{width:100% !important;justify-content:center !important}
-.student-portal-grid,.student-hub-grid{display:flex !important;flex-direction:column !important;gap:20px !important;width:100% !important}
-.hub-welcome-banner{flex-direction:column !important;align-items:flex-start !important;gap:16px !important;padding:20px 16px !important}
-.hub-welcome-banner .btn{width:100% !important;justify-content:center !important}
-.resource-card,.resource-item{padding:12px 14px !important;gap:10px !important;flex-wrap:wrap}
-.mentorship-chat-box{height:380px !important;width:100% !important}
-.chat-bubble{max-width:90% !important;font-size:.85rem !important}
-.countdown-timer-display,.countdown-timer-wrap{gap:8px !important;flex-wrap:wrap !important;justify-content:center !important}
-.countdown-box,.cd-unit{min-width:58px !important;padding:8px 4px !important;flex:1 !important;max-width:80px !important}
-.countdown-val,.cd-number{font-size:1.4rem !important}
-.countdown-lbl,.cd-label{font-size:.6rem !important}
-.admin-top-header{padding:12px 14px !important;flex-wrap:wrap !important;gap:10px !important}
-.admin-top-actions{gap:6px !important;flex-wrap:wrap !important}
-.admin-top-actions .btn{padding:6px 10px !important;font-size:.75rem !important}
-.admin-kpi-grid{grid-template-columns:repeat(2,1fr) !important;gap:12px !important}
-.kpi-card{padding:16px 14px !important;gap:12px !important}
-.kpi-icon{width:46px !important;height:46px !important;min-width:46px !important;font-size:1.3rem !important}
-.kpi-data h3{font-size:1.6rem !important}
-.admin-toolbar{flex-direction:column !important;align-items:stretch !important;gap:10px !important}
-.admin-search-wrap{min-width:0 !important;width:100% !important}
-.admin-toolbar>div{flex-wrap:wrap !important;gap:8px !important}
-.admin-toolbar>div .select-custom{width:100% !important}
-.admin-toolbar>div .btn{width:100% !important;justify-content:center !important}
-.admin-table-container,.table-responsive{overflow-x:auto !important;-webkit-overflow-scrolling:touch !important;width:100% !important}
-.admin-table{min-width:540px !important;font-size:.825rem !important}
-.admin-table th,.admin-table td{padding:12px 14px !important}
-.admin-slide-drawer{width:100% !important;max-width:100% !important}
-.drawer-body{padding:18px 16px !important}
-.drawer-footer{flex-direction:column !important;gap:8px !important}
-.drawer-footer .btn{width:100% !important;justify-content:center !important}
-.auth-wrapper{padding:24px 16px !important;margin:0 auto !important;border-radius:16px !important;width:100% !important;max-width:100% !important;background:rgba(255,255,255,.98) !important}
-.demo-buttons-wrap{flex-direction:column !important;gap:6px !important}
-.demo-fill-btn{width:100% !important;justify-content:center !important;padding:10px !important;font-size:.825rem !important}
-.social-auth-grid{grid-template-columns:1fr !important;gap:8px !important}
-.footer-grid{display:flex !important;flex-direction:column !important;gap:28px !important}
-.footer-bottom{flex-direction:column !important;gap:10px !important;text-align:center !important}
-.footer{padding:40px 0 24px !important}
-.toast-container{bottom:12px !important;right:10px !important;left:10px !important;gap:8px !important}
-.toast{min-width:0 !important;max-width:100% !important;width:100% !important;padding:12px 14px !important;font-size:.85rem !important}
-.glass-panel{background:rgba(255,255,255,.98) !important;padding:20px 16px !important}
-.schedule-countdown-card{padding:20px 16px !important}
-.addon-label-card{flex-wrap:wrap !important;gap:10px !important;padding:14px !important}
-.addon-info{flex:1 !important;min-width:0 !important}
-.order-summary-box{padding:18px 14px !important}
-.summary-row{font-size:.85rem !important;flex-wrap:wrap !important;gap:4px !important}
-.voucher-input-wrap{flex-direction:column !important;gap:10px !important}
-.form-group-custom{width:100%}
+*, *::before, *::after {
+  box-sizing: border-box;
+  min-width: 0;
 }
 
-/* <= 480px */
-@media(max-width:480px){
-.container{padding:0 12px !important}
-.section{padding:36px 0 !important}
-.section-title{font-size:clamp(1.35rem,6vw,1.6rem) !important}
-.hero-title{font-size:clamp(1.6rem,7vw,1.9rem) !important}
-.admin-kpi-grid{grid-template-columns:1fr !important}
-.social-auth-grid{grid-template-columns:1fr !important}
-.pay-apps-grid{grid-template-columns:1fr !important}
-.id-actions-grid{grid-template-columns:1fr !important}
-.ai-welcome-quick-links{grid-template-columns:1fr !important}
-.cyber-hud-telemetry{font-size:.7rem !important}
-.auth-wrapper{padding:18px 12px !important}
-.google-cert-outer-wrapper{overflow-x:auto !important}
-.google-cert-card{min-width:300px !important}
-.step-circle{width:28px !important;height:28px !important;font-size:.7rem !important}
-.step-name,.step-label{font-size:.55rem !important;max-width:40px !important}
-.btn-lg{padding:12px 18px !important;font-size:.9rem !important}
-.mode-pill{font-size:.75rem !important;padding:9px 10px !important}
-.countdown-box,.cd-unit{min-width:50px !important;max-width:70px !important}
-.countdown-val,.cd-number{font-size:1.2rem !important}
-.kpi-card{flex-direction:column !important;align-items:flex-start !important}
-.kpi-data h3{font-size:1.4rem !important}
-.admin-table{font-size:.78rem !important;min-width:480px !important}
-.admin-table th,.admin-table td{padding:10px 12px !important}
-.view-banner{padding:88px 0 20px !important}
-.view-banner h1{font-size:clamp(1.4rem,6vw,1.8rem) !important}
-.mentorship-chat-box{height:320px !important}
-.chat-bubble{max-width:95% !important;font-size:.825rem !important}
+img, svg, video, canvas, iframe {
+  max-width: 100%;
+  height: auto;
 }
 
-/* <= 360px */
-@media(max-width:360px){
-.container{padding:0 10px !important}
-.section{padding:28px 0 !important}
-.hero-title{font-size:1.5rem !important}
-.nav-logo span{font-size:.8rem !important}
-.nav-logo-icon{width:24px !important;height:24px !important;min-width:24px !important}
-.nav-actions .btn{padding:6px 8px !important;font-size:.7rem !important}
-.wizard-wrapper{padding:14px 10px !important}
-.ai-speech-bubble{padding:16px 12px !important}
-.ai-typed-heading{font-size:1.25rem !important}
-.btn-ai-enter-glow{font-size:.9rem !important;padding:13px 14px !important}
-.hero-stats{grid-template-columns:1fr !important}
+button, input, select, textarea {
+  touch-action: manipulation;
+  font-family: inherit;
+  max-width: 100%;
+}
+
+/* Base Headings & Text */
+h1, h2, h3, h4, h5, h6 {
+  color: #090d16 !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.02em !important;
+}
+
+p {
+  color: #1e293b;
+}
+
+/* --------------------------------------------------------------------------
+   1. NAVIGATION & DRAWER
+   -------------------------------------------------------------------------- */
+.public-left-menu-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  border-radius: 10px;
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  color: #090d16;
+  font-size: 1.2rem;
+  cursor: pointer;
+  margin-right: 10px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.mobile-drawer {
+  position: fixed;
+  top: 0;
+  left: -100%;
+  width: 88%;
+  max-width: 360px;
+  height: 100vh;
+  height: 100dvh;
+  background: #ffffff;
+  border-right: 1.5px solid #cbd5e1;
+  z-index: 1200;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 24px 18px;
+  transition: left 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 10px 0 40px rgba(15, 23, 42, 0.15);
+  overflow-y: auto;
+}
+
+.mobile-drawer.open {
+  left: 0;
+}
+
+.mobile-drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 1150;
+  display: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.mobile-drawer-overlay.open {
+  display: block;
+  opacity: 1;
+}
+
+.mobile-nav-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0;
+  margin: 0;
+}
+
+.mobile-nav-item a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  color: #0f172a;
+  font-size: 0.95rem;
+  font-weight: 700;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  cursor: pointer;
+  text-decoration: none;
+  word-break: break-word;
+  transition: all 0.18s;
+}
+
+.mobile-nav-item a:hover,
+.mobile-nav-item a.active {
+  background: rgba(2, 132, 199, 0.1);
+  border-color: rgba(2, 132, 199, 0.4);
+  color: #0284c7;
+  transform: translateX(4px);
+}
+
+.mobile-nav-item a i {
+  width: 22px;
+  min-width: 22px;
+  text-align: center;
+  font-size: 1.1rem;
+}
+
+/* Toast */
+.toast-container {
+  bottom: 16px;
+  right: 12px;
+  left: 12px;
+  max-width: 100%;
+}
+
+.toast {
+  min-width: 0;
+  max-width: 100%;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #090d16;
+  border: 1.5px solid #cbd5e1;
+}
+
+/* --------------------------------------------------------------------------
+   2. TABLETS & LAPTOPS (<= 1024px)
+   -------------------------------------------------------------------------- */
+@media screen and (max-width: 1024px) {
+  .container {
+    padding: 0 20px;
+  }
+  .hero-stats {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 16px;
+  }
+  .course-grid,
+  .cyber-cards-grid,
+  .roadmap-grid,
+  .testimonials-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 18px;
+  }
+  .student-portal-grid,
+  .student-hub-grid,
+  .admin-grid-2,
+  .cyber-pass-grid,
+  .cert-showcase-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .admin-kpi-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  .interactive-track-picker,
+  .track-selection-grid,
+  .course-square-grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
+  .batch-schedule-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .cert-customizer-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 14px;
+  }
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+  .hub-welcome-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  section, main, article, aside, header, footer, nav, div {
+    max-width: 100%;
+  }
+  .input-custom,
+  .select-custom,
+  .textarea-custom,
+  .big-select-custom {
+    max-width: 100% !important;
+    width: 100%;
+  }
+  .course-filters, .nav-links {
+    flex-wrap: wrap;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   3. MOBILE PHONES & TABLETS PORTRAIT (<= 768px)
+   -------------------------------------------------------------------------- */
+@media screen and (max-width: 768px) {
+  #bg-3d-canvas {
+    display: none !important;
+  }
+  
+  *, *::before, *::after {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .glass-panel,
+  .navbar,
+  .hero-badge,
+  .auth-wrapper {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  .hero-glow-1,
+  .hero-glow-2,
+  .ai-glow-1,
+  .ai-glow-2,
+  .ai-glow-orb {
+    display: none !important;
+  }
+
+  /* === LAYOUT & SPACING === */
+  .container {
+    padding: 0 14px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .section {
+    padding: 40px 0 !important;
+    overflow: hidden;
+  }
+
+  .section-header {
+    margin-bottom: 24px !important;
+  }
+
+  .section-tag {
+    font-size: 0.8rem !important;
+    font-weight: 800 !important;
+    padding: 6px 14px !important;
+    letter-spacing: 0.06em !important;
+    text-align: center;
+    border-radius: 999px !important;
+    display: inline-block;
+  }
+
+  .section-title {
+    font-size: clamp(1.6rem, 5.5vw, 2.2rem) !important;
+    line-height: 1.2 !important;
+    margin-bottom: 12px !important;
+    font-weight: 900 !important;
+    color: #090d16 !important;
+  }
+
+  .section-desc {
+    font-size: 0.95rem !important;
+    line-height: 1.6 !important;
+    color: #1e293b !important;
+    font-weight: 500 !important;
+  }
+
+  .view-banner {
+    padding: 90px 0 24px 0 !important;
+  }
+
+  .view-banner h1 {
+    font-size: clamp(1.6rem, 5vw, 2.1rem) !important;
+    line-height: 1.25 !important;
+    font-weight: 900 !important;
+    color: #090d16 !important;
+  }
+
+  .view-banner p {
+    font-size: 0.95rem !important;
+    color: #1e293b !important;
+    font-weight: 500 !important;
+  }
+
+  /* === NAVIGATION === */
+  .navbar {
+    padding: 10px 0 !important;
+    background: #ffffff !important;
+    border-bottom: 1.5px solid #e2e8f0 !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+  }
+
+  .nav-container {
+    padding: 0 12px !important;
+    gap: 8px;
+  }
+
+  .public-left-menu-btn {
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    font-size: 1.1rem !important;
+    margin-right: 8px !important;
+  }
+
+  .nav-logo span {
+    font-size: 0.95rem !important;
+    font-weight: 900 !important;
+    color: #090d16 !important;
+  }
+
+  .nav-logo-icon {
+    width: 30px !important;
+    height: 30px !important;
+    min-width: 30px !important;
+    font-size: 0.9rem !important;
+  }
+
+  .nav-actions {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    flex-shrink: 0;
+  }
+
+  .nav-btn-guide {
+    display: none !important;
+  }
+
+  .nav-actions .btn {
+    padding: 8px 12px !important;
+    font-size: 0.8rem !important;
+    font-weight: 700 !important;
+    border-radius: 8px !important;
+  }
+
+  .nav-btn-text {
+    display: none !important;
+  }
+
+  /* === TELEMETRY HUD === */
+  .cyber-hud-telemetry {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    padding: 14px 18px !important;
+    border-radius: 16px !important;
+    font-size: 0.825rem !important;
+    font-weight: 700 !important;
+    margin: 0 auto 20px !important;
+    width: 100% !important;
+    background: #090d16 !important;
+    border: 1.5px solid #0284c7 !important;
+    box-sizing: border-box !important;
+    color: #f1f5f9 !important;
+  }
+
+  .cyber-hud-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    color: #e2e8f0 !important;
+    flex-wrap: wrap;
+    font-size: 0.825rem !important;
+    font-weight: 600 !important;
+  }
+
+  .cyber-hud-val {
+    color: #38bdf8 !important;
+    font-weight: 800 !important;
+  }
+
+  /* === HERO SECTION === */
+  .cyber-welcome-hero,
+  .hero {
+    padding: 75px 0 32px !important;
+    min-height: auto !important;
+    overflow: hidden !important;
+  }
+
+  .hero-badge {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    padding: 10px 16px !important;
+    border-radius: 30px !important;
+    background: #ffffff !important;
+    border: 1.5px solid rgba(2, 132, 199, 0.35) !important;
+    font-size: 0.825rem !important;
+    font-weight: 700 !important;
+    color: #0284c7 !important;
+    margin-bottom: 16px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    flex-wrap: wrap !important;
+    box-shadow: 0 2px 8px rgba(2, 132, 199, 0.1) !important;
+  }
+
+  .hero-title {
+    font-size: clamp(1.85rem, 6.5vw, 2.3rem) !important;
+    font-weight: 900 !important;
+    line-height: 1.15 !important;
+    margin-bottom: 14px !important;
+    text-align: center !important;
+    letter-spacing: -0.03em !important;
+    color: #090d16 !important;
+  }
+
+  .hero-description {
+    font-size: 1rem !important;
+    line-height: 1.6 !important;
+    color: #1e293b !important;
+    font-weight: 500 !important;
+    margin-bottom: 20px !important;
+    text-align: center !important;
+    padding: 0 !important;
+  }
+
+  /* Specialization Chips: Vertical Stack */
+  .specialization-explorer-wrap {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+    margin-bottom: 24px !important;
+    width: 100% !important;
+  }
+
+  .specialization-title-tag {
+    display: block !important;
+    font-size: 0.8rem !important;
+    font-weight: 800 !important;
+    color: #475569 !important;
+    letter-spacing: 0.08em !important;
+    text-transform: uppercase !important;
+    margin-bottom: 6px !important;
+    text-align: center !important;
+  }
+
+  .specialization-chips-row {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    width: 100% !important;
+  }
+
+  .specialization-chips-row .filter-chip,
+  .specialization-chips-row button {
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    font-size: 0.925rem !important;
+    font-weight: 700 !important;
+    padding: 13px 16px !important;
+    border-radius: 12px !important;
+    background: #ffffff !important;
+    border: 1.5px solid #cbd5e1 !important;
+    color: #090d16 !important;
+    gap: 10px !important;
+    text-align: left !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04) !important;
+  }
+
+  /* Hero Actions */
+  .hero-actions {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    gap: 10px !important;
+    margin-bottom: 28px !important;
+  }
+
+  .hero-actions .btn,
+  .hero-actions button {
+    width: 100% !important;
+    justify-content: center !important;
+    padding: 14px 18px !important;
+    font-size: 1rem !important;
+    font-weight: 700 !important;
+    border-radius: 12px !important;
+  }
+
+  /* Hero Stats */
+  .hero-stats {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+    width: 100% !important;
+  }
+
+  .stat-card {
+    padding: 16px 12px !important;
+    border: 1.5px solid #cbd5e1 !important;
+    background: #ffffff !important;
+    border-radius: 14px !important;
+  }
+
+  .stat-number {
+    font-size: 1.85rem !important;
+    font-weight: 900 !important;
+    color: #090d16 !important;
+    margin-bottom: 2px !important;
+  }
+
+  .stat-label {
+    font-size: 0.775rem !important;
+    font-weight: 800 !important;
+    color: #475569 !important;
+    letter-spacing: 0.05em !important;
+    text-transform: uppercase !important;
+  }
+
+  /* === 4-TIER CYBER CARDS (FORCE 1 COLUMN) === */
+  .cyber-cards-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 18px !important;
+    margin: 20px auto !important;
+    width: 100% !important;
+  }
+
+  .cyber-holo-card {
+    width: 100% !important;
+    padding: 24px 20px !important;
+    border-radius: 18px !important;
+    background: #ffffff !important;
+    border: 1.5px solid #cbd5e1 !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05) !important;
+    box-sizing: border-box !important;
+  }
+
+  .cyber-holo-card h4 {
+    font-size: 1.25rem !important;
+    font-weight: 800 !important;
+    color: #090d16 !important;
+    line-height: 1.35 !important;
+    margin: 6px 0 8px 0 !important;
+  }
+
+  .cyber-holo-card p {
+    font-size: 0.925rem !important;
+    color: #334155 !important;
+    line-height: 1.55 !important;
+    font-weight: 500 !important;
+    margin-bottom: 14px !important;
+  }
+
+  .cyber-tier-tag {
+    font-size: 0.8rem !important;
+    font-weight: 800 !important;
+    padding: 5px 12px !important;
+    border-radius: 6px !important;
+    letter-spacing: 0.06em !important;
+  }
+
+  /* NUMBERS & PRICING: ULTRA CRISP & PROMINENT */
+  .cyber-card-price-row {
+    display: flex !important;
+    align-items: baseline !important;
+    justify-content: space-between !important;
+    margin: 16px 0 12px 0 !important;
+    padding-top: 14px !important;
+    border-top: 1.5px solid #f1f5f9 !important;
+  }
+
+  .cyber-card-price {
+    font-size: 1.75rem !important;
+    font-weight: 900 !important;
+    color: #090d16 !important;
+    letter-spacing: -0.02em !important;
+    font-family: var(--font-heading) !important;
+  }
+
+  .cyber-card-orig {
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    color: #64748b !important;
+    text-decoration: line-through !important;
+  }
+
+  /* === COURSE SHOWCASE (FORCE 1 COLUMN) === */
+  .course-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 18px !important;
+    width: 100% !important;
+  }
+
+  .course-card {
+    padding: 24px 20px !important;
+    background: #ffffff !important;
+    border: 1.5px solid #cbd5e1 !important;
+    border-radius: 20px !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05) !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .course-title {
+    font-size: 1.25rem !important;
+    font-weight: 800 !important;
+    color: #090d16 !important;
+    line-height: 1.35 !important;
+    margin-bottom: 8px !important;
+  }
+
+  .course-desc {
+    font-size: 0.925rem !important;
+    color: #334155 !important;
+    line-height: 1.6 !important;
+    font-weight: 500 !important;
+    margin-bottom: 14px !important;
+  }
+
+  .course-highlight-item {
+    font-size: 0.88rem !important;
+    color: #090d16 !important;
+    font-weight: 500 !important;
+    line-height: 1.45 !important;
+  }
+
+  .course-price-wrap {
+    margin: 16px 0 12px 0 !important;
+    padding-top: 14px !important;
+    border-top: 1.5px solid #f1f5f9 !important;
+    display: flex !important;
+    align-items: baseline !important;
+    justify-content: space-between !important;
+  }
+
+  .course-price {
+    font-size: 1.75rem !important;
+    font-weight: 900 !important;
+    color: #090d16 !important;
+    letter-spacing: -0.02em !important;
+    font-family: var(--font-heading) !important;
+  }
+
+  .course-orig-price {
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    color: #64748b !important;
+    text-decoration: line-through !important;
+  }
+
+  /* Discount Badge / Pill */
+  .discount-pill,
+  .discount-tag {
+    background: #ecfdf5 !important;
+    color: #047857 !important;
+    font-weight: 800 !important;
+    font-size: 0.825rem !important;
+    border: 1.5px solid #a7f3d0 !important;
+    padding: 3px 10px !important;
+    border-radius: 999px !important;
+  }
+
+  .course-meta {
+    font-size: 0.85rem !important;
+    font-weight: 700 !important;
+    color: #334155 !important;
+  }
+
+  .course-meta i {
+    color: #f59e0b !important;
+  }
+
+  /* Filter Bar Horizontal Scroll */
+  .course-filter-bar,
+  .course-filters {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    gap: 8px !important;
+    padding: 4px 0 14px 0 !important;
+    justify-content: flex-start !important;
+    width: 100% !important;
+    scrollbar-width: none;
+  }
+
+  .course-filter-bar::-webkit-scrollbar,
+  .course-filters::-webkit-scrollbar {
+    display: none;
+  }
+
+  .filter-btn {
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+    padding: 9px 18px !important;
+    font-size: 0.85rem !important;
+    font-weight: 700 !important;
+    border-radius: 20px !important;
+    border: 1.5px solid #cbd5e1 !important;
+    color: #090d16 !important;
+  }
+
+  /* === ROADMAP & PROGRESSION (FORCE 1 COLUMN) === */
+  .roadmap-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+    width: 100% !important;
+  }
+
+  .roadmap-grid > div,
+  .roadmap-step-card {
+    width: 100% !important;
+    padding: 20px 18px !important;
+    background: #ffffff !important;
+    border: 1.5px solid #cbd5e1 !important;
+    border-radius: 16px !important;
+    box-sizing: border-box !important;
+  }
+
+  .stage-tag {
+    font-size: 0.775rem !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.08em !important;
+    text-transform: uppercase !important;
+  }
+
+  .stage-title {
+    font-size: 1.15rem !important;
+    font-weight: 800 !important;
+    color: #090d16 !important;
+    margin: 6px 0 4px 0 !important;
+  }
+
+  .stage-desc {
+    font-size: 0.925rem !important;
+    color: #334155 !important;
+    line-height: 1.55 !important;
+    font-weight: 500 !important;
+  }
+
+  /* === TESTIMONIALS (FORCE 1 COLUMN) === */
+  .testimonials-grid,
+  #testimonialsGrid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 18px !important;
+    width: 100% !important;
+  }
+
+  .testimonial-card {
+    padding: 24px 20px !important;
+    background: #ffffff !important;
+    border: 1.5px solid #cbd5e1 !important;
+    border-radius: 18px !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05) !important;
+  }
+
+  .testimonial-quote,
+  .testimonial-card p {
+    font-size: 0.95rem !important;
+    color: #090d16 !important;
+    font-weight: 500 !important;
+    line-height: 1.65 !important;
+    font-style: normal !important;
+  }
+
+  .testimonial-author h4 {
+    font-size: 0.95rem !important;
+    font-weight: 800 !important;
+    color: #090d16 !important;
+  }
+
+  .testimonial-author p {
+    font-size: 0.825rem !important;
+    color: #475569 !important;
+    font-weight: 600 !important;
+  }
+
+  /* === FAQ ACCORDION === */
+  .faq-question {
+    font-size: 1rem !important;
+    font-weight: 800 !important;
+    color: #090d16 !important;
+    padding: 18px 20px !important;
+  }
+
+  .faq-answer {
+    padding: 0 20px 18px !important;
+    font-size: 0.925rem !important;
+    color: #334155 !important;
+    line-height: 1.65 !important;
+    font-weight: 500 !important;
+  }
+
+  /* === VISITOR PASS GENERATOR === */
+  .cyber-pass-generator-panel {
+    padding: 22px 16px !important;
+    border-radius: 20px !important;
+    margin-top: 20px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    background: #ffffff !important;
+    border: 1.5px solid #cbd5e1 !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06) !important;
+  }
+
+  .cyber-pass-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+    width: 100% !important;
+  }
+
+  .cyber-pass-input-row {
+    flex-direction: column !important;
+    gap: 10px !important;
+    width: 100% !important;
+  }
+
+  .cyber-pass-input-row input,
+  .cyber-pass-btn {
+    width: 100% !important;
+    font-size: 0.95rem !important;
+    font-weight: 600 !important;
+  }
+
+  .cyber-pass-result-badge {
+    width: 100% !important;
+    padding: 20px 16px !important;
+    border-radius: 18px !important;
+    border: 1.5px solid #cbd5e1 !important;
+    background: #f8fafc !important;
+    box-sizing: border-box !important;
+  }
+
+  /* === CERTIFICATE SHOWCASE === */
+  .cert-showcase-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+
+  .cert-customizer-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+
+  .cert-customizer-grid .btn {
+    width: 100% !important;
+    justify-content: center !important;
+    padding: 13px !important;
+    font-size: 0.95rem !important;
+  }
+
+  /* === 5-STEP ENROLLMENT WIZARD === */
+  .wizard-wrapper {
+    padding: 20px 16px !important;
+    border-radius: 18px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    border: 1.5px solid #cbd5e1 !important;
+  }
+
+  .mode-pill-container {
+    flex-direction: column !important;
+    gap: 6px !important;
+    width: 100% !important;
+    border-radius: 14px !important;
+  }
+
+  .mode-pill {
+    width: 100% !important;
+    justify-content: center !important;
+    font-size: 0.85rem !important;
+    font-weight: 700 !important;
+    padding: 11px 14px !important;
+    text-align: center !important;
+    border-radius: 12px !important;
+  }
+
+  .wizard-progress,
+  .wizard-progress-bar {
+    margin-bottom: 20px !important;
+    padding: 8px 4px !important;
+    overflow-x: auto !important;
+    scrollbar-width: none;
+  }
+
+  .step-circle {
+    width: 36px !important;
+    height: 36px !important;
+    font-size: 0.85rem !important;
+    font-weight: 800 !important;
+    border-width: 2px !important;
+  }
+
+  .step-name,
+  .step-label {
+    font-size: 0.65rem !important;
+    font-weight: 700 !important;
+    color: #090d16 !important;
+  }
+
+  .interactive-track-picker,
+  .course-square-grid,
+  #wizardTrackContainer {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 14px !important;
+    width: 100% !important;
+  }
+
+  .track-square-card,
+  .track-select-card {
+    padding: 20px 16px !important;
+    border-radius: 16px !important;
+    width: 100% !important;
+    border: 1.5px solid #cbd5e1 !important;
+    box-sizing: border-box !important;
+  }
+
+  .square-title {
+    font-size: 1.15rem !important;
+    font-weight: 800 !important;
+    color: #090d16 !important;
+    line-height: 1.35 !important;
+  }
+
+  .square-price {
+    font-size: 1.65rem !important;
+    font-weight: 900 !important;
+    color: #090d16 !important;
+  }
+
+  .calc-summary-card {
+    padding: 20px 16px !important;
+    border: 1.5px solid #cbd5e1 !important;
+    border-radius: 16px !important;
+  }
+
+  .calc-breakdown-row {
+    font-size: 0.95rem !important;
+    font-weight: 600 !important;
+    color: #1e293b !important;
+    margin-bottom: 10px !important;
+  }
+
+  .calc-total-row {
+    margin-top: 14px !important;
+    padding-top: 12px !important;
+  }
+
+  .calc-total-label {
+    font-size: 1.1rem !important;
+    font-weight: 800 !important;
+    color: #090d16 !important;
+  }
+
+  .calc-total-price {
+    font-size: 2rem !important;
+    font-weight: 900 !important;
+    color: #090d16 !important;
+  }
+
+  .voucher-input-wrap,
+  .wizard-footer-nav {
+    flex-direction: column !important;
+    gap: 10px !important;
+    width: 100% !important;
+  }
+
+  .voucher-input-wrap .btn,
+  .wizard-footer-nav .btn {
+    width: 100% !important;
+    justify-content: center !important;
+    padding: 14px !important;
+    font-size: 1rem !important;
+    font-weight: 700 !important;
+  }
+
+  /* Form Elements */
+  .form-grid-2 {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+    width: 100% !important;
+  }
+
+  .form-label-custom {
+    font-size: 0.9rem !important;
+    font-weight: 700 !important;
+    color: #090d16 !important;
+    margin-bottom: 6px !important;
+  }
+
+  .input-custom,
+  .select-custom,
+  .textarea-custom {
+    font-size: 0.95rem !important;
+    padding: 13px 16px !important;
+    border: 1.5px solid #cbd5e1 !important;
+    color: #090d16 !important;
+    font-weight: 500 !important;
+    border-radius: 12px !important;
+  }
+
+  /* === PAYMENT & QR SECTION === */
+  .payment-grid-responsive {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+    width: 100% !important;
+  }
+
+  .payment-qr-card {
+    padding: 22px 16px !important;
+    border-radius: 18px !important;
+    border: 1.5px solid #cbd5e1 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .qr-code-display-wrap {
+    width: 100% !important;
+    max-width: 260px !important;
+    padding: 8px !important;
+    margin: 0 auto 14px !important;
+  }
+
+  .qr-code-display-wrap img.phonepe-qr-img {
+    max-height: 320px !important;
+    width: 100% !important;
+  }
+
+  .pay-apps-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+  }
+
+  .pay-app-chip {
+    font-size: 0.8rem !important;
+    font-weight: 700 !important;
+    color: #090d16 !important;
+    padding: 8px 10px !important;
+    border: 1.5px solid #cbd5e1 !important;
+    justify-content: center !important;
+  }
+
+  /* === STUDENT HUB & ID CARD === */
+  .student-portal-grid,
+  .student-hub-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 20px !important;
+    width: 100% !important;
+  }
+
+  .hub-welcome-banner {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 16px !important;
+    padding: 22px 18px !important;
+    border: 1.5px solid #cbd5e1 !important;
+    border-radius: 18px !important;
+  }
+
+  .hub-welcome-banner .btn {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  .student-id-card,
+  .digital-student-id-card {
+    width: 100% !important;
+    padding: 22px 18px !important;
+    border-radius: 18px !important;
+    border: 1.5px solid #cbd5e1 !important;
+  }
+
+  .id-actions-bar,
+  .id-actions-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+
+  .id-actions-bar .btn,
+  .id-actions-grid .btn {
+    width: 100% !important;
+    justify-content: center !important;
+    font-size: 0.825rem !important;
+    font-weight: 700 !important;
+    padding: 10px 8px !important;
+  }
+
+  /* === GOOGLE CERTIFICATE === */
+  .google-cert-outer-wrapper {
+    width: 100% !important;
+    overflow-x: hidden !important;
+  }
+
+  .google-cert-inner {
+    padding: 26px 18px !important;
+  }
+
+  .google-cert-recipient-name {
+    font-size: clamp(1.6rem, 5vw, 2.2rem) !important;
+    font-weight: 800 !important;
+    color: #202124 !important;
+  }
+
+  .google-cert-course-name {
+    font-size: clamp(1.2rem, 4vw, 1.5rem) !important;
+    font-weight: 800 !important;
+    color: #1a73e8 !important;
+  }
+
+  .google-cert-header {
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+
+  .google-cert-footer {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 20px !important;
+  }
+
+  .google-cert-actions-bar {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+
+  .google-cert-actions-bar .btn {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  /* === ADMIN DASHBOARD === */
+  .admin-kpi-grid,
+  .admin-stats-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+    width: 100% !important;
+  }
+
+  .kpi-card {
+    padding: 18px 14px !important;
+    border: 1.5px solid #cbd5e1 !important;
+  }
+
+  .kpi-data h3 {
+    font-size: 1.8rem !important;
+    font-weight: 900 !important;
+    color: #090d16 !important;
+  }
+
+  .kpi-data p {
+    font-size: 0.85rem !important;
+    font-weight: 700 !important;
+    color: #475569 !important;
+  }
+
+  .admin-toolbar {
+    flex-direction: column !important;
+    width: 100% !important;
+    gap: 10px !important;
+  }
+
+  .admin-search-wrap {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  /* === AUTHENTICATION === */
+  .auth-wrapper {
+    padding: 26px 18px !important;
+    border: 1.5px solid #cbd5e1 !important;
+    border-radius: 18px !important;
+    background: #ffffff !important;
+  }
+
+  .demo-buttons-wrap {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+
+  .demo-fill-btn {
+    width: 100% !important;
+    justify-content: center !important;
+    padding: 11px !important;
+    font-size: 0.875rem !important;
+    font-weight: 700 !important;
+  }
+
+  .social-auth-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  /* === FOOTER === */
+  .footer-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 28px !important;
+  }
+
+  .footer-bottom {
+    flex-direction: column !important;
+    text-align: center !important;
+    gap: 10px !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   4. SMALL PHONES (<= 480px)
+   -------------------------------------------------------------------------- */
+@media screen and (max-width: 480px) {
+  .container {
+    padding: 0 12px !important;
+  }
+
+  .admin-kpi-grid,
+  .admin-stats-grid,
+  .hero-stats,
+  .pay-apps-grid,
+  .id-actions-bar,
+  .id-actions-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .hero-title {
+    font-size: clamp(1.65rem, 7vw, 2rem) !important;
+  }
+
+  .section-title {
+    font-size: clamp(1.45rem, 6.5vw, 1.8rem) !important;
+  }
+
+  .btn-lg {
+    padding: 14px 20px !important;
+    font-size: 0.95rem !important;
+  }
+
+  .kpi-card {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+  }
 }
