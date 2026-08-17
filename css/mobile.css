@@ -1,1218 +1,270 @@
-/* ==========================================================================
-   AI NEXUS ACADEMY - COMPREHENSIVE RESPONSIVE DESIGN & MOBILE STYLESHEET
-   Theme: High-Clarity Modern White / Crisp Luxury Light Aesthetic
-   Optimized for: Desktops, Tablets, Phablets & Mobile Phones (320px - 1024px)
-   ========================================================================== */
+﻿/* AI NEXUS ACADEMY - MOBILE-FIRST RESPONSIVE CSS */
+html,body{width:100%;max-width:100%;overflow-x:hidden;box-sizing:border-box;-webkit-text-size-adjust:100%}
+*,*::before,*::after{box-sizing:border-box;min-width:0}
+img,svg,video,canvas,iframe{max-width:100%;height:auto}
+button,input,select,textarea{touch-action:manipulation;font-family:inherit;max-width:100%}
+.public-left-menu-btn{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;min-width:42px;border-radius:10px;background:#fff;border:1px solid #e2e8f0;color:#0f172a;font-size:1.15rem;cursor:pointer;margin-right:10px;flex-shrink:0}
+.mobile-drawer{position:fixed;top:0;left:-100%;width:86%;max-width:360px;height:100vh;background:#fff;border-right:1px solid #e2e8f0;z-index:1200;display:flex;flex-direction:column;justify-content:space-between;padding:24px 18px;transition:left .35s cubic-bezier(.16,1,.3,1);box-shadow:10px 0 40px rgba(15,23,42,.15);overflow-y:auto}
+.mobile-drawer.open{left:0}
+.mobile-drawer-overlay{position:fixed;inset:0;background:rgba(15,23,42,.5);backdrop-filter:blur(6px);z-index:1150;display:none;opacity:0;transition:opacity .3s}
+.mobile-drawer-overlay.open{display:block;opacity:1}
+.mobile-nav-list{list-style:none;display:flex;flex-direction:column;gap:8px;padding:0;margin:0}
+.mobile-nav-item a{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:10px;color:#334155;font-size:.925rem;font-weight:600;background:#f8fafc;border:1px solid #e2e8f0;cursor:pointer;text-decoration:none;word-break:break-word;transition:all .18s}
+.mobile-nav-item a:hover,.mobile-nav-item a.active{background:rgba(2,132,199,.08);border-color:rgba(2,132,199,.3);color:var(--neon-cyan);transform:translateX(4px)}
+.mobile-nav-item a i{width:22px;min-width:22px;text-align:center}
+.toast-container{bottom:16px;right:12px;left:12px;max-width:100%}
+.toast{min-width:0;max-width:100%}
 
-/* --------------------------------------------------------------------------
-   1. GLOBAL MOBILE RESETS & BASE TOUCH TARGETS
-   -------------------------------------------------------------------------- */
-html {
-  -webkit-text-size-adjust: 100%;
-  width: 100%;
-  max-width: 100%;
-  overflow-x: hidden !important;
-  box-sizing: border-box;
+/* <= 1024px */
+@media(max-width:1024px){
+.container{padding:0 20px}
+.hero-stats{grid-template-columns:repeat(2,1fr);gap:16px}
+.course-grid{grid-template-columns:repeat(2,1fr);gap:20px}
+.cyber-cards-grid,.roadmap-grid,.testimonials-grid{grid-template-columns:repeat(2,1fr) !important;gap:18px}
+.student-portal-grid,.student-hub-grid{grid-template-columns:1fr !important}
+.admin-kpi-grid{grid-template-columns:repeat(2,1fr) !important}
+.admin-grid-2,.cyber-pass-grid,.cert-showcase-grid{grid-template-columns:1fr !important}
+.interactive-track-picker,.track-selection-grid,.course-square-grid{grid-template-columns:1fr 1fr !important}
+.batch-schedule-grid{grid-template-columns:repeat(2,1fr)}
+.cert-customizer-grid{grid-template-columns:1fr 1fr !important;gap:14px}
+.footer-grid{grid-template-columns:1fr 1fr;gap:32px}
+.hub-welcome-banner{flex-direction:column;align-items:flex-start;gap:16px}
+section,main,article,aside,header,footer,nav,div{max-width:100%}
+.input-custom,.select-custom,.textarea-custom,.big-select-custom{max-width:100% !important;width:100%}
+.course-filters,.nav-links{flex-wrap:wrap}
 }
 
-body {
-  width: 100%;
-  max-width: 100%;
-  overflow-x: hidden !important;
-  position: relative;
-  box-sizing: border-box;
+/* <= 768px */
+@media(max-width:768px){
+#bg-3d-canvas{display:none !important}
+*,*::before,*::after{-webkit-tap-highlight-color:transparent}
+.glass-panel,.navbar,.hero-badge,.auth-wrapper{backdrop-filter:none !important;-webkit-backdrop-filter:none !important}
+.hero-glow-1,.hero-glow-2,.ai-glow-1,.ai-glow-2,.ai-glow-orb{filter:none !important;opacity:.2 !important}
+.cyber-holo-card,.course-card,.glass-panel,.digital-student-id-card,.google-cert-card{box-shadow:0 2px 8px rgba(15,23,42,.06) !important;transform:none !important}
+.container{padding:0 14px !important;width:100% !important;max-width:100% !important}
+.section{padding:48px 0 !important;overflow:hidden}
+.section-header{margin-bottom:28px !important}
+.section-tag{font-size:.75rem !important;padding:5px 12px !important;text-align:center}
+.section-title{font-size:clamp(1.5rem,5vw,2rem) !important;line-height:1.25 !important;margin-bottom:10px !important}
+.section-desc{font-size:.9rem !important;line-height:1.6 !important}
+.view-banner{padding:100px 0 24px 0 !important}
+.view-banner h1{font-size:clamp(1.6rem,5vw,2rem) !important;line-height:1.25 !important}
+.view-banner p{font-size:.875rem !important}
+.navbar{padding:8px 0 !important;background:rgba(255,255,255,.98) !important;box-shadow:0 2px 8px rgba(0,0,0,.05) !important}
+.nav-container{padding:0 12px !important;gap:8px}
+.public-left-menu-btn{width:36px !important;height:36px !important;min-width:36px !important;font-size:1rem !important;margin-right:8px !important}
+.nav-logo span{font-size:.9rem !important}
+.nav-logo-icon{width:28px !important;height:28px !important;min-width:28px !important;font-size:.8rem !important}
+.nav-actions{display:flex !important;align-items:center !important;gap:6px !important;flex-shrink:0}
+.nav-btn-guide{display:none !important}
+.nav-actions .btn{padding:7px 10px !important;font-size:.75rem !important;border-radius:8px !important}
+.nav-btn-text{display:none !important}
+.ai-welcome-overlay{padding:28px 16px 36px !important;min-height:100vh !important;height:auto !important;display:flex !important;flex-direction:column !important;justify-content:flex-start !important;align-items:center !important;overflow-y:auto !important;background:radial-gradient(circle at 50% 20%,#f0f9ff,#e0f2fe 50%,#fff 90%) !important}
+.ai-welcome-box{width:100% !important;max-width:440px !important;display:flex !important;flex-direction:column !important;align-items:center !important;margin:auto !important;padding:16px 0 !important}
+.ai-hologram-character{width:90px !important;height:90px !important;margin-bottom:14px !important}
+.ai-orbit-ring-outer{width:100px !important;height:100px !important;border:2px dashed rgba(2,132,199,.45) !important}
+.ai-orbit-ring-inner{width:80px !important;height:80px !important}
+.ai-sphere-core{width:58px !important;height:58px !important;background:#fff !important}
+.ai-sphere-inner{width:46px !important;height:46px !important;background:#f8fafc !important}
+.ai-eye,.mouth-bar{background:#0284c7 !important}
+.ai-tag-badge{padding:4px 12px !important;font-size:.65rem !important;margin-bottom:10px !important;text-align:center;max-width:100%}
+.ai-speech-container{width:100% !important;margin-bottom:14px !important}
+.ai-speech-bubble{padding:20px 16px !important;border-radius:20px !important;background:#fff !important;border:1.5px solid #cbd5e1 !important;width:100% !important;box-sizing:border-box !important;text-align:center !important}
+.ai-speech-header{font-size:.7rem !important;margin-bottom:12px !important;padding-bottom:10px !important;flex-wrap:wrap !important;gap:8px !important}
+.ai-typed-heading{font-size:clamp(1.3rem,5vw,1.65rem) !important;font-weight:900 !important;min-height:auto !important;line-height:1.25 !important;margin-bottom:10px !important}
+.ai-typed-subtext{font-size:.875rem !important;margin-bottom:12px !important;min-height:auto !important}
+.ai-welcome-cta-wrap{width:100% !important;display:flex !important;flex-direction:column !important;align-items:center !important;gap:10px !important}
+.btn-ai-enter-glow{background:linear-gradient(135deg,#0284c7,#2563eb) !important;color:#fff !important;font-size:1rem !important;font-weight:700 !important;padding:15px 20px !important;border-radius:14px !important;width:100% !important;box-shadow:0 8px 25px rgba(2,132,199,.35) !important;display:flex !important;align-items:center !important;justify-content:center !important;gap:10px !important}
+.ai-welcome-quick-links{display:grid !important;grid-template-columns:repeat(2,1fr) !important;gap:8px !important;width:100% !important}
+.ai-quick-chip{background:#fff !important;border:1.5px solid #e2e8f0 !important;border-radius:12px !important;padding:11px 8px !important;font-size:.73rem !important;font-weight:600 !important;color:#0f172a !important;display:flex !important;align-items:center !important;justify-content:center !important;gap:5px !important;width:100% !important;text-align:center !important}
+.ai-skip-btn{font-size:.8rem !important;color:#64748b !important;margin-top:12px !important}
+.cyber-welcome-hero,.hero{padding:80px 0 36px !important;min-height:auto !important;overflow:hidden !important}
+.cyber-hud-telemetry{display:flex !important;flex-direction:column !important;gap:8px !important;padding:14px 16px !important;border-radius:16px !important;font-size:.75rem !important;margin:0 auto 20px !important;width:100% !important;background:#0b1120 !important;border:1.5px solid rgba(2,132,199,.35) !important;box-sizing:border-box !important}
+.cyber-hud-item{display:flex !important;align-items:center !important;gap:8px !important;color:#e2e8f0 !important;flex-wrap:wrap}
+.hud-lat-text{display:inline !important}
+.hero-badge{display:flex !important;align-items:center !important;justify-content:center !important;gap:8px !important;padding:10px 16px !important;border-radius:30px !important;background:#fff !important;border:1.5px solid rgba(2,132,199,.3) !important;font-size:.78rem !important;font-weight:600 !important;color:#0284c7 !important;margin-bottom:18px !important;width:100% !important;box-sizing:border-box !important;flex-wrap:wrap !important}
+.hero-title{font-size:clamp(1.75rem,6vw,2.1rem) !important;font-weight:900 !important;line-height:1.2 !important;margin-bottom:14px !important;text-align:center !important;letter-spacing:-.02em !important}
+.hero-description{font-size:.925rem !important;line-height:1.6 !important;margin-bottom:22px !important;text-align:center !important;padding:0 !important}
+.specialization-explorer-wrap{display:flex !important;flex-direction:column !important;align-items:stretch !important;gap:10px !important;margin-bottom:24px !important;width:100% !important}
+.specialization-title-tag{display:block !important;font-size:.75rem !important;font-weight:800 !important;color:#64748b !important;letter-spacing:.08em !important;text-transform:uppercase !important;margin-bottom:6px !important;text-align:center !important}
+.specialization-chips-row{display:flex !important;flex-direction:column !important;gap:10px !important;width:100% !important}
+.specialization-chips-row .filter-chip{width:100% !important;display:flex !important;align-items:center !important;justify-content:flex-start !important;font-size:.85rem !important;padding:12px 14px !important;border-radius:12px !important;background:#fff !important;border:1.5px solid #e2e8f0 !important;color:#1e293b !important;gap:10px !important;text-align:left !important}
+.hero-actions{display:flex !important;flex-direction:column !important;width:100% !important;gap:10px !important;margin-bottom:30px !important}
+.hero-actions .btn{width:100% !important;justify-content:center !important;padding:13px 16px !important;font-size:.95rem !important;border-radius:12px !important}
+.hero-stats{grid-template-columns:repeat(2,1fr) !important;gap:12px !important}
+.cyber-cards-grid{display:grid !important;grid-template-columns:1fr !important;gap:16px !important;margin:20px auto !important;width:100% !important}
+.cyber-holo-card{width:100% !important;padding:20px 16px !important;border-radius:18px !important;box-sizing:border-box !important}
+.cyber-holo-card h4{font-size:1.05rem !important;line-height:1.35 !important}
+.cyber-holo-card p{font-size:.825rem !important}
+.cyber-card-price{font-size:1.4rem !important}
+.cyber-card-orig{font-size:.85rem !important}
+.course-grid{grid-template-columns:1fr !important;gap:16px !important}
+.course-card{padding:22px 18px !important}
+.course-title{font-size:1.15rem !important}
+.course-price{font-size:1.5rem !important}
+.course-filter-bar,.course-filters{display:flex !important;flex-wrap:nowrap !important;overflow-x:auto !important;-webkit-overflow-scrolling:touch !important;gap:8px !important;padding:4px 0 12px !important;justify-content:flex-start !important;width:100% !important;scrollbar-width:none}
+.course-filter-bar::-webkit-scrollbar,.course-filters::-webkit-scrollbar{display:none}
+.filter-btn{white-space:nowrap !important;flex-shrink:0 !important;padding:8px 16px !important;font-size:.8rem !important;border-radius:20px !important}
+.roadmap-grid{grid-template-columns:1fr !important;gap:14px !important;width:100% !important}
+.testimonials-grid,#testimonialsGrid{grid-template-columns:1fr !important;gap:16px !important;width:100% !important}
+.cyber-pass-generator-panel{padding:20px 14px !important;border-radius:20px !important;margin-top:20px !important;width:100% !important;box-sizing:border-box !important;border:1.5px solid #e2e8f0 !important}
+.cyber-pass-grid{display:flex !important;flex-direction:column !important;gap:16px !important;width:100% !important}
+.cyber-pass-input-row{flex-direction:column !important;gap:10px !important;width:100% !important}
+.cyber-pass-input-row input,.cyber-pass-input-row .btn,.cyber-pass-btn{width:100% !important;justify-content:center !important;flex:none !important}
+.cyber-pass-result-badge{width:100% !important;padding:18px 14px !important;border-radius:18px !important;box-sizing:border-box !important}
+.cert-showcase-grid{grid-template-columns:1fr !important;gap:20px !important}
+.cert-customizer-grid{grid-template-columns:1fr !important;gap:14px !important}
+.cert-customizer-grid .btn{width:100% !important;justify-content:center !important}
+#certShowcaseSection .glass-panel{padding:20px 14px !important}
+.faq-question{font-size:.925rem !important;padding:16px 18px !important}
+.faq-answer{padding:0 18px 16px !important;font-size:.875rem !important}
+.btn-lg{padding:13px 22px !important;font-size:.95rem !important}
+.btn{gap:7px !important}
+.modal-backdrop{padding:12px !important;align-items:flex-end !important}
+.modal-card{max-width:100% !important;width:100% !important;padding:24px 18px !important;border-radius:20px 20px 0 0 !important;max-height:90vh !important}
+.modal-close-btn{top:16px !important;right:16px !important}
+.modal-box{padding:20px 14px !important;width:94% !important;max-height:88vh !important;overflow-y:auto !important;border-radius:16px !important}
+.wizard-wrapper{padding:18px 14px !important;border-radius:16px !important;width:100% !important;box-sizing:border-box !important}
+.wizard-mode-toggle{margin-bottom:20px !important}
+.mode-pill-container{flex-direction:column !important;gap:6px !important;width:100% !important;border-radius:14px !important}
+.mode-pill{width:100% !important;justify-content:center !important;font-size:.8rem !important;padding:10px 12px !important;text-align:center !important;border-radius:12px !important}
+.wizard-progress,.wizard-progress-bar{margin-bottom:20px !important;padding:8px 4px !important;overflow-x:auto !important;scrollbar-width:none}
+.wizard-progress::-webkit-scrollbar,.wizard-progress-bar::-webkit-scrollbar{display:none}
+.wizard-progress::before,.wizard-progress-bar::before,.wizard-progress-bar-fill,.wizard-progress-fill{top:23px !important;left:8px !important;right:8px !important;height:3px !important}
+.step-node{min-width:48px !important;gap:4px !important}
+.step-circle{width:34px !important;height:34px !important;font-size:.8rem !important;border-width:2px !important}
+.step-name,.step-label{font-size:.6rem !important;letter-spacing:0 !important;white-space:normal !important;text-align:center !important;max-width:52px !important;line-height:1.2 !important}
+.interactive-track-picker,.course-square-grid,#wizardTrackContainer{display:flex !important;flex-direction:column !important;gap:14px !important;width:100% !important}
+.track-square-card,.track-select-card{padding:18px 14px !important;border-radius:16px !important;width:100% !important;box-sizing:border-box !important}
+.square-title{font-size:1rem !important;line-height:1.35 !important}
+.square-fee-box{padding:12px !important;border-radius:12px !important;margin:10px 0 !important}
+.square-price{font-size:1.45rem !important}
+.batch-schedule-grid{grid-template-columns:1fr !important;gap:10px !important}
+.form-grid-2{grid-template-columns:1fr !important;gap:12px !important;width:100% !important}
+.voucher-input-wrap{flex-direction:column !important;gap:10px !important}
+.voucher-input-wrap .btn{width:100% !important;justify-content:center !important}
+.wizard-footer-nav{flex-direction:column-reverse !important;gap:10px !important;width:100% !important}
+.wizard-footer-nav .btn{width:100% !important;justify-content:center !important}
+.payment-grid-responsive{display:flex !important;flex-direction:column !important;gap:16px !important;width:100% !important}
+.payment-qr-card{padding:18px 14px !important;border-radius:16px !important;width:100% !important;box-sizing:border-box !important}
+.qr-code-display-wrap{width:100% !important;max-width:250px !important;padding:6px !important;margin:0 auto 12px !important}
+.qr-code-display-wrap img.phonepe-qr-img{max-height:300px !important;width:100% !important}
+.pay-apps-grid{display:grid !important;grid-template-columns:repeat(2,1fr) !important;gap:6px !important}
+.pay-app-chip{font-size:.72rem !important;padding:6px 8px !important;justify-content:center !important}
+#stepPanePendingApproval .glass-panel{padding:18px 14px !important;width:100% !important;box-sizing:border-box !important}
+.pending-dossier-grid{grid-template-columns:1fr !important;gap:10px !important}
+.student-id-card-wrapper,#idCardWrapper{width:100% !important;max-width:100% !important;padding:0 !important;overflow-x:hidden !important}
+.student-id-card,.digital-student-id-card{width:100% !important;max-width:100% !important;padding:18px 14px !important;border-radius:18px !important;box-sizing:border-box !important}
+.id-card-body{display:flex !important;flex-direction:row !important;align-items:center !important;gap:12px !important;margin-bottom:16px !important}
+.id-card-avatar{width:52px !important;height:52px !important;min-width:52px !important;font-size:1.2rem !important;flex-shrink:0 !important}
+.id-card-info h4{font-size:1rem !important;word-break:break-word !important}
+.id-card-footer{display:flex !important;flex-direction:row !important;justify-content:space-between !important;align-items:flex-end !important;gap:10px !important;padding-top:12px !important;flex-wrap:wrap}
+.id-actions-grid{display:grid !important;grid-template-columns:repeat(2,1fr) !important;gap:8px !important;margin-top:12px !important;width:100% !important}
+.id-actions-grid .btn{width:100% !important;justify-content:center !important;font-size:.775rem !important;padding:8px 6px !important}
+.id-actions-bar{flex-direction:column !important;gap:8px !important}
+.id-actions-bar .btn{flex:none !important;width:100% !important;justify-content:center !important}
+.google-cert-outer-wrapper{width:100% !important;max-width:100% !important;overflow-x:hidden !important;padding:0 !important;box-sizing:border-box !important}
+.google-cert-card{min-width:0 !important;width:100% !important;max-width:100% !important;margin:0 auto !important}
+.google-cert-inner{padding:24px 16px 20px !important}
+.google-cert-header{flex-direction:column !important;align-items:flex-start !important;gap:12px !important;margin-bottom:24px !important}
+.google-cert-meta-top{text-align:left !important}
+.google-cert-recipient-name{font-size:clamp(1.5rem,5vw,2rem) !important}
+.google-cert-course-name{font-size:clamp(1.1rem,4vw,1.4rem) !important}
+.google-cert-footer{flex-direction:column !important;align-items:center !important;gap:20px !important;padding-top:16px !important}
+.google-sig-column{width:100% !important;max-width:220px !important}
+.google-cert-security-band{padding:10px 16px !important;flex-direction:column !important;gap:4px !important;text-align:center !important}
+.google-cert-actions-bar{display:flex !important;flex-direction:column !important;gap:8px !important;width:100% !important}
+.google-cert-actions-bar .btn{width:100% !important;justify-content:center !important}
+.student-portal-grid,.student-hub-grid{display:flex !important;flex-direction:column !important;gap:20px !important;width:100% !important}
+.hub-welcome-banner{flex-direction:column !important;align-items:flex-start !important;gap:16px !important;padding:20px 16px !important}
+.hub-welcome-banner .btn{width:100% !important;justify-content:center !important}
+.resource-card,.resource-item{padding:12px 14px !important;gap:10px !important;flex-wrap:wrap}
+.mentorship-chat-box{height:380px !important;width:100% !important}
+.chat-bubble{max-width:90% !important;font-size:.85rem !important}
+.countdown-timer-display,.countdown-timer-wrap{gap:8px !important;flex-wrap:wrap !important;justify-content:center !important}
+.countdown-box,.cd-unit{min-width:58px !important;padding:8px 4px !important;flex:1 !important;max-width:80px !important}
+.countdown-val,.cd-number{font-size:1.4rem !important}
+.countdown-lbl,.cd-label{font-size:.6rem !important}
+.admin-top-header{padding:12px 14px !important;flex-wrap:wrap !important;gap:10px !important}
+.admin-top-actions{gap:6px !important;flex-wrap:wrap !important}
+.admin-top-actions .btn{padding:6px 10px !important;font-size:.75rem !important}
+.admin-kpi-grid{grid-template-columns:repeat(2,1fr) !important;gap:12px !important}
+.kpi-card{padding:16px 14px !important;gap:12px !important}
+.kpi-icon{width:46px !important;height:46px !important;min-width:46px !important;font-size:1.3rem !important}
+.kpi-data h3{font-size:1.6rem !important}
+.admin-toolbar{flex-direction:column !important;align-items:stretch !important;gap:10px !important}
+.admin-search-wrap{min-width:0 !important;width:100% !important}
+.admin-toolbar>div{flex-wrap:wrap !important;gap:8px !important}
+.admin-toolbar>div .select-custom{width:100% !important}
+.admin-toolbar>div .btn{width:100% !important;justify-content:center !important}
+.admin-table-container,.table-responsive{overflow-x:auto !important;-webkit-overflow-scrolling:touch !important;width:100% !important}
+.admin-table{min-width:540px !important;font-size:.825rem !important}
+.admin-table th,.admin-table td{padding:12px 14px !important}
+.admin-slide-drawer{width:100% !important;max-width:100% !important}
+.drawer-body{padding:18px 16px !important}
+.drawer-footer{flex-direction:column !important;gap:8px !important}
+.drawer-footer .btn{width:100% !important;justify-content:center !important}
+.auth-wrapper{padding:24px 16px !important;margin:0 auto !important;border-radius:16px !important;width:100% !important;max-width:100% !important;background:rgba(255,255,255,.98) !important}
+.demo-buttons-wrap{flex-direction:column !important;gap:6px !important}
+.demo-fill-btn{width:100% !important;justify-content:center !important;padding:10px !important;font-size:.825rem !important}
+.social-auth-grid{grid-template-columns:1fr !important;gap:8px !important}
+.footer-grid{display:flex !important;flex-direction:column !important;gap:28px !important}
+.footer-bottom{flex-direction:column !important;gap:10px !important;text-align:center !important}
+.footer{padding:40px 0 24px !important}
+.toast-container{bottom:12px !important;right:10px !important;left:10px !important;gap:8px !important}
+.toast{min-width:0 !important;max-width:100% !important;width:100% !important;padding:12px 14px !important;font-size:.85rem !important}
+.glass-panel{background:rgba(255,255,255,.98) !important;padding:20px 16px !important}
+.schedule-countdown-card{padding:20px 16px !important}
+.addon-label-card{flex-wrap:wrap !important;gap:10px !important;padding:14px !important}
+.addon-info{flex:1 !important;min-width:0 !important}
+.order-summary-box{padding:18px 14px !important}
+.summary-row{font-size:.85rem !important;flex-wrap:wrap !important;gap:4px !important}
+.voucher-input-wrap{flex-direction:column !important;gap:10px !important}
+.form-group-custom{width:100%}
 }
 
-*, *::before, *::after {
-  box-sizing: border-box;
+/* <= 480px */
+@media(max-width:480px){
+.container{padding:0 12px !important}
+.section{padding:36px 0 !important}
+.section-title{font-size:clamp(1.35rem,6vw,1.6rem) !important}
+.hero-title{font-size:clamp(1.6rem,7vw,1.9rem) !important}
+.admin-kpi-grid{grid-template-columns:1fr !important}
+.social-auth-grid{grid-template-columns:1fr !important}
+.pay-apps-grid{grid-template-columns:1fr !important}
+.id-actions-grid{grid-template-columns:1fr !important}
+.ai-welcome-quick-links{grid-template-columns:1fr !important}
+.cyber-hud-telemetry{font-size:.7rem !important}
+.auth-wrapper{padding:18px 12px !important}
+.google-cert-outer-wrapper{overflow-x:auto !important}
+.google-cert-card{min-width:300px !important}
+.step-circle{width:28px !important;height:28px !important;font-size:.7rem !important}
+.step-name,.step-label{font-size:.55rem !important;max-width:40px !important}
+.btn-lg{padding:12px 18px !important;font-size:.9rem !important}
+.mode-pill{font-size:.75rem !important;padding:9px 10px !important}
+.countdown-box,.cd-unit{min-width:50px !important;max-width:70px !important}
+.countdown-val,.cd-number{font-size:1.2rem !important}
+.kpi-card{flex-direction:column !important;align-items:flex-start !important}
+.kpi-data h3{font-size:1.4rem !important}
+.admin-table{font-size:.78rem !important;min-width:480px !important}
+.admin-table th,.admin-table td{padding:10px 12px !important}
+.view-banner{padding:88px 0 20px !important}
+.view-banner h1{font-size:clamp(1.4rem,6vw,1.8rem) !important}
+.mentorship-chat-box{height:320px !important}
+.chat-bubble{max-width:95% !important;font-size:.825rem !important}
 }
 
-img, svg, video {
-  max-width: 100%;
-  height: auto;
-}
-
-button, input, select, textarea {
-  touch-action: manipulation;
-  font-family: inherit;
-}
-
-/* --------------------------------------------------------------------------
-   2. PUBLIC NAVIGATION BAR & SLIDE-IN DRAWER
-   -------------------------------------------------------------------------- */
-.public-left-menu-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 42px;
-  height: 42px;
-  border-radius: 10px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  color: #0f172a;
-  font-size: 1.15rem;
-  cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
-  transition: all var(--trans-fast);
-  margin-right: 10px;
-  flex-shrink: 0;
-}
-
-.public-left-menu-btn:hover {
-  background: #0f172a;
-  color: #ffffff;
-  border-color: #0f172a;
-  transform: scale(1.04);
-}
-
-.mobile-nav-toggle {
-  display: none;
-  align-items: center;
-  justify-content: center;
-  width: 38px;
-  height: 38px;
-  border-radius: 8px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  color: #0f172a;
-  font-size: 1rem;
-  cursor: pointer;
-  margin-left: 6px;
-}
-
-.mobile-drawer {
-  position: fixed;
-  top: 0;
-  left: -100%;
-  right: auto;
-  width: 86%;
-  max-width: 360px;
-  height: 100vh;
-  background: #ffffff;
-  border-right: 1px solid #e2e8f0;
-  z-index: 1200;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 24px 18px;
-  transition: left 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 10px 0 40px rgba(15, 23, 42, 0.15);
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-.mobile-drawer.open {
-  left: 0;
-  right: auto;
-}
-
-.mobile-drawer-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.5);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  z-index: 1150;
-  display: none;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.mobile-drawer-overlay.open {
-  display: block;
-  opacity: 1;
-}
-
-.mobile-nav-list {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 0;
-  margin: 0;
-}
-
-.mobile-nav-item a {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 14px;
-  border-radius: 10px;
-  color: #334155;
-  font-size: 0.925rem;
-  font-weight: 600;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  transition: all var(--trans-fast);
-  cursor: pointer;
-  text-decoration: none;
-}
-
-.mobile-nav-item a:hover,
-.mobile-nav-item a.active {
-  background: rgba(2, 132, 199, 0.08);
-  border-color: rgba(2, 132, 199, 0.3);
-  color: var(--neon-cyan);
-  transform: translateX(4px);
-}
-
-.mobile-nav-item a i {
-  width: 22px;
-  text-align: center;
-  font-size: 1.1rem;
-}
-
-/* --------------------------------------------------------------------------
-   3. TABLETS & LAPTOPS (<= 1024px)
-   -------------------------------------------------------------------------- */
-@media screen and (max-width: 1024px) {
-  .container {
-    padding: 0 16px;
-  }
-
-  .hero-stats {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-  }
-
-  .course-grid,
-  .cyber-cards-grid,
-  .roadmap-grid,
-  .testimonials-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 18px;
-  }
-
-  .batch-schedule-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .student-portal-grid {
-    grid-template-columns: 1fr !important;
-  }
-
-  .admin-kpi-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
-  }
-
-  .admin-grid-2 {
-    grid-template-columns: 1fr !important;
-  }
-
-  .interactive-track-picker,
-  .track-selection-grid,
-  .course-square-grid {
-    grid-template-columns: 1fr !important;
-  }
-
-  .cyber-pass-grid {
-    grid-template-columns: 1fr !important;
-    gap: 28px;
-  }
-}
-
-/* --------------------------------------------------------------------------
-   4. MOBILE PHONES & PHABLETS (<= 768px) - CRITICAL RESPONSIVE ENGINE
-   -------------------------------------------------------------------------- */
-@media screen and (max-width: 768px) {
-  /* Disable heavy 3D WebGL canvas on mobile for maximum touch fluidity */
-  #bg-3d-canvas {
-    display: none !important;
-    pointer-events: none !important;
-  }
-
-  /* Ultra-Fast Mobile GPU Rendering & 120fps Scroll Optimizations */
-  *, *::before, *::after {
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  /* Disable expensive continuous backdrop-filters on mobile */
-  .glass-panel,
-  .navbar,
-  .hero-badge,
-  .auth-wrapper {
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    background: rgba(255, 255, 255, 0.98) !important;
-  }
-
-  .hero-glow-1,
-  .hero-glow-2,
-  .ai-glow-1,
-  .ai-glow-2,
-  .ai-glow-orb {
-    filter: none !important;
-    opacity: 0.2 !important;
-    transform: translateZ(0);
-    will-change: auto;
-  }
-
-  /* Optimize card shadows for 60fps/120fps mobile rendering */
-  .cyber-holo-card,
-  .course-card,
-  .glass-panel,
-  .digital-student-id-card,
-  .google-cert-card {
-    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06) !important;
-    transform: none !important;
-  }
-
-  /* Containers & Padding */
-  .container {
-    padding: 0 14px !important;
-    width: 100% !important;
-    max-width: 100% !important;
-  }
-
-  .section {
-    padding: 45px 0 !important;
-    overflow: hidden;
-  }
-
-  .section-header {
-    margin-bottom: 28px !important;
-  }
-
-  .section-title {
-    font-size: 1.75rem !important;
-    line-height: 1.25 !important;
-    margin-bottom: 10px !important;
-  }
-
-  .section-desc {
-    font-size: 0.925rem !important;
-    line-height: 1.55 !important;
-  }
-
-  .view-banner {
-    padding: 28px 0 20px 0 !important;
-  }
-
-  .view-banner h1 {
-    font-size: 1.75rem !important;
-    line-height: 1.25 !important;
-  }
-
-  /* Navigation Bar */
-  .navbar {
-    padding: 8px 0 !important;
-    background: rgba(255, 255, 255, 0.98) !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
-  }
-
-  .nav-container {
-    padding: 0 12px !important;
-  }
-
-  .public-left-menu-btn {
-    width: 36px;
-    height: 36px;
-    font-size: 1rem;
-    margin-right: 8px;
-  }
-
-  .nav-logo span {
-    font-size: 0.95rem !important;
-    letter-spacing: -0.01em;
-  }
-
-  .nav-logo-icon {
-    width: 28px;
-    height: 28px;
-    font-size: 0.8rem;
-  }
-
-  .nav-actions {
-    display: flex !important;
-    align-items: center !important;
-    gap: 6px !important;
-  }
-
-  .nav-btn-guide {
-    display: none !important;
-  }
-
-  .nav-actions .btn {
-    padding: 7px 12px !important;
-    font-size: 0.775rem !important;
-    border-radius: 8px !important;
-  }
-
-  .mobile-nav-toggle {
-    display: none !important;
-  }
-
-  /* Cyber Welcoming Hero Section */
-  .cyber-welcome-hero,
-  .hero {
-    padding: 80px 0 35px 0 !important;
-    min-height: auto !important;
-    overflow: hidden !important;
-  }
-
-  .hero-glow-1,
-  .hero-glow-2,
-  .ai-glow-1,
-  .ai-glow-2 {
-    max-width: 80vw !important;
-    max-height: 80vw !important;
-    opacity: 0.4 !important;
-  }
-
-  .hero-title {
-    font-size: 1.85rem !important;
-    line-height: 1.22 !important;
-    letter-spacing: -0.03em;
-    margin-bottom: 12px !important;
-  }
-
-  .hero-description {
-    font-size: 0.925rem !important;
-    line-height: 1.55 !important;
-    margin-bottom: 20px !important;
-    padding: 0 4px !important;
-  }
-
-  /* Live Hologram Telemetry HUD Bar (Photo 2 exact match) */
-  .cyber-hud-telemetry {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 8px !important;
-    padding: 14px 18px !important;
-    border-radius: 16px !important;
-    font-size: 0.775rem !important;
-    margin: 0 auto 22px auto !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-    background: #0b1120 !important;
-    border: 1.5px solid rgba(2, 132, 199, 0.35) !important;
-    box-shadow: 0 8px 24px rgba(2, 132, 199, 0.15) !important;
-    text-align: left !important;
-  }
-
-  .cyber-hud-item {
-    display: flex !important;
-    align-items: center !important;
-    gap: 8px !important;
-    font-size: 0.775rem !important;
-    justify-content: flex-start !important;
-    white-space: nowrap !important;
-    color: #e2e8f0 !important;
-  }
-
-  .hud-lat-text {
-    display: inline !important;
-  }
-
-  /* Hero Badge (Photo 2 exact match) */
-  .hero-badge {
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 8px !important;
-    padding: 10px 18px !important;
-    border-radius: 30px !important;
-    background: #ffffff !important;
-    border: 1.5px solid rgba(2, 132, 199, 0.3) !important;
-    box-shadow: 0 4px 14px rgba(2, 132, 199, 0.1) !important;
-    font-size: 0.8rem !important;
-    font-weight: 600 !important;
-    color: #0284c7 !important;
-    margin-bottom: 20px !important;
-    line-height: 1.4 !important;
-    text-align: center !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-  }
-
-  .hero-title {
-    font-size: 2.1rem !important;
-    font-weight: 900 !important;
-    line-height: 1.2 !important;
-    margin-bottom: 16px !important;
-    color: #0f172a !important;
-    text-align: center !important;
-    letter-spacing: -0.02em !important;
-  }
-
-  .hero-description {
-    font-size: 0.95rem !important;
-    line-height: 1.6 !important;
-    color: #475569 !important;
-    margin-bottom: 24px !important;
-    text-align: center !important;
-  }
-
-  /* Specialization Exploration Chips (Photo 2 exact match) */
-  .specialization-explorer-wrap {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: stretch !important;
-    gap: 10px !important;
-    margin-bottom: 28px !important;
-    width: 100% !important;
-  }
-
-  .specialization-title-tag {
-    display: block !important;
-    font-size: 0.8rem !important;
-    font-weight: 800 !important;
-    color: #64748b !important;
-    letter-spacing: 0.08em !important;
-    text-transform: uppercase !important;
-    margin-bottom: 8px !important;
-    text-align: center !important;
-  }
-
-  .specialization-chips-row {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 10px !important;
-    width: 100% !important;
-  }
-
-  .specialization-chips-row .filter-chip {
-    width: 100% !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: flex-start !important;
-    font-size: 0.85rem !important;
-    font-weight: 600 !important;
-    padding: 13px 16px !important;
-    border-radius: 12px !important;
-    background: #ffffff !important;
-    border: 1.5px solid #e2e8f0 !important;
-    color: #1e293b !important;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04) !important;
-    gap: 12px !important;
-    text-align: left !important;
-    line-height: 1.4 !important;
-  }
-
-  /* Hero Action CTAs */
-  .hero-actions {
-    display: flex !important;
-    flex-direction: column !important;
-    width: 100% !important;
-    gap: 10px !important;
-    margin-bottom: 32px !important;
-  }
-
-  .hero-actions .btn {
-    width: 100% !important;
-    justify-content: center !important;
-    padding: 13px 16px !important;
-    font-size: 0.95rem !important;
-    border-radius: 12px !important;
-  }
-
-  .hero-stats {
-    grid-template-columns: 1fr !important;
-    gap: 12px !important;
-  }
-
-  /* 4-Tier Holographic Cards Grid (Clean Single Column on Mobile) */
-  .cyber-cards-grid,
-  .course-grid,
-  .roadmap-grid,
-  .testimonials-grid {
-    display: flex !important;
-    flex-direction: column !important;
-    grid-template-columns: 1fr !important;
-    gap: 16px !important;
-    margin: 20px auto !important;
-    width: 100% !important;
-  }
-
-  .roadmap-grid > div,
-  .testimonials-grid > div {
-    width: 100% !important;
-    box-sizing: border-box !important;
-  }
-
-  .cyber-holo-card {
-    width: 100% !important;
-    padding: 20px 18px !important;
-    border-radius: 18px !important;
-    box-sizing: border-box !important;
-  }
-
-  .cyber-holo-card h4 {
-    font-size: 1.15rem !important;
-    line-height: 1.35 !important;
-  }
-
-  .cyber-holo-card p {
-    font-size: 0.85rem !important;
-    margin-bottom: 12px !important;
-  }
-
-  .cyber-card-price {
-    font-size: 1.45rem !important;
-  }
-
-  .cyber-card-orig {
-    font-size: 0.85rem !important;
-  }
-
-  /* Specialized Learning Tracks Filter Bar (Photo 3 exact match) */
-  .course-filter-bar {
-    display: flex !important;
-    flex-wrap: nowrap !important;
-    overflow-x: auto !important;
-    -webkit-overflow-scrolling: touch !important;
-    gap: 8px !important;
-    padding: 4px 0 12px 0 !important;
-    justify-content: flex-start !important;
-    width: 100% !important;
-  }
-
-  .filter-btn {
-    white-space: nowrap !important;
-    flex-shrink: 0 !important;
-    padding: 8px 18px !important;
-    font-size: 0.825rem !important;
-    font-weight: 600 !important;
-    border-radius: 20px !important;
-  }
-
-  .filter-btn.active {
-    background: #0284c7 !important;
-    color: #ffffff !important;
-    border-color: #0284c7 !important;
-  }
-
-  /* Visitor Pass Generator Panel (Photo 3 exact match) */
-  .cyber-pass-generator-panel {
-    padding: 20px 14px !important;
-    border-radius: 20px !important;
-    margin-top: 24px !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-    background: #ffffff !important;
-    border: 1.5px solid #e2e8f0 !important;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05) !important;
-  }
-
-  .cyber-pass-grid {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 18px !important;
-    width: 100% !important;
-  }
-
-  .cyber-pass-input-row {
-    flex-direction: column !important;
-    gap: 10px !important;
-    width: 100% !important;
-  }
-
-  .cyber-pass-input-row input,
-  .cyber-pass-input-row .btn {
-    width: 100% !important;
-    justify-content: center !important;
-  }
-
-  .cyber-pass-result-badge {
-    width: 100% !important;
-    padding: 20px 16px !important;
-    border-radius: 18px !important;
-    border: 1.5px solid #cbd5e1 !important;
-    background: #ffffff !important;
-    box-sizing: border-box !important;
-  }
-
-  /* Certificate Showcase Section */
-  #certShowcaseSection .glass-panel {
-    padding: 20px 16px !important;
-  }
-
-  #certShowcaseSection .glass-panel > div {
-    display: flex !important;
-    flex-direction: column !important;
-    grid-template-columns: 1fr !important;
-    gap: 20px !important;
-  }
-
-  /* Testimonials Grid */
-  #testimonialsGrid {
-    grid-template-columns: 1fr !important;
-    gap: 16px !important;
-    width: 100% !important;
-  }
-
-  /* AI Welcome Intro Splash - Mobile App Style Layout (Photo 1 exact match) */
-  .ai-welcome-overlay {
-    padding: 28px 16px 36px 16px !important;
-    min-height: 100dvh !important;
-    min-height: 100vh !important;
-    height: auto !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: center !important;
-    align-items: center !important;
-    box-sizing: border-box !important;
-    background: radial-gradient(circle at 50% 20%, #f0f9ff 0%, #e0f2fe 50%, #ffffff 90%) !important;
-  }
-
-  .ai-welcome-box {
-    width: 100% !important;
-    max-width: 440px !important;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
-    margin: auto !important;
-  }
-
-  .ai-hologram-character {
-    width: 96px !important;
-    height: 96px !important;
-    margin-bottom: 16px !important;
-  }
-
-  .ai-orbit-ring-outer {
-    width: 106px !important;
-    height: 106px !important;
-    border: 2px dashed rgba(2, 132, 199, 0.45) !important;
-  }
-
-  .ai-orbit-ring-inner {
-    width: 86px !important;
-    height: 86px !important;
-  }
-
-  .ai-sphere-core {
-    width: 60px !important;
-    height: 60px !important;
-    background: #ffffff !important;
-    box-shadow: 0 8px 24px rgba(2, 132, 199, 0.3) !important;
-  }
-
-  .ai-sphere-inner {
-    width: 48px !important;
-    height: 48px !important;
-    background: #f8fafc !important;
-  }
-
-  .ai-eye, .mouth-bar {
-    background: #0284c7 !important;
-  }
-
-  .ai-tag-badge {
-    padding: 4px 12px !important;
-    font-size: 0.68rem !important;
-    margin-bottom: 12px !important;
-  }
-
-  .ai-speech-container {
-    width: 100% !important;
-    margin-bottom: 16px !important;
-  }
-
-  .ai-speech-bubble {
-    padding: 24px 20px !important;
-    border-radius: 24px !important;
-    background: #ffffff !important;
-    border: 1.5px solid #cbd5e1 !important;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05) !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-    text-align: center !important;
-  }
-
-  .ai-speech-header {
-    border-bottom: 1px solid #f1f5f9 !important;
-    color: #64748b !important;
-    font-size: 0.725rem !important;
-    margin-bottom: 14px !important;
-    padding-bottom: 10px !important;
-  }
-
-  .ai-typed-heading {
-    font-size: 1.65rem !important;
-    font-weight: 900 !important;
-    color: #0f172a !important;
-    min-height: auto !important;
-    line-height: 1.25 !important;
-    margin-bottom: 10px !important;
-    letter-spacing: -0.02em !important;
-  }
-
-  .ai-typed-subtext {
-    font-size: 0.925rem !important;
-    color: #475569 !important;
-    line-height: 1.55 !important;
-    margin-bottom: 14px !important;
-    min-height: auto !important;
-  }
-
-  .ai-welcome-cta-wrap {
-    width: 100% !important;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-  }
-
-  .btn-ai-enter-glow {
-    background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%) !important;
-    color: #ffffff !important;
-    font-size: 1.05rem !important;
-    font-weight: 700 !important;
-    padding: 16px 20px !important;
-    border-radius: 14px !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    box-shadow: 0 8px 25px rgba(2, 132, 199, 0.35) !important;
-    margin-bottom: 12px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 10px !important;
-  }
-
-  .ai-welcome-quick-links {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 8px !important;
-    width: 100% !important;
-  }
-
-  .ai-quick-chip {
-    background: #ffffff !important;
-    border: 1.5px solid #e2e8f0 !important;
-    border-radius: 12px !important;
-    padding: 12px 8px !important;
-    font-size: 0.775rem !important;
-    font-weight: 600 !important;
-    color: #0f172a !important;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04) !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 6px !important;
-    width: 100% !important;
-    text-align: center !important;
-  }
-
-  .ai-skip-btn {
-    font-size: 0.8rem !important;
-    color: #64748b !important;
-    font-family: var(--font-mono, monospace) !important;
-    margin-top: 14px !important;
-  }
-
-  /* 5-Step Interactive Enrollment Wizard */
-  .wizard-wrapper {
-    padding: 18px 12px !important;
-    border-radius: 16px !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-  }
-
-  .mode-pill-container {
-    flex-direction: column !important;
-    gap: 6px !important;
-    width: 100% !important;
-  }
-
-  .mode-pill {
-    width: 100% !important;
-    justify-content: center !important;
-    font-size: 0.775rem !important;
-    padding: 8px 10px !important;
-  }
-
-  .wizard-progress,
-  .wizard-progress-bar {
-    margin-bottom: 20px !important;
-    padding: 0 4px !important;
-  }
-
-  .wizard-progress::before,
-  .wizard-progress-bar::before,
-  .wizard-progress-bar-fill,
-  .wizard-progress-fill {
-    top: 15px !important;
-    left: 10px !important;
-    right: 10px !important;
-    height: 3px !important;
-  }
-
-  .step-node {
-    min-width: 42px !important;
-    gap: 4px !important;
-  }
-
-  .step-circle {
-    width: 30px !important;
-    height: 30px !important;
-    font-size: 0.75rem !important;
-    border-width: 2px !important;
-  }
-
-  .step-name,
-  .step-label {
-    font-size: 0.65rem !important;
-    letter-spacing: 0 !important;
-  }
-
-  /* Wizard Step 2: Course Square Grid Tiles */
-  .interactive-track-picker,
-  .course-square-grid,
-  #wizardTrackContainer {
-    display: flex !important;
-    flex-direction: column !important;
-    grid-template-columns: 1fr !important;
-    gap: 14px !important;
-    width: 100% !important;
-  }
-
-  .track-square-card {
-    padding: 16px 14px !important;
-    border-radius: 16px !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-  }
-
-  .square-title {
-    font-size: 1.05rem !important;
-    line-height: 1.35 !important;
-  }
-
-  .square-fee-box {
-    padding: 12px !important;
-    border-radius: 12px !important;
-    margin: 12px 0 !important;
-  }
-
-  .square-price {
-    font-size: 1.45rem !important;
-  }
-
-  .form-grid-2 {
-    grid-template-columns: 1fr !important;
-    gap: 12px !important;
-    width: 100% !important;
-  }
-
-  .wizard-footer-nav {
-    flex-direction: column-reverse !important;
-    gap: 10px !important;
-    width: 100% !important;
-  }
-
-  .wizard-footer-nav .btn {
-    width: 100% !important;
-    justify-content: center !important;
-  }
-
-  /* Wizard Step 5: QR Payment Checkout */
-  .payment-grid-responsive {
-    display: flex !important;
-    flex-direction: column !important;
-    grid-template-columns: 1fr !important;
-    gap: 16px !important;
-    width: 100% !important;
-  }
-
-  .payment-qr-card {
-    padding: 18px 14px !important;
-    border-radius: 16px !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-  }
-
-  .qr-code-display-wrap {
-    width: 100% !important;
-    max-width: 240px !important;
-    padding: 6px !important;
-    margin: 0 auto 12px auto !important;
-  }
-
-  .qr-code-display-wrap img.phonepe-qr-img {
-    max-height: 320px !important;
-    width: 100% !important;
-  }
-
-  .pay-apps-grid {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 6px !important;
-  }
-
-  .pay-app-chip {
-    font-size: 0.72rem !important;
-    padding: 6px 8px !important;
-    justify-content: center !important;
-  }
-
-  /* Waiting For Approval Screen */
-  #stepPanePendingApproval .glass-panel {
-    padding: 18px 14px !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-  }
-
-  #stepPanePendingApproval .glass-panel > div:nth-child(2) {
-    grid-template-columns: 1fr !important;
-    gap: 10px !important;
-  }
-
-  /* Digital Student ID Card */
-  .student-id-card-wrapper,
-  #idCardWrapper {
-    width: 100% !important;
-    max-width: 100% !important;
-    padding: 0 !important;
-    overflow-x: hidden !important;
-  }
-
-  .student-id-card,
-  .digital-student-id-card {
-    width: 100% !important;
-    max-width: 100% !important;
-    padding: 20px 16px !important;
-    border-radius: 18px !important;
-    box-sizing: border-box !important;
-  }
-
-  .id-card-body {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    gap: 12px !important;
-    margin-bottom: 16px !important;
-  }
-
-  .id-card-avatar {
-    width: 52px !important;
-    height: 52px !important;
-    font-size: 1.2rem !important;
-    flex-shrink: 0 !important;
-  }
-
-  .id-card-info h4 {
-    font-size: 1.05rem !important;
-    word-break: break-word !important;
-  }
-
-  .id-card-footer {
-    display: flex !important;
-    flex-direction: row !important;
-    justify-content: space-between !important;
-    align-items: flex-end !important;
-    gap: 10px !important;
-    padding-top: 14px !important;
-  }
-
-  .id-actions-grid {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 8px !important;
-    margin-top: 14px !important;
-    width: 100% !important;
-  }
-
-  .id-actions-grid .btn {
-    width: 100% !important;
-    justify-content: center !important;
-    font-size: 0.775rem !important;
-    padding: 8px 6px !important;
-  }
-
-  /* Google Career Certificate Component */
-  .google-cert-outer-wrapper {
-    width: 100% !important;
-    max-width: 100% !important;
-    overflow-x: auto !important;
-    -webkit-overflow-scrolling: touch !important;
-    padding: 10px 0 !important;
-    box-sizing: border-box !important;
-  }
-
-  .google-cert-card {
-    min-width: 0 !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    margin: 0 auto !important;
-  }
-
-  .google-cert-inner {
-    padding: 24px 16px 20px 16px !important;
-  }
-
-  .google-cert-actions-bar {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 8px !important;
-    width: 100% !important;
-  }
-
-  .google-cert-actions-bar .btn {
-    width: 100% !important;
-    justify-content: center !important;
-  }
-
-  /* Certificate Generator Bar (View 2) */
-  #view-certificate .glass-panel > div {
-    display: flex !important;
-    flex-direction: column !important;
-    grid-template-columns: 1fr !important;
-    gap: 14px !important;
-  }
-
-  #view-certificate .glass-panel > div .btn {
-    width: 100% !important;
-    justify-content: center !important;
-  }
-
-  /* Student Hub Portal */
-  .student-portal-grid {
-    display: flex !important;
-    flex-direction: column !important;
-    grid-template-columns: 1fr !important;
-    gap: 20px !important;
-    width: 100% !important;
-  }
-
-  .mentorship-chat-box {
-    height: 380px !important;
-    width: 100% !important;
-  }
-
-  .chat-bubble {
-    max-width: 90% !important;
-    font-size: 0.85rem !important;
-  }
-
-  .countdown-timer-display {
-    gap: 6px !important;
-  }
-
-  .countdown-box {
-    min-width: 55px !important;
-    padding: 8px 4px !important;
-  }
-
-  .countdown-val {
-    font-size: 1.25rem !important;
-  }
-
-  .countdown-lbl {
-    font-size: 0.6rem !important;
-  }
-
-  /* Admin CRM Dashboard */
-  .admin-top-header {
-    padding: 12px 14px !important;
-    flex-wrap: wrap !important;
-    gap: 10px !important;
-  }
-
-  .admin-breadcrumbs {
-    font-size: 0.8rem !important;
-  }
-
-  .admin-top-actions {
-    gap: 8px !important;
-  }
-
-  .admin-top-actions .btn {
-    padding: 6px 10px !important;
-    font-size: 0.75rem !important;
-  }
-
-  .admin-kpi-grid {
-    grid-template-columns: 1fr !important;
-    gap: 12px !important;
-  }
-
-  .admin-table-container {
-    overflow-x: auto !important;
-    -webkit-overflow-scrolling: touch !important;
-    width: 100% !important;
-  }
-
-  .admin-table {
-    min-width: 560px !important;
-  }
-
-  .admin-slide-drawer {
-    width: 100% !important;
-    max-width: 100% !important;
-  }
-
-  .admin-sidebar {
-    width: 280px !important;
-  }
-
-  /* Modals */
-  .modal-box {
-    padding: 20px 14px !important;
-    width: 94% !important;
-    max-height: 88vh !important;
-    overflow-y: auto !important;
-    box-sizing: border-box !important;
-  }
-
-  /* Footer */
-  .footer-grid {
-    display: flex !important;
-    flex-direction: column !important;
-    grid-template-columns: 1fr !important;
-    gap: 28px !important;
-  }
-
-  .footer-bottom {
-    flex-direction: column !important;
-    gap: 12px !important;
-    text-align: center !important;
-  }
-}
-
-/* --------------------------------------------------------------------------
-   5. SMALL PHONES (<= 480px)
-   -------------------------------------------------------------------------- */
-@media screen and (max-width: 480px) {
-  .container {
-    padding: 0 10px !important;
-  }
-
-  .hero-title {
-    font-size: 1.65rem !important;
-  }
-
-  .section {
-    padding: 35px 0 !important;
-  }
-
-  .section-title {
-    font-size: 1.45rem !important;
-  }
-
-  .auth-wrapper {
-    padding: 18px 12px !important;
-  }
-
-  .social-auth-grid {
-    grid-template-columns: 1fr !important;
-  }
-
-  .cyber-hud-telemetry {
-    grid-template-columns: 1fr !important;
-    gap: 6px !important;
-  }
-
-  .specialization-chips-row {
-    grid-template-columns: 1fr !important;
-  }
-
-  .id-actions-grid {
-    grid-template-columns: 1fr !important;
-  }
-
-  .pay-apps-grid {
-    grid-template-columns: 1fr !important;
-  }
+/* <= 360px */
+@media(max-width:360px){
+.container{padding:0 10px !important}
+.section{padding:28px 0 !important}
+.hero-title{font-size:1.5rem !important}
+.nav-logo span{font-size:.8rem !important}
+.nav-logo-icon{width:24px !important;height:24px !important;min-width:24px !important}
+.nav-actions .btn{padding:6px 8px !important;font-size:.7rem !important}
+.wizard-wrapper{padding:14px 10px !important}
+.ai-speech-bubble{padding:16px 12px !important}
+.ai-typed-heading{font-size:1.25rem !important}
+.btn-ai-enter-glow{font-size:.9rem !important;padding:13px 14px !important}
+.hero-stats{grid-template-columns:1fr !important}
 }
