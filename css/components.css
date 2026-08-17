@@ -3599,3 +3599,46 @@ body.portal-entering-active .cyber-cards-grid .cyber-holo-card:nth-child(4) {
 }
 
 
+
+/* ==========================================================================
+   DEFINITIVE MOBILE OVERRIDES
+   ========================================================================== */
+@media screen and (max-width: 768px) {
+  .course-grid,.roadmap-grid,.testimonials-grid,#testimonialsGrid,.cyber-cards-grid,.admin-kpi-grid,.admin-stats-grid,.cert-showcase-grid,.cert-customizer-grid,.payment-grid-responsive,.social-auth-grid,.form-grid-2,.batch-schedule-grid,.pending-dossier-grid,.footer-grid,.student-portal-grid,.student-hub-grid{display:grid !important;grid-template-columns:1fr !important;gap:14px !important;width:100% !important}
+  .specialization-chips-row{display:flex !important;flex-direction:column !important;width:100% !important;gap:10px !important}
+  .specialization-chips-row .filter-chip,.specialization-chips-row button{width:100% !important;text-align:left !important;justify-content:flex-start !important;padding:12px 16px !important;border-radius:12px !important;font-size:.875rem !important}
+  .hero-actions{flex-direction:column !important;width:100% !important;gap:10px !important}
+  .hero-actions .btn,.hero-actions button{width:100% !important;justify-content:center !important}
+  .mode-pill-container{flex-direction:column !important;width:100% !important;gap:6px !important}
+  .mode-pill{width:100% !important;text-align:center !important;justify-content:center !important}
+  .interactive-track-picker,.course-square-grid,#wizardTrackContainer{display:flex !important;flex-direction:column !important;width:100% !important;gap:14px !important}
+  .track-square-card,.track-select-card{width:100% !important;box-sizing:border-box !important}
+  .voucher-input-wrap,.wizard-footer-nav{flex-direction:column !important;width:100% !important;gap:10px !important}
+  .voucher-input-wrap .btn,.wizard-footer-nav .btn{width:100% !important;justify-content:center !important}
+  .admin-toolbar{flex-direction:column !important;width:100% !important;gap:10px !important}
+  .admin-search-wrap{width:100% !important;min-width:0 !important}
+  .hub-welcome-banner{flex-direction:column !important;align-items:stretch !important;gap:14px !important}
+  .hub-welcome-banner .btn{width:100% !important;justify-content:center !important}
+  .pay-apps-grid{display:grid !important;grid-template-columns:repeat(2,1fr) !important;gap:8px !important}
+  .demo-buttons-wrap{flex-direction:column !important;gap:8px !important}
+  .demo-fill-btn{width:100% !important;justify-content:center !important}
+  .footer-bottom{flex-direction:column !important;text-align:center !important;gap:10px !important}
+  .drawer-footer{flex-direction:column !important;gap:8px !important}
+  .drawer-footer .btn{width:100% !important;justify-content:center !important}
+  .google-cert-actions-bar{flex-direction:column !important;gap:8px !important}
+  .google-cert-actions-bar .btn,.google-cert-actions-bar button{width:100% !important;justify-content:center !important}
+  .google-cert-header{flex-direction:column !important;gap:12px !important}
+  .google-cert-footer{flex-direction:column !important;align-items:center !important;gap:20px !important}
+  .id-actions-bar,.id-actions-grid{display:grid !important;grid-template-columns:repeat(2,1fr) !important;gap:8px !important;width:100% !important}
+  .id-actions-bar .btn,.id-actions-grid .btn{width:100% !important;justify-content:center !important}
+  .countdown-timer-display,.countdown-timer-wrap{flex-wrap:wrap !important;justify-content:center !important;gap:8px !important}
+  .cyber-pass-grid{display:flex !important;flex-direction:column !important;gap:16px !important;width:100% !important}
+  .cyber-pass-input-row{flex-direction:column !important;gap:10px !important}
+  .cyber-pass-input-row input,.cyber-pass-btn{width:100% !important}
+  .container,.wizard-wrapper,.glass-panel,.auth-wrapper,.google-cert-outer-wrapper{max-width:100% !important;overflow-x:hidden !important;box-sizing:border-box !important}
+}
+@media screen and (max-width:480px){
+  .pay-apps-grid{grid-template-columns:1fr !important}
+  .id-actions-bar,.id-actions-grid{grid-template-columns:1fr !important}
+  .admin-kpi-grid,.admin-stats-grid{grid-template-columns:1fr !important}
+}
