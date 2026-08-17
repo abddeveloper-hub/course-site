@@ -373,62 +373,120 @@ button, input, select, textarea {
     padding: 0 4px !important;
   }
 
-  /* Live Hologram Telemetry HUD Bar */
+  /* Live Hologram Telemetry HUD Bar (Photo 2 exact match) */
   .cyber-hud-telemetry {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 8px 10px !important;
-    padding: 10px 12px !important;
-    border-radius: 14px !important;
-    font-size: 0.72rem !important;
-    margin: 0 auto 20px auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    padding: 14px 18px !important;
+    border-radius: 16px !important;
+    font-size: 0.775rem !important;
+    margin: 0 auto 22px auto !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    background: #0b1120 !important;
+    border: 1.5px solid rgba(2, 132, 199, 0.35) !important;
+    box-shadow: 0 8px 24px rgba(2, 132, 199, 0.15) !important;
+    text-align: left !important;
+  }
+
+  .cyber-hud-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    font-size: 0.775rem !important;
+    justify-content: flex-start !important;
+    white-space: nowrap !important;
+    color: #e2e8f0 !important;
+  }
+
+  .hud-lat-text {
+    display: inline !important;
+  }
+
+  /* Hero Badge (Photo 2 exact match) */
+  .hero-badge {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    padding: 10px 18px !important;
+    border-radius: 30px !important;
+    background: #ffffff !important;
+    border: 1.5px solid rgba(2, 132, 199, 0.3) !important;
+    box-shadow: 0 4px 14px rgba(2, 132, 199, 0.1) !important;
+    font-size: 0.8rem !important;
+    font-weight: 600 !important;
+    color: #0284c7 !important;
+    margin-bottom: 20px !important;
+    line-height: 1.4 !important;
+    text-align: center !important;
     width: 100% !important;
     box-sizing: border-box !important;
   }
 
-  .cyber-hud-item {
-    justify-content: flex-start !important;
-    gap: 6px !important;
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
+  .hero-title {
+    font-size: 2.1rem !important;
+    font-weight: 900 !important;
+    line-height: 1.2 !important;
+    margin-bottom: 16px !important;
+    color: #0f172a !important;
+    text-align: center !important;
+    letter-spacing: -0.02em !important;
   }
 
-  .hud-lat-text {
-    display: none !important;
+  .hero-description {
+    font-size: 0.95rem !important;
+    line-height: 1.6 !important;
+    color: #475569 !important;
+    margin-bottom: 24px !important;
+    text-align: center !important;
   }
 
-  /* Specialization Exploration Chips */
+  /* Specialization Exploration Chips (Photo 2 exact match) */
   .specialization-explorer-wrap {
+    display: flex !important;
     flex-direction: column !important;
     align-items: stretch !important;
-    gap: 8px !important;
-    margin-bottom: 24px !important;
+    gap: 10px !important;
+    margin-bottom: 28px !important;
     width: 100% !important;
   }
 
   .specialization-title-tag {
-    font-size: 0.75rem !important;
-    margin-bottom: 4px !important;
+    display: block !important;
+    font-size: 0.8rem !important;
+    font-weight: 800 !important;
+    color: #64748b !important;
+    letter-spacing: 0.08em !important;
+    text-transform: uppercase !important;
+    margin-bottom: 8px !important;
     text-align: center !important;
   }
 
   .specialization-chips-row {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 8px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
     width: 100% !important;
   }
 
   .specialization-chips-row .filter-chip {
     width: 100% !important;
-    justify-content: center !important;
-    font-size: 0.725rem !important;
-    padding: 8px 6px !important;
-    white-space: normal !important;
-    text-align: center !important;
-    line-height: 1.3 !important;
-    border-radius: 10px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+    padding: 13px 16px !important;
+    border-radius: 12px !important;
+    background: #ffffff !important;
+    border: 1.5px solid #e2e8f0 !important;
+    color: #1e293b !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04) !important;
+    gap: 12px !important;
+    text-align: left !important;
+    line-height: 1.4 !important;
   }
 
   /* Hero Action CTAs */
@@ -497,35 +555,49 @@ button, input, select, textarea {
     font-size: 0.85rem !important;
   }
 
+  /* Specialized Learning Tracks Filter Bar (Photo 3 exact match) */
   .course-filter-bar {
-    justify-content: flex-start !important;
-    overflow-x: auto !important;
-    padding-bottom: 8px !important;
+    display: flex !important;
     flex-wrap: nowrap !important;
-    width: 100% !important;
+    overflow-x: auto !important;
     -webkit-overflow-scrolling: touch !important;
+    gap: 8px !important;
+    padding: 4px 0 12px 0 !important;
+    justify-content: flex-start !important;
+    width: 100% !important;
   }
 
   .filter-btn {
     white-space: nowrap !important;
-    font-size: 0.8rem !important;
-    padding: 6px 14px !important;
+    flex-shrink: 0 !important;
+    padding: 8px 18px !important;
+    font-size: 0.825rem !important;
+    font-weight: 600 !important;
+    border-radius: 20px !important;
   }
 
-  /* Visitor Pass Generator Panel */
+  .filter-btn.active {
+    background: #0284c7 !important;
+    color: #ffffff !important;
+    border-color: #0284c7 !important;
+  }
+
+  /* Visitor Pass Generator Panel (Photo 3 exact match) */
   .cyber-pass-generator-panel {
-    padding: 22px 16px !important;
-    border-radius: 18px !important;
+    padding: 20px 14px !important;
+    border-radius: 20px !important;
     margin-top: 24px !important;
     width: 100% !important;
     box-sizing: border-box !important;
+    background: #ffffff !important;
+    border: 1.5px solid #e2e8f0 !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05) !important;
   }
 
   .cyber-pass-grid {
     display: flex !important;
     flex-direction: column !important;
-    grid-template-columns: 1fr !important;
-    gap: 20px !important;
+    gap: 18px !important;
     width: 100% !important;
   }
 
@@ -543,7 +615,10 @@ button, input, select, textarea {
 
   .cyber-pass-result-badge {
     width: 100% !important;
-    padding: 16px 14px !important;
+    padding: 20px 16px !important;
+    border-radius: 18px !important;
+    border: 1.5px solid #cbd5e1 !important;
+    background: #ffffff !important;
     box-sizing: border-box !important;
   }
 
@@ -566,9 +641,9 @@ button, input, select, textarea {
     width: 100% !important;
   }
 
-  /* AI Welcome Intro Splash - Mobile App Style Layout */
+  /* AI Welcome Intro Splash - Mobile App Style Layout (Photo 1 exact match) */
   .ai-welcome-overlay {
-    padding: 24px 16px 36px 16px !important;
+    padding: 28px 16px 36px 16px !important;
     min-height: 100dvh !important;
     min-height: 100vh !important;
     height: auto !important;
@@ -577,11 +652,12 @@ button, input, select, textarea {
     justify-content: center !important;
     align-items: center !important;
     box-sizing: border-box !important;
+    background: radial-gradient(circle at 50% 20%, #f0f9ff 0%, #e0f2fe 50%, #ffffff 90%) !important;
   }
 
   .ai-welcome-box {
     width: 100% !important;
-    max-width: 100% !important;
+    max-width: 440px !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
@@ -590,29 +666,37 @@ button, input, select, textarea {
   }
 
   .ai-hologram-character {
-    width: 90px !important;
-    height: 90px !important;
-    margin-bottom: 12px !important;
+    width: 96px !important;
+    height: 96px !important;
+    margin-bottom: 16px !important;
   }
 
   .ai-orbit-ring-outer {
-    width: 100px !important;
-    height: 100px !important;
+    width: 106px !important;
+    height: 106px !important;
+    border: 2px dashed rgba(2, 132, 199, 0.45) !important;
   }
 
   .ai-orbit-ring-inner {
-    width: 80px !important;
-    height: 80px !important;
+    width: 86px !important;
+    height: 86px !important;
   }
 
   .ai-sphere-core {
-    width: 56px !important;
-    height: 56px !important;
+    width: 60px !important;
+    height: 60px !important;
+    background: #ffffff !important;
+    box-shadow: 0 8px 24px rgba(2, 132, 199, 0.3) !important;
   }
 
   .ai-sphere-inner {
-    width: 44px !important;
-    height: 44px !important;
+    width: 48px !important;
+    height: 48px !important;
+    background: #f8fafc !important;
+  }
+
+  .ai-eye, .mouth-bar {
+    background: #0284c7 !important;
   }
 
   .ai-tag-badge {
@@ -627,24 +711,40 @@ button, input, select, textarea {
   }
 
   .ai-speech-bubble {
-    padding: 20px 16px !important;
-    border-radius: 20px !important;
+    padding: 24px 20px !important;
+    border-radius: 24px !important;
+    background: #ffffff !important;
+    border: 1.5px solid #cbd5e1 !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05) !important;
     width: 100% !important;
     box-sizing: border-box !important;
+    text-align: center !important;
+  }
+
+  .ai-speech-header {
+    border-bottom: 1px solid #f1f5f9 !important;
+    color: #64748b !important;
+    font-size: 0.725rem !important;
+    margin-bottom: 14px !important;
+    padding-bottom: 10px !important;
   }
 
   .ai-typed-heading {
-    font-size: 1.45rem !important;
+    font-size: 1.65rem !important;
+    font-weight: 900 !important;
+    color: #0f172a !important;
     min-height: auto !important;
     line-height: 1.25 !important;
-    margin-bottom: 8px !important;
+    margin-bottom: 10px !important;
+    letter-spacing: -0.02em !important;
   }
 
   .ai-typed-subtext {
-    font-size: 0.875rem !important;
+    font-size: 0.925rem !important;
+    color: #475569 !important;
+    line-height: 1.55 !important;
+    margin-bottom: 14px !important;
     min-height: auto !important;
-    line-height: 1.45 !important;
-    margin-bottom: 12px !important;
   }
 
   .ai-welcome-cta-wrap {
@@ -655,13 +755,20 @@ button, input, select, textarea {
   }
 
   .btn-ai-enter-glow {
-    padding: 15px 20px !important;
+    background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%) !important;
+    color: #ffffff !important;
     font-size: 1.05rem !important;
+    font-weight: 700 !important;
+    padding: 16px 20px !important;
+    border-radius: 14px !important;
     width: 100% !important;
     max-width: 100% !important;
-    box-sizing: border-box !important;
+    box-shadow: 0 8px 25px rgba(2, 132, 199, 0.35) !important;
     margin-bottom: 12px !important;
-    border-radius: 14px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 10px !important;
   }
 
   .ai-welcome-quick-links {
@@ -672,18 +779,27 @@ button, input, select, textarea {
   }
 
   .ai-quick-chip {
-    padding: 9px 8px !important;
-    font-size: 0.75rem !important;
-    width: 100% !important;
+    background: #ffffff !important;
+    border: 1.5px solid #e2e8f0 !important;
+    border-radius: 12px !important;
+    padding: 12px 8px !important;
+    font-size: 0.775rem !important;
+    font-weight: 600 !important;
+    color: #0f172a !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04) !important;
+    display: flex !important;
+    align-items: center !important;
     justify-content: center !important;
+    gap: 6px !important;
+    width: 100% !important;
     text-align: center !important;
-    border-radius: 10px !important;
-    white-space: nowrap !important;
   }
 
   .ai-skip-btn {
-    font-size: 0.775rem !important;
-    padding: 6px 12px !important;
+    font-size: 0.8rem !important;
+    color: #64748b !important;
+    font-family: var(--font-mono, monospace) !important;
+    margin-top: 14px !important;
   }
 
   /* 5-Step Interactive Enrollment Wizard */
@@ -916,8 +1032,14 @@ button, input, select, textarea {
   }
 
   .google-cert-card {
-    min-width: 600px !important;
+    min-width: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
     margin: 0 auto !important;
+  }
+
+  .google-cert-inner {
+    padding: 24px 16px 20px 16px !important;
   }
 
   .google-cert-actions-bar {
