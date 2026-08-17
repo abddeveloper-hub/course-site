@@ -254,14 +254,6 @@ const App = {
     this.renderCourseShowcase(level);
   },
 
-  startEnrollment: function(courseId) {
-    this.showView('register');
-    if (typeof Wizard !== 'undefined') {
-      Wizard.goToStep(1);
-      Wizard.selectTrack(courseId);
-    }
-  },
-
   openCourseModal: function(courseId) {
     const course = ACADEMY_DATA.courses.find(c => c.id === courseId);
     if (!course) return;

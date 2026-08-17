@@ -313,7 +313,7 @@ const AdminDashboard = {
     StorageService.setCurrentStudent(student);
 
     // Sync to Cloud Firestore if connected
-    if (typeof FirebaseService !== 'undefined' && FirebaseService.isConfigured) {
+    if (typeof FirebaseService !== 'undefined' && (FirebaseService.isInitialized || FirebaseService.isConfigured)) {
       FirebaseService.saveStudentAdmission(student);
     }
 

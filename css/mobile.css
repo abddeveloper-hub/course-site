@@ -176,7 +176,9 @@ button, input, select, textarea {
   }
 
   .course-grid,
-  .cyber-cards-grid {
+  .cyber-cards-grid,
+  .roadmap-grid,
+  .testimonials-grid {
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 18px;
   }
@@ -422,13 +424,21 @@ button, input, select, textarea {
 
   /* 4-Tier Holographic Cards Grid (Clean Single Column on Mobile) */
   .cyber-cards-grid,
-  .course-grid {
+  .course-grid,
+  .roadmap-grid,
+  .testimonials-grid {
     display: flex !important;
     flex-direction: column !important;
     grid-template-columns: 1fr !important;
     gap: 16px !important;
     margin: 20px auto !important;
     width: 100% !important;
+  }
+
+  .roadmap-grid > div,
+  .testimonials-grid > div {
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   .cyber-holo-card {
@@ -525,84 +535,124 @@ button, input, select, textarea {
     width: 100% !important;
   }
 
-  /* AI Welcome Intro Splash */
+  /* AI Welcome Intro Splash - Mobile App Style Layout */
   .ai-welcome-overlay {
-    padding: 16px 12px !important;
+    padding: 24px 16px 36px 16px !important;
+    min-height: 100dvh !important;
+    min-height: 100vh !important;
+    height: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    box-sizing: border-box !important;
   }
 
   .ai-welcome-box {
     width: 100% !important;
     max-width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: auto !important;
   }
 
   .ai-hologram-character {
-    width: 110px !important;
-    height: 110px !important;
-    margin-bottom: 14px !important;
+    width: 90px !important;
+    height: 90px !important;
+    margin-bottom: 12px !important;
   }
 
   .ai-orbit-ring-outer {
-    width: 118px !important;
-    height: 118px !important;
+    width: 100px !important;
+    height: 100px !important;
   }
 
   .ai-orbit-ring-inner {
-    width: 95px !important;
-    height: 95px !important;
+    width: 80px !important;
+    height: 80px !important;
   }
 
   .ai-sphere-core {
-    width: 66px !important;
-    height: 66px !important;
+    width: 56px !important;
+    height: 56px !important;
   }
 
   .ai-sphere-inner {
-    width: 50px !important;
-    height: 50px !important;
+    width: 44px !important;
+    height: 44px !important;
+  }
+
+  .ai-tag-badge {
+    padding: 4px 12px !important;
+    font-size: 0.68rem !important;
+    margin-bottom: 12px !important;
   }
 
   .ai-speech-container {
     width: 100% !important;
-    margin-bottom: 20px !important;
+    margin-bottom: 16px !important;
   }
 
   .ai-speech-bubble {
-    padding: 18px 14px !important;
-    border-radius: 18px !important;
+    padding: 20px 16px !important;
+    border-radius: 20px !important;
     width: 100% !important;
     box-sizing: border-box !important;
   }
 
   .ai-typed-heading {
-    font-size: 1.4rem !important;
+    font-size: 1.45rem !important;
     min-height: auto !important;
-    line-height: 1.3 !important;
+    line-height: 1.25 !important;
     margin-bottom: 8px !important;
   }
 
   .ai-typed-subtext {
     font-size: 0.875rem !important;
     min-height: auto !important;
-    line-height: 1.5 !important;
+    line-height: 1.45 !important;
     margin-bottom: 12px !important;
   }
 
-  .btn-ai-enter-glow {
-    padding: 14px 22px !important;
-    font-size: 1.025rem !important;
+  .ai-welcome-cta-wrap {
     width: 100% !important;
-    max-width: 320px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+
+  .btn-ai-enter-glow {
+    padding: 15px 20px !important;
+    font-size: 1.05rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
     box-sizing: border-box !important;
-    margin-bottom: 16px !important;
+    margin-bottom: 12px !important;
+    border-radius: 14px !important;
   }
 
   .ai-welcome-quick-links {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
     gap: 8px !important;
+    width: 100% !important;
   }
 
   .ai-quick-chip {
-    padding: 7px 12px !important;
+    padding: 9px 8px !important;
     font-size: 0.75rem !important;
+    width: 100% !important;
+    justify-content: center !important;
+    text-align: center !important;
+    border-radius: 10px !important;
+    white-space: nowrap !important;
+  }
+
+  .ai-skip-btn {
+    font-size: 0.775rem !important;
+    padding: 6px 12px !important;
   }
 
   /* 5-Step Interactive Enrollment Wizard */

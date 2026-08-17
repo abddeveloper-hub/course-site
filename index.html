@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>AI Nexus Academy | Advanced AI Education & Course Registration</title>
   <meta name="description" content="Join AI Nexus Academy. World-class AI education for beginners, developers, and leaders. Hands-on Generative AI, Machine Learning, AI Agents & MLOps cohorts.">
   
@@ -13,9 +13,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
   <!-- Stylesheets -->
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/components.css">
-  <link rel="stylesheet" href="css/mobile.css">
+  <link rel="stylesheet" href="css/style.css?v=2.2">
+  <link rel="stylesheet" href="css/components.css?v=2.2">
+  <link rel="stylesheet" href="css/mobile.css?v=2.2">
 </head>
 <body>
 
@@ -512,7 +512,7 @@
           <p class="section-desc">A structured week-by-week transformation from foundational concepts to deploying production-ready AI models.</p>
         </div>
 
-        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:24px;">
+        <div class="roadmap-grid">
           <div class="glass-panel" style="padding: 28px; position:relative;">
             <span class="course-code" style="color:var(--neon-cyan); margin-bottom:12px; display:inline-block;">STAGE 01 &bull; LOW TIER</span>
             <h4 style="font-size:1.2rem; margin-bottom:8px; color:#0f172a;">Vibe Coding & AI Softwares</h4>
@@ -619,7 +619,7 @@
           <p class="section-desc">Join hundreds of engineers, data analysts, and leaders who accelerated their AI journey.</p>
         </div>
 
-        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:24px;" id="testimonialsGrid">
+        <div class="testimonials-grid" id="testimonialsGrid">
           <!-- Populated dynamically -->
         </div>
       </div>
@@ -635,7 +635,7 @@
 
         <div style="display:flex; flex-direction:column; gap:16px;">
           <div class="glass-panel faq-item" style="padding:20px 24px; cursor:pointer;">
-            <div class="faq-question" style="display:flex; justify-content:space-between; align-items:center; font-weight:700; color:#fff;">
+            <div class="faq-question" style="display:flex; justify-content:space-between; align-items:center; font-weight:700; color:#0f172a;">
               <span>I have zero coding knowledge. Can I join Track 1C?</span>
               <i class="fas fa-chevron-down" style="color:var(--neon-cyan);"></i>
             </div>
@@ -643,7 +643,7 @@
           </div>
 
           <div class="glass-panel faq-item" style="padding:20px 24px; cursor:pointer;">
-            <div class="faq-question" style="display:flex; justify-content:space-between; align-items:center; font-weight:700; color:#fff;">
+            <div class="faq-question" style="display:flex; justify-content:space-between; align-items:center; font-weight:700; color:#0f172a;">
               <span>Are class recordings provided if I miss a live session?</span>
               <i class="fas fa-chevron-down" style="color:var(--neon-cyan);"></i>
             </div>
@@ -651,7 +651,7 @@
           </div>
 
           <div class="faq-item glass-panel" style="padding:20px 24px; cursor:pointer;">
-            <div class="faq-question" style="display:flex; justify-content:space-between; align-items:center; font-weight:700; color:#fff;">
+            <div class="faq-question" style="display:flex; justify-content:space-between; align-items:center; font-weight:700; color:#0f172a;">
               <span>Do I receive a verified Digital Certificate and Student Pass?</span>
               <i class="fas fa-chevron-down" style="color:var(--neon-cyan);"></i>
             </div>
@@ -1623,7 +1623,7 @@
       <button class="modal-close-btn" onclick="App.closeModal('adminPassModal')">
         <i class="fas fa-times"></i>
       </button>
-      <h3 style="font-size:1.3rem; margin-bottom:20px; color:#fff; text-align:center;">
+      <h3 style="font-size:1.3rem; margin-bottom:20px; color:#0f172a; text-align:center;">
         <i class="fas fa-id-card" style="color:var(--neon-cyan); margin-right:8px;"></i> Student Admission Pass
       </h3>
       <div id="adminPassModalContent">

@@ -186,6 +186,18 @@
   gap: 30px;
 }
 
+.roadmap-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+}
+
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+}
+
 .course-card {
   background: #ffffff;
   border: 1px solid var(--border-subtle);
