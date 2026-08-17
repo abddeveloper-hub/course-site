@@ -21,10 +21,10 @@
   left: 20%;
   width: 500px;
   height: 500px;
-  background: radial-gradient(circle, rgba(2, 132, 199, 0.12) 0%, transparent 70%);
-  filter: blur(80px);
+  background: radial-gradient(circle, rgba(2, 132, 199, 0.14) 0%, rgba(2, 132, 199, 0.04) 45%, transparent 70%);
   pointer-events: none;
   z-index: 0;
+  transform: translateZ(0);
 }
 
 .hero-glow-2 {
@@ -33,10 +33,10 @@
   right: 15%;
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, transparent 70%);
-  filter: blur(100px);
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.14) 0%, rgba(99, 102, 241, 0.04) 45%, transparent 70%);
   pointer-events: none;
   z-index: 0;
+  transform: translateZ(0);
 }
 
 .hero-content {
@@ -2840,26 +2840,27 @@
 .ai-glow-orb {
   position: absolute;
   border-radius: 50%;
-  filter: blur(120px);
   pointer-events: none;
   z-index: 0;
+  transform: translateZ(0);
 }
 
 .ai-glow-1 {
-  width: 500px;
-  height: 500px;
-  background: rgba(2, 132, 199, 0.25);
+  width: 480px;
+  height: 480px;
+  background: radial-gradient(circle, rgba(2, 132, 199, 0.28) 0%, rgba(2, 132, 199, 0.08) 50%, transparent 75%);
   top: 10%;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%) translateZ(0);
 }
 
 .ai-glow-2 {
   width: 400px;
   height: 400px;
-  background: rgba(147, 51, 234, 0.2);
+  background: radial-gradient(circle, rgba(147, 51, 234, 0.22) 0%, rgba(147, 51, 234, 0.06) 50%, transparent 75%);
   bottom: 5%;
   right: 15%;
+  transform: translateZ(0);
 }
 
 .ai-grid-floor {

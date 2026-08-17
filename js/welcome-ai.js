@@ -218,7 +218,7 @@ const AIWelcome = {
       overlay.classList.add('hidden');
       document.body.classList.add('portal-entering-active');
 
-      // Stop starfield animation to save CPU/GPU on mobile
+      // Stop starfield animation and clean up canvas to release 100% GPU memory
       if (this.canvasAnimId) {
         cancelAnimationFrame(this.canvasAnimId);
         this.canvasAnimId = null;
@@ -226,6 +226,11 @@ const AIWelcome = {
       if (this.typingInterval) {
         clearInterval(this.typingInterval);
         this.typingInterval = null;
+      }
+      const canvas = document.getElementById('neuralMeshCanvas');
+      if (canvas) {
+        const ctx = canvas.getContext('2d');
+        if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
       }
       this.isWarping = false;
     }, 450);
@@ -269,35 +274,48 @@ const AIWelcome = {
     }
   },
 
-  // Starfield Particle Canvas Background (Theme-aware with Warp Speed)
+  // Starfield Particle Canvas Background (Theme-aware with Warp Speed - Ultra Optimized)
   initCanvasStarfield: function() {
     const canvas = document.getElementById('neuralMeshCanvas');
     if (!canvas) return;
+
+    if (this.canvasAnimId) {
+      cancelAnimationFrame(this.canvasAnimId);
+      this.canvasAnimId = null;
+    }
 
     const ctx = canvas.getContext('2d');
     let width = canvas.width = window.innerWidth;
     let height = canvas.height = window.innerHeight;
 
+    let resizeTimer = null;
     window.addEventListener('resize', () => {
       if (!canvas) return;
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
+      if (resizeTimer) clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+      }, 150);
     }, { passive: true });
 
     const particles = [];
-    const maxP = window.innerWidth <= 768 ? 22 : 65;
-    const numParticles = Math.min(maxP, Math.max(12, Math.floor((width * height) / 18000)));
+    const isMobile = window.innerWidth <= 768;
+    const maxP = isMobile ? 14 : 42;
+    const numParticles = Math.min(maxP, Math.max(8, Math.floor((width * height) / 26000)));
 
     for (let i = 0; i < numParticles; i++) {
       particles.push({
         x: Math.random() * width,
         y: Math.random() * height,
-        vx: (Math.random() - 0.5) * 0.8,
-        vy: (Math.random() - 0.5) * 0.8,
-        radius: Math.random() * 2.5 + 1.2,
-        alpha: Math.random() * 0.5 + 0.3
+        vx: (Math.random() - 0.5) * 0.7,
+        vy: (Math.random() - 0.5) * 0.7,
+        radius: Math.random() * 2.2 + 1.0,
+        alpha: Math.random() * 0.4 + 0.3
       });
     }
+
+    const maxDist = 110;
+    const maxDistSq = maxDist * maxDist;
 
     const animate = () => {
       ctx.clearRect(0, 0, width, height);
@@ -313,14 +331,14 @@ const AIWelcome = {
           // Warp Speed Particle Acceleration
           const dx = p.x - centerX || 1;
           const dy = p.y - centerY || 1;
-          const dist = Math.hypot(dx, dy) || 1;
-          p.x += (dx / dist) * 20;
-          p.y += (dy / dist) * 20;
+          const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+          p.x += (dx / dist) * 22;
+          p.y += (dy / dist) * 22;
 
           // Draw warp light streak
           ctx.beginPath();
           ctx.moveTo(p.x, p.y);
-          ctx.lineTo(p.x - (dx / dist) * 40, p.y - (dy / dist) * 40);
+          ctx.lineTo(p.x - (dx / dist) * 36, p.y - (dy / dist) * 36);
           ctx.strokeStyle = isLight ? `rgba(2, 132, 199, 0.85)` : `rgba(0, 240, 255, 0.9)`;
           ctx.lineWidth = p.radius * 1.5;
           ctx.stroke();
@@ -340,17 +358,21 @@ const AIWelcome = {
             : `rgba(56, 189, 248, ${p.alpha})`;
           ctx.fill();
 
-          // Connect nearby nodes
+          // Connect nearby nodes using squared distance (zero square roots unless connected)
           for (let j = i + 1; j < particles.length; j++) {
             const p2 = particles[j];
-            const dist = Math.hypot(p.x - p2.x, p.y - p2.y);
-            if (dist < 125) {
+            const dx = p.x - p2.x;
+            const dy = p.y - p2.y;
+            const distSq = dx * dx + dy * dy;
+
+            if (distSq < maxDistSq) {
+              const dist = Math.sqrt(distSq);
               ctx.beginPath();
               ctx.moveTo(p.x, p.y);
               ctx.lineTo(p2.x, p2.y);
               ctx.strokeStyle = isLight
-                ? `rgba(2, 132, 199, ${0.18 * (1 - dist / 125)})`
-                : `rgba(2, 132, 199, ${0.25 * (1 - dist / 125)})`;
+                ? `rgba(2, 132, 199, ${0.16 * (1 - dist / maxDist)})`
+                : `rgba(2, 132, 199, ${0.22 * (1 - dist / maxDist)})`;
               ctx.lineWidth = 0.8;
               ctx.stroke();
             }

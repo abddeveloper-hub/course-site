@@ -72,6 +72,11 @@ const App = {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+    // Pause heavy 3D WebGL background when off-home to give 100% frame rate to current view
+    if (typeof ThreeBackground !== 'undefined') {
+      ThreeBackground.isPaused = (viewId !== 'home');
+    }
+
     // Update nav active states
     document.querySelectorAll('.nav-link').forEach(link => {
       link.classList.toggle('active', link.dataset.view === viewId || (viewId === 'courses' && link.dataset.view === 'courses'));
@@ -366,14 +371,21 @@ const App = {
     }, 4000);
   },
 
-  // Navbar scroll background change
+  // High-performance RAF Throttled Navbar scroll listener
   setupScrollListener: function() {
+    const navbar = document.querySelector('.navbar');
+    if (!navbar) return;
+    let isTicking = false;
+
     window.addEventListener('scroll', () => {
-      const navbar = document.querySelector('.navbar');
-      if (navbar) {
-        navbar.classList.toggle('scrolled', window.scrollY > 50);
+      if (!isTicking) {
+        window.requestAnimationFrame(() => {
+          navbar.classList.toggle('scrolled', window.scrollY > 40);
+          isTicking = false;
+        });
+        isTicking = true;
       }
-    });
+    }, { passive: true });
   },
 
   // Live Holographic Cyber Telemetry Ticker (Option 5)
