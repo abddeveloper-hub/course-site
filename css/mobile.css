@@ -249,6 +249,118 @@ p {
     -webkit-backdrop-filter: none !important;
   }
 
+  /* === AI WELCOME INTRO SPLASH & POPUP (MOBILE) === */
+  .ai-welcome-overlay {
+    padding: 24px 16px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: radial-gradient(circle at 50% 20%, #f0f9ff, #e0f2fe 50%, #ffffff 90%) !important;
+  }
+
+  .ai-welcome-box {
+    width: 100% !important;
+    max-width: 460px !important;
+    padding: 10px 0 !important;
+  }
+
+  .ai-hologram-character {
+    width: 105px !important;
+    height: 105px !important;
+    margin-bottom: 16px !important;
+  }
+
+  .ai-orbit-ring-outer {
+    width: 116px !important;
+    height: 116px !important;
+  }
+
+  .ai-orbit-ring-inner {
+    width: 92px !important;
+    height: 92px !important;
+  }
+
+  .ai-sphere-core {
+    width: 66px !important;
+    height: 66px !important;
+  }
+
+  .ai-sphere-inner {
+    width: 50px !important;
+    height: 50px !important;
+  }
+
+  .ai-speech-container {
+    width: 100% !important;
+    margin-bottom: 16px !important;
+  }
+
+  .ai-speech-bubble {
+    padding: 20px 18px !important;
+    border-radius: 20px !important;
+    border: 1.5px solid #cbd5e1 !important;
+    background: #ffffff !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06) !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .ai-typed-heading {
+    font-size: clamp(1.4rem, 5.5vw, 1.8rem) !important;
+    font-weight: 900 !important;
+    color: #090d16 !important;
+    line-height: 1.25 !important;
+    margin-bottom: 10px !important;
+    min-height: auto !important;
+  }
+
+  .ai-typed-subtext {
+    font-size: 0.95rem !important;
+    color: #1e293b !important;
+    font-weight: 500 !important;
+    line-height: 1.6 !important;
+    margin-bottom: 14px !important;
+    min-height: auto !important;
+  }
+
+  .btn-ai-enter-glow {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 16px 22px !important;
+    font-size: 1.05rem !important;
+    font-weight: 800 !important;
+    border-radius: 14px !important;
+    justify-content: center !important;
+    gap: 10px !important;
+    box-shadow: 0 8px 24px rgba(2, 132, 199, 0.35) !important;
+  }
+
+  .ai-welcome-quick-links {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+    width: 100% !important;
+    margin-top: 10px !important;
+  }
+
+  .ai-quick-chip {
+    padding: 11px 10px !important;
+    font-size: 0.8rem !important;
+    font-weight: 700 !important;
+    border-radius: 12px !important;
+    border: 1.5px solid #cbd5e1 !important;
+    color: #090d16 !important;
+    background: #ffffff !important;
+    justify-content: center !important;
+    text-align: center !important;
+  }
+
+  .ai-skip-btn {
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+    color: #475569 !important;
+    padding: 8px 14px !important;
+  }
+
   .hero-glow-1,
   .hero-glow-2,
   .ai-glow-1,

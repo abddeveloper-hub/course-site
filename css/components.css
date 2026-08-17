@@ -1,4 +1,4 @@
-﻿/* ==========================================================================
+/* ==========================================================================
    AI NEXUS ACADEMY - COMPONENTS STYLING
    Theme: Luxury Modern White / Light Mode Aesthetic
    ========================================================================== */
@@ -2891,9 +2891,21 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  animation: aiWelcomeBoxPopIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-/* AI Hologram Character Core */
+@keyframes aiWelcomeBoxPopIn {
+  0% {
+    opacity: 0;
+    transform: translateY(30px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* AI Hologram Character Core - Spring Popup Entrance */
 .ai-hologram-character {
   position: relative;
   width: 130px;
@@ -2902,6 +2914,24 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  animation: aiPopUpEntrance 0.85s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes aiPopUpEntrance {
+  0% {
+    opacity: 0;
+    transform: scale(0) translateY(60px) rotate(-12deg);
+    filter: blur(10px);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.15) translateY(-8px) rotate(3deg);
+    filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0) rotate(0deg);
+  }
 }
 
 .ai-orbit-ring-outer {
@@ -2909,7 +2939,7 @@
   width: 140px;
   height: 140px;
   border-radius: 50%;
-  border: 2px dashed rgba(56, 189, 248, 0.5);
+  border: 2px dashed rgba(56, 189, 248, 0.55);
   animation: aiOrbitSpin 12s linear infinite;
 }
 
@@ -2929,7 +2959,7 @@
   width: 90px;
   height: 90px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(56, 189, 248, 0.4) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.45) 0%, transparent 70%);
   animation: aiHaloPulse 2.4s ease-in-out infinite alternate;
 }
 
@@ -3381,6 +3411,7 @@
 /* 1. Welcoming Screen Warp State */
 .ai-welcome-overlay.portal-warping {
   pointer-events: none;
+  animation: portalOverlayWarp 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .ai-welcome-overlay.portal-warping .ai-welcome-box {
@@ -3388,17 +3419,17 @@
 }
 
 .ai-welcome-overlay.portal-warping .ai-hologram-character {
-  animation: portalCoreHyperdrive 0.65s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  animation: portalCoreLaunch 0.7s cubic-bezier(0.2, 0.85, 0.2, 1) forwards;
 }
 
 .ai-welcome-overlay.portal-warping .portal-shockwave-ring {
   opacity: 1;
-  animation: portalShockwavePulse 0.75s cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
+  animation: portalShockwavePulse 0.8s cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
 }
 
 .ai-welcome-overlay.portal-warping .portal-light-flash {
   opacity: 1;
-  animation: portalFlashPulse 0.5s ease-out forwards;
+  animation: portalFlashPulse 0.55s ease-out forwards;
 }
 
 .portal-shockwave-ring {
@@ -3411,7 +3442,7 @@
   max-width: 100vw;
   max-height: 100vw;
   border-radius: 50%;
-  border: 4px solid #00f0ff;
+  border: 4px solid #0284c7;
   box-shadow: 0 0 60px #0284c7, inset 0 0 50px rgba(99, 102, 241, 0.6);
   opacity: 0;
   pointer-events: none;
@@ -3427,6 +3458,25 @@
   z-index: 9;
 }
 
+@keyframes portalOverlayWarp {
+  0% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    filter: blur(0);
+  }
+  40% {
+    opacity: 0.85;
+    transform: scale(1.03) translateY(-10px);
+    filter: blur(4px);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.08) translateY(-40px);
+    filter: blur(14px);
+    visibility: hidden;
+  }
+}
+
 @keyframes portalShockwavePulse {
   0% {
     transform: translate(-50%, -50%) scale(0.05);
@@ -3436,11 +3486,11 @@
   }
   50% {
     opacity: 0.85;
-    border-width: 5px;
+    border-width: 4px;
     filter: blur(2px);
   }
   100% {
-    transform: translate(-50%, -50%) scale(2.8);
+    transform: translate(-50%, -50%) scale(2.6);
     opacity: 0;
     border-width: 1px;
     filter: blur(8px);
@@ -3448,24 +3498,24 @@
 }
 
 @keyframes portalFlashPulse {
-  0% { opacity: 0; transform: scale(0.8); }
-  25% { opacity: 0.9; transform: scale(1.05); }
-  100% { opacity: 0; transform: scale(1.2); }
+  0% { opacity: 0; transform: scale(0.85); }
+  30% { opacity: 0.95; transform: scale(1.05); }
+  100% { opacity: 0; transform: scale(1.25); }
 }
 
-@keyframes portalCoreHyperdrive {
+@keyframes portalCoreLaunch {
   0% {
-    transform: scale(1) rotate(0deg);
+    transform: scale(1) translateY(0);
     filter: brightness(1) drop-shadow(0 0 15px rgba(2, 132, 199, 0.4));
   }
   40% {
-    transform: scale(1.35) rotate(180deg);
-    filter: brightness(2) drop-shadow(0 0 45px #00f0ff) drop-shadow(0 0 80px #6366f1);
+    transform: scale(1.25) translateY(-20px) rotate(6deg);
+    filter: brightness(2) drop-shadow(0 0 45px #0284c7) drop-shadow(0 0 70px #6366f1);
   }
   100% {
-    transform: scale(0) rotate(720deg);
+    transform: scale(0.2) translateY(-120px) rotate(20deg);
     opacity: 0;
-    filter: brightness(3) drop-shadow(0 0 100px #00f0ff);
+    filter: brightness(3) drop-shadow(0 0 90px #0284c7);
   }
 }
 
@@ -3476,11 +3526,11 @@
     filter: blur(0);
   }
   30% {
-    transform: translateY(-8px) scale(1.03);
+    transform: translateY(-8px) scale(1.02);
     opacity: 0.9;
   }
   100% {
-    transform: translateY(24px) scale(0.92);
+    transform: translateY(24px) scale(0.94);
     opacity: 0;
     filter: blur(10px);
   }
@@ -3492,48 +3542,52 @@ body.portal-entering-active {
 }
 
 body.portal-entering-active .navbar {
-  animation: portalNavDrop 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: portalNavDrop 0.75s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 body.portal-entering-active .cyber-hud-telemetry {
-  animation: portalHudReveal 0.8s 0.12s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: portalHudReveal 0.8s 0.1s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+body.portal-entering-active .hero-badge {
+  animation: portalFadeUp 0.8s 0.16s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 body.portal-entering-active .hero-title {
-  animation: portalTitleSweep 0.9s 0.18s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: portalTitleSweep 0.85s 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 body.portal-entering-active .hero-description {
-  animation: portalFadeUp 0.8s 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: portalFadeUp 0.85s 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 body.portal-entering-active .specialization-explorer-wrap {
-  animation: portalFadeUp 0.8s 0.34s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: portalFadeUp 0.85s 0.36s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 body.portal-entering-active .hero-actions {
-  animation: portalFadeUp 0.8s 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: portalFadeUp 0.85s 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 body.portal-entering-active .cyber-cards-grid .cyber-holo-card:nth-child(1) {
-  animation: portalCardLift 0.8s 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: portalCardLift 0.85s 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 body.portal-entering-active .cyber-cards-grid .cyber-holo-card:nth-child(2) {
-  animation: portalCardLift 0.8s 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: portalCardLift 0.85s 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 body.portal-entering-active .cyber-cards-grid .cyber-holo-card:nth-child(3) {
-  animation: portalCardLift 0.8s 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: portalCardLift 0.85s 0.52s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 body.portal-entering-active .cyber-cards-grid .cyber-holo-card:nth-child(4) {
-  animation: portalCardLift 0.8s 0.65s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: portalCardLift 0.85s 0.62s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 @keyframes portalNavDrop {
   0% {
-    transform: translateY(-40px);
+    transform: translateY(-35px);
     opacity: 0;
   }
   100% {
@@ -3544,7 +3598,7 @@ body.portal-entering-active .cyber-cards-grid .cyber-holo-card:nth-child(4) {
 
 @keyframes portalHudReveal {
   0% {
-    transform: scale(0.92) translateY(-14px);
+    transform: scale(0.94) translateY(-12px);
     opacity: 0;
     box-shadow: 0 0 0 rgba(2, 132, 199, 0);
   }
@@ -3560,7 +3614,7 @@ body.portal-entering-active .cyber-cards-grid .cyber-holo-card:nth-child(4) {
 
 @keyframes portalTitleSweep {
   0% {
-    transform: translateY(24px) scale(0.97);
+    transform: translateY(22px) scale(0.98);
     opacity: 0;
     filter: blur(4px);
   }
@@ -3573,7 +3627,7 @@ body.portal-entering-active .cyber-cards-grid .cyber-holo-card:nth-child(4) {
 
 @keyframes portalFadeUp {
   0% {
-    transform: translateY(20px);
+    transform: translateY(18px);
     opacity: 0;
   }
   100% {
@@ -3584,7 +3638,7 @@ body.portal-entering-active .cyber-cards-grid .cyber-holo-card:nth-child(4) {
 
 @keyframes portalCardLift {
   0% {
-    transform: translateY(36px) scale(0.94);
+    transform: translateY(30px) scale(0.95);
     opacity: 0;
     filter: blur(3px);
   }

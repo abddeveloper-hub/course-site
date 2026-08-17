@@ -150,7 +150,7 @@ const AIWelcome = {
     }
   },
 
-  // Dynamic Typewriter Greeting
+  // Dynamic Typewriter Greeting with Interactive AI Popup
   startAIGreetingSequence: function() {
     const headingEl = document.getElementById('aiTypedGreeting');
     const subtextEl = document.getElementById('aiTypedMessage');
@@ -162,15 +162,19 @@ const AIWelcome = {
     subtextEl.innerHTML = '';
     if (ctaWrap) ctaWrap.style.opacity = '1';
 
-    const greetingText = "Welcome to AI Nexus Academy.";
-    const subtext = "Pioneering the Next Era of Pure Artificial Intelligence Education, Autonomous Agents, Neural Engineering & Global Accreditations.";
+    // Play friendly AI power-on chime
+    this.playAITextChime(580);
+    setTimeout(() => this.playAITextChime(880), 120);
+
+    const greetingText = "Hello! 👋 Welcome to AI Nexus Academy.";
+    const subtext = "I'm your intelligent AI guide. Master Generative AI, Neural Engineering, Autonomous Multi-Agent Swarms & Cloud MLOps.";
 
     let charIdx = 0;
     this.typingInterval = setInterval(() => {
       if (charIdx < greetingText.length) {
-        headingEl.innerHTML = greetingText.slice(0, charIdx + 1) + `<span style="color:#00f0ff; animation:beaconPulse 0.6s infinite;">|</span>`;
+        headingEl.innerHTML = greetingText.slice(0, charIdx + 1) + `<span style="color:#0284c7; animation:beaconPulse 0.5s infinite;">|</span>`;
         if (charIdx % 3 === 0) {
-          this.playAITextChime(420 + (charIdx % 5) * 60);
+          this.playAITextChime(460 + (charIdx % 6) * 55);
         }
         charIdx++;
       } else {
@@ -178,16 +182,16 @@ const AIWelcome = {
         headingEl.innerHTML = greetingText;
         this.typewriterSubtext(subtext, subtextEl);
       }
-    }, 38);
+    }, 32);
   },
 
   typewriterSubtext: function(text, targetEl) {
     let sIndex = 0;
     const subInterval = setInterval(() => {
       if (sIndex < text.length) {
-        targetEl.innerHTML = text.slice(0, sIndex + 1) + `<span style="color:#0284c7; animation:beaconPulse 0.5s infinite;">|</span>`;
+        targetEl.innerHTML = text.slice(0, sIndex + 1) + `<span style="color:#0284c7; animation:beaconPulse 0.4s infinite;">|</span>`;
         if (sIndex % 5 === 0) {
-          this.playAITextChime(350 + (sIndex % 4) * 50);
+          this.playAITextChime(360 + (sIndex % 4) * 45);
         }
         sIndex++;
       } else {
@@ -196,12 +200,12 @@ const AIWelcome = {
 
         // Equalizer animation settle
         const eq = document.getElementById('aiEqualizerBars');
-        if (eq) eq.style.opacity = '0.7';
+        if (eq) eq.style.opacity = '0.85';
       }
-    }, 22);
+    }, 20);
   },
 
-  // Enter Site Transition (Rich Multi-Stage Cinematic Warp)
+  // Enter Site Transition (Silky Smooth Motion Animation to Index Page)
   enterSite: function() {
     const overlay = document.getElementById('aiWelcomeIntroScreen');
     if (!overlay || overlay.classList.contains('hidden') || this.isTransitioning) return;
@@ -210,13 +214,17 @@ const AIWelcome = {
     this.isWarping = true;
     this.playPortalEnterSound();
 
-    // 1. Trigger energetic portal shockwave and entity overdrive
+    // 1. Trigger graceful cinematic upward glide and iris light burst
     overlay.classList.add('portal-warping');
 
-    // 2. Warp-dissolve welcome overlay and trigger homepage entrance cascade
+    // 2. Cascade reveal the index page
+    setTimeout(() => {
+      document.body.classList.add('portal-entering-active');
+    }, 150);
+
+    // 3. Complete hide of overlay and cleanup
     setTimeout(() => {
       overlay.classList.add('hidden');
-      document.body.classList.add('portal-entering-active');
 
       // Stop starfield animation and clean up canvas to release 100% GPU memory
       if (this.canvasAnimId) {
@@ -233,9 +241,9 @@ const AIWelcome = {
         if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
       }
       this.isWarping = false;
-    }, 450);
+    }, 600);
 
-    // 3. Clean up active entrance cascade classes after animation completes
+    // 4. Clean up active entrance cascade classes after animation completes
     setTimeout(() => {
       document.body.classList.remove('portal-entering-active');
       this.isTransitioning = false;
@@ -243,7 +251,7 @@ const AIWelcome = {
       if (typeof App !== 'undefined' && App.showToast) {
         App.showToast("Welcome to AI Nexus Academy! ✨", "Enjoy exploring our 4 AI course specializations and live labs.", "success");
       }
-    }, 1500);
+    }, 1600);
   },
 
   // Enter Site and immediately route to specific view
