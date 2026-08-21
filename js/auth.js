@@ -42,6 +42,10 @@ const Auth = {
     }
   },
 
+  isAdminLoggedIn: function() {
+    return this.currentUser && this.currentUser.role === 'admin';
+  },
+
   // Update Navbar based on logged-in authentication state
   updateNavbarAuth: function() {
     const navActions = document.querySelector('.nav-actions');

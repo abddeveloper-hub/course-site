@@ -316,8 +316,13 @@ const AdminDashboard = {
     }
   },
 
-  // 4. Admin 1-Click Payment Acceptance & Admission Release
+  // 4. Admin 1-Click Payment Acceptance & Admission Release (Admin Dashboard Only)
   acceptPayment: function(studentId) {
+    if (typeof Auth !== 'undefined' && !Auth.isAdminLoggedIn()) {
+      App.showToast("Admin Privileges Required", "Only authorized administrators can verify and accept payments.", "error");
+      return;
+    }
+
     const students = StorageService.getStudents();
     const student = students.find(s => s.id === studentId);
     if (!student) {
@@ -353,18 +358,6 @@ const AdminDashboard = {
       AdminApp.renderCertificateRegistry();
       AdminApp.updateBadgeCounts();
     }
-  },
-
-  acceptPaymentFromCandidateScreen: function() {
-    const pendingIdEl = document.getElementById('pendingApplicationId');
-    const studentId = pendingIdEl ? pendingIdEl.textContent.trim() : null;
-
-    if (!studentId || studentId === 'AI-2026-XXXX') {
-      App.showToast("No Pending Registration", "Please submit a registration first.", "error");
-      return;
-    }
-
-    this.acceptPayment(studentId);
   },
 
   // 5. Inline Status Updater
