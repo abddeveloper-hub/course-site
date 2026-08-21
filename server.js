@@ -774,9 +774,76 @@ func main() {
         });
       }
 
+      // 17. AI Technical Mock Interview Evaluation API
+      if (pathname === '/api/v1/interview/evaluate' && method === 'POST') {
+        const body = await parseRequestBody(req);
+        const questionId = body.questionId || 'q_rate_limiter';
+        const studentAnswer = (body.answer || '').trim();
+
+        const questions = {
+          q_rate_limiter: {
+            title: 'Design a resilient rate-limiting proxy for OpenAI/Anthropic APIs under 50,000 req/min.',
+            keywords: ['token bucket', 'redis', 'sliding window', '429', 'retry-after', 'exponential backoff', 'jitter', 'queue'],
+            idealAnswer: 'Implement a distributed Token Bucket or Sliding Window Log in Redis Cluster. Incoming requests consume tokens from per-tenant buckets. If depleted, return HTTP 429 with RFC-7231 Retry-After headers. Implement client-side exponential backoff with full jitter and a fallback Celery/BullMQ job queue for non-realtime batch jobs.'
+          },
+          q_prompt_injection: {
+            title: 'How do you prevent indirect prompt injection in RAG pipelines when indexing untrusted user web scrapes?',
+            keywords: ['xml', 'delimiter', 'llama-guard', 'sanitization', 'dual llm', 'canary', 'untrusted', 'blast radius'],
+            idealAnswer: 'Isolate untrusted scraped text inside explicit XML delimiters `<untrusted_content>`. Run a dedicated safety classifier (e.g. Llama-Guard 3 or NeMo Guardrails) prior to LLM injection. Use a dual-LLM architecture where an unprivileged worker extracts structured data before passing to the primary reasoning model.'
+          },
+          q_kv_cache: {
+            title: 'Explain KV Caching in Transformer inference. What is the memory footprint formula for a 70B model?',
+            keywords: ['key', 'value', 'tensor', 'gpu', 'vram', 'o(n)', 'attention', 'batch size', 'layers'],
+            idealAnswer: 'KV Caching stores previously computed Key (K) and Value (V) attention tensors in GPU VRAM across autoregressive decode steps, reducing self-attention computational complexity from O(N^2) to O(N). Memory footprint = 2 * 2 * n_layers * n_heads * d_head * seq_len * batch_size bytes (in fp16).'
+          }
+        };
+
+        const currentQ = questions[questionId] || questions.q_rate_limiter;
+        const lowerAns = studentAnswer.toLowerCase();
+        let matched = 0;
+        currentQ.keywords.forEach(k => {
+          if (lowerAns.includes(k)) matched++;
+        });
+
+        const matchPct = Math.min(100, Math.round((matched / Math.max(1, currentQ.keywords.length * 0.6)) * 100));
+
+        let grade = 'A+ (Elite)';
+        let verdict = 'OFFER: SENIOR AI ARCHITECT';
+        let xpAward = 150;
+
+        if (studentAnswer.length < 30) {
+          grade = 'D (Incomplete)';
+          verdict = 'NEEDS EXPANSION: Provide architectural depth & specific protocols.';
+          xpAward = 25;
+        } else if (matchPct >= 80) {
+          grade = 'A+ (Top 1%)';
+          verdict = 'STRONG HIRE: Demonstrates mastery of production distributed AI systems.';
+          xpAward = 150;
+        } else if (matchPct >= 50) {
+          grade = 'B+ (Solid)';
+          verdict = 'HIRE: Good foundational grasp, minor gaps in distributed edge cases.';
+          xpAward = 100;
+        } else {
+          grade = 'C (Developing)';
+          verdict = 'REVISE: Review the ideal architectural answer and key mechanisms.';
+          xpAward = 50;
+        }
+
+        return sendJsonResponse(res, 200, {
+          success: true,
+          question: currentQ.title,
+          grade,
+          verdict,
+          matchScore: `${matchPct}% Criteria Met`,
+          xpAward,
+          idealAnswer: currentQ.idealAnswer,
+          latencyMs: Date.now() - startTime
+        });
+      }
+
       // 404 for unknown API routes
       return sendJsonResponse(res, 404, {
-        error: `Endpoint '${pathname}' not found. Available endpoints: /api/v1/health, /api/v1/courses, /api/v1/vibe/generate, /api/v1/prompt/optimize, /api/v1/tokens/tokenize, /api/v1/rag/simulate, /api/v1/tutor/explain, /api/v1/security/audit, /api/v1/frontend/component, /api/v1/backend/microservice, /api/v1/uiux/wireframe, /api/v1/arena/compare, /api/v1/certificate/verify, /api/v1/golf/evaluate, /api/v1/flow/execute, /api/v1/swarm/run`
+        error: `Endpoint '${pathname}' not found. Available endpoints: /api/v1/health, /api/v1/courses, /api/v1/vibe/generate, /api/v1/prompt/optimize, /api/v1/tokens/tokenize, /api/v1/rag/simulate, /api/v1/tutor/explain, /api/v1/security/audit, /api/v1/frontend/component, /api/v1/backend/microservice, /api/v1/uiux/wireframe, /api/v1/arena/compare, /api/v1/certificate/verify, /api/v1/golf/evaluate, /api/v1/flow/execute, /api/v1/swarm/run, /api/v1/interview/evaluate`
       });
 
     } catch (err) {

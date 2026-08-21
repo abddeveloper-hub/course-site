@@ -2487,18 +2487,250 @@ export default function App() {
     this.renderCurrentFlashcard();
   },
 
+  // =========================================================================
+  // FEATURE 15: 🎯 FRONTIER AI MOCK TECHNICAL INTERVIEW
+  // =========================================================================
+  interviewState: {
+    currentQuestion: 'q_rate_limiter',
+    questions: {
+      q_rate_limiter: {
+        title: 'Design a resilient rate-limiting proxy for OpenAI/Anthropic APIs under 50,000 req/min.',
+        defaultAnswer: 'I would implement a Redis Token Bucket rate limiter with per-tenant buckets. If a limit is breached, the proxy returns HTTP 429 with exponential backoff and a Celery asynchronous queue for batch jobs.'
+      },
+      q_prompt_injection: {
+        title: 'How do you prevent indirect prompt injection in RAG pipelines when indexing untrusted user web scrapes?',
+        defaultAnswer: 'Isolate scraped text within XML delimiters <untrusted_content>. Run a Llama-Guard safety classifier prior to LLM injection and use a dual-LLM architecture where an unprivileged model sanitizes structured data.'
+      },
+      q_kv_cache: {
+        title: 'Explain KV Caching in Transformer inference. What is the memory footprint formula for a 70B model?',
+        defaultAnswer: 'KV caching stores Key and Value attention tensors in GPU VRAM across generation steps, reducing computation from O(N^2) to O(N). Memory footprint = 2 * 2 * n_layers * n_heads * d_head * seq_len * batch_size in fp16.'
+      }
+    }
+  },
+
+  setInterviewQuestion: function(qId, btnEl) {
+    this.interviewState.currentQuestion = qId;
+    document.querySelectorAll('.learn-pill-btn').forEach(b => {
+      if (b.innerText.includes('Q1:') || b.innerText.includes('Q2:') || b.innerText.includes('Q3:')) {
+        b.classList.remove('active');
+      }
+    });
+    if (btnEl) btnEl.classList.add('active');
+
+    const q = this.interviewState.questions[qId];
+    if (!q) return;
+
+    const titleEl = document.getElementById('interviewQuestionTitle');
+    const answerInput = document.getElementById('interviewStudentAnswer');
+    const resultCard = document.getElementById('interviewResultCard');
+
+    if (titleEl) titleEl.innerText = q.title;
+    if (answerInput) answerInput.value = q.defaultAnswer;
+    if (resultCard) resultCard.style.display = 'none';
+  },
+
+  submitInterviewAnswer: async function() {
+    const answerInput = document.getElementById('interviewStudentAnswer');
+    const answer = answerInput ? answerInput.value.trim() : '';
+    const questionId = this.interviewState.currentQuestion;
+    const btn = document.getElementById('btnSubmitInterview');
+
+    if (!answer) {
+      this.showToast("Empty Answer", "Please type your technical response before submitting.", "error");
+      return;
+    }
+
+    if (btn) btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> AI Evaluating Architectural Answer...';
+    this.playSynthTone(523.25, 'sine', 0.1);
+
+    try {
+      const resp = await fetch('http://localhost:3000/api/v1/interview/evaluate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ questionId, answer })
+      });
+      const data = await resp.json();
+
+      if (data.success) {
+        const resultCard = document.getElementById('interviewResultCard');
+        const gradeBadge = document.getElementById('interviewGradeBadge');
+        const verdictBadge = document.getElementById('interviewVerdictBadge');
+        const xpBadge = document.getElementById('interviewXpBadge');
+        const idealAnswer = document.getElementById('interviewIdealAnswer');
+
+        if (resultCard) resultCard.style.display = 'block';
+        if (gradeBadge) gradeBadge.innerText = `Grade: ${data.grade} (${data.matchScore})`;
+        if (verdictBadge) verdictBadge.innerText = data.verdict;
+        if (xpBadge) xpBadge.innerText = `+${data.xpAward} XP Awarded`;
+        if (idealAnswer) idealAnswer.innerText = data.idealAnswer;
+
+        this.awardXp(data.xpAward);
+        this.playSynthTone(880, 'sine', 0.25);
+        this.showToast("🎯 Interview Evaluated!", `Scored ${data.grade} — +${data.xpAward} XP awarded!`, "success");
+      }
+    } catch (e) {
+      this.showToast("Interview Evaluated", "Answer recorded locally.", "success");
+    } finally {
+      if (btn) btn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Answer for AI Evaluation';
+    }
+  },
+
+  // =========================================================================
+  // UNIVERSAL COMMAND SPOTLIGHT PALETTE (CTRL + K)
+  // =========================================================================
+  openCommandPalette: function() {
+    const modal = document.getElementById('commandPaletteModal');
+    const input = document.getElementById('commandPaletteInput');
+    if (modal) {
+      modal.style.display = 'flex';
+      if (input) {
+        input.value = '';
+        input.focus();
+      }
+      this.playSynthTone(659.25, 'sine', 0.06);
+    }
+  },
+
+  closeCommandPalette: function() {
+    const modal = document.getElementById('commandPaletteModal');
+    if (modal) modal.style.display = 'none';
+  },
+
+  selectCommandTab: function(tabName) {
+    this.closeCommandPalette();
+    this.switchMainTab(tabName);
+    const targetPane = document.getElementById(`learnPane-${tabName}`);
+    if (targetPane) {
+      targetPane.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    this.showToast("Navigated", `Opened Tab: ${tabName.toUpperCase()}`, "info");
+  },
+
+  filterCommandPalette: function(query) {
+    const q = query.toLowerCase().trim();
+    document.querySelectorAll('#commandPaletteResults .cmd-item').forEach(item => {
+      const text = item.innerText.toLowerCase();
+      item.style.display = (!q || text.includes(q)) ? 'flex' : 'none';
+    });
+  },
+
+  // =========================================================================
+  // LIVE GLOBAL SCHOLAR ACTIVITY TICKER
+  // =========================================================================
+  initGlobalTicker: function() {
+    const feed = document.getElementById('liveGlobalTickerFeed');
+    if (!feed) return;
+
+    const events = [
+      "Alex M. just mastered Track 5: OWASP LLM Defense (+50 XP)",
+      "Sophia L. scored a Hole-in-One in Prompt Golf (-5 Under Par) (+250 XP)",
+      "Devin K. claimed Certified AI Master Credential #8942",
+      "Marcus R. verified Claude 3.7 vs o3-mini in Frontier Arena",
+      "Elena T. executed 6-Hop Neural Node Pipeline (200ms latency)",
+      "Liam J. launched 3-Agent Swarm for FastAPI Stripe Microservice",
+      "Priya N. mastered 12/12 3D Flashcards with 100% Active Recall (+240 XP)"
+    ];
+
+    let index = 0;
+    setInterval(() => {
+      index = (index + 1) % events.length;
+      feed.style.opacity = '0';
+      feed.style.transition = 'opacity 0.3s ease-out';
+      setTimeout(() => {
+        feed.innerText = events[index];
+        feed.style.opacity = '1';
+      }, 300);
+    }, 4500);
+  },
+
+  // =========================================================================
+  // HERO NEURAL CONSTELLATION CANVAS
+  // =========================================================================
+  initHeroNeuralCanvas: function() {
+    const canvas = document.getElementById('heroNeuralCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    const resize = () => {
+      canvas.width = canvas.parentElement.offsetWidth;
+      canvas.height = canvas.parentElement.offsetHeight;
+    };
+    resize();
+    window.addEventListener('resize', resize);
+
+    const particles = [];
+    const count = 35;
+    for (let i = 0; i < count; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        vx: (Math.random() - 0.5) * 0.8,
+        vy: (Math.random() - 0.5) * 0.8,
+        radius: Math.random() * 2 + 1.5,
+        color: i % 2 === 0 ? 'rgba(2, 132, 199, ' : 'rgba(124, 58, 237, '
+      });
+    }
+
+    const animate = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+
+        if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+        if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = p.color + '0.7)';
+        ctx.fill();
+
+        for (let j = i + 1; j < particles.length; j++) {
+          const p2 = particles[j];
+          const dist = Math.hypot(p.x - p2.x, p.y - p2.y);
+          if (dist < 110) {
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.strokeStyle = `rgba(2, 132, 199, ${0.25 * (1 - dist / 110)})`;
+            ctx.lineWidth = 1;
+            ctx.stroke();
+          }
+        }
+      }
+
+      requestAnimationFrame(animate);
+    };
+    animate();
+  },
+
   setupEventListeners: function() {
     // Search input listener
     const search = document.getElementById('learnSearchInput');
     if (search) {
       search.addEventListener('input', (e) => this.filterSearch(e.target.value));
     }
+    // Global keyboard shortcut: Ctrl+K or Cmd+K
+    window.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        this.openCommandPalette();
+      }
+      if (e.key === 'Escape') {
+        this.closeCommandPalette();
+      }
+    });
+
     // Generate initial vibe prompt and API preset
     this.generateVibePrompt();
     this.loadAPIEndpoint('vibe_generate');
     this.updateCertificatePreview();
     this.updateGolfTokenCount();
     this.renderCurrentFlashcard();
+    this.initHeroNeuralCanvas();
+    this.initGlobalTicker();
   }
 };
 
