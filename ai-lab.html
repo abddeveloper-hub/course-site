@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Nexus AI Lab | Autonomous Swarm Simulator & RAG Sandbox</title>
+  <meta name="description" content="Interactive AI Sandbox by AI Nexus Academy. Test Multi-Agent Swarms, Prompt Engineering Guardrails, and Vector RAG Embeddings live in your browser.">
+  
+  <!-- Google Fonts Preconnect & Stylesheet -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/style.css?v=7.1">
+  <link rel="stylesheet" href="css/components.css?v=7.1">
+  <link rel="stylesheet" href="css/mobile.css?v=7.1">
+</head>
+<body style="background:#f8fafc; color:#0f172a; min-height:100vh; display:flex; flex-direction:column;">
+
+  <!-- ========================================================================
+       TOP STREAMLINED NAVIGATION BAR
+       ======================================================================== -->
+  <nav class="navbar" style="background:rgba(255,255,255,0.92); backdrop-filter:blur(16px); border-bottom:1px solid #e2e8f0; position:sticky; top:0; z-index:1000;">
+    <div class="container nav-container" style="display:flex; justify-content:space-between; align-items:center; height:70px;">
+      
+      <div style="display:flex; align-items:center; gap:16px;">
+        <a href="index.html" class="nav-logo">
+          <div class="nav-logo-icon"><i class="fas fa-brain"></i></div>
+          <span>AI NEXUS <span class="gradient-text">ACADEMY</span></span>
+        </a>
+        <span class="status-badge status-payment" style="font-size:0.75rem; padding:4px 10px; font-weight:800;">
+          <i class="fas fa-flask"></i> AI LAB v4.2
+        </span>
+      </div>
+
+      <div class="nav-actions" style="display:flex; gap:10px; align-items:center;">
+        <a href="index.html" class="btn btn-secondary btn-sm">
+          <i class="fas fa-arrow-left"></i> <span class="nav-btn-text">Back to Academy</span>
+        </a>
+        <a href="learn.html" class="btn btn-secondary btn-sm" style="background:rgba(2,132,199,0.08); color:var(--neon-cyan); border-color:rgba(2,132,199,0.3);">
+          <i class="fas fa-book-open"></i> <span class="nav-btn-text">AI Study Hub</span>
+        </a>
+        <a href="index.html#courses" class="btn btn-secondary btn-sm">
+          <i class="fas fa-cubes"></i> <span class="nav-btn-text">AI Tracks</span>
+        </a>
+        <a href="achievements.html" class="btn btn-secondary btn-sm">
+          <i class="fas fa-award"></i> <span class="nav-btn-text">Achievements</span>
+        </a>
+        <a href="index.html#student-hub" class="btn btn-secondary btn-sm">
+          <i class="fas fa-graduation-cap"></i> <span class="nav-btn-text">Student Hub</span>
+        </a>
+        <a href="index.html#register" class="btn btn-primary btn-sm">
+          <i class="fas fa-rocket"></i> <span class="nav-btn-text">Enroll Now</span>
+        </a>
+      </div>
+
+    </div>
+  </nav>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- ========================================================================
+       MAIN LAB WORKSPACE
+       ======================================================================== -->
+  <main style="flex:1; padding: 40px 0 60px 0;">
+    <div class="container">
+      
+      <!-- Laboratory Header Banner -->
+      <div style="text-align:center; margin-bottom:36px;">
+        <span class="section-tag" style="background:rgba(124,58,237,0.1); border-color:rgba(124,58,237,0.3); color:var(--neon-violet); margin-bottom:12px;">
+          <i class="fas fa-flask"></i> Interactive Autonomous AI Sandbox
+        </span>
+        <h1 style="font-size:clamp(2.2rem, 5vw, 3.2rem); font-weight:900; color:#0f172a; margin-bottom:10px;">
+          Nexus <span class="gradient-text">AI Laboratory</span>
+        </h1>
+        <p style="color:#64748b; font-size:1.05rem; max-width:680px; margin:0 auto; line-height:1.6;">
+          Experience live Multi-Agent Swarms, Prompt Engineering Guardrails, and Enterprise Vector RAG in action before launching production models.
+        </p>
+      </div>
+
+      <!-- Main Interactive Sandbox Glass Container -->
+      <div class="nexus-ai-lab-wrapper">
+        
+        <!-- Header with Mode Selector Tabs & Live Telemetry -->
+        <div class="ai-lab-header-bar">
+          <div class="ai-lab-tabs-nav">
+            <button class="ai-lab-tab-btn active" data-tab="swarm" onclick="NexusAILab.switchTab('swarm')">
+              <i class="fas fa-network-wired" style="color:#0284c7;"></i> Multi-Agent Swarm
+            </button>
+            <button class="ai-lab-tab-btn" data-tab="prompt" onclick="NexusAILab.switchTab('prompt')">
+              <i class="fas fa-magic" style="color:#7c3aed;"></i> Prompt Optimizer
+            </button>
+            <button class="ai-lab-tab-btn" data-tab="rag" onclick="NexusAILab.switchTab('rag')">
+              <i class="fas fa-database" style="color:#059669;"></i> Vector RAG Explorer
+            </button>
+          </div>
+
+          <!-- Live Cluster Telemetry -->
+          <div style="display:flex; align-items:center; gap:16px; font-size:0.8rem; font-family:var(--font-mono); color:#64748b;">
+            <div><i class="fas fa-microchip" style="color:#0284c7;"></i> A100 GPU: <span style="color:#059669; font-weight:700;">ONLINE</span></div>
+            <div><i class="fas fa-tachometer-alt" style="color:#7c3aed;"></i> <span id="labSwarmTokensMeter">142 tok/sec</span></div>
+            <div><i class="fas fa-wifi" style="color:#0284c7;"></i> <span id="labSwarmLatencyMeter">14ms</span></div>
+          </div>
+        </div>
+
+        <!-- Content Body -->
+        <div class="ai-lab-content">
+          
+          <!-- PANE 1: MULTI-AGENT SWARM SIMULATOR -->
+          <div class="ai-lab-pane" id="labPane-swarm">
+            <!-- Preset Selector & Goal Bar -->
+            <div style="display:flex; gap:14px; align-items:flex-end; margin-bottom:24px; flex-wrap:wrap;">
+              <div style="flex:1; min-width:260px;">
+                <label style="font-size:0.75rem; font-weight:800; text-transform:uppercase; color:#64748b; margin-bottom:6px; display:block;">
+                  Select Autonomous Swarm Objective:
+                </label>
+                <select class="select-custom" id="labSwarmPresetSelect" onchange="NexusAILab.loadSwarmPreset(this.value)" style="padding:12px 14px; font-size:0.9rem;">
+                  <option value="legal">⚖️ Autonomous Legal Contract & Risk Analysis Swarm (AI-401)</option>
+                  <option value="seo">🌐 Autonomous SEO Content & Intelligence Engine (AI-301)</option>
+                  <option value="trading">📈 Realtime Financial Sentiment & Market Sentinel (AI-401)</option>
+                </select>
+              </div>
+              <div>
+                <button class="btn btn-primary" id="btnLaunchSwarm" onclick="NexusAILab.startSwarmSimulation()" style="box-shadow:0 6px 20px rgba(2,132,199,0.3); padding:12px 24px;">
+                  <i class="fas fa-play"></i> Launch Multi-Agent Swarm
+                </button>
+              </div>
+            </div>
+
+            <!-- 4 Agent Nodes Pipeline Grid -->
+            <div class="lab-agents-grid" id="labSwarmAgentsGrid">
+              <!-- Populated dynamically by NexusAILab -->
+            </div>
+
+            <!-- Split View: Terminal Stream on Left, Generated Python Code on Right -->
+            <div class="lab-split-grid">
+              <div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                  <span style="font-size:0.8rem; font-weight:800; color:#0f172a; font-family:var(--font-mono);">
+                    <i class="fas fa-terminal" style="color:var(--neon-cyan);"></i> LIVE AGENT TELEMETRY STREAM
+                  </span>
+                  <span class="status-badge status-confirmed" style="font-size:0.7rem; padding:2px 8px;">DAG Active</span>
+                </div>
+                <div class="lab-terminal-box" id="labSwarmTerminalOutput">
+                  <!-- Dynamic logs -->
+                </div>
+              </div>
+
+              <div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                  <span style="font-size:0.8rem; font-weight:800; color:#0f172a; font-family:var(--font-mono);">
+                    <i class="fab fa-python" style="color:#059669;"></i> GENERATED PRODUCTION CODE
+                  </span>
+                  <button class="btn btn-secondary btn-sm" style="font-size:0.75rem; padding:4px 10px;" onclick="NexusAILab.copySwarmCode()">
+                    <i class="fas fa-copy"></i> Copy Code
+                  </button>
+                </div>
+                <pre class="lab-code-box" id="labSwarmCodeOutput"></pre>
+              </div>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:24px; padding-top:18px; border-top:1px solid #e2e8f0; flex-wrap:wrap; gap:12px;">
+              <div style="font-size:0.85rem; color:#475569;">
+                Curriculum Alignment: <strong style="color:#0284c7;" id="labSwarmTrackTag">AI-401: Advanced AI Architecture & MLOps</strong>
+              </div>
+              <a href="index.html#register" class="btn btn-secondary btn-sm">
+                <i class="fas fa-graduation-cap"></i> Master This in Cohort &rarr;
+              </a>
+            </div>
+          </div>
+
+          <!-- PANE 2: PROMPT OPTIMIZER -->
+          <div class="ai-lab-pane" id="labPane-prompt" style="display:none;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:12px;">
+              <div>
+                <h4 style="font-size:1.15rem; font-weight:800; color:#0f172a; margin-bottom:4px;">
+                  Enterprise Prompt Engineering & Guardrail Optimizer
+                </h4>
+                <p style="font-size:0.85rem; color:#64748b;">Transforms loose, amateur prompts into production system prompts with CoT reasoning and strict schemas.</p>
+              </div>
+              <div>
+                <select class="select-custom" id="labPromptPresetSelect" onchange="NexusAILab.loadPromptPreset(this.value)" style="font-size:0.85rem; padding:8px 12px;">
+                  <option value="customerBot">🤖 Enterprise Customer Support Concierge</option>
+                  <option value="codeReviewer">💻 Principal AI Code Reviewer & Performance Auditor</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="lab-split-grid">
+              <div>
+                <label style="font-size:0.8rem; font-weight:700; color:#475569; margin-bottom:6px; display:block;">
+                  <i class="fas fa-edit" style="color:#e11d48;"></i> Raw / Unoptimized Draft Prompt:
+                </label>
+                <textarea class="input-custom" id="labRawPromptInput" rows="7" style="font-size:0.85rem; line-height:1.5; margin-bottom:14px; font-family:var(--font-mono);"></textarea>
+                <button class="btn btn-primary" style="width:100%; justify-content:center;" onclick="NexusAILab.optimizePrompt()">
+                  <i class="fas fa-magic"></i> Upgrade Prompt With System Guardrails
+                </button>
+              </div>
+
+              <div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                  <label style="font-size:0.8rem; font-weight:700; color:#059669;">
+                    <i class="fas fa-check-double"></i> Nexus Optimized System Architecture:
+                  </label>
+                  <button class="btn btn-secondary btn-sm" style="font-size:0.75rem; padding:3px 8px;" onclick="NexusAILab.copyOptimizedPrompt()">
+                    <i class="fas fa-copy"></i> Copy
+                  </button>
+                </div>
+                <pre class="lab-code-box" id="labOptimizedPromptOutput" style="max-height:220px; font-size:0.775rem;"></pre>
+                
+                <div style="margin-top:14px;">
+                  <div style="font-size:0.75rem; font-weight:800; color:#475569; margin-bottom:6px;">Engineering Upgrades Injected:</div>
+                  <div style="display:flex; flex-wrap:wrap; gap:6px;" id="labPromptImprovementsList">
+                    <!-- Dynamic tags -->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PANE 3: VECTOR RAG EXPLORER -->
+          <div class="ai-lab-pane" id="labPane-rag" style="display:none;">
+            <div style="margin-bottom:18px;">
+              <h4 style="font-size:1.15rem; font-weight:800; color:#0f172a; margin-bottom:4px;">
+                Real-Time Vector Embedding & RAG Pipeline Visualizer
+              </h4>
+              <p style="font-size:0.85rem; color:#64748b;">Type a query to observe text embedding mathematical vectorization and cosine similarity chunk retrieval.</p>
+            </div>
+
+            <div style="display:flex; gap:10px; margin-bottom:18px;">
+              <input type="text" class="input-custom" id="labRagQueryInput" placeholder="Enter query (e.g. How do autonomous agents share memory in CrewAI?)" value="How do autonomous agents share memory in CrewAI?">
+              <button class="btn btn-primary" onclick="NexusAILab.runRagSearch()" style="white-space:nowrap;">
+                <i class="fas fa-search"></i> Compute Vector Similarity
+              </button>
+            </div>
+
+            <div style="background:#090d16; border:1px solid #1e293b; border-radius:10px; padding:12px 16px; margin-bottom:18px; font-family:var(--font-mono); font-size:0.75rem; color:#38bdf8;">
+              <div style="color:#64748b; margin-bottom:4px;">// Generated 384-Dimensional Dense Vector Embedding (text-embedding-3-small):</div>
+              <div id="labRagVectorDisplay">[0.0412, -0.8912, 0.3129, 0.0094, -0.4412, 0.7812, 0.1290, -0.0519... 384 dims]</div>
+            </div>
+
+            <div class="lab-split-grid">
+              <div>
+                <div style="font-size:0.8rem; font-weight:800; color:#0f172a; margin-bottom:10px;">
+                  <i class="fas fa-database" style="color:#0284c7;"></i> Ranked Knowledge Chunks (Pinecone Vector DB)
+                </div>
+                <div id="labRagResultsContainer">
+                  <!-- Populated dynamically -->
+                </div>
+              </div>
+
+              <div>
+                <div style="font-size:0.8rem; font-weight:800; color:#0f172a; margin-bottom:10px;">
+                  <i class="fas fa-layer-group" style="color:#7c3aed;"></i> Dynamic Injected Context & LLM Synthesis
+                </div>
+                <pre class="lab-code-box" id="labRagInjectedPrompt" style="max-height:300px; font-size:0.775rem;"></pre>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Cohort Call To Action Card -->
+      <div class="glass-panel" style="margin-top:40px; padding:36px 28px; text-align:center; border-color:rgba(124,58,237,0.3); background:linear-gradient(135deg, rgba(2,132,199,0.04), rgba(124,58,237,0.06));">
+        <span class="section-tag" style="background:rgba(2,132,199,0.1); border-color:rgba(2,132,199,0.3); color:#0284c7; margin-bottom:12px;">
+          ⚡ Fall 2026 Admissions Open
+        </span>
+        <h3 style="font-size:1.8rem; font-weight:800; color:#0f172a; margin-bottom:10px;">
+          Ready to Build & Deploy Production Swarms?
+        </h3>
+        <p style="color:#64748b; font-size:0.95rem; max-width:600px; margin:0 auto 24px auto; line-height:1.6;">
+          Join live cohort lectures, receive 1-on-1 code reviews from senior AI researchers, and build enterprise-grade Capstones with cloud GPU access.
+        </p>
+        <div style="display:flex; justify-content:center; gap:14px; flex-wrap:wrap;">
+          <a href="index.html#register" class="btn btn-primary btn-lg" style="box-shadow:0 8px 25px rgba(2,132,199,0.35);">
+            <i class="fas fa-rocket"></i> Initialize 5-Step Enrollment
+          </a>
+          <a href="index.html#courses" class="btn btn-secondary btn-lg">
+            <i class="fas fa-cubes"></i> Explore All 4 AI Tiers
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ========================================================================
+       FOOTER
+       ======================================================================== -->
+  <footer class="footer" style="background:#ffffff; border-top:1px solid #e2e8f0; padding:40px 0 24px 0;">
+    <div class="container">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; border-bottom:1px solid #f1f5f9; padding-bottom:20px; margin-bottom:20px;">
+        <div class="nav-logo">
+          <div class="nav-logo-icon"><i class="fas fa-brain"></i></div>
+          <span>AI NEXUS <span class="gradient-text">ACADEMY</span></span>
+        </div>
+        <div style="display:flex; gap:18px; font-size:0.85rem; font-weight:600;">
+          <a href="index.html#home" style="color:#64748b; text-decoration:none;">Home</a>
+          <a href="index.html#courses" style="color:#64748b; text-decoration:none;">Curriculum</a>
+          <a href="ai-lab.html" style="color:#0284c7; text-decoration:none;">AI Lab</a>
+          <a href="index.html#student-hub" style="color:#64748b; text-decoration:none;">Student Hub</a>
+          <a href="index.html#register" style="color:#64748b; text-decoration:none;">Register</a>
+        </div>
+      </div>
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; font-size:0.8rem; color:#94a3b8;">
+        <div>&copy; 2026 AI Nexus Academy Inc. All rights reserved.</div>
+        <div>Contact Admissions: <a href="mailto:abddeveloper@gmail.com" style="color:#0284c7; text-decoration:none;">abddeveloper@gmail.com</a> | +91 9844691633</div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Helper Toast Handler -->
+  <script>
+    const App = {
+      showToast: function(title, msg, type) {
+        const container = document.getElementById('toastContainer');
+        if (!container) return;
+        const toast = document.createElement('div');
+        toast.className = `toast ${type || 'info'}`;
+        toast.innerHTML = `
+          <div class="toast-icon">
+            <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
+          </div>
+          <div class="toast-content">
+            <div class="toast-title">${title}</div>
+            <div class="toast-message">${msg}</div>
+          </div>
+        `;
+        container.appendChild(toast);
+        setTimeout(() => {
+          toast.style.opacity = '0';
+          setTimeout(() => toast.remove(), 400);
+        }, 3500);
+      }
+    };
+  </script>
+
+  <!-- Nexus AI Lab Script -->
+  <script src="js/nexus-ai-lab.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      NexusAILab.init();
+    });
+  </script>
+</body>
+</html>

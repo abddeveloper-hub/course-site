@@ -20,12 +20,37 @@ const Wizard = {
   },
 
   init: function() {
+    this.renderStep1BatchSelect();
     this.renderTrackOptions();
     this.renderBatchOptions();
     this.renderAddonOptions();
     this.setupEventListeners();
     this.updateWizardUI();
     this.calculatePricing();
+  },
+
+  // Render Batch selection dropdown in Step 1 (Student details step)
+  renderStep1BatchSelect: function() {
+    const select = document.getElementById('wizBatchSelect');
+    if (!select) return;
+
+    const batches = StorageService.getActiveBatches();
+    if (batches.length === 0) {
+      select.innerHTML = `<option value="batch-hybrid-flex">Hybrid Self-Paced &bull; On-Demand Live Labs</option>`;
+      this.formData.batchId = "batch-hybrid-flex";
+      return;
+    }
+
+    select.innerHTML = batches.map(b => {
+      const seatsLeft = Math.max(0, b.maxSeats - b.enrolledSeats);
+      return `<option value="${b.id}" ${this.formData.batchId === b.id ? 'selected' : ''}>${b.name} &bull; Starts ${b.startDate} (${b.schedule}) [${seatsLeft} seats left]</option>`;
+    }).join('');
+
+    // Ensure valid active batch is selected
+    if (!batches.some(b => b.id === this.formData.batchId)) {
+      this.formData.batchId = batches[0].id;
+      select.value = this.formData.batchId;
+    }
   },
 
   // Switch between Standard (5-step) and Express (2-step) mode
@@ -183,12 +208,28 @@ const Wizard = {
     this.calculatePricing();
   },
 
-  // Render Batch Selector Cards (Step 3)
+  // Render Batch Selector Cards (Step 3) - Filters out completed batches automatically
   renderBatchOptions: function() {
     const container = document.getElementById('wizardBatchContainer');
     if (!container) return;
 
-    const batches = StorageService.getBatches();
+    const batches = StorageService.getActiveBatches();
+
+    if (batches.length === 0) {
+      container.innerHTML = `
+        <div class="glass-panel" style="padding:24px; text-align:center; border-color:rgba(217,119,6,0.3);">
+          <i class="fas fa-clock" style="font-size:2rem; color:#d97706; margin-bottom:10px;"></i>
+          <h4 style="font-size:1.15rem; color:#0f172a; margin-bottom:6px;">Current Live Batches Completed</h4>
+          <p style="font-size:0.85rem; color:#64748b; max-width:480px; margin:0 auto 14px auto;">
+            The scheduled class hours for current live batches have completed. Enrollment will grant you instant On-Demand Access and entry to the upcoming cohort cycle.
+          </p>
+          <span class="status-badge status-confirmed"><i class="fas fa-check-circle"></i> Enrolled into Immediate Hybrid Lab Access</span>
+        </div>
+      `;
+      this.formData.batchId = "batch-hybrid-flex";
+      return;
+    }
+
     let html = '';
     batches.forEach(batch => {
       const isSelected = this.formData.batchId === batch.id;
@@ -202,7 +243,9 @@ const Wizard = {
               <strong style="color:#0f172a; font-size:1.05rem;">${batch.name}</strong>
               <div style="font-size:0.8rem; color:var(--text-muted);"><i class="fas fa-calendar-alt" style="color:var(--neon-cyan); margin-right:4px;"></i> Starts: ${batch.startDate}</div>
             </div>
-            <span class="status-badge ${percent > 80 ? 'status-waitlisted' : 'status-confirmed'}">${batch.status}</span>
+            <span class="status-badge ${percent > 80 ? 'status-waitlisted' : 'status-confirmed'}">
+              <i class="fas fa-check-circle"></i> Active Cohort
+            </span>
           </div>
           <p style="font-size:0.85rem; color:#334155; margin-bottom:6px;"><i class="fas fa-clock" style="color:var(--neon-cyan); margin-right:4px;"></i> ${batch.schedule}</p>
           <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-muted); margin-top:10px;">
@@ -220,6 +263,20 @@ const Wizard = {
 
   selectBatch: function(batchId) {
     this.formData.batchId = batchId;
+
+    // Sync Step 1 dropdown if exists
+    const step1Select = document.getElementById('wizBatchSelect');
+    if (step1Select && step1Select.value !== batchId) {
+      step1Select.value = batchId;
+    }
+
+    // Sync Express select if exists
+    const expressSelect = document.getElementById('expressBatchSelect');
+    if (expressSelect && expressSelect.value !== batchId) {
+      expressSelect.value = batchId;
+    }
+
+    // Highlight active card in Step 3
     document.querySelectorAll('.batch-select-card').forEach(card => card.classList.remove('selected'));
     const target = document.getElementById(`batch-card-${batchId}`);
     if (target) target.classList.add('selected');
@@ -466,6 +523,12 @@ const Wizard = {
       this.formData.phone = phone;
       this.formData.education = edu;
       this.formData.linkedin = (document.getElementById('wizLinkedin') ? document.getElementById('wizLinkedin').value.trim() : '');
+
+      const batchSelect = document.getElementById('wizBatchSelect');
+      if (batchSelect && batchSelect.value) {
+        this.formData.batchId = batchSelect.value;
+      }
+
       return true;
     }
 
@@ -648,9 +711,6 @@ const Wizard = {
     // Render Digital ID Card into Step 6
     IDCardGenerator.renderCard(student, 'wizardIdCardResult');
 
-    // Render Official Google Professional Certificate into Step 6
-    AICertificateGenerator.renderCertificate(student, 'wizardCertificateSlot');
-
     // Display confirmation pane
     document.querySelectorAll('.wizard-step-pane').forEach(p => p.classList.remove('active'));
     const successPane = document.getElementById('stepPaneSuccess');
@@ -661,7 +721,7 @@ const Wizard = {
     StudentHub.render();
     if (typeof AdminApp !== 'undefined') AdminApp.updateBadgeCounts();
 
-    App.showToast("Payment Approved & Confirmed! 🏆", `Welcome to AI Nexus Academy, ${student.fullName}! Your student pass & certificate are ready.`, "success");
+    App.showToast("Payment Approved & Confirmed! 🏆", `Welcome to AI Nexus Academy, ${student.fullName}! Your student admission pass is ready.`, "success");
   },
 
   // Submit complete enrollment
@@ -681,9 +741,14 @@ const Wizard = {
     }
 
     if (batchSelect) {
-      batchSelect.innerHTML = StorageService.getBatches().map(b => `
-        <option value="${b.id}">${b.name} (${b.schedule})</option>
-      `).join('');
+      const activeBatches = StorageService.getActiveBatches();
+      if (activeBatches.length === 0) {
+        batchSelect.innerHTML = `<option value="batch-hybrid-flex">Hybrid Self-Paced (Immediate Access)</option>`;
+      } else {
+        batchSelect.innerHTML = activeBatches.map(b => `
+          <option value="${b.id}">${b.name} &bull; Starts ${b.startDate} (${b.schedule})</option>
+        `).join('');
+      }
     }
   },
 

@@ -3696,3 +3696,400 @@ body.portal-entering-active .cyber-cards-grid .cyber-holo-card:nth-child(4) {
   .id-actions-bar,.id-actions-grid{grid-template-columns:1fr !important}
   .admin-kpi-grid,.admin-stats-grid{grid-template-columns:1fr !important}
 }
+
+/* ==========================================================================
+   NEXUS AI LAB - INTERACTIVE MULTI-AGENT & RAG SANDBOX
+   ========================================================================== */
+.nexus-ai-lab-wrapper {
+  background: #ffffff;
+  border: 1px solid rgba(2, 132, 199, 0.25);
+  border-radius: 20px;
+  box-shadow: 0 16px 40px rgba(2, 132, 199, 0.08);
+  overflow: hidden;
+  position: relative;
+}
+
+.ai-lab-header-bar {
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.05), rgba(124, 58, 237, 0.05));
+  border-bottom: 1px solid #e2e8f0;
+  padding: 18px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.ai-lab-tabs-nav {
+  display: flex;
+  gap: 8px;
+  background: #f1f5f9;
+  padding: 4px;
+  border-radius: 12px;
+}
+
+.ai-lab-tab-btn {
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #64748b;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.25s ease;
+}
+
+.ai-lab-tab-btn:hover {
+  color: #0f172a;
+}
+
+.ai-lab-tab-btn.active {
+  background: #ffffff;
+  color: #0284c7;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.ai-lab-content {
+  padding: 24px;
+}
+
+/* Agent Nodes Grid */
+.lab-agents-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.lab-agent-node {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.lab-agent-node.active-pulsing {
+  border-color: #0284c7;
+  background: rgba(2, 132, 199, 0.05);
+  box-shadow: 0 0 15px rgba(2, 132, 199, 0.25);
+  transform: translateY(-2px);
+}
+
+.lab-agent-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.lab-agent-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.lab-agent-name {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.lab-agent-role {
+  font-size: 0.725rem;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lab-agent-badge {
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 10px;
+  text-transform: uppercase;
+}
+
+/* Cyber Terminal Box */
+.lab-terminal-box {
+  background: #090d16;
+  border: 1px solid #1e293b;
+  border-radius: 12px;
+  padding: 16px;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.825rem;
+  height: 220px;
+  overflow-y: auto;
+  color: #cbd5e1;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.term-line {
+  margin-bottom: 4px;
+}
+.term-dim { color: #64748b; }
+.term-cyan { color: #38bdf8; }
+.term-green { color: #4ade80; }
+.term-magenta { color: #f472b6; }
+
+/* Code Output Box */
+.lab-code-box {
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  border-radius: 12px;
+  padding: 18px;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.8rem;
+  color: #e2e8f0;
+  max-height: 280px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  line-height: 1.5;
+}
+
+/* Side by Side Split */
+.lab-split-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+/* RAG Chunk Cards */
+.lab-rag-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+  transition: all 0.25s ease;
+}
+
+.lab-rag-card.top-match {
+  border-color: #0284c7;
+  background: rgba(2, 132, 199, 0.04);
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.12);
+}
+
+@media (max-width: 768px) {
+  .ai-lab-header-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .ai-lab-tabs-nav {
+    flex-direction: column;
+  }
+  .lab-agents-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================================================
+   ACHIEVEMENTS, BADGES & MILESTONE XP PORTAL
+   ========================================================================== */
+.achieve-hero-card {
+  background: #ffffff;
+  border: 1px solid rgba(2, 132, 199, 0.25);
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: 0 14px 36px rgba(2, 132, 199, 0.08);
+  margin-bottom: 32px;
+  position: relative;
+  overflow: hidden;
+}
+
+.achieve-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.achieve-kpi-box {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+}
+
+.achieve-kpi-val {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #0f172a;
+  font-family: var(--font-heading);
+}
+
+.achieve-kpi-lbl {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 4px;
+}
+
+/* Level Progress Bar */
+.level-bar-track {
+  background: #e2e8f0;
+  border-radius: 10px;
+  height: 12px;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.level-bar-fill {
+  background: linear-gradient(90deg, #0284c7, #7c3aed);
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 12px rgba(2, 132, 199, 0.4);
+}
+
+/* Hologram Badges Grid */
+.badges-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.hologram-badge-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+}
+
+.hologram-badge-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(2, 132, 199, 0.15);
+  border-color: #0284c7;
+}
+
+.hologram-badge-card.locked {
+  opacity: 0.7;
+  background: #f8fafc;
+}
+
+.hologram-badge-card.locked:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.badge-icon-wrap {
+  width: 54px;
+  height: 54px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  margin-bottom: 14px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* Quests Cards */
+.quest-item-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 18px;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: all 0.25s ease;
+}
+
+.quest-item-card:hover {
+  border-color: #0284c7;
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.08);
+}
+
+.quest-item-card.claimed {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.quest-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.quest-details {
+  flex: 1;
+}
+
+/* Leaderboard */
+.leaderboard-row {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 14px 18px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: all 0.2s ease;
+}
+
+.leaderboard-row.current-user-row {
+  border: 2px solid #0284c7;
+  background: rgba(2, 132, 199, 0.04);
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.1);
+}
+
+.lb-rank {
+  font-size: 1.1rem;
+  font-weight: 800;
+  width: 32px;
+  text-align: center;
+}
+
+.lb-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.lb-info {
+  flex: 1;
+}
+
+.lb-score {
+  text-align: right;
+}
+
+

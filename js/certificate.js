@@ -12,20 +12,42 @@ const AICertificateGenerator = {
   },
 
   // Render Certificate DOM
-  renderCertificate: function(student, containerId) {
+  renderCertificate: function(student, containerId, allowOverride = false) {
     const container = document.getElementById(containerId);
     if (!container) return;
 
-    const studentData = student || StorageService.getCurrentStudent() || {
-      id: "AI-2026-9182",
-      fullName: "Alex Rivera",
-      trackTitle: "Generative AI, LLMs & Autonomous AI Agents",
-      registeredAt: "2026-08-14",
-      certificateAllotted: true,
-      certificateId: "G-NEX-2026-9182",
-      certificateGrade: "Distinction (98%)",
-      certificateDate: "2026-08-14"
-    };
+    const studentData = student || StorageService.getCurrentStudent();
+    if (!studentData) {
+      container.innerHTML = `
+        <div class="glass-panel" style="padding: 40px 20px; text-align: center; border-radius: 16px;">
+          <i class="fas fa-lock" style="font-size: 2.5rem; color: #94a3b8; margin-bottom: 12px;"></i>
+          <h3 style="color: #0f172a; font-weight: 800; margin-bottom: 6px;">No Certificate Available</h3>
+          <p style="color: #64748b; font-size: 0.9rem;">Official certificates are granted exclusively by the Academy Administration to registered students.</p>
+        </div>
+      `;
+      return;
+    }
+
+    // Security & Policy Check: Only render printable certificate if allotted by Admin or in Admin Mode
+    if (!studentData.certificateAllotted && !allowOverride) {
+      container.innerHTML = `
+        <div class="glass-panel" style="padding: 36px 24px; text-align: center; border: 2px dashed rgba(2, 132, 199, 0.35); background: rgba(2, 132, 199, 0.03); border-radius: 16px;">
+          <div style="width: 58px; height: 58px; border-radius: 50%; background: rgba(2, 132, 199, 0.1); color: var(--neon-cyan); font-size: 1.6rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px auto;">
+            <i class="fas fa-user-shield"></i>
+          </div>
+          <h3 style="font-size: 1.25rem; font-weight: 800; color: #0f172a; margin-bottom: 6px;">
+            Certificate Pending Admin Authorization
+          </h3>
+          <p style="color: #64748b; font-size: 0.9rem; max-width: 520px; margin: 0 auto 16px auto; line-height: 1.6;">
+            The official Google-grade Certificate for <strong>${studentData.fullName}</strong> is awaiting administrative evaluation and faculty review. Only academy administrators can issue and authorize official credentials.
+          </p>
+          <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(245, 158, 11, 0.1); color: #b45309; border: 1px solid rgba(245, 158, 11, 0.3); padding: 6px 16px; border-radius: 20px; font-size: 0.825rem; font-weight: 700;">
+            <i class="fas fa-clock"></i> Status: Awaiting Admin Issuance
+          </div>
+        </div>
+      `;
+      return;
+    }
 
     const certId = studentData.certificateId || this.generateCertId(studentData.id);
     const dateStr = studentData.certificateDate || studentData.registeredAt;

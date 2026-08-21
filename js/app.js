@@ -12,7 +12,6 @@ const App = {
     this.setupNavigation();
     this.renderCourseShowcase();
     this.renderTestimonials();
-    this.initCertificateView();
     this.setupFAQ();
     this.setupScrollListener();
     this.startCyberTelemetry();
@@ -27,7 +26,7 @@ const App = {
     const homeView = document.getElementById('view-home');
     if (homeView) {
       const hash = window.location.hash.replace('#', '');
-      if (hash && ['home', 'courses', 'certificate', 'auth', 'register', 'student-hub', 'admin-portal'].includes(hash)) {
+      if (hash && ['home', 'courses', 'auth', 'register', 'student-hub', 'admin-portal'].includes(hash)) {
         this.showView(hash);
       } else {
         this.showView('home');
@@ -46,6 +45,30 @@ const App = {
           sec.scrollIntoView({ behavior: 'smooth' });
         }
       }, 80);
+      return;
+    }
+
+    // Handling for AI Study Hub dedicated page
+    if (viewId === 'learn' || viewId === 'study-hub') {
+      window.location.href = 'learn.html';
+      return;
+    }
+
+    // Handling for Nexus AI Lab dedicated page
+    if (viewId === 'ai-lab') {
+      window.location.href = 'ai-lab.html';
+      return;
+    }
+
+    // Deprecated / Restricted public certificate route redirect
+    if (viewId === 'certificate') {
+      this.showToast("Official Certificate Policy", "Certificates are issued and authorized exclusively by the Academy Administration to enrolled students.", "info");
+      const student = typeof StorageService !== 'undefined' ? StorageService.getCurrentStudent() : null;
+      if (student) {
+        this.showView('student-hub');
+      } else {
+        this.showView('courses');
+      }
       return;
     }
 
@@ -87,8 +110,6 @@ const App = {
       AdminDashboard.render();
     } else if (viewId === 'student-hub' && typeof StudentHub !== 'undefined') {
       StudentHub.render();
-    } else if (viewId === 'certificate') {
-      this.initCertificateView();
     } else if (viewId === 'register' && typeof Wizard !== 'undefined') {
       Wizard.renderTrackOptions();
       Wizard.renderBatchOptions();
@@ -129,42 +150,20 @@ const App = {
     if (overlay) overlay.classList.toggle('open', open);
   },
 
-  // Automatic AI Certificate Controller
-  initCertificateView: function() {
-    const student = StorageService.getCurrentStudent() || {
-      id: "AI-2026-9182",
-      fullName: "Alex Rivera",
-      trackTitle: "API Architecture, Backend Services & AI Engine APIs",
-      registeredAt: "2026-08-14"
-    };
-
-    const nameInput = document.getElementById('certInputName');
-    if (nameInput && !nameInput.value) {
-      nameInput.value = student.fullName;
-    }
-
-    AICertificateGenerator.renderCertificate(student, 'certificateViewResultSlot');
-  },
-
-  generateCustomCertificate: function() {
-    const name = (document.getElementById('certInputName').value || "Alex Rivera").trim();
-    const track = document.getElementById('certInputTrack').value;
-    
-    const customStudent = {
-      id: `AI-2026-${Math.floor(1000 + Math.random() * 9000)}`,
-      fullName: name,
-      trackTitle: track,
-      registeredAt: new Date().toISOString().slice(0, 10)
-    };
-
-    AICertificateGenerator.renderCertificate(customStudent, 'certificateViewResultSlot');
-    this.showToast("Certificate Generated!", `Official certificate issued for ${name}`, "success");
-  },
-
+  // Open verified certificate in modal for authorized students
   openStudentHubCertificate: function() {
     const student = StorageService.getCurrentStudent();
     if (!student) {
-      this.showToast("No Enrollment", "Please register first to generate your official student certificate.", "error");
+      this.showToast("No Active Enrollment", "Please register for a course to access your student records.", "error");
+      return;
+    }
+
+    if (!student.certificateAllotted) {
+      this.showToast(
+        "Certificate Pending Admin Allotment",
+        "Your official certificate is issued exclusively by the Academy Administration following Capstone evaluation.",
+        "info"
+      );
       return;
     }
 
@@ -403,59 +402,6 @@ const App = {
         scholarsEl.textContent = `${count.toLocaleString()}+`;
       }
     }, 3500);
-  },
-
-  // Generate Instant Holographic Visitor / Guest Pass
-  generateGuestPass: function() {
-    const input = document.getElementById('guestPassInputName');
-    const rawName = input ? input.value.trim() : "";
-    const name = rawName || "Alex Rivera";
-
-    const randomSuffix = Math.floor(1000 + Math.random() * 9000);
-    const guestId = `GUEST-2026-${randomSuffix}`;
-
-    const initials = name
-      .split(' ')
-      .filter(Boolean)
-      .slice(0, 2)
-      .map(p => p[0].toUpperCase())
-      .join('') || 'AI';
-
-    const nameEl = document.getElementById('guestPassNameDisplay');
-    const idEl = document.getElementById('guestPassIdDisplay');
-    const avatarEl = document.getElementById('guestPassAvatar');
-
-    if (nameEl) nameEl.textContent = name;
-    if (idEl) idEl.textContent = guestId;
-    if (avatarEl) avatarEl.textContent = initials;
-
-    this.showToast("Holographic Pass Generated! 🎫", `Welcome to AI Nexus Academy, ${name}! Your visitor access is active.`, "success");
-  },
-
-  downloadGuestPass: function() {
-    const nameEl = document.getElementById('guestPassNameDisplay');
-    const idEl = document.getElementById('guestPassIdDisplay');
-    const name = nameEl ? nameEl.textContent : "Alex Rivera";
-    const guestId = idEl ? idEl.textContent : "GUEST-2026-8492";
-
-    const content = `=====================================================
-    AI NEXUS ACADEMY - HOLOGRAPHIC GUEST ACCESS PASS
-=====================================================
-Visitor Name      : ${name}
-Guest Pass ID     : ${guestId}
-Access Clearance  : Open AI Campus Tour & GPU Sandboxes
-Issued Date       : ${new Date().toLocaleDateString()}
-Status            : Active & Cryptographically Verified
-Security Protocol : ISO/IEC 27001 AI Architecture Sandbox
-=====================================================`;
-
-    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `AI-Nexus-Guest-Pass-${guestId}.txt`;
-    link.click();
-
-    this.showToast("Pass Downloaded 📥", "Your AI Nexus Visitor Pass has been saved.", "success");
   }
 };
 

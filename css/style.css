@@ -201,15 +201,19 @@ button {
 
 .gradient-text {
   background: var(--grad-primary);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  color: transparent !important;
   display: inline-block;
 }
 
 .gradient-violet-text {
   background: var(--grad-violet);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  color: transparent !important;
   display: inline-block;
 }
 
@@ -633,6 +637,8 @@ button {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
   font-size: 0.825rem;
   color: var(--text-dim);
 }

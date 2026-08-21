@@ -482,10 +482,11 @@
           </a>
         </li>
         <li class="admin-nav-item">
-          <a href="index.html#certificate">
+          <a href="index.html#student-hub" target="_blank">
             <span class="admin-nav-left">
-              <i class="fas fa-stamp" style="color:#1a73e8;"></i> Public Certificate Hub
+              <i class="fas fa-graduation-cap" style="color:#1a73e8;"></i> Student Hub Portal
             </span>
+            <i class="fas fa-external-link-alt" style="font-size:0.75rem; color:#94a3b8;"></i>
           </a>
         </li>
       </ul>
@@ -906,17 +907,23 @@
           <input type="date" class="input-custom" id="modalBatchStart">
         </div>
         <div class="form-group-custom">
-          <label class="form-label-custom">Max Seat Capacity *</label>
-          <input type="number" class="input-custom" id="modalBatchSeats" value="30" min="5" max="100">
+          <label class="form-label-custom">Class End / Retire Date</label>
+          <input type="date" class="input-custom" id="modalBatchEnd" title="Batch will automatically retire from student options after this date">
         </div>
       </div>
 
-      <div class="form-group-custom" style="margin-bottom:20px;">
-        <label class="form-label-custom">Delivery Mode</label>
-        <select class="select-custom" id="modalBatchMode">
-          <option value="Live Interactive Online">Live Interactive Online (Zoom & Discord)</option>
-          <option value="Hybrid (In-Person NYC Lab + Online)">Hybrid (In-Person NYC Lab + Online)</option>
-        </select>
+      <div class="form-grid-2" style="margin-bottom:20px;">
+        <div class="form-group-custom">
+          <label class="form-label-custom">Max Seat Capacity *</label>
+          <input type="number" class="input-custom" id="modalBatchSeats" value="30" min="5" max="100">
+        </div>
+        <div class="form-group-custom">
+          <label class="form-label-custom">Delivery Mode</label>
+          <select class="select-custom" id="modalBatchMode">
+            <option value="Live Interactive Online">Live Interactive Online (Zoom & Discord)</option>
+            <option value="Hybrid (In-Person NYC Lab + Online)">Hybrid (In-Person NYC Lab + Online)</option>
+          </select>
+        </div>
       </div>
 
       <button class="btn btn-primary btn-lg" style="width:100%;" onclick="AdminDashboard.saveNewBatch()">
@@ -1254,15 +1261,18 @@
         if (!container) return;
         const batches = StorageService.getBatches();
         container.innerHTML = batches.map(b => {
+          const isCompleted = StorageService.isBatchCompleted(b);
           const percent = Math.round((b.enrolledSeats / b.maxSeats) * 100);
           return `
-            <div style="background:#ffffff; border:1px solid #e2e8f0; border-radius:12px; padding:20px; box-shadow:var(--shadow-sm);">
+            <div style="background:#ffffff; border:1px solid ${isCompleted ? '#cbd5e1' : '#e2e8f0'}; border-radius:12px; padding:20px; box-shadow:var(--shadow-sm); opacity:${isCompleted ? '0.75' : '1'};">
               <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;">
                 <div>
                   <h4 style="font-size:1.05rem; font-weight:800; color:#0f172a; margin-bottom:4px;">${b.name}</h4>
                   <div style="font-size:0.8rem; color:#64748b;"><i class="fas fa-calendar-alt" style="color:var(--neon-cyan); margin-right:4px;"></i> Starts: ${b.startDate}</div>
                 </div>
-                <span class="status-badge ${percent > 80 ? 'status-waitlisted' : 'status-confirmed'}">${b.status}</span>
+                <span class="status-badge ${isCompleted ? 'status-pending' : (percent > 80 ? 'status-waitlisted' : 'status-confirmed')}">
+                  ${isCompleted ? 'Class Completed (Retired)' : b.status}
+                </span>
               </div>
               <div style="font-size:0.85rem; color:#334155; margin-bottom:12px;">
                 <i class="fas fa-clock" style="color:var(--neon-cyan); margin-right:4px;"></i> ${b.schedule}
@@ -1272,11 +1282,21 @@
                 <span><strong>${percent}%</strong> Capacity</span>
               </div>
               <div class="batch-capacity-bar" style="margin-bottom:14px;">
-                <div class="batch-capacity-fill" style="width:${percent}%;"></div>
+                <div class="batch-capacity-fill" style="width:${percent}%; background:${isCompleted ? '#94a3b8' : 'var(--grad-primary)'};"></div>
               </div>
               <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #f1f3f4; padding-top:12px;">
-                <span style="font-size:0.75rem; color:#7c3aed; font-weight:700;"><i class="fas fa-video"></i> ${b.mode}</span>
-                <button class="btn btn-secondary btn-sm" style="font-size:0.75rem; padding:4px 8px;" onclick="App.showToast('Batch Updated', 'Capacity settings synchronized', 'info')">Edit</button>
+                <span style="font-size:0.75rem; color:${isCompleted ? '#64748b' : '#7c3aed'}; font-weight:700;">
+                  <i class="${isCompleted ? 'fas fa-check-double' : 'fas fa-video'}"></i> ${isCompleted ? 'Class Ended' : b.mode}
+                </span>
+                ${isCompleted ? `
+                  <button class="btn btn-secondary btn-sm" style="font-size:0.75rem; padding:4px 10px;" onclick="AdminDashboard.toggleBatchCompletion('${b.id}', false); AdminApp.renderBatchDetailGrid();">
+                    <i class="fas fa-redo"></i> Re-open
+                  </button>
+                ` : `
+                  <button class="btn btn-secondary btn-sm" style="font-size:0.75rem; padding:4px 10px; color:#d97706;" onclick="AdminDashboard.toggleBatchCompletion('${b.id}', true); AdminApp.renderBatchDetailGrid();">
+                    <i class="fas fa-ban"></i> Mark Done
+                  </button>
+                `}
               </div>
             </div>
           `;
@@ -1319,14 +1339,17 @@
               <div style="display:flex; gap:6px; align-items:center;">
                 ${s.certificateAllotted ? `
                   <button class="btn btn-primary btn-sm" style="padding:6px 10px; font-size:0.75rem; background:#1a73e8; color:#fff;" onclick="AdminDashboard.viewStudentCertificate('${s.id}')" title="View & Print Certificate">
-                    <i class="fas fa-eye"></i> View
+                    <i class="fas fa-eye"></i> View & Print
                   </button>
                   <button class="btn btn-secondary btn-sm" style="padding:6px 10px; font-size:0.75rem; color:#e11d48;" onclick="AdminDashboard.revokeStudentCertificate('${s.id}')" title="Revoke Certificate">
                     <i class="fas fa-ban"></i> Revoke
                   </button>
                 ` : `
-                  <button class="btn btn-primary btn-sm" style="padding:6px 10px; font-size:0.75rem; background:linear-gradient(135deg, #1a73e8, #059669); color:#fff;" onclick="AdminDashboard.openAllotCertModal('${s.id}')" title="Allot Certificate">
-                    <i class="fas fa-stamp"></i> Allot
+                  <button class="btn btn-primary btn-sm" style="padding:6px 10px; font-size:0.75rem; background:#059669; color:#fff;" onclick="AdminDashboard.provideCertificateDirect('${s.id}')" title="Provide Certificate Immediately">
+                    <i class="fas fa-check-circle"></i> Provide
+                  </button>
+                  <button class="btn btn-secondary btn-sm" style="padding:6px 10px; font-size:0.75rem;" onclick="AdminDashboard.openAllotCertModal('${s.id}')" title="Customize Allotment Details">
+                    <i class="fas fa-stamp"></i> Allot...
                   </button>
                 `}
               </div>

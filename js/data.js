@@ -13,10 +13,10 @@ const ACADEMY_DATA = {
       id: "ai-beginners",
       code: "AI-101",
       tier: "Low Tier (Foundation)",
-      title: "Vibe Coding Softwares & AI-Assisted App Development",
+      title: "Vibe Coding Software & AI-Assisted App Development",
       category: "Vibe Coding & AI Software Tools",
       level: "Beginner",
-      badge: "🌱 Low Tier · Vibe Coding Softwares",
+      badge: "🌱 Low Tier · Vibe Coding Software",
       duration: "4 Weeks (32 Hours)",
       format: "Live Interactive AI Cohort",
       price: 1500,
@@ -169,7 +169,21 @@ const ACADEMY_DATA = {
       startDate: "Instant Access Upon Enrollment",
       maxSeats: 50,
       enrolledSeats: 0,
-      status: "Open Enrollment"
+      status: "Open Enrollment",
+      isCompleted: false
+    },
+    {
+      id: "batch-inaugural-summer",
+      name: "Summer 2026 Pioneer Cohort",
+      schedule: "Mon & Wed | 06:00 PM - 09:00 PM EST",
+      mode: "Live Interactive Zoom + GPU Lab",
+      startDate: "June 01, 2026",
+      endDate: "July 31, 2026",
+      classEndTime: "2026-07-31T23:59:59Z",
+      maxSeats: 40,
+      enrolledSeats: 40,
+      status: "Class Completed",
+      isCompleted: true
     }
   ],
 
@@ -278,7 +292,7 @@ const StorageService = {
         if (emailLower) seenEmails.add(emailLower);
 
         if (s.certificateAllotted === undefined) {
-          s.certificateAllotted = s.status === 'Confirmed';
+          s.certificateAllotted = false;
           s.certificateId = s.certificateId || `G-NEX-2026-${s.id.split('-').pop()}`;
           s.certificateGrade = s.certificateGrade || "Distinction (98%)";
           s.certificateDate = s.certificateDate || new Date().toISOString().slice(0, 10);
@@ -527,18 +541,80 @@ const StorageService = {
       }
     }
 
-    // De-duplicate batches by ID
+    // De-duplicate batches by ID and check auto-expiration
     const seen = new Set();
     const unique = [];
+    const now = Date.now();
+
     rawList.forEach(b => {
       if (b && b.id && !seen.has(b.id)) {
         seen.add(b.id);
+        
+        // Auto-check if classEndTime or endDate has passed
+        if (b.classEndTime && new Date(b.classEndTime).getTime() <= now) {
+          b.status = "Class Completed";
+          b.isCompleted = true;
+        } else if (b.status === "Class Completed" || b.status === "Completed") {
+          b.isCompleted = true;
+        } else {
+          b.isCompleted = b.isCompleted || false;
+        }
+
         unique.push(b);
       }
     });
 
     localStorage.setItem("nexus_batches", JSON.stringify(unique));
     return unique;
+  },
+
+  // Check if a batch has completed its class time or is marked completed
+  isBatchCompleted: function(batch) {
+    if (!batch) return true;
+    if (batch.isCompleted || batch.status === "Class Completed" || batch.status === "Completed" || batch.status === "Closed") {
+      return true;
+    }
+    if (batch.classEndTime && new Date(batch.classEndTime).getTime() <= Date.now()) {
+      return true;
+    }
+    if (batch.endDate && new Date(batch.endDate).getTime() <= Date.now()) {
+      return true;
+    }
+    return false;
+  },
+
+  // Returns ONLY active, uncompleted batches available for student enrollment
+  getActiveBatches: function() {
+    const allBatches = this.getBatches();
+    return allBatches.filter(b => !this.isBatchCompleted(b));
+  },
+
+  // Mark a batch class completed (Admin or automated)
+  markBatchCompleted: function(batchId) {
+    const batches = this.getBatches();
+    const target = batches.find(b => b.id === batchId);
+    if (target) {
+      target.status = "Class Completed";
+      target.isCompleted = true;
+      target.completedAt = new Date().toISOString();
+      localStorage.setItem("nexus_batches", JSON.stringify(batches));
+      return target;
+    }
+    return null;
+  },
+
+  // Re-open a batch for enrollment
+  reopenBatch: function(batchId) {
+    const batches = this.getBatches();
+    const target = batches.find(b => b.id === batchId);
+    if (target) {
+      target.status = "Open Enrollment";
+      target.isCompleted = false;
+      delete target.completedAt;
+      localStorage.setItem("nexus_batches", JSON.stringify(batches));
+      return target;
+    }
+    return null;
   },
 
   saveBatch: function(batch) {

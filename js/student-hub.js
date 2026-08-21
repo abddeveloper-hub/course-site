@@ -30,7 +30,51 @@ const StudentHub = {
     // Render Digital ID Card inside the student hub sidebar
     IDCardGenerator.renderCard(student, 'hubStudentIdCardSlot');
 
-    // Render Official Google Professional Certificate inside the student hub
+    // Render Milestone Progress Tracker & Certificate Status
+    const certProgressCard = document.getElementById('hubCertProgressCard');
+    if (certProgressCard) {
+      if (student.certificateAllotted) {
+        certProgressCard.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+            <h4 style="font-size:1.1rem; color:#0f172a;"><i class="fas fa-award" style="color:#1a73e8; margin-right:8px;"></i> Official Google-Grade AI Certificate</h4>
+            <span class="status-badge status-confirmed"><i class="fas fa-check-circle"></i> Issued & Authorized by Admin</span>
+          </div>
+          <div style="font-size:0.85rem; color:var(--text-muted); margin-bottom:14px;">Credential Serial: <strong style="color:#1a73e8; font-family:var(--font-mono);">${student.certificateId || 'G-NEX-2026'}</strong> &bull; Honors: <strong style="color:#059669;">${student.certificateGrade || 'Distinction'}</strong></div>
+          <div class="batch-capacity-bar" style="height:10px; margin-bottom:16px;">
+            <div class="batch-capacity-fill" style="width: 100%; background:linear-gradient(90deg, #1a73e8, #34a853);"></div>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+            <div style="font-size:0.85rem; color:#15803d; font-weight:600;">
+              <i class="fas fa-certificate" style="color:#fbbc04; margin-right:6px;"></i> Official Certificate Authorized & Released by Administration
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="App.openStudentHubCertificate()">
+              <i class="fas fa-award"></i> View & Print My Official Certificate
+            </button>
+          </div>
+        `;
+      } else {
+        certProgressCard.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+            <h4 style="font-size:1.1rem; color:#0f172a;"><i class="fas fa-award" style="color:#1a73e8; margin-right:8px;"></i> Official Google-Grade AI Certificate</h4>
+            <span class="status-badge status-pending"><i class="fas fa-clock"></i> Pending Admin Issuance</span>
+          </div>
+          <div style="font-size:0.85rem; color:var(--text-muted); margin-bottom:14px;">Enrolled on ${student.registeredAt} &bull; Status: <span style="color:#0284c7; font-weight:700;">Active Cohort Scholar</span></div>
+          <div class="batch-capacity-bar" style="height:10px; margin-bottom:16px;">
+            <div class="batch-capacity-fill" style="width: 50%; background:linear-gradient(90deg, #0284c7, #f59e0b);"></div>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+            <div style="font-size:0.85rem; color:#64748b;">
+              <i class="fas fa-info-circle" style="color:#0284c7; margin-right:6px;"></i> Certificate will be authorized and provided by Academy Administration upon Capstone evaluation.
+            </div>
+            <button class="btn btn-secondary btn-sm" disabled style="opacity:0.75; cursor:not-allowed;" title="Admin has not yet allotted your certificate">
+              <i class="fas fa-lock"></i> Pending Admin Issuance
+            </button>
+          </div>
+        `;
+      }
+    }
+
+    // Render Official Google Professional Certificate inside the student hub (guarded)
     AICertificateGenerator.renderCertificate(student, 'hubCertificateEmbedSlot');
 
     // Render Faculty Mentorship Chat Stream

@@ -189,7 +189,7 @@ const IDCardGenerator = {
           <button class="btn btn-secondary btn-sm" onclick="IDCardGenerator.downloadPass('${student.fullName}', '${student.id}')" style="justify-content:center; padding:10px 14px; font-weight:700;">
             <i class="fas fa-download"></i> Save Pass (.txt)
           </button>
-          <button class="btn btn-sm" style="background:#1a73e8; color:#fff; font-weight:700; justify-content:center; padding:10px 14px;" onclick="typeof AdminDashboard !== 'undefined' ? AdminDashboard.viewStudentCertificate('${student.id}') : App.openStudentHubCertificate()">
+          <button class="btn btn-sm" style="background:#1a73e8; color:#fff; font-weight:700; justify-content:center; padding:10px 14px;" onclick="(typeof Auth !== 'undefined' && Auth.currentUser && Auth.currentUser.role === 'admin' && typeof AdminDashboard !== 'undefined') ? AdminDashboard.viewStudentCertificate('${student.id}') : (typeof App !== 'undefined' && App.openStudentHubCertificate ? App.openStudentHubCertificate() : window.location.href='index.html#student-hub')">
             <i class="fas fa-award"></i> View Certificate
           </button>
           <button class="btn btn-accent btn-sm" style="justify-content:center; padding:10px 14px; font-weight:700;" onclick="typeof App !== 'undefined' && App.showView ? App.showView('student-hub') : window.location.href='index.html#student-hub'">

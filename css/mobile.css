@@ -36,13 +36,14 @@ button, input, select, textarea {
 
 /* Base Headings & Text */
 h1, h2, h3, h4, h5, h6 {
-  color: #090d16 !important;
-  font-weight: 800 !important;
-  letter-spacing: -0.02em !important;
+  color: #090d16;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  font-family: var(--font-heading);
 }
 
 p {
-  color: #1e293b;
+  color: #475569;
 }
 
 /* --------------------------------------------------------------------------
@@ -449,9 +450,8 @@ p {
   }
 
   .nav-logo span {
-    font-size: 0.95rem !important;
-    font-weight: 900 !important;
-    color: #090d16 !important;
+    font-size: 0.95rem;
+    font-weight: 900;
   }
 
   .nav-logo-icon {
@@ -1393,5 +1393,58 @@ p {
     flex-direction: column !important;
     align-items: flex-start !important;
     gap: 8px !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   5. LEARN HUB & STUDY PAGES
+   -------------------------------------------------------------------------- */
+@media screen and (max-width: 768px) {
+  .learn-hero-card {
+    padding: 22px 18px !important;
+  }
+
+  .learn-stats-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+  }
+
+  .learn-main-tab-btn {
+    font-size: 0.8rem !important;
+    padding: 8px 14px !important;
+  }
+
+  .vibe-config-grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  .api-split-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .vibe-ide-split {
+    grid-template-columns: 1fr !important;
+  }
+
+  .cheatsheet-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .vibe-prompt-arsenal-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .learn-stats-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .vibe-config-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .optimizer-grid {
+    grid-template-columns: 1fr !important;
   }
 }

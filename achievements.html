@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Scholar Achievements & Milestone XP | AI Nexus Academy</title>
+  <meta name="description" content="AI Nexus Academy Gamified Rewards Portal. Unlock holographic badges, track milestone XP levels, complete quests, and climb the scholar leaderboard.">
+  
+  <!-- Google Fonts Preconnect & Stylesheet -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/style.css?v=7.1">
+  <link rel="stylesheet" href="css/components.css?v=7.1">
+  <link rel="stylesheet" href="css/mobile.css?v=7.1">
+</head>
+<body style="background:#f8fafc; color:#0f172a; min-height:100vh; display:flex; flex-direction:column;">
+
+  <!-- Confetti Particle Canvas -->
+  <canvas id="confettiCanvas" style="position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:9999;"></canvas>
+
+  <!-- ========================================================================
+       TOP STREAMLINED NAVIGATION BAR
+       ======================================================================== -->
+  <nav class="navbar" style="background:rgba(255,255,255,0.92); backdrop-filter:blur(16px); border-bottom:1px solid #e2e8f0; position:sticky; top:0; z-index:1000;">
+    <div class="container nav-container" style="display:flex; justify-content:space-between; align-items:center; height:70px;">
+      
+      <div style="display:flex; align-items:center; gap:16px;">
+        <a href="index.html" class="nav-logo">
+          <div class="nav-logo-icon"><i class="fas fa-brain"></i></div>
+          <span>AI NEXUS <span class="gradient-text">ACADEMY</span></span>
+        </a>
+        <span class="status-badge status-confirmed" style="font-size:0.75rem; padding:4px 10px; font-weight:800;">
+          <i class="fas fa-award"></i> REWARDS PORTAL
+        </span>
+      </div>
+
+      <div class="nav-actions" style="display:flex; gap:10px; align-items:center;">
+        <a href="index.html" class="btn btn-secondary btn-sm">
+          <i class="fas fa-arrow-left"></i> <span class="nav-btn-text">Back to Academy</span>
+        </a>
+        <a href="learn.html" class="btn btn-secondary btn-sm" style="background:rgba(2,132,199,0.08); color:var(--neon-cyan); border-color:rgba(2,132,199,0.3);">
+          <i class="fas fa-book-open"></i> <span class="nav-btn-text">AI Study Hub</span>
+        </a>
+        <a href="ai-lab.html" class="btn btn-secondary btn-sm">
+          <i class="fas fa-flask"></i> <span class="nav-btn-text">AI Lab</span>
+        </a>
+        <a href="index.html#student-hub" class="btn btn-secondary btn-sm">
+          <i class="fas fa-graduation-cap"></i> <span class="nav-btn-text">Student Hub</span>
+        </a>
+        <a href="index.html#register" class="btn btn-primary btn-sm">
+          <i class="fas fa-rocket"></i> <span class="nav-btn-text">Enroll Now</span>
+        </a>
+      </div>
+
+    </div>
+  </nav>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- ========================================================================
+       MAIN ACHIEVEMENTS WORKSPACE
+       ======================================================================== -->
+  <main style="flex:1; padding: 36px 0 60px 0;">
+    <div class="container">
+      
+      <!-- Scholar Profile & Level Progression Hero Card -->
+      <div class="achieve-hero-card">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:20px;">
+          
+          <!-- Avatar & Scholar Profile -->
+          <div style="display:flex; align-items:center; gap:18px;">
+            <div style="width:68px; height:68px; border-radius:50%; background:var(--grad-primary); color:#ffffff; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:1.6rem; box-shadow:0 8px 24px rgba(2, 132, 199, 0.35); flex-shrink:0;" id="achieveStudentAvatar">
+              AR
+            </div>
+            <div>
+              <div style="display:flex; align-items:center; gap:10px; margin-bottom:4px;">
+                <h2 style="font-size:1.5rem; font-weight:900; color:#0f172a; margin:0;" id="achieveStudentName">Alex Rivera</h2>
+                <span class="status-badge status-confirmed" style="font-size:0.75rem; font-family:var(--font-mono); font-weight:800;" id="currentLevelDisplay">
+                  Lvl 4
+                </span>
+              </div>
+              <div style="font-size:0.875rem; color:#64748b;" id="achieveStudentTrack">
+                AI-401: Advanced AI Architecture & MLOps
+              </div>
+              <div style="font-size:0.775rem; font-family:var(--font-mono); color:#0284c7; margin-top:2px;">
+                Scholar ID: <strong id="achieveStudentId">NEX-2026-8492</strong> &bull; Rank: <span style="font-weight:700; color:#7c3aed;" id="levelRankTitle">Senior Swarm Architect</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Action Buttons -->
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <a href="learn.html" class="btn btn-secondary btn-sm" style="background:rgba(2,132,199,0.08); color:var(--neon-cyan); border-color:rgba(2,132,199,0.3);">
+              <i class="fas fa-book-open"></i> Open AI Study Hub
+            </a>
+            <a href="ai-lab.html" class="btn btn-secondary btn-sm">
+              <i class="fas fa-flask"></i> Launch AI Lab Sandbox
+            </a>
+            <a href="index.html#student-hub" class="btn btn-secondary btn-sm">
+              <i class="fas fa-id-card"></i> View Digital Student Pass
+            </a>
+          </div>
+
+        </div>
+
+        <!-- Animated Level Progress Bar -->
+        <div style="margin-top:24px; padding-top:20px; border-top:1px solid #f1f5f9;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; font-size:0.85rem;">
+            <span style="font-weight:800; color:#0f172a;"><i class="fas fa-bolt" style="color:#0284c7; margin-right:4px;"></i> Level XP Progression</span>
+            <span style="font-weight:700; color:#64748b; font-family:var(--font-mono);" id="levelProgressPercent">850 / 1,000 XP (85% to Level 5)</span>
+          </div>
+          <div class="level-bar-track">
+            <div class="level-bar-fill" id="levelProgressBar" style="width: 85%;"></div>
+          </div>
+        </div>
+
+        <!-- 4 Key Performance Metric Boxes -->
+        <div class="achieve-kpi-grid">
+          <div class="achieve-kpi-box">
+            <div class="achieve-kpi-val" style="color:#0284c7;" id="totalXPCount">3,850</div>
+            <div class="achieve-kpi-lbl">Total Scholar XP</div>
+          </div>
+          <div class="achieve-kpi-box">
+            <div class="achieve-kpi-val" style="color:#059669;" id="unlockedBadgesCount">6 / 8</div>
+            <div class="achieve-kpi-lbl">Badges Earned</div>
+          </div>
+          <div class="achieve-kpi-box">
+            <div class="achieve-kpi-val" style="color:#e11d48;" id="streakDaysCount">12 Days</div>
+            <div class="achieve-kpi-lbl">Learning Streak 🔥</div>
+          </div>
+          <div class="achieve-kpi-box">
+            <div class="achieve-kpi-val" style="color:#7c3aed;">#3 Global</div>
+            <div class="achieve-kpi-lbl">Cohort Rank 🏆</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Main Split Layout: Badges on Left (2/3), Quests & Leaderboard on Right (1/3) -->
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:32px; align-items:start;">
+        
+        <!-- LEFT COLUMN: Holographic Badges Gallery -->
+        <div style="grid-column: span 2;">
+          
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:12px;">
+            <div>
+              <h3 style="font-size:1.35rem; font-weight:800; color:#0f172a; margin:0;">
+                <i class="fas fa-medal" style="color:#f59e0b; margin-right:8px;"></i> Holographic Skill Badges
+              </h3>
+              <p style="font-size:0.85rem; color:#64748b; margin-top:2px;">Click any credential badge to view verification proofs, share on LinkedIn, or export pass.</p>
+            </div>
+
+            <!-- Filter Controls -->
+            <div style="display:flex; gap:6px; background:#f1f5f9; padding:4px; border-radius:10px;">
+              <button class="ai-lab-tab-btn badge-filter-btn active" data-filter="all" onclick="AchievementsPortal.filterBadges('all')">All</button>
+              <button class="ai-lab-tab-btn badge-filter-btn" data-filter="unlocked" onclick="AchievementsPortal.filterBadges('unlocked')">Earned</button>
+              <button class="ai-lab-tab-btn badge-filter-btn" data-filter="tier" onclick="AchievementsPortal.filterBadges('tier')">Curriculum</button>
+              <button class="ai-lab-tab-btn badge-filter-btn" data-filter="locked" onclick="AchievementsPortal.filterBadges('locked')">Locked</button>
+            </div>
+          </div>
+
+          <!-- Badges Grid Container -->
+          <div class="badges-grid" id="badgesGridContainer">
+            <!-- Rendered dynamically by AchievementsPortal -->
+          </div>
+
+        </div>
+
+        <!-- RIGHT COLUMN: Weekly Quests & Global Leaderboard -->
+        <div>
+          
+          <!-- Weekly Quests Module -->
+          <div class="glass-panel" style="padding:22px; margin-bottom:28px; border-color:rgba(124,58,237,0.25);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+              <h4 style="font-size:1.15rem; font-weight:800; color:#0f172a; margin:0;">
+                <i class="fas fa-tasks" style="color:#7c3aed; margin-right:6px;"></i> Active Quests
+              </h4>
+              <span class="status-badge status-payment" style="font-size:0.7rem; font-weight:800;">
+                WEEKLY RESET
+              </span>
+            </div>
+            <p style="font-size:0.8rem; color:#64748b; margin-bottom:16px;">Complete assignments and AI Lab simulations to earn bonus XP points.</p>
+            
+            <div id="questsListContainer">
+              <!-- Rendered dynamically by AchievementsPortal -->
+            </div>
+          </div>
+
+          <!-- Global Scholar Leaderboard -->
+          <div class="glass-panel" style="padding:22px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+              <h4 style="font-size:1.15rem; font-weight:800; color:#0f172a; margin:0;">
+                <i class="fas fa-crown" style="color:#f59e0b; margin-right:6px;"></i> Cohort Leaderboard
+              </h4>
+              <span style="font-size:0.75rem; color:#059669; font-weight:700;">
+                <i class="fas fa-circle" style="font-size:0.45rem; vertical-align:middle;"></i> Live Sync
+              </span>
+            </div>
+            <p style="font-size:0.8rem; color:#64748b; margin-bottom:16px;">Top ranked scholars in the Fall 2026 AI Institute cohort.</p>
+
+            <div id="leaderboardListContainer">
+              <!-- Rendered dynamically by AchievementsPortal -->
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ========================================================================
+       BADGE DETAIL / SHARE MODAL
+       ======================================================================== -->
+  <div class="modal-overlay" id="badgeDetailModal" onclick="if(event.target === this) AchievementsPortal.closeModal()">
+    <div class="modal-card" style="max-width:480px; position:relative;">
+      <button class="modal-close-btn" onclick="AchievementsPortal.closeModal()">
+        <i class="fas fa-times"></i>
+      </button>
+      <div id="badgeModalBody">
+        <!-- Rendered dynamically by AchievementsPortal -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       FOOTER
+       ======================================================================== -->
+  <footer class="footer" style="background:#ffffff; border-top:1px solid #e2e8f0; padding:36px 0 20px 0;">
+    <div class="container">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; border-bottom:1px solid #f1f5f9; padding-bottom:16px; margin-bottom:16px;">
+        <div class="nav-logo">
+          <div class="nav-logo-icon"><i class="fas fa-brain"></i></div>
+          <span>AI NEXUS <span class="gradient-text">ACADEMY</span></span>
+        </div>
+        <div style="display:flex; gap:18px; font-size:0.85rem; font-weight:600;">
+          <a href="index.html#home" style="color:#64748b; text-decoration:none;">Home</a>
+          <a href="index.html#courses" style="color:#64748b; text-decoration:none;">Curriculum</a>
+          <a href="ai-lab.html" style="color:#64748b; text-decoration:none;">AI Lab</a>
+          <a href="achievements.html" style="color:#0284c7; text-decoration:none;">Achievements</a>
+          <a href="index.html#student-hub" style="color:#64748b; text-decoration:none;">Student Hub</a>
+        </div>
+      </div>
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; font-size:0.8rem; color:#94a3b8;">
+        <div>&copy; 2026 AI Nexus Academy Inc. All rights reserved.</div>
+        <div>Contact Admissions: <a href="mailto:abddeveloper@gmail.com" style="color:#0284c7; text-decoration:none;">abddeveloper@gmail.com</a> | +91 9844691633</div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Controller Script -->
+  <script src="js/achievements.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      AchievementsPortal.init();
+    });
+  </script>
+</body>
+</html>

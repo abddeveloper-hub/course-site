@@ -257,8 +257,8 @@ const CapstonePortal = {
           <!-- Action Buttons -->
           <div style="display:flex; gap:10px; flex-wrap:wrap;">
             ${isApproved ? `
-              <button class="btn btn-primary" onclick="App.showView('certificate'); AICertificateGenerator.renderCertificate(StorageService.getCurrentStudent(), 'printableCertificateContainer');">
-                <i class="fas fa-award"></i> View & Print Google AI Certificate
+              <button class="btn btn-primary" onclick="App.openStudentHubCertificate()">
+                <i class="fas fa-award"></i> View Authorized Google AI Certificate
               </button>
             ` : `
               <button class="btn btn-secondary" onclick="App.showToast('Evaluation Pending', 'Dr. Sterling is currently evaluating your test suite and architecture.', 'info')">

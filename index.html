@@ -6,6 +6,11 @@
   <title>AI Nexus Academy | Advanced AI Education & Course Registration</title>
   <meta name="description" content="Join AI Nexus Academy. World-class AI education for beginners, developers, and leaders. Hands-on Generative AI, Machine Learning, AI Agents & MLOps cohorts.">
   
+  <!-- Google Fonts Preconnect & Stylesheet -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
   <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   
@@ -13,9 +18,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
   <!-- Stylesheets -->
-  <link rel="stylesheet" href="css/style.css?v=7.0">
-  <link rel="stylesheet" href="css/components.css?v=7.0">
-  <link rel="stylesheet" href="css/mobile.css?v=7.0">
+  <link rel="stylesheet" href="css/style.css?v=7.1">
+  <link rel="stylesheet" href="css/components.css?v=7.1">
+  <link rel="stylesheet" href="css/mobile.css?v=7.1">
 </head>
 <body>
 
@@ -58,8 +63,13 @@
           </a>
         </li>
         <li class="mobile-nav-item">
-          <a data-route="certificate" data-view="certificate" onclick="App.showView('certificate'); App.toggleMobileDrawer(false);">
-            <i class="fas fa-award" style="color:#ffd700;"></i> Google AI Certificate Hub
+          <a href="learn.html" target="_blank" onclick="App.toggleMobileDrawer(false);" style="color:var(--neon-cyan); font-weight:700;">
+            <i class="fas fa-book-open" style="color:var(--neon-cyan);"></i> 📚 AI Study Hub & Playgrounds
+          </a>
+        </li>
+        <li class="mobile-nav-item">
+          <a href="ai-lab.html" target="_blank" onclick="App.toggleMobileDrawer(false);">
+            <i class="fas fa-flask" style="color:#7c3aed;"></i> 🧪 Nexus AI Sandbox Lab
           </a>
         </li>
         <li class="mobile-nav-item">
@@ -76,6 +86,11 @@
         <li class="mobile-nav-item">
           <a data-route="student-hub" data-view="student-hub" onclick="App.showView('student-hub'); App.toggleMobileDrawer(false);">
             <i class="fas fa-graduation-cap" style="color:var(--neon-cyan);"></i> Student Hub & Digital Pass
+          </a>
+        </li>
+        <li class="mobile-nav-item">
+          <a href="achievements.html" target="_blank" onclick="App.toggleMobileDrawer(false);">
+            <i class="fas fa-award" style="color:#f59e0b;"></i> 🏆 Scholar Badges & XP Portal
           </a>
         </li>
         <li class="mobile-nav-item">
@@ -187,14 +202,20 @@
           <button class="ai-quick-chip" onclick="AIWelcome.enterSiteAndRoute('register')">
             <i class="fas fa-rocket" style="color:var(--neon-cyan);"></i> Start Enrollment (₹1,500+)
           </button>
+          <button class="ai-quick-chip" onclick="window.open('learn.html', '_blank')">
+            <i class="fas fa-book-open" style="color:#0284c7;"></i> 📚 AI Study Hub
+          </button>
+          <button class="ai-quick-chip" onclick="window.open('ai-lab.html', '_blank')">
+            <i class="fas fa-flask" style="color:#7c3aed;"></i> 🧪 Nexus AI Lab
+          </button>
+          <button class="ai-quick-chip" onclick="window.open('achievements.html', '_blank')">
+            <i class="fas fa-award" style="color:#f59e0b;"></i> 🏆 Scholar Badges & XP
+          </button>
           <button class="ai-quick-chip" onclick="AIWelcome.enterSiteAndRoute('courses')">
             <i class="fas fa-cubes" style="color:var(--neon-violet);"></i> Explore 4 AI Tiers
           </button>
-          <button class="ai-quick-chip" onclick="AIWelcome.enterSiteAndRoute('certificate')">
-            <i class="fas fa-award" style="color:#ffd700;"></i> Verify Certificate
-          </button>
-          <button class="ai-quick-chip" onclick="AIWelcome.enterSiteAndRoute('auth')">
-            <i class="fas fa-user-lock" style="color:#10b981;"></i> Student Sign-In
+          <button class="ai-quick-chip" onclick="AIWelcome.enterSiteAndRoute('student-hub')">
+            <i class="fas fa-graduation-cap" style="color:#0284c7;"></i> Student Hub & Pass
           </button>
         </div>
       </div>
@@ -230,7 +251,10 @@
 
       <!-- Action Buttons on Right (Public Facing Only) -->
       <div class="nav-actions">
-        <button class="btn btn-secondary btn-sm nav-btn-guide" onclick="AIWelcome.replayIntro()" style="background:rgba(2,132,199,0.08); color:var(--neon-cyan); border-color:rgba(2,132,199,0.3);" title="Replay AI Welcome Greeting">
+        <a href="learn.html" class="btn btn-secondary btn-sm nav-btn-learn" style="background:rgba(2,132,199,0.08); color:var(--neon-cyan); border-color:rgba(2,132,199,0.3); text-decoration:none;" title="Open AI Study Hub & Learning Center">
+          <i class="fas fa-book-open"></i> <span class="nav-btn-text">Study Hub</span>
+        </a>
+        <button class="btn btn-secondary btn-sm nav-btn-guide" onclick="AIWelcome.replayIntro()" style="background:rgba(124,58,237,0.08); color:var(--neon-violet); border-color:rgba(124,58,237,0.3);" title="Replay AI Welcome Greeting">
           <i class="fas fa-robot"></i> <span class="nav-btn-text">AI Guide</span>
         </button>
         <button class="btn btn-secondary btn-sm nav-btn-signin" onclick="App.showView('auth')">
@@ -297,7 +321,7 @@
           <div class="specialization-title-tag">Explore Specializations:</div>
           <div class="specialization-chips-row">
             <button class="filter-chip active" onclick="App.startEnrollment('ai-beginners')">
-              <i class="fas fa-magic" style="color:#0284c7;"></i> Low Tier: Vibe Coding Softwares (₹1,500)
+              <i class="fas fa-magic" style="color:#0284c7;"></i> Low Tier: Vibe Coding Software (₹1,500)
             </button>
             <button class="filter-chip" onclick="App.startEnrollment('applied-ml-ds')">
               <i class="fas fa-cloud-upload-alt" style="color:#7c3aed;"></i> Mid Tier: Hosting & Deploy (₹2,500)
@@ -311,15 +335,18 @@
           </div>
         </div>
 
-        <div class="hero-actions" style="margin-bottom:48px;">
+        <div class="hero-actions" style="margin-bottom:48px; display:flex; justify-content:center; gap:12px; flex-wrap:wrap;">
           <button class="btn btn-primary btn-lg" data-route="register" style="box-shadow:0 8px 25px rgba(2,132,199,0.35);">
             <i class="fas fa-rocket"></i> Initialize 5-Step Enrollment
           </button>
-          <button class="btn btn-secondary btn-lg" onclick="document.getElementById('guestPassGeneratorSlot').scrollIntoView({behavior:'smooth'})">
-            <i class="fas fa-id-badge" style="color:#0284c7;"></i> Get Instant Visitor Pass
-          </button>
-          <button class="btn btn-secondary btn-lg" data-route="certificate">
-            <i class="fas fa-award" style="color:#ffd700;"></i> Verify Certificate
+          <a href="learn.html" class="btn btn-secondary btn-lg" style="background:rgba(2,132,199,0.08); border-color:rgba(2,132,199,0.3); color:var(--neon-cyan); text-decoration:none; display:inline-flex; align-items:center; gap:8px;">
+            <i class="fas fa-book-open"></i> 📚 AI Study & Practice Hub
+          </a>
+          <a href="ai-lab.html" class="btn btn-secondary btn-lg" style="background:rgba(124,58,237,0.08); border-color:rgba(124,58,237,0.3); color:#7c3aed; text-decoration:none; display:inline-flex; align-items:center; gap:8px;">
+            <i class="fas fa-flask"></i> 🧪 Try Nexus AI Lab
+          </a>
+          <button class="btn btn-secondary btn-lg" data-route="courses">
+            <i class="fas fa-cubes" style="color:var(--neon-violet);"></i> View AI Tracks
           </button>
         </div>
 
@@ -329,7 +356,7 @@
           <!-- Card 1: Low Tier -->
           <div class="cyber-holo-card" style="--holo-accent:linear-gradient(90deg, #00f0ff, #0072ff);" onclick="App.startEnrollment('ai-beginners')">
             <div>
-              <span class="cyber-tier-tag tier-tag-cyan">🌱 Low Tier &bull; Vibe Coding Softwares</span>
+              <span class="cyber-tier-tag tier-tag-cyan">🌱 Low Tier &bull; Vibe Coding Software</span>
               <div style="font-size:0.8rem; font-weight:700; color:#0284c7; font-family:var(--font-mono);">AI-101</div>
               <h4 style="font-size:1.15rem; font-weight:800; color:#0f172a; margin:4px 0 8px 0;">Vibe Coding & AI App Development</h4>
               <p style="font-size:0.825rem; color:#64748b; line-height:1.5; margin-bottom:12px;">Build complete apps & websites purely with AI prompts using Cursor AI, Windsurf, Lovable, Bolt.new & v0.dev.</p>
@@ -343,7 +370,8 @@
               <div class="cyber-card-price-row">
                 <span class="cyber-card-price">₹1,500</span>
                 <span class="cyber-card-orig">₹2,200</span>
-               <button class="btn btn-primary btn-sm" style="width:100%; justify-content:center; font-size:0.8rem;">
+              </div>
+              <button class="btn btn-primary btn-sm" style="width:100%; justify-content:center; font-size:0.8rem;">
                 Select Tier 1 <i class="fas fa-arrow-right"></i>
               </button>
             </div>
@@ -423,58 +451,6 @@
 
         </div>
 
-        <!-- Interactive Holographic Guest / Visitor Pass Generator Panel -->
-        <div class="cyber-pass-generator-panel" id="guestPassGeneratorSlot">
-          <div class="cyber-pass-grid">
-            <div>
-              <span class="section-tag" style="background:rgba(2, 132, 199, 0.1); border-color:rgba(2, 132, 199, 0.25); color:#0284c7; margin-bottom:12px;">
-                <i class="fas fa-id-badge"></i> Instant Holographic Guest Credential
-              </span>
-              <h3 style="font-size:1.65rem; font-weight:800; color:#0f172a; margin-bottom:10px;">
-                Generate Your AI Nexus Guest Pass
-              </h3>
-              <p style="color:#475569; font-size:0.925rem; line-height:1.6; margin-bottom:22px;">
-                Enter your name to generate an instant cryptographic Visitor Pass. Explore our curriculum, trial GPU compute sandboxes, and verify student credentials.
-              </p>
-
-              <div class="cyber-pass-input-row">
-                <input type="text" class="input-custom cyber-pass-input" id="guestPassInputName" placeholder="Enter your full name (e.g. Alex Rivera)">
-                <button class="btn btn-primary cyber-pass-btn" onclick="App.generateGuestPass()">
-                  <i class="fas fa-magic"></i> Generate Pass
-                </button>
-              </div>
-            </div>
-
-            <!-- Dynamic Pass Output Slot -->
-            <div id="guestPassRenderSlot">
-              <div class="cyber-pass-result-badge">
-                <div class="cyber-pass-scanline"></div>
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; border-bottom:1px solid #e2e8f0; padding-bottom:10px;">
-                  <span style="font-family:var(--font-mono); font-size:0.75rem; font-weight:800; color:#0284c7;">// AI NEXUS GUEST PASS</span>
-                  <span class="status-badge status-confirmed" style="font-size:0.72rem; padding:4px 10px;">
-                    <i class="fas fa-check-circle"></i> VERIFIED VISITOR
-                  </span>
-                </div>
-                <div style="display:flex; align-items:center; gap:14px; margin-bottom:14px;">
-                  <div style="width:48px; height:48px; border-radius:50%; background:var(--grad-primary); color:#ffffff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:1.1rem; box-shadow:0 4px 12px rgba(2, 132, 199, 0.35); flex-shrink:0;" id="guestPassAvatar">
-                    AR
-                  </div>
-                  <div>
-                    <h4 style="font-size:1.15rem; color:#0f172a; font-weight:800; line-height:1.3;" id="guestPassNameDisplay">Alex Rivera</h4>
-                    <div style="font-size:0.775rem; color:#64748b; font-family:var(--font-mono);" id="guestPassIdDisplay">GUEST-2026-8492</div>
-                  </div>
-                </div>
-                <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.775rem; color:#64748b; margin-top:10px; border-top:1px dashed #e2e8f0; padding-top:10px;">
-                  <span>Clearance: <strong style="color:#0f172a;">Open AI Campus Tour</strong></span>
-                  <button class="btn btn-secondary btn-sm" style="font-size:0.75rem; padding:5px 12px; font-weight:700;" onclick="App.downloadGuestPass()">
-                    <i class="fas fa-download"></i> Save Pass
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
       </div>
     </section>
 
@@ -550,8 +526,8 @@
           <span class="section-tag" style="color:#ffd700; border-color:rgba(255,215,0,0.4); background:rgba(255,215,0,0.1);">
             <i class="fas fa-award"></i> Verified AI Credentials
           </span>
-          <h2 class="section-title">Automatic <span class="gradient-text">AI Certificate Generation</span></h2>
-          <p class="section-desc">Every graduate receives an officially verifiable, cryptographic digital certificate embedded with a unique verification QR code and holographic security seal.</p>
+          <h2 class="section-title">Faculty-Issued <span class="gradient-text">Accredited Certifications</span></h2>
+          <p class="section-desc">Every graduate receives an officially verifiable, cryptographic digital certificate issued exclusively by Academy Administration upon capstone evaluation.</p>
         </div>
 
         <div class="glass-panel" style="padding: 32px 24px; border-color: rgba(2, 132, 199, 0.3); box-shadow: var(--shadow-md);">
@@ -562,7 +538,7 @@
               </span>
               <h3 style="font-size: 1.8rem; font-weight: 800; color: #0f172a; margin-bottom: 14px;">Instant Recognition for Your AI Expertise</h3>
               <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.7; margin-bottom: 20px;">
-                Upon completing course milestones or enrolling, our automated system generates your official Google-grade Certificate of Completion. Instantly printable in high-resolution, exportable as credentials, and verified by AI Nexus Institute.
+                Upon completing course milestones and submitting your graduation Capstone, our administration reviews and authorizes your official Google-grade Certificate of Completion. Verified and issued exclusively by AI Nexus Institute faculty.
               </p>
               
               <ul style="list-style: none; display: flex; flex-direction: column; gap: 12px; margin-bottom: 28px;">
@@ -573,16 +549,16 @@
                   <i class="fas fa-check-circle" style="color:#ea4335;"></i> Signed by Dean & Director of AI Research
                 </li>
                 <li style="display:flex; align-items:center; gap:10px; font-size:0.9rem; color:#334155;">
-                  <i class="fas fa-check-circle" style="color:#34a853;"></i> 1-Click High-Res PDF Print & LinkedIn credential sharing
+                  <i class="fas fa-check-circle" style="color:#34a853;"></i> High-Res PDF Diploma & LinkedIn credential authorization
                 </li>
               </ul>
 
               <div style="display:flex; gap:14px; flex-wrap:wrap;">
-                <button class="btn btn-primary" data-route="certificate">
-                  <i class="fas fa-certificate"></i> Open Certificate Generator
+                <button class="btn btn-primary" data-route="register">
+                  <i class="fas fa-rocket"></i> Enroll & Earn Accredited Certificate
                 </button>
-                <button class="btn btn-secondary" data-route="register">
-                  <i class="fas fa-rocket"></i> Enroll & Earn Certificate
+                <button class="btn btn-secondary" data-route="courses">
+                  <i class="fas fa-cubes"></i> Explore Syllabus Tracks
                 </button>
               </div>
             </div>
@@ -661,53 +637,7 @@
     </section>
   </main>
 
-  <!-- ========================================================================
-       VIEW: AI CERTIFICATE GENERATOR & CREDENTIAL VERIFICATION
-       ======================================================================== -->
-  <main id="view-certificate" class="view-section">
-    <div class="view-banner">
-      <div class="container">
-        <span class="section-tag" style="color:#ffd700; border-color:rgba(255,215,0,0.4); background:rgba(255,215,0,0.1);">
-          <i class="fas fa-award"></i> Credential Verification & Accreditation
-        </span>
-        <h1 style="font-size:clamp(2rem, 4vw, 3rem); font-weight:900;">Official <span class="gradient-text">AI Certificate Generator</span></h1>
-        <p style="color:var(--text-muted); margin-top:8px;">Instant automatic issuance of official, cryptographically verifiable certificates for AI Nexus graduates.</p>
-      </div>
-    </div>
 
-    <div class="container section" style="padding-top: 20px;">
-      
-      <!-- Interactive Generator Customizer Bar -->
-      <div class="glass-panel" style="padding: 24px 20px; margin-bottom: 36px; border-color: rgba(255,215,0,0.3);">
-        <div class="cert-customizer-grid">
-          <div class="form-group-custom">
-            <label class="form-label-custom"><i class="fas fa-user-graduate" style="color:var(--neon-cyan);"></i> Certificate Recipient Full Name</label>
-            <input type="text" class="input-custom" id="certInputName" placeholder="Enter student or graduate name" value="Alex Rivera">
-          </div>
-
-          <div class="form-group-custom">
-            <label class="form-label-custom"><i class="fas fa-microchip" style="color:var(--neon-violet);"></i> Accredited Specialization Track</label>
-            <select class="select-custom" id="certInputTrack">
-              <option value="Vibe Coding Softwares & AI-Assisted App Development">AI-101: Vibe Coding Softwares & AI Development</option>
-              <option value="Cloud Hosting, Deployment & Software Integration">AI-201: Cloud Hosting & Software Integration</option>
-              <option value="API Architecture, Backend Services & AI Engine APIs" selected>AI-301: API Architecture & AI Engine APIs</option>
-              <option value="Advanced AI Architecture, Autonomous Agents & MLOps">AI-401: Advanced AI Architecture & MLOps</option>
-            </select>
-          </div>
-
-          <button class="btn btn-primary" onclick="App.generateCustomCertificate()">
-            <i class="fas fa-sync-alt"></i> Generate Certificate
-          </button>
-        </div>
-      </div>
-
-      <!-- Render Target for Certificate -->
-      <div id="certificateViewResultSlot">
-        <!-- Rendered dynamically by AICertificateGenerator -->
-      </div>
-
-    </div>
-  </main>
 
   <!-- ========================================================================
        VIEW: SIGN IN & AUTHENTICATION PORTAL
@@ -928,6 +858,19 @@
                   <option value="Product Manager / Business Lead">Product Manager / Business Lead</option>
                   <option value="Non-Technical Professional">Non-Technical Professional / Explorer</option>
                 </select>
+              </div>
+            </div>
+
+            <div class="form-group-custom" style="margin-bottom:20px;">
+              <label class="form-label-custom" style="display:flex; justify-content:space-between; align-items:center;">
+                <span>Preferred Cohort Batch *</span>
+                <span style="font-size:0.75rem; color:#059669; font-weight:700;"><i class="fas fa-check-circle"></i> Live Active Batches</span>
+              </label>
+              <select class="select-custom" id="wizBatchSelect" onchange="Wizard.selectBatch(this.value)">
+                <!-- Dynamically populated with active uncompleted batches only -->
+              </select>
+              <div style="font-size:0.75rem; color:#64748b; margin-top:4px;">
+                <i class="fas fa-info-circle" style="color:#0284c7;"></i> Batches automatically retire once the class schedule is completed.
               </div>
             </div>
 
@@ -1204,21 +1147,20 @@
               <p style="color:var(--text-muted); font-size:0.95rem;">Your transaction has cleared. Your official student credential and accredited Google Career Certificate are ready.</p>
             </div>
 
-            <!-- Dual Showcase: ID Pass & Certificate -->
-            <div style="display:grid; grid-template-columns:1fr; gap:32px; margin-bottom:24px;">
+            <!-- Dual Showcase: ID Pass & Certificate Policy -->
+            <div style="display:grid; grid-template-columns:1fr; gap:24px; margin-bottom:24px;">
               <div id="wizardIdCardResult">
                 <!-- Digital Student ID Card Rendered Here -->
               </div>
               
-              <div style="margin-top:16px;">
-                <div style="text-align:center; margin-bottom:16px;">
-                  <span class="section-tag" style="background:rgba(2, 132, 199, 0.08); border-color:rgba(2, 132, 199, 0.25); color:var(--neon-cyan);">
-                    <i class="fas fa-award"></i> Official Accredited Professional Certificate
-                  </span>
+              <div class="glass-panel" style="padding:22px; border-left:4px solid var(--neon-cyan); background:rgba(2,132,199,0.03); border-radius:14px; text-align:left;">
+                <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+                  <i class="fas fa-award" style="color:#1a73e8; font-size:1.3rem;"></i>
+                  <h4 style="font-size:1.05rem; font-weight:800; color:#0f172a; margin:0;">Official Certification Issuance Policy</h4>
                 </div>
-                <div id="wizardCertificateSlot">
-                  <!-- Google Certificate Rendered Here -->
-                </div>
+                <p style="font-size:0.875rem; color:#475569; line-height:1.6; margin:0;">
+                  Your official Google-grade Certificate of Completion is issued and authorized exclusively by the <strong>Academy Administration & Faculty</strong> upon successful submission and grading of your Capstone Project. You can monitor your enrollment status anytime inside the <strong>Student Hub</strong>.
+                </p>
               </div>
             </div>
 
@@ -1391,27 +1333,32 @@
                   <i class="fab fa-discord"></i> Join
                 </a>
               </div>
+
+              <div class="resource-card" style="border-left:3px solid #7c3aed;">
+                <div>
+                  <strong style="color:#0f172a; font-size:0.95rem;"><i class="fas fa-flask" style="color:#7c3aed; margin-right:4px;"></i> Nexus AI Sandbox Lab</strong>
+                  <div style="font-size:0.775rem; color:var(--text-muted);">Multi-agent swarms & RAG explorer</div>
+                </div>
+                <a href="ai-lab.html" target="_blank" class="btn btn-secondary btn-sm" style="color:#7c3aed; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+                  <i class="fas fa-play"></i> Launch
+                </a>
+              </div>
+
+              <div class="resource-card" style="border-left:3px solid #f59e0b;">
+                <div>
+                  <strong style="color:#0f172a; font-size:0.95rem;"><i class="fas fa-award" style="color:#f59e0b; margin-right:4px;"></i> Milestone Badges & XP</strong>
+                  <div style="font-size:0.775rem; color:var(--text-muted);">Quests, XP ranks & leaderboard</div>
+                </div>
+                <a href="achievements.html" target="_blank" class="btn btn-secondary btn-sm" style="color:#f59e0b; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+                  <i class="fas fa-trophy"></i> Rewards
+                </a>
+              </div>
             </div>
           </div>
 
           <!-- Milestone Progress Tracker & Automatic AI Certificate -->
-          <div class="glass-panel" style="padding:28px; border-color:rgba(2,132,199,0.3);">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-              <h4 style="font-size:1.1rem; color:#0f172a;"><i class="fas fa-award" style="color:#1a73e8; margin-right:8px;"></i> Official Google-Grade AI Certificate</h4>
-              <span class="status-badge status-confirmed" id="hubStatusBadge">Confirmed</span>
-            </div>
-            <div style="font-size:0.85rem; color:var(--text-muted); margin-bottom:14px;" id="hubEnrolledDate">Enrolled on 2026-08-14</div>
-            <div class="batch-capacity-bar" style="height:10px; margin-bottom:16px;">
-              <div class="batch-capacity-fill" style="width: 100%; background:linear-gradient(90deg, #1a73e8, #34a853);"></div>
-            </div>
-            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
-              <div style="font-size:0.8rem; color:#475569;">
-                <i class="fas fa-check-circle" style="color:var(--neon-emerald);"></i> Certificate Credential Ready for Download & Verification
-              </div>
-              <button class="btn btn-primary btn-sm" onclick="App.openStudentHubCertificate()">
-                <i class="fas fa-award"></i> View & Print My AI Certificate
-              </button>
-            </div>
+          <div class="glass-panel" id="hubCertProgressCard" style="padding:28px; border-color:rgba(2,132,199,0.3);">
+            <!-- Rendered dynamically by StudentHub.render() -->
           </div>
 
           <!-- Graduation Capstone Project Submission & Status Tracker -->
@@ -1664,15 +1611,20 @@
           <input type="text" class="input-custom" id="newBatchSchedule" placeholder="e.g. Mon & Wed | 08:00 PM - 11:00 PM EST" required>
         </div>
 
-        <div class="form-grid-2" style="margin-bottom:24px;">
+        <div class="form-grid-2" style="margin-bottom:16px;">
           <div class="form-group-custom">
             <label class="form-label-custom">Start Date *</label>
             <input type="text" class="input-custom" id="newBatchStartDate" placeholder="e.g. Oct 12, 2026" required>
           </div>
           <div class="form-group-custom">
-            <label class="form-label-custom">Seat Limit</label>
-            <input type="number" class="input-custom" id="newBatchMaxSeats" value="30" min="5" max="100">
+            <label class="form-label-custom">Class End / Retire Date</label>
+            <input type="date" class="input-custom" id="modalBatchEnd" title="Batch will automatically retire from student options after this date">
           </div>
+        </div>
+
+        <div class="form-group-custom" style="margin-bottom:24px;">
+          <label class="form-label-custom">Seat Limit</label>
+          <input type="number" class="input-custom" id="newBatchMaxSeats" value="30" min="5" max="100">
         </div>
 
         <button type="submit" class="btn btn-primary" style="width:100%;">
@@ -1710,8 +1662,8 @@
           <h4>Portals</h4>
           <ul>
             <li><a href="#register" data-route="register">Student Registration</a></li>
-            <li><a href="#certificate" data-route="certificate">AI Certificate Portal</a></li>
             <li><a href="#student-hub" data-route="student-hub">Student Learning Hub</a></li>
+            <li><a href="#courses" data-route="courses">Curriculum & Syllabi</a></li>
             <li><a href="#auth" data-route="auth">Member Login</a></li>
           </ul>
         </div>

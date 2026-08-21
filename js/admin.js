@@ -53,32 +53,60 @@ const AdminDashboard = {
     if (kpiTopTrack) kpiTopTrack.textContent = topTrack;
   },
 
-  // 2. Render Batch Occupancy Progress Meters
+  // 2. Render Batch Occupancy Progress Meters & Lifecycle Controls
   renderBatchMeters: function(batches) {
     const container = document.getElementById('adminBatchMeters');
     if (!container) return;
 
     let html = '';
     batches.forEach(b => {
+      const isCompleted = StorageService.isBatchCompleted(b);
       const percent = Math.round((b.enrolledSeats / b.maxSeats) * 100);
+      
       html += `
-        <div style="background:#ffffff; border:1px solid #e2e8f0; border-radius:12px; padding: 16px 20px; margin-bottom: 12px; box-shadow:0 2px 6px rgba(0,0,0,0.02);">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
+        <div style="background:#ffffff; border:1px solid ${isCompleted ? '#cbd5e1' : '#e2e8f0'}; border-radius:12px; padding: 16px 20px; margin-bottom: 12px; box-shadow:0 2px 6px rgba(0,0,0,0.02); opacity:${isCompleted ? '0.75' : '1'};">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px; flex-wrap:wrap; gap:8px;">
             <div>
               <strong style="color:#0f172a; font-size:0.95rem;">${b.name}</strong>
-              <div style="font-size:0.775rem; color:#64748b;">${b.schedule}</div>
+              <div style="font-size:0.775rem; color:#64748b;"><i class="fas fa-clock" style="color:#0284c7; margin-right:4px;"></i> ${b.schedule} &bull; Starts: ${b.startDate}</div>
             </div>
-            <span class="status-badge ${percent > 80 ? 'status-waitlisted' : 'status-confirmed'}">
-              ${b.enrolledSeats}/${b.maxSeats} Seats (${percent}%)
-            </span>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span class="status-badge ${isCompleted ? 'status-pending' : (percent > 80 ? 'status-waitlisted' : 'status-confirmed')}" style="font-size:0.72rem; padding:3px 8px;">
+                ${isCompleted ? '<i class="fas fa-check-double"></i> Class Completed (Retired)' : `<i class="fas fa-circle" style="color:#059669; font-size:0.5rem; vertical-align:middle;"></i> Active (${b.enrolledSeats}/${b.maxSeats})`}
+              </span>
+              ${isCompleted ? `
+                <button class="btn btn-secondary btn-sm" style="font-size:0.7rem; padding:3px 8px;" onclick="AdminDashboard.toggleBatchCompletion('${b.id}', false)">
+                  <i class="fas fa-redo"></i> Re-open
+                </button>
+              ` : `
+                <button class="btn btn-secondary btn-sm" style="font-size:0.7rem; padding:3px 8px; color:#d97706;" onclick="AdminDashboard.toggleBatchCompletion('${b.id}', true)">
+                  <i class="fas fa-ban"></i> Mark Class Done
+                </button>
+              `}
+            </div>
           </div>
           <div class="batch-capacity-bar">
-            <div class="batch-capacity-fill" style="width: ${percent}%;"></div>
+            <div class="batch-capacity-fill" style="width: ${percent}%; background:${isCompleted ? '#94a3b8' : 'var(--grad-primary)'};"></div>
           </div>
         </div>
       `;
     });
     container.innerHTML = html;
+  },
+
+  toggleBatchCompletion: function(batchId, markDone) {
+    if (markDone) {
+      StorageService.markBatchCompleted(batchId);
+      App.showToast("Batch Retired", "Class completed! This batch is now removed from public student options.", "info");
+    } else {
+      StorageService.reopenBatch(batchId);
+      App.showToast("Batch Re-opened", "This batch is now live and selectable for enrollment.", "success");
+    }
+    this.render();
+    if (typeof Wizard !== 'undefined') {
+      Wizard.renderStep1BatchSelect();
+      Wizard.renderBatchOptions();
+    }
   },
 
   // 3. Render Student Applications Table with Search & Filter
@@ -369,13 +397,37 @@ const AdminDashboard = {
     App.openModal(modalId);
   },
 
-  // View specific student's Official AI Certificate in modal
+  // Direct 1-Click Provide / Issue Certificate to a Student
+  provideCertificateDirect: function(studentId) {
+    const students = StorageService.getStudents();
+    const target = students.find(s => s.id === studentId);
+    if (!target) return;
+
+    const certId = target.certificateId || `G-NEX-2026-${target.id.split('-').pop()}`;
+    const updated = StorageService.allotCertificate(studentId, {
+      id: certId,
+      date: new Date().toISOString().slice(0, 10),
+      grade: target.certificateGrade || "Distinction (98%)"
+    });
+
+    if (updated) {
+      App.showToast("Certificate Provided & Issued! 🎓", `Official credential released for ${updated.fullName} (${certId}). Student can now access it in their Hub.`, "success");
+      this.render();
+      if (typeof AdminApp !== 'undefined') {
+        AdminApp.renderOverviewRecentTable();
+        AdminApp.renderCertificateRegistry();
+        AdminApp.updateBadgeCounts();
+      }
+    }
+  },
+
+  // View specific student's Official AI Certificate in modal (Admin Authorized)
   viewStudentCertificate: function(studentId) {
     const students = StorageService.getStudents();
     const target = students.find(s => s.id === studentId);
     if (!target) return;
 
-    AICertificateGenerator.renderCertificate(target, 'modalCertContainer');
+    AICertificateGenerator.renderCertificate(target, 'modalCertContainer', true);
     App.openModal('certModal');
   },
 
@@ -430,6 +482,8 @@ const AdminDashboard = {
     const maxSeats = parseInt(document.getElementById('modalBatchSeats')?.value || document.getElementById('newBatchMaxSeats')?.value, 10) || 30;
     const mode = document.getElementById('modalBatchMode')?.value || "Live Interactive Online";
 
+    const endDate = (document.getElementById('modalBatchEnd')?.value || "").trim();
+
     if (!name || !schedule || !startDate) {
       App.showToast("Required Fields", "Please complete all batch details.", "error");
       return;
@@ -441,13 +495,19 @@ const AdminDashboard = {
       schedule: schedule,
       mode: mode,
       startDate: startDate,
+      endDate: endDate || "",
+      classEndTime: endDate ? `${endDate}T23:59:59` : "",
       maxSeats: maxSeats,
       enrolledSeats: 0,
-      status: "Seats Available"
+      status: "Seats Available",
+      isCompleted: false
     };
 
     StorageService.saveBatch(newBatch);
-    if (typeof Wizard !== 'undefined') Wizard.renderBatchOptions();
+    if (typeof Wizard !== 'undefined') {
+      Wizard.renderStep1BatchSelect();
+      Wizard.renderBatchOptions();
+    }
     if (typeof AdminApp !== 'undefined') {
       AdminApp.renderBatchDetailGrid();
       AdminApp.updateBadgeCounts();
