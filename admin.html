@@ -329,6 +329,9 @@
             <div class="system-status-dot"></div>
             <span>Live Sync</span>
           </div>
+          <button class="btn btn-secondary btn-sm" onclick="AdminMedia.openUploadModal()" style="color:#ec4899; border-color:rgba(236,72,153,0.3); background:rgba(236,72,153,0.06); font-weight:700;">
+            <i class="fas fa-cloud-arrow-up"></i> Upload Media
+          </button>
           <button class="btn btn-primary btn-sm" onclick="AdminDashboard.openAddBatchModal()">
             <i class="fas fa-plus"></i> New Batch
           </button>
@@ -355,6 +358,10 @@
         <button class="admin-tab-btn" id="tabBtn-capstones" onclick="AdminApp.switchTab('tab-capstones')">
           <i class="fas fa-microchip" style="color: #d946ef"></i> Capstones
           <span class="tab-count" id="badgeCapstonesCount">0</span>
+        </button>
+        <button class="admin-tab-btn" id="tabBtn-media" onclick="AdminApp.switchTab('tab-media')">
+          <i class="fas fa-photo-film" style="color: #ec4899"></i> Media &amp; Videos
+          <span class="tab-count" id="badgeMediaCount">0</span>
         </button>
         <div style="margin-left: auto; display: flex; align-items: center; gap: 8px; padding: 0 8px">
           <button class="btn btn-secondary btn-sm" style="font-size: 0.78rem" onclick="AdminDashboard.exportToCSV()">
@@ -772,6 +779,68 @@
           </div>
         </div>
       </section>
+
+      <!-- ========================================================================
+         TAB 6: MEDIA & VIDEO MANAGEMENT SUITE
+         ======================================================================== -->
+      <section class="admin-pane" id="tab-media">
+        <!-- Media Suite Header -->
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom: 24px; flex-wrap:wrap; gap:16px;">
+          <div>
+            <h2 style="font-size: 1.6rem; font-weight: 800; color: #0f172a; margin-bottom: 4px;">
+              Media &amp; Video <span class="gradient-violet-text">Asset Library</span>
+            </h2>
+            <p style="color: #64748b; font-size: 0.875rem; margin:0;">
+              Upload, preview, and organize official course videos, lecture screencasts, and campus photos.
+            </p>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <button class="btn btn-primary" onclick="AdminMedia.openUploadModal()" style="background: linear-gradient(135deg, #ec4899, #8b5cf6); color:#fff; border:none; box-shadow:0 4px 16px rgba(236,72,153,0.3);">
+              <i class="fas fa-cloud-arrow-up"></i> Upload Photo / Video
+            </button>
+          </div>
+        </div>
+
+        <!-- Metric Counter Cards -->
+        <div class="kpi-grid" style="margin-bottom: 24px;">
+          <div class="kpi-card" style="border-left: 4px solid #ec4899;">
+            <div class="kpi-title"><i class="fas fa-photo-film" style="color:#ec4899;"></i> Total Media Assets</div>
+            <div class="kpi-value" id="statMediaTotal">0</div>
+            <div class="kpi-sub">Across all courses &amp; events</div>
+          </div>
+          <div class="kpi-card" style="border-left: 4px solid #0284c7;">
+            <div class="kpi-title"><i class="fas fa-camera" style="color:#0284c7;"></i> Photographs &amp; Banners</div>
+            <div class="kpi-value" id="statMediaPhotos">0</div>
+            <div class="kpi-sub">High-resolution stills</div>
+          </div>
+          <div class="kpi-card" style="border-left: 4px solid #ef4444;">
+            <div class="kpi-title"><i class="fas fa-video" style="color:#ef4444;"></i> Video Lectures &amp; Demos</div>
+            <div class="kpi-value" id="statMediaVideos">0</div>
+            <div class="kpi-sub">Stream &amp; MP4 screencasts</div>
+          </div>
+        </div>
+
+        <!-- Filter & Search Bar -->
+        <div style="background:#ffffff; border:1px solid #e2e8f0; border-radius:14px; padding:14px 20px; margin-bottom: 20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px; box-shadow:0 2px 6px rgba(0,0,0,0.02);">
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="filter-chip media-filter-chip active" onclick="AdminMedia.setFilter('ALL', this)">All Assets</button>
+            <button class="filter-chip media-filter-chip" onclick="AdminMedia.setFilter('PHOTO', this)"><i class="fas fa-camera"></i> Photos</button>
+            <button class="filter-chip media-filter-chip" onclick="AdminMedia.setFilter('VIDEO', this)"><i class="fas fa-video"></i> Videos</button>
+            <button class="filter-chip media-filter-chip" onclick="AdminMedia.setFilter('CAMPUS', this)"><i class="fas fa-building"></i> Campus &amp; Labs</button>
+            <button class="filter-chip media-filter-chip" onclick="AdminMedia.setFilter('LECTURE', this)"><i class="fas fa-chalkboard-user"></i> Lectures</button>
+          </div>
+
+          <div style="position:relative; width:260px;">
+            <i class="fas fa-search" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#94a3b8; font-size:0.85rem;"></i>
+            <input type="text" class="input-custom" placeholder="Search media title..." style="padding-left:36px; height:38px; font-size:0.85rem;" oninput="AdminMedia.handleSearch(this.value)">
+          </div>
+        </div>
+
+        <!-- Media Grid Container -->
+        <div id="adminMediaGridContainer" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px;">
+          <!-- Rendered dynamically by AdminMedia.render() -->
+        </div>
+      </section>
     </div>
 
     <!-- ========================================================================
@@ -1106,6 +1175,126 @@
     <div class="admin-drawer-backdrop" id="adminDrawerBackdrop" onclick="AdminDashboard.closeSlideDrawer()"></div>
     <aside class="admin-slide-drawer" id="adminSlideDrawer"></aside>
 
+    <!-- ========================================================================
+       MODAL 6: UPLOAD PHOTO / VIDEO MODAL
+       ======================================================================== -->
+    <div class="modal-backdrop" id="adminMediaUploadModal">
+      <div class="modal-box glass-panel" style="max-width: 620px;">
+        <button class="modal-close-btn" onclick="AdminMedia.closeUploadModal()">
+          <i class="fas fa-times"></i>
+        </button>
+
+        <div style="text-align: center; margin-bottom: 18px;">
+          <div style="width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, #ec4899, #8b5cf6); color: #fff; font-size: 1.3rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px auto; box-shadow: 0 6px 16px rgba(236,72,153,0.3);">
+            <i class="fas fa-cloud-arrow-up"></i>
+          </div>
+          <h3 style="font-size: 1.35rem; font-weight: 800; color: #0f172a; margin-bottom: 4px;">
+            Add Photo or Video Asset
+          </h3>
+          <p style="color: #64748b; font-size: 0.875rem;">
+            Upload local files or link YouTube, Vimeo, or direct MP4/image URLs.
+          </p>
+        </div>
+
+        <form id="mediaUploadForm" onsubmit="event.preventDefault(); AdminMedia.submitMedia();">
+          <div class="form-group-custom" style="margin-bottom: 12px;">
+            <label class="form-label-custom">Asset Title *</label>
+            <input type="text" class="input-custom" id="mediaInputTitle" placeholder="e.g. Distributed A100 Training Cluster Walkthrough" required />
+          </div>
+
+          <div class="form-grid-2" style="margin-bottom: 12px;">
+            <div class="form-group-custom">
+              <label class="form-label-custom">Media Type *</label>
+              <select class="select-custom" id="mediaInputType" onchange="AdminMedia.handleUrlChange()">
+                <option value="photo">Photograph / Image</option>
+                <option value="video">Video (MP4 / YouTube / Embed)</option>
+              </select>
+            </div>
+            <div class="form-group-custom">
+              <label class="form-label-custom">Target Course Track</label>
+              <select class="select-custom" id="mediaInputTrack">
+                <option value="All Tracks">All Tracks / General Campus</option>
+                <option value="Vibe Coding & AI Prototyping">Vibe Coding & AI Prototyping</option>
+                <option value="Applied Machine Learning & MLOps">Applied Machine Learning & MLOps</option>
+                <option value="Multi-Agent Swarms & Enterprise RAG">Multi-Agent Swarms & Enterprise RAG</option>
+                <option value="Full-Stack AI Solutions Architect">Full-Stack AI Solutions Architect</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-grid-2" style="margin-bottom: 12px;">
+            <div class="form-group-custom">
+              <label class="form-label-custom">Category</label>
+              <select class="select-custom" id="mediaInputCategory">
+                <option value="Lecture Preview">Lecture Preview</option>
+                <option value="Lab Demo">Lab Demo</option>
+                <option value="Campus & Hardware">Campus & Hardware</option>
+                <option value="Graduation & Alumni">Graduation & Alumni</option>
+                <option value="Student Project">Student Project</option>
+              </select>
+            </div>
+            <div class="form-group-custom">
+              <label class="form-label-custom">Or Upload Local File</label>
+              <input type="file" id="mediaFileInput" class="input-custom" accept="image/*,video/*" onchange="AdminMedia.handleFileUpload(event)" style="padding: 6px 10px; font-size: 0.8rem;" />
+            </div>
+          </div>
+
+          <div class="form-group-custom" style="margin-bottom: 12px;">
+            <label class="form-label-custom">External URL / YouTube Embed</label>
+            <input type="url" class="input-custom" id="mediaInputUrl" placeholder="https://images.unsplash.com/... or https://youtube.com/watch?v=..." oninput="AdminMedia.handleUrlChange()" />
+          </div>
+
+          <!-- Live Preview Box -->
+          <div style="background:#f8fafc; border:1px dashed #cbd5e1; border-radius:10px; padding:12px; margin-bottom:14px; min-height:140px; display:flex; flex-direction:column; justify-content:center; align-items:center;" id="mediaLivePreviewBox">
+            <div style="color:#94a3b8; font-size:0.85rem; text-align:center;">
+              <i class="fas fa-image" style="font-size:1.8rem; margin-bottom:6px; display:block;"></i>
+              Live preview will appear here
+            </div>
+          </div>
+
+          <div class="form-group-custom" style="margin-bottom: 16px;">
+            <label class="form-label-custom">Description &amp; Caption</label>
+            <textarea class="textarea-custom" id="mediaInputCaption" rows="2" placeholder="Brief context, speaker names, or timestamp references..."></textarea>
+          </div>
+
+          <div style="display: flex; gap: 10px;">
+            <button type="button" class="btn btn-secondary" style="flex: 1;" onclick="AdminMedia.closeUploadModal()">Cancel</button>
+            <button type="submit" class="btn btn-primary" style="flex: 2; background: linear-gradient(135deg, #ec4899, #8b5cf6); color: #fff; justify-content:center;">
+              <i class="fas fa-save"></i> Save Asset to Library
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ========================================================================
+       MODAL 7: MEDIA LIGHTBOX & VIDEO PLAYER MODAL
+       ======================================================================== -->
+    <div class="modal-backdrop" id="adminMediaPlayerModal">
+      <div class="modal-box glass-panel" style="max-width: 820px; padding: 20px;">
+        <button class="modal-close-btn" onclick="AdminMedia.closePlayerModal()">
+          <i class="fas fa-times"></i>
+        </button>
+
+        <div style="margin-bottom: 14px;">
+          <h3 style="font-size: 1.25rem; font-weight: 800; color: #0f172a; margin: 0 0 4px 0;" id="playerMediaTitle">Media Asset</h3>
+          <div style="font-size: 0.78rem; color: #64748b; font-weight: 600;" id="playerMediaSubtitle">PHOTO • Campus</div>
+        </div>
+
+        <div id="playerMediaStage" style="background:#090e17; border-radius:12px; overflow:hidden; min-height:280px; display:flex; align-items:center; justify-content:center; margin-bottom:14px;">
+          <!-- Rendered dynamically -->
+        </div>
+
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:12px 16px; margin-bottom:14px; font-size:0.875rem; color:#334155; line-height:1.5;" id="playerMediaCaption">
+          Description
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:8px;">
+          <button class="btn btn-secondary btn-sm" onclick="AdminMedia.closePlayerModal()">Close</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Firebase Cloud SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -1121,6 +1310,7 @@
     <script src="js/certificate.js"></script>
     <script src="js/messaging-capstone.js"></script>
     <script src="js/admin.js"></script>
+    <script src="js/admin-media.js"></script>
     <script src="js/app.js"></script>
 
     <script>
@@ -1139,6 +1329,9 @@
           }
           if (typeof MessagingPortal !== "undefined") {
             MessagingPortal.renderAdminChatQueue("adminInquiriesQueueContainer");
+          }
+          if (typeof AdminMedia !== "undefined") {
+            AdminMedia.init();
           }
           this.updateBadgeCounts();
 
@@ -1178,6 +1371,9 @@
             if (typeof MessagingPortal !== "undefined")
               MessagingPortal.renderAdminChatQueue("adminInquiriesQueueContainer");
           }
+          if (tabId === "tab-media") {
+            if (typeof AdminMedia !== "undefined") AdminMedia.render();
+          }
           this.updateBadgeCounts();
         },
 
@@ -1201,6 +1397,7 @@
           if (cConf) cConf.textContent = students.filter((s) => s.status === "Confirmed").length;
           if (cVer) cVer.textContent = students.filter((s) => s.status === "Payment Verified").length;
           if (cPend) cPend.textContent = students.filter((s) => s.status === "Pending").length;
+          if (typeof AdminMedia !== "undefined") AdminMedia.updateBadge();
         },
 
         quickFilterStatus: function (status, btn) {

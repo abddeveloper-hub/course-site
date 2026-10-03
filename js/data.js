@@ -461,6 +461,80 @@ const StorageService = {
   },
 
   // ------------------------------------------------------------------------
+  // MEDIA & VIDEO LIBRARY STORAGE
+  // ------------------------------------------------------------------------
+  getMedia: function () {
+    const data = localStorage.getItem("nexus_admin_media");
+    if (data) {
+      try {
+        return JSON.parse(data);
+      } catch (e) {}
+    }
+    const defaultMedia = [
+      {
+        id: "med-1",
+        title: "NVIDIA H100 SXM5 Supercomputing Cluster",
+        type: "photo",
+        url: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1200&q=80",
+        category: "Campus & Hardware",
+        track: "All Tracks",
+        caption: "Dedicated 8x SXM5 GPU nodes allocated for student distributed model training and LLM pre-training.",
+        date: "2026-10-01",
+        size: "2.4 MB"
+      },
+      {
+        id: "med-2",
+        title: "Foundations of Large Language Models & Deep Transformers",
+        type: "video",
+        url: "https://www.youtube.com/embed/kCc8FmEb1nY",
+        category: "Lecture Preview",
+        track: "Vibe Coding & AI Prototyping",
+        caption: "Comprehensive lecture walkthrough on self-attention mechanisms and latent embedding spaces.",
+        date: "2026-10-02",
+        size: "Stream HD"
+      },
+      {
+        id: "med-3",
+        title: "Executive Convocation & Gold-Seal Certificate Awarding",
+        type: "photo",
+        url: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=80",
+        category: "Graduation & Alumni",
+        track: "Full-Stack AI Solutions Architect",
+        caption: "Cohort Alpha graduation ceremony and honors distribution at Nexvion AI Research Campus.",
+        date: "2026-09-28",
+        size: "3.1 MB"
+      },
+      {
+        id: "med-4",
+        title: "Autonomous Multi-Agent Swarm Live Orchestration Screencast",
+        type: "video",
+        url: "https://www.youtube.com/embed/bZQun8Y4L2A",
+        category: "Lab Demo",
+        track: "Multi-Agent Swarms & Enterprise RAG",
+        caption: "Live demonstration of 4 autonomous agents compiling distributed vector pipelines.",
+        date: "2026-10-03",
+        size: "Stream 4K"
+      }
+    ];
+    localStorage.setItem("nexus_admin_media", JSON.stringify(defaultMedia));
+    return defaultMedia;
+  },
+
+  saveMediaItem: function (item) {
+    const list = this.getMedia();
+    list.unshift(item);
+    localStorage.setItem("nexus_admin_media", JSON.stringify(list));
+    return list;
+  },
+
+  deleteMediaItem: function (mediaId) {
+    let list = this.getMedia();
+    list = list.filter((m) => m.id !== mediaId);
+    localStorage.setItem("nexus_admin_media", JSON.stringify(list));
+    return list;
+  },
+
+  // ------------------------------------------------------------------------
   // CAPSTONE PROJECT PORTAL STORAGE
   // ------------------------------------------------------------------------
   getCapstones: function () {
