@@ -1,15 +1,15 @@
-// AI Nexus Academy - Firebase Cloud Infrastructure Integration
-// Project: course-site-be20c
+// NEXVION AI ACADEMY - Firebase Cloud Infrastructure Integration
+// Project: ai-cour
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCzJi-FfdUp_MlDPi7nf_Ue57TuPC7w9Vc",
-  authDomain: "course-site-be20c.firebaseapp.com",
-  databaseURL: "https://course-site-be20c-default-rtdb.firebaseio.com",
-  projectId: "course-site-be20c",
-  storageBucket: "course-site-be20c.firebasestorage.app",
-  messagingSenderId: "529718109500",
-  appId: "1:529718109500:web:814b606686b12b630daa39",
-  measurementId: "G-2CR5EBGC7R"
+  apiKey: "AIzaSyAMA6wZrsGy9MRJQAzYlMU9ZEjuU4GN5ts",
+  authDomain: "ai-cour.firebaseapp.com",
+  databaseURL: "https://ai-cour-default-rtdb.firebaseio.com",
+  projectId: "ai-cour",
+  storageBucket: "ai-cour.firebasestorage.app",
+  messagingSenderId: "452089438353",
+  appId: "1:452089438353:web:df7890f057fe6c2d431f30",
+  measurementId: "G-M1XG7Q3P9F",
 };
 
 // Initialize Firebase SDK Wrapper
@@ -21,9 +21,9 @@ const FirebaseService = {
   auth: null,
   isInitialized: false,
 
-  init: function() {
+  init: function () {
     try {
-      if (typeof firebase !== 'undefined') {
+      if (typeof firebase !== "undefined") {
         if (!firebase.apps.length) {
           this.app = firebase.initializeApp(firebaseConfig);
         } else {
@@ -51,7 +51,7 @@ const FirebaseService = {
         }
 
         this.isInitialized = true;
-        console.log("🔥 Firebase connected successfully to project: course-site-be20c");
+        console.log("🔥 Firebase connected successfully to project: ai-cour");
       } else {
         console.warn("⚠️ Firebase SDK not loaded, using local storage fallback.");
       }
@@ -61,7 +61,7 @@ const FirebaseService = {
   },
 
   // Save new student admission to Firebase Firestore & Realtime DB
-  saveStudentAdmission: async function(studentData) {
+  saveStudentAdmission: async function (studentData) {
     try {
       // 1. Save to Firestore
       if (this.db) {
@@ -80,7 +80,7 @@ const FirebaseService = {
         this.analytics.logEvent("course_enrollment_complete", {
           course_id: studentData.trackId,
           total_paid: studentData.totalPaid,
-          student_id: studentData.id
+          student_id: studentData.id,
         });
       }
     } catch (error) {
@@ -89,7 +89,7 @@ const FirebaseService = {
   },
 
   // Save Capstone Submission to Firestore
-  saveCapstone: async function(capstoneData) {
+  saveCapstone: async function (capstoneData) {
     try {
       if (this.db) {
         await this.db.collection("capstones").doc(capstoneData.id).set(capstoneData, { merge: true });
@@ -100,7 +100,7 @@ const FirebaseService = {
   },
 
   // Verify Certificate in Firestore
-  verifyCertificateInCloud: async function(certificateId) {
+  verifyCertificateInCloud: async function (certificateId) {
     try {
       if (this.db) {
         const query = await this.db.collection("students").where("certificateId", "==", certificateId).get();
@@ -115,16 +115,16 @@ const FirebaseService = {
   },
 
   // Log Custom User Actions in Firebase Analytics
-  logEvent: function(eventName, eventParams = {}) {
+  logEvent: function (eventName, eventParams = {}) {
     if (this.analytics) {
       try {
         this.analytics.logEvent(eventName, eventParams);
       } catch (e) {}
     }
-  }
+  },
 };
 
 // Auto-initialize on script load
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   window.FirebaseService = FirebaseService;
 }

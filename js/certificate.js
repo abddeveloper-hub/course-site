@@ -1,18 +1,18 @@
-// AI Nexus Academy - Google Professional Certificate Generator
+// NEXVION AI ACADEMY - Google Professional Certificate Generator
 // Modeled after official Google Career & Cloud Professional Certificates
 
 const AICertificateGenerator = {
   // Generate Verification Hash / Cert ID
-  generateCertId: function(studentId) {
+  generateCertId: function (studentId) {
     if (studentId) {
-      return `G-NEX-${studentId.replace('AI-', '')}`;
+      return `G-NEX-${studentId.replace("AI-", "")}`;
     }
     const rand = Math.floor(100000 + Math.random() * 900000);
     return `G-NEX-2026-${rand}`;
   },
 
   // Render Certificate DOM
-  renderCertificate: function(student, containerId, allowOverride = false) {
+  renderCertificate: function (student, containerId, allowOverride = false) {
     const container = document.getElementById(containerId);
     if (!container) return;
 
@@ -52,14 +52,16 @@ const AICertificateGenerator = {
     const certId = studentData.certificateId || this.generateCertId(studentData.id);
     const dateStr = studentData.certificateDate || studentData.registeredAt;
     const dateObj = dateStr ? new Date(dateStr) : new Date();
-    const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    const formattedDate = dateObj.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
     const qrSvg = IDCardGenerator.generateQRCodeSVG(certId);
 
-    const honorsBadge = studentData.certificateGrade ? `
+    const honorsBadge = studentData.certificateGrade
+      ? `
       <div style="margin-top: 6px; display: inline-flex; align-items: center; gap: 6px; background: rgba(26, 115, 232, 0.08); color: #1a73e8; border: 1px solid rgba(26, 115, 232, 0.25); padding: 4px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 700;">
         <i class="fas fa-medal" style="color:#fbbc04;"></i> ${studentData.certificateGrade}
       </div>
-    ` : '';
+    `
+      : "";
 
     const certHTML = `
       <div class="google-cert-outer-wrapper">
@@ -127,7 +129,7 @@ const AICertificateGenerator = {
                 <div class="google-sig-rule"></div>
                 <div class="google-sig-name">Dr. Sarah Sterling</div>
                 <div class="google-sig-title">Director of Artificial Intelligence</div>
-                <div class="google-sig-org">AI Nexus Academy of Intelligence</div>
+                <div class="google-sig-org">NEXVION AI ACADEMY of Intelligence</div>
               </div>
 
               <!-- Center Gold Verified Seal -->
@@ -166,7 +168,7 @@ const AICertificateGenerator = {
           <!-- Bottom Security Code Band -->
           <div class="google-cert-security-band">
             <div>ACCREDITED BY AI NEXUS ACADEMIC COUNCIL &bull; IN ACCORDANCE WITH ISO/IEC 17024 STANDARDS</div>
-            <div style="font-family:var(--font-mono);">SECURITY HASH: SHA256-${certId.replace(/-/g, '')}-VERIFIED</div>
+            <div style="font-family:var(--font-mono);">SECURITY HASH: SHA256-${certId.replace(/-/g, "")}-VERIFIED</div>
           </div>
 
         </div>
@@ -194,29 +196,29 @@ const AICertificateGenerator = {
   },
 
   // Print Certificate (triggers clean print preview)
-  printCertificate: function() {
+  printCertificate: function () {
     window.print();
   },
 
   // Share to LinkedIn Certification Modal
-  shareOnLinkedIn: function(name, track, certId) {
-    const orgName = encodeURIComponent("AI Nexus Academy");
+  shareOnLinkedIn: function (name, track, certId) {
+    const orgName = encodeURIComponent("NEXVION AI ACADEMY");
     const certName = encodeURIComponent(track);
     const certUrl = encodeURIComponent(`https://ainexus.edu/verify/${certId}`);
     const linkedInUrl = `https://www.linkedin.com/profile/add?startTask=CERTIFICATION_NAME&name=${certName}&organizationName=${orgName}&certId=${certId}&certUrl=${certUrl}`;
-    
-    window.open(linkedInUrl, '_blank');
+
+    window.open(linkedInUrl, "_blank");
     App.showToast("LinkedIn Redirect", "Opening LinkedIn Certification dialog...", "info");
   },
 
   // Save credential as text transcript
-  downloadCertificateData: function(name, certId) {
+  downloadCertificateData: function (name, certId) {
     const student = StorageService.getCurrentStudent();
     const track = student ? student.trackTitle : "Generative AI & Machine Learning Engineering";
     const date = student ? student.registeredAt : new Date().toISOString().slice(0, 10);
 
     const certText = `================================================================================
-AI NEXUS ACADEMY - PROFESSIONAL CAREER CERTIFICATE
+NEXVION AI ACADEMY - PROFESSIONAL CAREER CERTIFICATE
 ACCREDITATION & DIGITAL TRANSCRIPT OF COMPLETION
 ================================================================================
 
@@ -242,9 +244,9 @@ This official digital credential verifies that the recipient has fulfilled all
 academic, project, and examination requirements prescribed for this track.
 ================================================================================`;
 
-    const blob = new Blob([certText], { type: 'text/plain' });
+    const blob = new Blob([certText], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
     a.download = `AI_Nexus_Google_Certificate_${certId}.txt`;
     document.body.appendChild(a);
@@ -253,5 +255,5 @@ academic, project, and examination requirements prescribed for this track.
     URL.revokeObjectURL(url);
 
     App.showToast("Transcript Saved!", `Downloaded digital transcript: ${certId}`, "success");
-  }
+  },
 };

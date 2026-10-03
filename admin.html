@@ -1,1230 +1,1226 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Executive Admissions CRM & Management Console | AI Nexus Academy</title>
-  
-  <!-- SEO Metadata -->
-  <meta name="description" content="Enterprise CRM & Admissions Console for AI Nexus Academy - Manage student enrollments, cohort seat capacities, verify tuition records, and issue Google-grade certificates.">
-  <meta name="theme-color" content="#ffffff">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <title>Executive Admissions CRM & Management Console | NEXVION AI ACADEMY</title>
 
-  <!-- Google Fonts: Inter & Outfit -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- SEO Metadata -->
+    <meta
+      name="description"
+      content="Enterprise CRM & Admissions Console for NEXVION AI ACADEMY - Manage student enrollments, cohort seat capacities, verify tuition records, and issue Google-grade certificates."
+    />
+    <meta name="theme-color" content="#ffffff" />
 
-  <!-- FontAwesome Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono (Executive Alabaster) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
 
-  <!-- Core CSS -->
-  <link rel="stylesheet" href="css/style.css?v=2.4">
-  <link rel="stylesheet" href="css/components.css?v=2.4">
-  <link rel="stylesheet" href="css/mobile.css?v=2.4">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
-  <style>
-    :root {
-      --admin-sidebar-width: 300px;
-    }
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="css/style.css?v=2.4" />
+    <link rel="stylesheet" href="css/components.css?v=2.4" />
+    <link rel="stylesheet" href="css/mobile.css?v=2.4" />
 
-    body.admin-body {
-      background: #f8fafc;
-      color: #0f172a;
-      display: flex;
-      min-height: 100vh;
-      margin: 0;
-      font-family: var(--font-body);
-      font-size: 16px;
-      overflow-x: hidden;
-    }
+    <style>
+      body.admin-body {
+        background: #f8fafc;
+        color: #0f172a;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        margin: 0;
+        font-family: var(--font-body);
+        font-size: 16px;
+        overflow-x: hidden;
+      }
 
-    /* Sliding Left Sidebar Drawer */
-    .admin-sidebar {
-      width: var(--admin-sidebar-width);
-      background: #ffffff;
-      border-right: 1px solid #e2e8f0;
-      display: flex;
-      flex-direction: column;
-      position: fixed;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      z-index: 1000;
-      box-shadow: 6px 0 36px rgba(0, 0, 0, 0.15);
-      transform: translateX(-100%);
-      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    }
+      /* ---- Top Tab Bar ---- */
+      .admin-top-tabs {
+        display: flex;
+        gap: 4px;
+        align-items: center;
+        padding: 0 28px;
+        background: #fff;
+        border-bottom: 1px solid #e2e8f0;
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
 
-    .admin-sidebar.open {
-      transform: translateX(0);
-    }
+      .admin-top-tabs::-webkit-scrollbar {
+        display: none;
+      }
 
-    .admin-sidebar-header {
-      padding: 24px 22px;
-      border-bottom: 1px solid #f1f5f9;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px;
-    }
+      .admin-tab-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 16px 20px;
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: #64748b;
+        background: transparent;
+        border: none;
+        border-bottom: 3px solid transparent;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: all 0.15s ease;
+      }
 
-    .admin-brand-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, #7c3aed, #0284c7);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #ffffff;
-      font-size: 1.35rem;
-      box-shadow: 0 4px 12px rgba(124, 58, 237, 0.25);
-    }
+      .admin-tab-btn:hover {
+        color: #0f172a;
+        background: #f8fafc;
+      }
 
-    .admin-brand-title {
-      font-family: var(--font-heading);
-      font-weight: 800;
-      font-size: 1.15rem;
-      color: #0f172a;
-      line-height: 1.2;
-    }
+      .admin-tab-btn.active {
+        color: #7c3aed;
+        border-bottom-color: #7c3aed;
+        background: rgba(124, 58, 237, 0.04);
+      }
 
-    .admin-brand-sub {
-      font-size: 0.75rem;
-      font-weight: 800;
-      color: #7c3aed;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-    }
+      .admin-tab-btn .tab-count {
+        background: #e2e8f0;
+        color: #475569;
+        font-size: 0.72rem;
+        font-weight: 800;
+        padding: 2px 8px;
+        border-radius: 10px;
+      }
 
-    .admin-nav-group {
-      padding: 20px 14px 10px;
-    }
+      .admin-tab-btn.active .tab-count {
+        background: #7c3aed;
+        color: #fff;
+      }
 
-    .admin-nav-label {
-      font-size: 0.75rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: #94a3b8;
-      padding: 0 14px;
-      margin-bottom: 10px;
-    }
-
-    .admin-nav-menu {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      padding: 0;
-      margin: 0;
-    }
-
-    .admin-nav-item button,
-    .admin-nav-item a {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 13px 18px;
-      border-radius: 10px;
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: #475569;
-      text-decoration: none;
-      border: none;
-      background: transparent;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      text-align: left;
-    }
-
-    .admin-nav-item button:hover,
-    .admin-nav-item a:hover {
-      background: #f1f5f9;
-      color: #0f172a;
-    }
-
-    .admin-nav-item.active button {
-      background: rgba(124, 58, 237, 0.1);
-      color: #7c3aed;
-      font-weight: 800;
-    }
-
-    .admin-nav-left {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .admin-nav-left i {
-      font-size: 1.15rem;
-      width: 22px;
-      text-align: center;
-    }
-
-    .admin-badge-count {
-      font-size: 0.775rem;
-      font-weight: 800;
-      background: #e2e8f0;
-      color: #334155;
-      padding: 3px 9px;
-      border-radius: 12px;
-    }
-
-    .admin-nav-item.active .admin-badge-count {
-      background: #7c3aed;
-      color: #ffffff;
-    }
-
-    .admin-sidebar-footer {
-      margin-top: auto;
-      padding: 18px 22px;
-      border-top: 1px solid #f1f5f9;
-      background: #ffffff;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    /* Full-Width Workspace Wrapper */
-    .admin-main-wrapper {
-      margin-left: 0;
-      width: 100%;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      min-width: 0;
-    }
-
-    /* Top Enterprise Header */
-    .admin-top-header {
-      height: 78px;
-      background: #ffffff;
-      border-bottom: 1px solid #e2e8f0;
-      padding: 0 36px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 90;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
-    }
-
-    .admin-left-dots-btn {
-      width: 44px;
-      height: 44px;
-      border-radius: 10px;
-      border: 1px solid #e2e8f0;
-      background: #ffffff;
-      color: #0f172a;
-      font-size: 1.2rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
-      transition: all 0.15s ease;
-    }
-
-    .admin-left-dots-btn:hover {
-      background: #0f172a;
-      color: #ffffff;
-      border-color: #0f172a;
-    }
-
-    .admin-breadcrumbs {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 0.95rem;
-      color: #64748b;
-      font-weight: 600;
-    }
-
-    .admin-breadcrumbs strong {
-      color: #0f172a;
-      font-weight: 800;
-      font-size: 1.05rem;
-    }
-
-    .admin-top-actions {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .system-status-pill {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(5, 150, 105, 0.08);
-      color: #059669;
-      border: 1px solid rgba(5, 150, 105, 0.25);
-      padding: 7px 16px;
-      border-radius: 24px;
-      font-size: 0.85rem;
-      font-weight: 700;
-    }
-
-    .system-status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #059669;
-      animation: pulseGreen 2s infinite;
-    }
-
-    @keyframes pulseGreen {
-      0% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.4; transform: scale(1.2); }
-      100% { opacity: 1; transform: scale(1); }
-    }
-
-    .admin-pane {
-      display: none;
-      padding: 36px;
-    }
-
-    .admin-pane.active {
-      display: block;
-    }
-
-    .admin-card {
-      background: #ffffff;
-      border: 1px solid #e2e8f0;
-      border-radius: 16px;
-      padding: 28px;
-      margin-bottom: 28px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-    }
-
-    .admin-card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 22px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid #f1f5f9;
-    }
-
-    .admin-card-title {
-      font-size: 1.3rem;
-      font-weight: 800;
-      color: #0f172a;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .admin-card-desc {
-      font-size: 0.9rem;
-      color: #64748b;
-      margin-top: 4px;
-    }
-
-    .filter-chips-row {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
-
-    .filter-chip {
-      padding: 8px 18px;
-      border-radius: 24px;
-      font-size: 0.875rem;
-      font-weight: 700;
-      border: 1px solid #e2e8f0;
-      background: #ffffff;
-      color: #475569;
-      cursor: pointer;
-      transition: all 0.15s ease;
-    }
-
-    .filter-chip:hover, .filter-chip.active {
-      background: #0f172a;
-      color: #ffffff;
-      border-color: #0f172a;
-    }
-
-    @media (max-width: 992px) {
+      /* ---- Legacy sidebar stubs (kept for JS compat) ---- */
       .admin-sidebar {
+        display: none !important;
+      }
+
+      .admin-drawer-backdrop {
+        display: none !important;
+      }
+
+      /* KEEP this class from original */
+      .admin-sidebar {
+        display: none;
+        width: var(--admin-sidebar-width);
+        background: #ffffff;
+        border-right: 1px solid #e2e8f0;
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 1000;
+        box-shadow: 6px 0 36px rgba(0, 0, 0, 0.15);
         transform: translateX(-100%);
-        transition: transform 0.3s ease;
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       }
-      .admin-sidebar.open {
-        transform: translateX(0);
+
+      /* stub */
+      /* stub2 */
+      .admin-sidebar-extra {
+        display: none;
       }
+
+      /* Full-Width Workspace Wrapper */
       .admin-main-wrapper {
-        margin-left: 0;
+        width: 100%;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
       }
+
+      /* Top Header */
       .admin-top-header {
-        padding: 0 18px;
+        height: 64px;
+        background: #ffffff;
+        border-bottom: 1px solid #e2e8f0;
+        padding: 0 28px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: sticky;
+        top: 0;
+        z-index: 90;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
       }
+
+      .system-status-pill {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(5, 150, 105, 0.08);
+        color: #059669;
+        border: 1px solid rgba(5, 150, 105, 0.25);
+        padding: 6px 14px;
+        border-radius: 24px;
+        font-size: 0.82rem;
+        font-weight: 700;
+      }
+
+      .system-status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #059669;
+        animation: pulseGreen 2s infinite;
+      }
+
+      @keyframes pulseGreen {
+        0%,
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+
+        50% {
+          opacity: 0.4;
+          transform: scale(1.2);
+        }
+      }
+
       .admin-pane {
-        padding: 24px 18px;
+        display: none;
+        padding: 32px 36px;
       }
-    }
-  </style>
-</head>
-<body class="light-mode admin-body">
 
-  <!-- Left Sidebar Slide-In Backdrop Overlay -->
-  <div class="admin-drawer-backdrop" id="adminLeftNavBackdrop" onclick="AdminApp.toggleSidebar(false)"></div>
+      .admin-pane.active {
+        display: block;
+      }
 
-  <!-- ========================================================================
-       1. SLIDING LEFT NAVIGATION DRAWER (Opened via Left Three Dots Button)
-       ======================================================================== -->
-  <aside class="admin-sidebar" id="adminSidebar">
-    <!-- Brand Logo & Close Button -->
-    <div class="admin-sidebar-header">
-      <div style="display:flex; align-items:center; gap:12px;">
-        <div class="admin-brand-icon">
-          <i class="fas fa-user-shield"></i>
-        </div>
-        <div>
-          <div class="admin-brand-title">AI NEXUS</div>
-          <div class="admin-brand-sub">Admissions CRM v2.6</div>
-        </div>
-      </div>
-      <button class="drawer-close-btn" onclick="AdminApp.toggleSidebar(false)" title="Close Navigation Menu" aria-label="Close Menu">
-        <i class="fas fa-times"></i>
-      </button>
-    </div>
+      .admin-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 28px;
+        margin-bottom: 28px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+      }
 
-    <!-- Navigation Menu -->
-    <div class="admin-nav-group">
-      <div class="admin-nav-label">Core Modules</div>
+      .admin-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 22px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid #f1f5f9;
+      }
+
+      .admin-card-title {
+        font-size: 1.3rem;
+        font-weight: 800;
+        color: #0f172a;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .admin-card-desc {
+        font-size: 0.9rem;
+        color: #64748b;
+        margin-top: 4px;
+      }
+
+      .filter-chips-row {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+      }
+
+      .filter-chip {
+        padding: 8px 18px;
+        border-radius: 24px;
+        font-size: 0.875rem;
+        font-weight: 700;
+        border: 1px solid #e2e8f0;
+        background: #ffffff;
+        color: #475569;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+
+      .filter-chip:hover,
+      .filter-chip.active {
+        background: #0f172a;
+        color: #fff;
+        border-color: #0f172a;
+      }
+
+      @media (max-width: 768px) {
+        .admin-pane {
+          padding: 20px 16px;
+        }
+
+        .admin-top-header {
+          padding: 0 16px;
+        }
+
+        .admin-top-tabs {
+          padding: 0 8px;
+        }
+
+        .admin-tab-btn {
+          padding: 14px 12px;
+          font-size: 0.8rem;
+        }
+
+        .system-status-pill span {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+
+  <body class="light-mode admin-body">
+    <!-- Hidden stubs to keep JS compatibility -->
+    <div id="adminLeftNavBackdrop" style="display: none"></div>
+    <aside id="adminSidebar" style="display: none">
       <ul class="admin-nav-menu">
-        <li class="admin-nav-item active" data-tab="tab-overview">
-          <button onclick="AdminApp.switchTab('tab-overview')">
-            <span class="admin-nav-left">
-              <i class="fas fa-chart-pie" style="color:#7c3aed;"></i> Dashboard Overview
-            </span>
-            <span class="admin-badge-count" id="badgeTotalOverview">0</span>
-          </button>
-        </li>
-        <li class="admin-nav-item" data-tab="tab-students">
-          <button onclick="AdminApp.switchTab('tab-students')">
-            <span class="admin-nav-left">
-              <i class="fas fa-user-graduate" style="color:#0284c7;"></i> Student Database
-            </span>
-            <span class="admin-badge-count" id="badgeStudentRoster">0</span>
-          </button>
-        </li>
-        <li class="admin-nav-item" data-tab="tab-batches">
-          <button onclick="AdminApp.switchTab('tab-batches')">
-            <span class="admin-nav-left">
-              <i class="fas fa-layer-group" style="color:#059669;"></i> Cohorts & Batches
-            </span>
-            <span class="admin-badge-count">3</span>
-          </button>
-        </li>
-        <li class="admin-nav-item" data-tab="tab-certificates">
-          <button onclick="AdminApp.switchTab('tab-certificates')">
-            <span class="admin-nav-left">
-              <i class="fas fa-award" style="color:#eab308;"></i> Google Certificates
-            </span>
-            <span class="admin-badge-count"><i class="fas fa-check" style="font-size:0.6rem;"></i></span>
-          </button>
-        </li>
-        <li class="admin-nav-item" data-tab="tab-capstones">
-          <button onclick="AdminApp.switchTab('tab-capstones')">
-            <span class="admin-nav-left">
-              <i class="fas fa-microchip" style="color:#d946ef;"></i> Capstones & Inquiries
-            </span>
-            <span class="admin-badge-count" id="badgeCapstonesCount">0</span>
-          </button>
-        </li>
+        <li class="admin-nav-item active" data-tab="tab-overview"><button></button></li>
+        <li class="admin-nav-item" data-tab="tab-students"><button></button></li>
+        <li class="admin-nav-item" data-tab="tab-batches"><button></button></li>
+        <li class="admin-nav-item" data-tab="tab-certificates"><button></button></li>
+        <li class="admin-nav-item" data-tab="tab-capstones"><button></button></li>
       </ul>
-    </div>
+    </aside>
 
-    <div class="admin-nav-group">
-      <div class="admin-nav-label">Quick Actions</div>
-      <ul class="admin-nav-menu">
-        <li class="admin-nav-item">
-          <button onclick="AdminDashboard.openAddBatchModal(); AdminApp.toggleSidebar(false);">
-            <span class="admin-nav-left">
-              <i class="fas fa-calendar-plus" style="color:#0284c7;"></i> Create New Batch
-            </span>
-            <i class="fas fa-plus" style="font-size:0.75rem; color:#94a3b8;"></i>
-          </button>
-        </li>
-        <li class="admin-nav-item">
-          <button onclick="AdminDashboard.exportToCSV(); AdminApp.toggleSidebar(false);">
-            <span class="admin-nav-left">
-              <i class="fas fa-file-csv" style="color:#059669;"></i> Export Student CSV
-            </span>
-            <i class="fas fa-download" style="font-size:0.75rem; color:#94a3b8;"></i>
-          </button>
-        </li>
-        <li class="admin-nav-item">
-          <button onclick="StorageService.resetToDefault(); AdminDashboard.render(); App.showToast('Reset Complete', 'Demo student database restored.', 'info'); AdminApp.toggleSidebar(false);">
-            <span class="admin-nav-left">
-              <i class="fas fa-redo" style="color:#e11d48;"></i> Reset Demo Database
-            </span>
-          </button>
-        </li>
-      </ul>
-    </div>
-
-    <div class="admin-nav-group">
-      <div class="admin-nav-label">Platform Portal</div>
-      <ul class="admin-nav-menu">
-        <li class="admin-nav-item">
-          <a href="index.html">
-            <span class="admin-nav-left">
-              <i class="fas fa-globe" style="color:#64748b;"></i> Main Website
-            </span>
-            <i class="fas fa-external-link-alt" style="font-size:0.75rem; color:#94a3b8;"></i>
-          </a>
-        </li>
-        <li class="admin-nav-item">
-          <a href="index.html#student-hub" target="_blank">
-            <span class="admin-nav-left">
-              <i class="fas fa-graduation-cap" style="color:#1a73e8;"></i> Student Hub Portal
-            </span>
-            <i class="fas fa-external-link-alt" style="font-size:0.75rem; color:#94a3b8;"></i>
-          </a>
-        </li>
-      </ul>
-    </div>
-
-    <!-- Admin User Profile Footer -->
-    <div class="admin-sidebar-footer">
-      <div style="display:flex; align-items:center; gap:10px;">
-        <div style="width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg, #7c3aed, #0284c7); color:#ffffff; font-weight:800; font-size:0.8rem; display:flex; align-items:center; justify-content:center;">
-          SS
+    <div class="admin-main-wrapper">
+      <!-- ── Top Header ── -->
+      <header class="admin-top-header" style="position: sticky; top: 0; z-index: 100">
+        <div style="display: flex; align-items: center; gap: 14px">
+          <div
+            style="
+              width: 36px;
+              height: 36px;
+              border-radius: 10px;
+              background: linear-gradient(135deg, #7c3aed, #0284c7);
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              color: #fff;
+              font-size: 1rem;
+            "
+          >
+            <i class="fas fa-user-shield"></i>
+          </div>
+          <div>
+            <div style="font-weight: 900; font-size: 1rem; color: #0f172a; letter-spacing: 0.02em">
+              NEXVION AI ACADEMY
+            </div>
+            <div style="font-size: 0.7rem; color: #7c3aed; font-weight: 700; letter-spacing: 0.08em">ADMIN CRM</div>
+          </div>
         </div>
-        <div>
-          <div style="font-size:0.825rem; font-weight:700; color:#0f172a; line-height:1.1;">Dr. Sarah Sterling</div>
-          <div style="font-size:0.68rem; color:#7c3aed; font-weight:600;">Dean of AI Research</div>
+        <div style="display: flex; align-items: center; gap: 12px">
+          <div class="system-status-pill">
+            <div class="system-status-dot"></div>
+            <span>Live Sync</span>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="AdminDashboard.openAddBatchModal()">
+            <i class="fas fa-plus"></i> New Batch
+          </button>
+          <a href="index.html" class="btn btn-secondary btn-sm"> <i class="fas fa-arrow-left"></i> Exit </a>
         </div>
-      </div>
-      <a href="index.html" title="Exit Admin Console" style="color:#e11d48; padding:6px; font-size:0.9rem; text-decoration:none;">
-        <i class="fas fa-sign-out-alt"></i>
-      </a>
-    </div>
-  </aside>
+      </header>
 
-  <!-- ========================================================================
-       2. MAIN FULL-WIDTH WORKSPACE AREA
-       ======================================================================== -->
-  <div class="admin-main-wrapper">
-    
-    <!-- Top Enterprise Header with Single Three Dots Button on the Left -->
-    <header class="admin-top-header">
-      <div style="display:flex; align-items:center; gap:16px;">
-        <!-- Single Three-Dots Button on the Left to Slide Navigation Drawer -->
-        <button class="admin-left-dots-btn" id="adminSidebarToggle" onclick="AdminApp.toggleSidebar()" title="Toggle Navigation Menu" aria-label="Toggle Navigation Menu">
-          <i class="fas fa-ellipsis-v"></i>
+      <!-- ── Permanent Tab Bar ── -->
+      <nav class="admin-top-tabs">
+        <button class="admin-tab-btn active" id="tabBtn-overview" onclick="AdminApp.switchTab('tab-overview')">
+          <i class="fas fa-chart-pie" style="color: #7c3aed"></i> Overview
+          <span class="tab-count" id="badgeTotalOverview">0</span>
         </button>
-
-        <div class="admin-breadcrumbs">
-          <i class="fas fa-shield-alt" style="color:#7c3aed;"></i>
-          <span>Admin Portal</span>
-          <span>/</span>
-          <strong id="breadcrumbCurrentTab">Dashboard Overview</strong>
-        </div>
-      </div>
-
-      <div class="admin-top-actions">
-        <div class="system-status-pill">
-          <div class="system-status-dot"></div>
-          <span>Live Admissions Sync</span>
-        </div>
-
-        <button class="btn btn-primary btn-sm" onclick="AdminDashboard.openAddBatchModal()">
-          <i class="fas fa-plus"></i> New Batch
+        <button class="admin-tab-btn" id="tabBtn-students" onclick="AdminApp.switchTab('tab-students')">
+          <i class="fas fa-user-graduate" style="color: #0284c7"></i> Students
+          <span class="tab-count" id="badgeStudentRoster">0</span>
         </button>
+        <button class="admin-tab-btn" id="tabBtn-batches" onclick="AdminApp.switchTab('tab-batches')">
+          <i class="fas fa-layer-group" style="color: #059669"></i> Batches
+        </button>
+        <button class="admin-tab-btn" id="tabBtn-certificates" onclick="AdminApp.switchTab('tab-certificates')">
+          <i class="fas fa-award" style="color: #eab308"></i> Certificates
+        </button>
+        <button class="admin-tab-btn" id="tabBtn-capstones" onclick="AdminApp.switchTab('tab-capstones')">
+          <i class="fas fa-microchip" style="color: #d946ef"></i> Capstones
+          <span class="tab-count" id="badgeCapstonesCount">0</span>
+        </button>
+        <div style="margin-left: auto; display: flex; align-items: center; gap: 8px; padding: 0 8px">
+          <button class="btn btn-secondary btn-sm" style="font-size: 0.78rem" onclick="AdminDashboard.exportToCSV()">
+            <i class="fas fa-file-csv"></i> Export CSV
+          </button>
+        </div>
+      </nav>
 
-        <a href="index.html" class="btn btn-secondary btn-sm">
-          <i class="fas fa-external-link-alt"></i> Live Site
-        </a>
-      </div>
-    </header>
+      <!-- Toast Notification Container -->
+      <div class="toast-container" id="toastContainer"></div>
 
-    <!-- Toast Notification Container -->
-    <div class="toast-container" id="toastContainer"></div>
-
-    <!-- ========================================================================
+      <!-- ========================================================================
          TAB 1: DASHBOARD OVERVIEW & ANALYTICS
          ======================================================================== -->
-    <section class="admin-pane active" id="tab-overview">
-      <!-- Welcome Header -->
-      <div style="margin-bottom:24px;">
-        <h2 style="font-size:1.6rem; font-weight:800; color:#0f172a; margin-bottom:4px;">
-          Welcome back, <span class="gradient-violet-text">Dr. Sterling</span>
-        </h2>
-        <p style="color:#64748b; font-size:0.875rem;">Here is the real-time summary of AI course applications, cohort capacities, and tuition revenue.</p>
-      </div>
-
-      <!-- KPI Metrics Cards Grid -->
-      <div class="admin-kpi-grid" style="margin-bottom:28px;">
-        <div class="kpi-card">
-          <div class="kpi-icon" style="background:rgba(2, 132, 199, 0.1); color:var(--neon-cyan);">
-            <i class="fas fa-users"></i>
-          </div>
-          <div class="kpi-data">
-            <h3 id="kpiTotalStudents">0</h3>
-            <p>Total Enrolled Students</p>
-          </div>
+      <section class="admin-pane active" id="tab-overview">
+        <!-- Welcome Header -->
+        <div style="margin-bottom: 24px">
+          <h2 style="font-size: 1.6rem; font-weight: 800; color: #0f172a; margin-bottom: 4px">
+            Welcome back, <span class="gradient-violet-text">Dr. Sterling</span>
+          </h2>
+          <p style="color: #64748b; font-size: 0.875rem">
+            Here is the real-time summary of AI course applications, cohort capacities, and tuition revenue.
+          </p>
         </div>
 
-        <div class="kpi-card">
-          <div class="kpi-icon" style="background:rgba(5, 150, 105, 0.1); color:var(--neon-emerald);">
-            <i class="fas fa-rupee-sign"></i>
-          </div>
-          <div class="kpi-data">
-            <h3 id="kpiTotalRevenue">₹0</h3>
-            <p>Tuition Revenue Collected</p>
-          </div>
-        </div>
-
-        <div class="kpi-card">
-          <div class="kpi-icon" style="background:rgba(124, 58, 237, 0.1); color:var(--neon-violet);">
-            <i class="fas fa-chart-pie"></i>
-          </div>
-          <div class="kpi-data">
-            <h3 id="kpiOccupancy">0%</h3>
-            <p>Average Cohort Fill Rate</p>
-          </div>
-        </div>
-
-        <div class="kpi-card">
-          <div class="kpi-icon" style="background:rgba(225, 29, 72, 0.1); color:var(--neon-rose);">
-            <i class="fas fa-fire"></i>
-          </div>
-          <div class="kpi-data">
-            <h3 id="kpiTopTrack" style="font-size:1.25rem;">—</h3>
-            <p>Highest Demand Track</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Cohort Batch Capacities Card -->
-      <div class="admin-card">
-        <div class="admin-card-header">
-          <div>
-            <div class="admin-card-title">
-              <i class="fas fa-layer-group" style="color:var(--neon-cyan);"></i> Live Cohort Seat Capacities
+        <!-- KPI Metrics Cards Grid -->
+        <div class="admin-kpi-grid" style="margin-bottom: 28px">
+          <div class="kpi-card">
+            <div class="kpi-icon" style="background: rgba(2, 132, 199, 0.1); color: var(--neon-cyan)">
+              <i class="fas fa-users"></i>
             </div>
-            <div class="admin-card-desc">Real-time seat occupancy and availability across active cohorts.</div>
-          </div>
-          <button class="btn btn-secondary btn-sm" onclick="AdminDashboard.openAddBatchModal()">
-            <i class="fas fa-plus"></i> Add Batch
-          </button>
-        </div>
-
-        <div id="adminBatchMeters">
-          <!-- Populated dynamically -->
-        </div>
-      </div>
-
-      <!-- Quick Recent Applicants Card -->
-      <div class="admin-card">
-        <div class="admin-card-header">
-          <div>
-            <div class="admin-card-title">
-              <i class="fas fa-clock" style="color:#7c3aed;"></i> Recent Admissions & Applications
+            <div class="kpi-data">
+              <h3 id="kpiTotalStudents">0</h3>
+              <p>Total Enrolled Students</p>
             </div>
-            <div class="admin-card-desc">Review student verification statuses and issue credentials.</div>
-          </div>
-          <button class="btn btn-secondary btn-sm" onclick="AdminApp.switchTab('tab-students')">
-            View All Students <i class="fas fa-arrow-right" style="margin-left:4px;"></i>
-          </button>
-        </div>
-
-        <div class="admin-table-container">
-          <table class="admin-table">
-            <thead>
-              <tr>
-                <th>Student ID</th>
-                <th>Full Name & Email</th>
-                <th>Enrolled Track</th>
-                <th>Tuition Paid</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="overviewRecentStudentsTable">
-              <!-- Populated dynamically -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- ========================================================================
-         TAB 2: FULL STUDENT CRM DATABASE
-         ======================================================================== -->
-    <section class="admin-pane" id="tab-students">
-      <div style="margin-bottom:20px;">
-        <h2 style="font-size:1.6rem; font-weight:800; color:#0f172a; margin-bottom:4px;">
-          Student Admissions <span class="gradient-violet-text">Database & CRM</span>
-        </h2>
-        <p style="color:#64748b; font-size:0.875rem;">Search, filter, update payment verification statuses, and generate official student passes.</p>
-      </div>
-
-      <div class="admin-card">
-        <!-- Advanced Toolbar -->
-        <div class="admin-toolbar">
-          <div class="admin-search-wrap" style="flex:1; min-width:260px;">
-            <i class="fas fa-search"></i>
-            <input type="text" class="admin-search-input" id="adminSearchInput" placeholder="Search by student name, email, or Student ID (e.g. AI-2026-9182)...">
           </div>
 
-          <div style="display:flex; gap:10px; flex-wrap:wrap;">
-            <select class="select-custom" id="adminTrackFilter" style="width:auto; padding:10px 14px; font-size:0.85rem;">
-              <option value="ALL">All AI Tracks</option>
-              <option value="ai-beginners">Tier 1: Vibe Coding Softwares</option>
-              <option value="applied-ml-ds">Tier 2: Hosting & Deployment</option>
-              <option value="genai-agents">Tier 3: APIs & Backend Services</option>
-              <option value="fullstack-ai-engineer">Tier 4: Advanced AI & MLOps</option>
-            </select>
+          <div class="kpi-card">
+            <div class="kpi-icon" style="background: rgba(5, 150, 105, 0.1); color: var(--neon-emerald)">
+              <i class="fas fa-rupee-sign"></i>
+            </div>
+            <div class="kpi-data">
+              <h3 id="kpiTotalRevenue">₹0</h3>
+              <p>Tuition Revenue Collected</p>
+            </div>
+          </div>
 
-            <select class="select-custom" id="adminStatusFilter" style="width:auto; padding:10px 14px; font-size:0.85rem;">
-              <option value="ALL">All Statuses</option>
-              <option value="Confirmed">Confirmed</option>
-              <option value="Payment Verified">Payment Verified</option>
-              <option value="Pending">Pending</option>
-              <option value="Waitlisted">Waitlisted</option>
-            </select>
+          <div class="kpi-card">
+            <div class="kpi-icon" style="background: rgba(124, 58, 237, 0.1); color: var(--neon-violet)">
+              <i class="fas fa-chart-pie"></i>
+            </div>
+            <div class="kpi-data">
+              <h3 id="kpiOccupancy">0%</h3>
+              <p>Average Cohort Fill Rate</p>
+            </div>
+          </div>
 
-            <button class="btn btn-primary btn-sm" onclick="AdminDashboard.exportToCSV()">
-              <i class="fas fa-file-csv"></i> Export CSV
-            </button>
+          <div class="kpi-card">
+            <div class="kpi-icon" style="background: rgba(225, 29, 72, 0.1); color: var(--neon-rose)">
+              <i class="fas fa-fire"></i>
+            </div>
+            <div class="kpi-data">
+              <h3 id="kpiTopTrack" style="font-size: 1.25rem">—</h3>
+              <p>Highest Demand Track</p>
+            </div>
           </div>
         </div>
 
-        <!-- Status Summary Chips -->
-        <div class="filter-chips-row" id="adminFilterChipsRow">
-          <span class="filter-chip active" onclick="AdminApp.quickFilterStatus('ALL', this)">All (<span id="chipCountAll">0</span>)</span>
-          <span class="filter-chip" onclick="AdminApp.quickFilterStatus('Confirmed', this)"><i class="fas fa-check-circle" style="color:#059669;"></i> Confirmed (<span id="chipCountConfirmed">0</span>)</span>
-          <span class="filter-chip" onclick="AdminApp.quickFilterStatus('Payment Verified', this)"><i class="fas fa-rupee-sign" style="color:#0284c7;"></i> Payment Verified (<span id="chipCountVerified">0</span>)</span>
-          <span class="filter-chip" onclick="AdminApp.quickFilterStatus('Pending', this)"><i class="fas fa-clock" style="color:#d97706;"></i> Pending (<span id="chipCountPending">0</span>)</span>
-        </div>
-
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-          <span class="demo-nav-badge" id="adminStudentCountBadge">0 Applications</span>
-          <button class="btn btn-secondary btn-sm" style="font-size:0.75rem; padding:4px 10px;" onclick="StorageService.resetToDefault(); AdminDashboard.render(); App.showToast('Database Cleared', 'All records have been reset to zero.', 'info');">
-            <i class="fas fa-redo"></i> Reset Database
-          </button>
-        </div>
-
-        <!-- Full Table -->
-        <div class="admin-table-container">
-          <table class="admin-table">
-            <thead>
-              <tr>
-                <th>Student ID</th>
-                <th>Full Name & Email</th>
-                <th>Selected Track & Batch</th>
-                <th>Tuition Paid (₹)</th>
-                <th>Status</th>
-                <th>Date</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="adminStudentTableBody">
-              <!-- Populated dynamically -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- ========================================================================
-         TAB 3: COHORT BATCHES & SCHEDULE MANAGER
-         ======================================================================== -->
-    <section class="admin-pane" id="tab-batches">
-      <div style="margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
-        <div>
-          <h2 style="font-size:1.6rem; font-weight:800; color:#0f172a; margin-bottom:4px;">
-            Cohort Batches & <span class="gradient-text">Class Schedules</span>
-          </h2>
-          <p style="color:#64748b; font-size:0.875rem;">Manage batch capacity limits, schedules, live classroom links, and cohort start dates.</p>
-        </div>
-        <button class="btn btn-primary" onclick="AdminDashboard.openAddBatchModal()">
-          <i class="fas fa-plus"></i> Create New Cohort
-        </button>
-      </div>
-
-      <div class="admin-card">
-        <div class="admin-card-header">
-          <div class="admin-card-title">
-            <i class="fas fa-calendar-alt" style="color:var(--neon-cyan);"></i> Active Cohort Catalog
-          </div>
-        </div>
-
-        <div id="adminBatchDetailGrid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:20px;">
-          <!-- Populated dynamically -->
-        </div>
-      </div>
-    </section>
-
-    <!-- ========================================================================
-         TAB 4: CERTIFICATE REGISTRY & ALLOTMENT (Feature: Allow Admin to Allot Certificate)
-         ======================================================================== -->
-    <section class="admin-pane" id="tab-certificates">
-      <div style="margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px;">
-        <div>
-          <h2 style="font-size:1.6rem; font-weight:800; color:#0f172a; margin-bottom:4px;">
-            Google-Grade AI <span class="gradient-text">Certificate Registry</span>
-          </h2>
-          <p style="color:#64748b; font-size:0.875rem;">Allot, grant, verify, and authorize official accredited Google-grade diplomas for students.</p>
-        </div>
-        <div style="display:flex; gap:10px;">
-          <button class="btn btn-primary" onclick="AdminDashboard.openAllotCertModal()">
-            <i class="fas fa-stamp"></i> Allot Certificate
-          </button>
-          <button class="btn btn-secondary" onclick="AdminDashboard.allotAllEligibleStudents()">
-            <i class="fas fa-magic"></i> Allot All Eligible
-          </button>
-        </div>
-      </div>
-
-      <div class="admin-card">
-        <div class="admin-card-header">
-          <div class="admin-card-title">
-            <i class="fas fa-award" style="color:#eab308;"></i> Certificate Verification & Allotment Registry
-          </div>
-        </div>
-
-        <div class="admin-table-container">
-          <table class="admin-table">
-            <thead>
-              <tr>
-                <th>Certificate ID</th>
-                <th>Recipient Name</th>
-                <th>Accredited Specialization</th>
-                <th>Academic Honors</th>
-                <th>Issue Date</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="adminCertificatesTableBody">
-              <!-- Populated dynamically -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- ========================================================================
-         TAB 5: CAPSTONE PROJECT EVALUATION & INQUIRIES QUEUE
-         ======================================================================== -->
-    <section class="admin-pane" id="tab-capstones">
-      <div style="margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
-        <div>
-          <h2 style="font-size:1.6rem; font-weight:800; color:#0f172a; margin-bottom:4px;">
-            Graduation Capstones & <span class="gradient-text">Mentorship Inquiries</span>
-          </h2>
-          <p style="color:#64748b; font-size:0.875rem;">Evaluate candidate model repositories, score academic distinctions, and send direct faculty guidance.</p>
-        </div>
-        <button class="btn btn-secondary btn-sm" onclick="CapstonePortal.renderAdminCapstoneTable('adminCapstonesTableBody'); MessagingPortal.renderAdminChatQueue('adminInquiriesQueueContainer'); App.showToast('Data Synced', 'Capstone roster & inquiries refreshed.', 'info');">
-          <i class="fas fa-sync"></i> Refresh Submissions
-        </button>
-      </div>
-
-      <div class="admin-grid-2" style="margin-bottom:24px;">
-        
-        <!-- Left: Capstone Evaluation Table -->
+        <!-- Cohort Batch Capacities Card -->
         <div class="admin-card">
           <div class="admin-card-header">
-            <div class="admin-card-title">
-              <i class="fas fa-microchip" style="color:#0284c7;"></i> Capstone Project Submissions
+            <div>
+              <div class="admin-card-title">
+                <i class="fas fa-layer-group" style="color: var(--neon-cyan)"></i> Live Cohort Seat Capacities
+              </div>
+              <div class="admin-card-desc">Real-time seat occupancy and availability across active cohorts.</div>
             </div>
-            <span class="demo-nav-badge">Evaluation Queue</span>
+            <button class="btn btn-secondary btn-sm" onclick="AdminDashboard.openAddBatchModal()">
+              <i class="fas fa-plus"></i> Add Batch
+            </button>
+          </div>
+
+          <div id="adminBatchMeters">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+
+        <!-- Quick Recent Applicants Card -->
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <div>
+              <div class="admin-card-title">
+                <i class="fas fa-clock" style="color: #7c3aed"></i> Recent Admissions & Applications
+              </div>
+              <div class="admin-card-desc">Review student verification statuses and issue credentials.</div>
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="AdminApp.switchTab('tab-students')">
+              View All Students <i class="fas fa-arrow-right" style="margin-left: 4px"></i>
+            </button>
           </div>
 
           <div class="admin-table-container">
             <table class="admin-table">
               <thead>
                 <tr>
-                  <th>ID</th>
-                  <th>Student</th>
-                  <th>Capstone Title & Repo</th>
-                  <th>Track</th>
+                  <th>Student ID</th>
+                  <th>Full Name & Email</th>
+                  <th>Enrolled Track</th>
+                  <th>Tuition Paid</th>
                   <th>Status</th>
-                  <th>Grade</th>
                   <th>Actions</th>
                 </tr>
               </thead>
-              <tbody id="adminCapstonesTableBody">
-                <!-- Populated dynamically by CapstonePortal -->
+              <tbody id="overviewRecentStudentsTable">
+                <!-- Populated dynamically -->
               </tbody>
             </table>
           </div>
         </div>
+      </section>
 
-        <!-- Right: Student Mentorship Support Queue -->
+      <!-- ========================================================================
+         TAB 2: FULL STUDENT CRM DATABASE
+         ======================================================================== -->
+      <section class="admin-pane" id="tab-students">
+        <div style="margin-bottom: 20px">
+          <h2 style="font-size: 1.6rem; font-weight: 800; color: #0f172a; margin-bottom: 4px">
+            Student Admissions <span class="gradient-violet-text">Database & CRM</span>
+          </h2>
+          <p style="color: #64748b; font-size: 0.875rem">
+            Search, filter, update payment verification statuses, and generate official student passes.
+          </p>
+        </div>
+
+        <div class="admin-card">
+          <!-- Advanced Toolbar -->
+          <div class="admin-toolbar">
+            <div class="admin-search-wrap" style="flex: 1; min-width: 260px">
+              <i class="fas fa-search"></i>
+              <input
+                type="text"
+                class="admin-search-input"
+                id="adminSearchInput"
+                placeholder="Search by student name, email, or Student ID (e.g. AI-2026-9182)..."
+              />
+            </div>
+
+            <div style="display: flex; gap: 10px; flex-wrap: wrap">
+              <select
+                class="select-custom"
+                id="adminTrackFilter"
+                style="width: auto; padding: 10px 14px; font-size: 0.85rem"
+              >
+                <option value="ALL">All AI Tracks</option>
+                <option value="ai-foundations-free">Free Tier: AI Foundations (₹0)</option>
+                <option value="ai-beginners">Tier 1: Vibe Coding Softwares</option>
+                <option value="applied-ml-ds">Tier 2: Hosting & Deployment</option>
+                <option value="genai-agents">Tier 3: APIs & Backend Services</option>
+                <option value="fullstack-ai-engineer">Tier 4: Advanced AI & MLOps</option>
+              </select>
+
+              <select
+                class="select-custom"
+                id="adminStatusFilter"
+                style="width: auto; padding: 10px 14px; font-size: 0.85rem"
+              >
+                <option value="ALL">All Statuses</option>
+                <option value="Confirmed">Confirmed</option>
+                <option value="Payment Verified">Payment Verified</option>
+                <option value="Pending">Pending</option>
+                <option value="Waitlisted">Waitlisted</option>
+              </select>
+
+              <button class="btn btn-primary btn-sm" onclick="AdminDashboard.exportToCSV()">
+                <i class="fas fa-file-csv"></i> Export CSV
+              </button>
+            </div>
+          </div>
+
+          <!-- Status Summary Chips -->
+          <div class="filter-chips-row" id="adminFilterChipsRow">
+            <span class="filter-chip active" onclick="AdminApp.quickFilterStatus('ALL', this)"
+              >All (<span id="chipCountAll">0</span>)</span
+            >
+            <span class="filter-chip" onclick="AdminApp.quickFilterStatus('Confirmed', this)"
+              ><i class="fas fa-check-circle" style="color: #059669"></i> Confirmed (<span id="chipCountConfirmed"
+                >0</span
+              >)</span
+            >
+            <span class="filter-chip" onclick="AdminApp.quickFilterStatus('Payment Verified', this)"
+              ><i class="fas fa-rupee-sign" style="color: #0284c7"></i> Payment Verified (<span id="chipCountVerified"
+                >0</span
+              >)</span
+            >
+            <span class="filter-chip" onclick="AdminApp.quickFilterStatus('Pending', this)"
+              ><i class="fas fa-clock" style="color: #d97706"></i> Pending (<span id="chipCountPending">0</span>)</span
+            >
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px">
+            <span class="demo-nav-badge" id="adminStudentCountBadge">0 Applications</span>
+            <button
+              class="btn btn-secondary btn-sm"
+              style="font-size: 0.75rem; padding: 4px 10px"
+              onclick="
+                StorageService.resetToDefault();
+                AdminDashboard.render();
+                App.showToast('Database Cleared', 'All records have been reset to zero.', 'info');
+              "
+            >
+              <i class="fas fa-redo"></i> Reset Database
+            </button>
+          </div>
+
+          <!-- Full Table -->
+          <div class="admin-table-container">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Student ID</th>
+                  <th>Full Name & Email</th>
+                  <th>Selected Track & Batch</th>
+                  <th>Tuition Paid (₹)</th>
+                  <th>Status</th>
+                  <th>Date</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="adminStudentTableBody">
+                <!-- Populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================================================
+         TAB 3: COHORT BATCHES & SCHEDULE MANAGER
+         ======================================================================== -->
+      <section class="admin-pane" id="tab-batches">
+        <div
+          style="
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+          "
+        >
+          <div>
+            <h2 style="font-size: 1.6rem; font-weight: 800; color: #0f172a; margin-bottom: 4px">
+              Cohort Batches & <span class="gradient-text">Class Schedules</span>
+            </h2>
+            <p style="color: #64748b; font-size: 0.875rem">
+              Manage batch capacity limits, schedules, live classroom links, and cohort start dates.
+            </p>
+          </div>
+          <button class="btn btn-primary" onclick="AdminDashboard.openAddBatchModal()">
+            <i class="fas fa-plus"></i> Create New Cohort
+          </button>
+        </div>
+
         <div class="admin-card">
           <div class="admin-card-header">
             <div class="admin-card-title">
-              <i class="fas fa-comments" style="color:#7c3aed;"></i> Mentorship Inquiries Queue
+              <i class="fas fa-calendar-alt" style="color: var(--neon-cyan)"></i> Active Cohort Catalog
             </div>
           </div>
-          
-          <div id="adminInquiriesQueueContainer" style="max-height:500px; overflow-y:auto;">
-            <!-- Populated dynamically by MessagingPortal -->
+
+          <div
+            id="adminBatchDetailGrid"
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px"
+          >
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================================================
+         TAB 4: CERTIFICATE REGISTRY & ALLOTMENT (Feature: Allow Admin to Allot Certificate)
+         ======================================================================== -->
+      <section class="admin-pane" id="tab-certificates">
+        <div
+          style="
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 14px;
+          "
+        >
+          <div>
+            <h2 style="font-size: 1.6rem; font-weight: 800; color: #0f172a; margin-bottom: 4px">
+              Google-Grade AI <span class="gradient-text">Certificate Registry</span>
+            </h2>
+            <p style="color: #64748b; font-size: 0.875rem">
+              Allot, grant, verify, and authorize official accredited Google-grade diplomas for students.
+            </p>
+          </div>
+          <div style="display: flex; gap: 10px">
+            <button class="btn btn-primary" onclick="AdminDashboard.openAllotCertModal()">
+              <i class="fas fa-stamp"></i> Allot Certificate
+            </button>
+            <button class="btn btn-secondary" onclick="AdminDashboard.allotAllEligibleStudents()">
+              <i class="fas fa-magic"></i> Allot All Eligible
+            </button>
           </div>
         </div>
 
-      </div>
-    </section>
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <div class="admin-card-title">
+              <i class="fas fa-award" style="color: #eab308"></i> Certificate Verification & Allotment Registry
+            </div>
+          </div>
 
-  </div>
+          <div class="admin-table-container">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Certificate ID</th>
+                  <th>Recipient Name</th>
+                  <th>Accredited Specialization</th>
+                  <th>Academic Honors</th>
+                  <th>Issue Date</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="adminCertificatesTableBody">
+                <!-- Populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
 
-  <!-- ========================================================================
+      <!-- ========================================================================
+         TAB 5: CAPSTONE PROJECT EVALUATION & INQUIRIES QUEUE
+         ======================================================================== -->
+      <section class="admin-pane" id="tab-capstones">
+        <div
+          style="
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+          "
+        >
+          <div>
+            <h2 style="font-size: 1.6rem; font-weight: 800; color: #0f172a; margin-bottom: 4px">
+              Graduation Capstones & <span class="gradient-text">Mentorship Inquiries</span>
+            </h2>
+            <p style="color: #64748b; font-size: 0.875rem">
+              Evaluate candidate model repositories, score academic distinctions, and send direct faculty guidance.
+            </p>
+          </div>
+          <button
+            class="btn btn-secondary btn-sm"
+            onclick="
+              CapstonePortal.renderAdminCapstoneTable('adminCapstonesTableBody');
+              MessagingPortal.renderAdminChatQueue('adminInquiriesQueueContainer');
+              App.showToast('Data Synced', 'Capstone roster & inquiries refreshed.', 'info');
+            "
+          >
+            <i class="fas fa-sync"></i> Refresh Submissions
+          </button>
+        </div>
+
+        <div class="admin-grid-2" style="margin-bottom: 24px">
+          <!-- Left: Capstone Evaluation Table -->
+          <div class="admin-card">
+            <div class="admin-card-header">
+              <div class="admin-card-title">
+                <i class="fas fa-microchip" style="color: #0284c7"></i> Capstone Project Submissions
+              </div>
+              <span class="demo-nav-badge">Evaluation Queue</span>
+            </div>
+
+            <div class="admin-table-container">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Student</th>
+                    <th>Capstone Title & Repo</th>
+                    <th>Track</th>
+                    <th>Status</th>
+                    <th>Grade</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="adminCapstonesTableBody">
+                  <!-- Populated dynamically by CapstonePortal -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Right: Student Mentorship Support Queue -->
+          <div class="admin-card">
+            <div class="admin-card-header">
+              <div class="admin-card-title">
+                <i class="fas fa-comments" style="color: #7c3aed"></i> Mentorship Inquiries Queue
+              </div>
+            </div>
+
+            <div id="adminInquiriesQueueContainer" style="max-height: 500px; overflow-y: auto">
+              <!-- Populated dynamically by MessagingPortal -->
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ========================================================================
        MODAL 1: ADD NEW COHORT BATCH MODAL
        ======================================================================== -->
-  <div class="modal-backdrop" id="addBatchModal">
-    <div class="modal-box glass-panel" style="max-width: 500px;">
-      <button class="modal-close-btn" onclick="App.closeModal('addBatchModal')">
-        <i class="fas fa-times"></i>
-      </button>
-      <h3 style="font-size:1.3rem; margin-bottom:16px; color:#0f172a;">
-        <i class="fas fa-calendar-plus" style="color:var(--neon-cyan); margin-right:8px;"></i> Create New Cohort Batch
-      </h3>
+    <div class="modal-backdrop" id="addBatchModal">
+      <div class="modal-box glass-panel" style="max-width: 500px">
+        <button class="modal-close-btn" onclick="App.closeModal('addBatchModal')">
+          <i class="fas fa-times"></i>
+        </button>
+        <h3 style="font-size: 1.3rem; margin-bottom: 16px; color: #0f172a">
+          <i class="fas fa-calendar-plus" style="color: var(--neon-cyan); margin-right: 8px"></i> Create New Cohort
+          Batch
+        </h3>
 
-      <div class="form-group-custom" style="margin-bottom:14px;">
-        <label class="form-label-custom">Batch Title / Name *</label>
-        <input type="text" class="input-custom" id="modalBatchName" placeholder="e.g. October Evening Fast-Track">
-      </div>
-
-      <div class="form-group-custom" style="margin-bottom:14px;">
-        <label class="form-label-custom">Schedule Timing *</label>
-        <input type="text" class="input-custom" id="modalBatchSchedule" placeholder="e.g. Tue & Thu (7:00 PM - 9:30 PM EST)">
-      </div>
-
-      <div class="form-grid-2" style="margin-bottom:14px;">
-        <div class="form-group-custom">
-          <label class="form-label-custom">Start Date *</label>
-          <input type="date" class="input-custom" id="modalBatchStart">
+        <div class="form-group-custom" style="margin-bottom: 14px">
+          <label class="form-label-custom">Batch Title / Name *</label>
+          <input type="text" class="input-custom" id="modalBatchName" placeholder="e.g. October Evening Fast-Track" />
         </div>
-        <div class="form-group-custom">
-          <label class="form-label-custom">Class End / Retire Date</label>
-          <input type="date" class="input-custom" id="modalBatchEnd" title="Batch will automatically retire from student options after this date">
-        </div>
-      </div>
 
-      <div class="form-grid-2" style="margin-bottom:20px;">
-        <div class="form-group-custom">
-          <label class="form-label-custom">Max Seat Capacity *</label>
-          <input type="number" class="input-custom" id="modalBatchSeats" value="30" min="5" max="100">
+        <div class="form-group-custom" style="margin-bottom: 14px">
+          <label class="form-label-custom">Schedule Timing *</label>
+          <input
+            type="text"
+            class="input-custom"
+            id="modalBatchSchedule"
+            placeholder="e.g. Tue & Thu (7:00 PM - 9:30 PM EST)"
+          />
         </div>
-        <div class="form-group-custom">
-          <label class="form-label-custom">Delivery Mode</label>
-          <select class="select-custom" id="modalBatchMode">
-            <option value="Live Interactive Online">Live Interactive Online (Zoom & Discord)</option>
-            <option value="Hybrid (In-Person NYC Lab + Online)">Hybrid (In-Person NYC Lab + Online)</option>
-          </select>
-        </div>
-      </div>
 
-      <button class="btn btn-primary btn-lg" style="width:100%;" onclick="AdminDashboard.saveNewBatch()">
-        <i class="fas fa-save"></i> Save & Publish Cohort Batch
-      </button>
+        <div class="form-grid-2" style="margin-bottom: 14px">
+          <div class="form-group-custom">
+            <label class="form-label-custom">Start Date *</label>
+            <input type="date" class="input-custom" id="modalBatchStart" />
+          </div>
+          <div class="form-group-custom">
+            <label class="form-label-custom">Class End / Retire Date</label>
+            <input
+              type="date"
+              class="input-custom"
+              id="modalBatchEnd"
+              title="Batch will automatically retire from student options after this date"
+            />
+          </div>
+        </div>
+
+        <div class="form-grid-2" style="margin-bottom: 20px">
+          <div class="form-group-custom">
+            <label class="form-label-custom">Max Seat Capacity *</label>
+            <input type="number" class="input-custom" id="modalBatchSeats" value="30" min="5" max="100" />
+          </div>
+          <div class="form-group-custom">
+            <label class="form-label-custom">Delivery Mode</label>
+            <select class="select-custom" id="modalBatchMode">
+              <option value="Live Interactive Online">Live Interactive Online (Zoom & Discord)</option>
+              <option value="Hybrid (In-Person NYC Lab + Online)">Hybrid (In-Person NYC Lab + Online)</option>
+            </select>
+          </div>
+        </div>
+
+        <button class="btn btn-primary btn-lg" style="width: 100%" onclick="AdminDashboard.saveNewBatch()">
+          <i class="fas fa-save"></i> Save & Publish Cohort Batch
+        </button>
+      </div>
     </div>
-  </div>
 
-  <!-- ========================================================================
+    <!-- ========================================================================
        MODAL 2: STUDENT PASS MODAL
        ======================================================================== -->
-  <div class="modal-backdrop" id="passModal">
-    <div class="modal-box glass-panel" style="max-width: 550px; text-align: center;">
-      <button class="modal-close-btn" onclick="App.closeModal('passModal')">
-        <i class="fas fa-times"></i>
-      </button>
-      <div id="modalPassContainer">
-        <!-- Rendered dynamically -->
+    <div class="modal-backdrop" id="passModal">
+      <div class="modal-box glass-panel" style="max-width: 550px; text-align: center">
+        <button class="modal-close-btn" onclick="App.closeModal('passModal')">
+          <i class="fas fa-times"></i>
+        </button>
+        <div id="modalPassContainer">
+          <!-- Rendered dynamically -->
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- ========================================================================
+    <!-- ========================================================================
        MODAL 4: ALLOT ACCREDITED CERTIFICATE MODAL
        ======================================================================== -->
-  <div class="modal-backdrop" id="allotCertModal">
-    <div class="modal-box glass-panel" style="max-width: 580px;">
-      <button class="modal-close-btn" onclick="App.closeModal('allotCertModal')">
-        <i class="fas fa-times"></i>
-      </button>
-      <div style="text-align:center; margin-bottom:20px;">
-        <div style="width:54px; height:54px; border-radius:50%; background:linear-gradient(135deg, #1a73e8, #7c3aed); color:#ffffff; font-size:1.4rem; display:flex; align-items:center; justify-content:center; margin:0 auto 10px auto; box-shadow:0 6px 16px rgba(26,115,232,0.3);">
-          <i class="fas fa-award"></i>
-        </div>
-        <h3 style="font-size:1.35rem; font-weight:800; color:#0f172a; margin-bottom:4px;">
-          Allot Google-Grade AI Certificate
-        </h3>
-        <p style="color:#64748b; font-size:0.875rem;">Issue official accredited credential and seal of competency.</p>
-      </div>
-
-      <!-- Candidate Selector -->
-      <div class="form-group-custom" style="margin-bottom:16px;">
-        <label class="form-label-custom">Select Candidate / Student *</label>
-        <select class="select-custom" id="allotSelectStudent" onchange="AdminDashboard.onAllotStudentSelected(this.value)">
-          <!-- Options populated dynamically -->
-        </select>
-      </div>
-
-      <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:14px 18px; margin-bottom:16px;">
-        <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:0.875rem;">
-          <span style="color:#64748b;">Specialization Track:</span>
-          <strong id="allotDisplayTrack" style="color:#0f172a;">Generative AI, LLMs & Agents</strong>
-        </div>
-        <div style="display:flex; justify-content:space-between; font-size:0.875rem;">
-          <span style="color:#64748b;">Cohort Mode:</span>
-          <strong id="allotDisplayCohort" style="color:#7c3aed;">Weekend Cohort (Live)</strong>
-        </div>
-      </div>
-
-      <div class="form-grid-2" style="margin-bottom:16px;">
-        <div class="form-group-custom">
-          <label class="form-label-custom">Accredited Credential ID *</label>
-          <input type="text" class="input-custom" id="allotCredentialId" placeholder="G-NEX-2026-XXXX">
-        </div>
-        <div class="form-group-custom">
-          <label class="form-label-custom">Issue Date *</label>
-          <input type="date" class="input-custom" id="allotIssueDate">
-        </div>
-      </div>
-
-      <div class="form-group-custom" style="margin-bottom:20px;">
-        <label class="form-label-custom">Academic Distinction / Honors *</label>
-        <select class="select-custom" id="allotAcademicHonors">
-          <option value="Summa Cum Laude / Distinction (98%)">Summa Cum Laude / Distinction (98%)</option>
-          <option value="High Honors with Merit (95%)" selected>High Honors with Merit (95%)</option>
-          <option value="Honors Certification (90%)">Honors Certification (90%)</option>
-          <option value="Standard Professional Pass (85%)">Standard Professional Pass (85%)</option>
-        </select>
-      </div>
-
-      <div style="display:flex; gap:10px;">
-        <button class="btn btn-secondary" style="flex:1;" onclick="App.closeModal('allotCertModal')">
-          Cancel
+    <div class="modal-backdrop" id="allotCertModal">
+      <div class="modal-box glass-panel" style="max-width: 580px">
+        <button class="modal-close-btn" onclick="App.closeModal('allotCertModal')">
+          <i class="fas fa-times"></i>
         </button>
-        <button class="btn btn-primary" style="flex:2; justify-content:center; background:linear-gradient(135deg, #1a73e8, #059669); color:#fff;" onclick="AdminDashboard.submitAllotCertificate()">
-          <i class="fas fa-stamp"></i> Allot & Authorize Certificate
-        </button>
+        <div style="text-align: center; margin-bottom: 20px">
+          <div
+            style="
+              width: 54px;
+              height: 54px;
+              border-radius: 50%;
+              background: linear-gradient(135deg, #1a73e8, #7c3aed);
+              color: #ffffff;
+              font-size: 1.4rem;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              margin: 0 auto 10px auto;
+              box-shadow: 0 6px 16px rgba(26, 115, 232, 0.3);
+            "
+          >
+            <i class="fas fa-award"></i>
+          </div>
+          <h3 style="font-size: 1.35rem; font-weight: 800; color: #0f172a; margin-bottom: 4px">
+            Allot Google-Grade AI Certificate
+          </h3>
+          <p style="color: #64748b; font-size: 0.875rem">
+            Issue official accredited credential and seal of competency.
+          </p>
+        </div>
+
+        <!-- Candidate Selector -->
+        <div class="form-group-custom" style="margin-bottom: 16px">
+          <label class="form-label-custom">Select Candidate / Student *</label>
+          <select
+            class="select-custom"
+            id="allotSelectStudent"
+            onchange="AdminDashboard.onAllotStudentSelected(this.value)"
+          >
+            <!-- Options populated dynamically -->
+          </select>
+        </div>
+
+        <div
+          style="
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin-bottom: 16px;
+          "
+        >
+          <div style="display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.875rem">
+            <span style="color: #64748b">Specialization Track:</span>
+            <strong id="allotDisplayTrack" style="color: #0f172a">Generative AI, LLMs & Agents</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 0.875rem">
+            <span style="color: #64748b">Cohort Mode:</span>
+            <strong id="allotDisplayCohort" style="color: #7c3aed">Weekend Cohort (Live)</strong>
+          </div>
+        </div>
+
+        <div class="form-grid-2" style="margin-bottom: 16px">
+          <div class="form-group-custom">
+            <label class="form-label-custom">Accredited Credential ID *</label>
+            <input type="text" class="input-custom" id="allotCredentialId" placeholder="G-NEX-2026-XXXX" />
+          </div>
+          <div class="form-group-custom">
+            <label class="form-label-custom">Issue Date *</label>
+            <input type="date" class="input-custom" id="allotIssueDate" />
+          </div>
+        </div>
+
+        <div class="form-group-custom" style="margin-bottom: 20px">
+          <label class="form-label-custom">Academic Distinction / Honors *</label>
+          <select class="select-custom" id="allotAcademicHonors">
+            <option value="Summa Cum Laude / Distinction (98%)">Summa Cum Laude / Distinction (98%)</option>
+            <option value="High Honors with Merit (95%)" selected>High Honors with Merit (95%)</option>
+            <option value="Honors Certification (90%)">Honors Certification (90%)</option>
+            <option value="Standard Professional Pass (85%)">Standard Professional Pass (85%)</option>
+          </select>
+        </div>
+
+        <div style="display: flex; gap: 10px">
+          <button class="btn btn-secondary" style="flex: 1" onclick="App.closeModal('allotCertModal')">Cancel</button>
+          <button
+            class="btn btn-primary"
+            style="flex: 2; justify-content: center; background: linear-gradient(135deg, #1a73e8, #059669); color: #fff"
+            onclick="AdminDashboard.submitAllotCertificate()"
+          >
+            <i class="fas fa-stamp"></i> Allot & Authorize Certificate
+          </button>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- ========================================================================
+    <!-- ========================================================================
        MODAL 3: CERTIFICATE PREVIEW MODAL
        ======================================================================== -->
-  <div class="modal-backdrop" id="certModal">
-    <div class="modal-box glass-panel" style="max-width: 960px; padding: 24px;">
-      <button class="modal-close-btn" onclick="App.closeModal('certModal')">
-        <i class="fas fa-times"></i>
-      </button>
-      <div id="modalCertContainer">
-        <!-- Rendered dynamically by certificate.js -->
+    <div class="modal-backdrop" id="certModal">
+      <div class="modal-box glass-panel" style="max-width: 960px; padding: 24px">
+        <button class="modal-close-btn" onclick="App.closeModal('certModal')">
+          <i class="fas fa-times"></i>
+        </button>
+        <div id="modalCertContainer">
+          <!-- Rendered dynamically by certificate.js -->
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- ========================================================================
+    <!-- ========================================================================
        MODAL 5: GRADE & EVALUATE CAPSTONE MODAL
        ======================================================================== -->
-  <div class="modal-backdrop" id="gradeCapstoneModal">
-    <div class="modal-box glass-panel" style="max-width: 600px;">
-      <button class="modal-close-btn" onclick="App.closeModal('gradeCapstoneModal')">
-        <i class="fas fa-times"></i>
-      </button>
-      
-      <div style="text-align:center; margin-bottom:18px;">
-        <div style="width:52px; height:52px; border-radius:50%; background:linear-gradient(135deg, #0284c7, #7c3aed); color:#fff; font-size:1.3rem; display:flex; align-items:center; justify-content:center; margin:0 auto 10px auto; box-shadow:0 6px 16px rgba(124,58,237,0.3);">
-          <i class="fas fa-clipboard-check"></i>
-        </div>
-        <h3 style="font-size:1.35rem; font-weight:800; color:#0f172a; margin-bottom:4px;">
-          Faculty Capstone Evaluation
-        </h3>
-        <p style="color:#64748b; font-size:0.875rem;">Review code repository, assign academic grade, and authorize certificate.</p>
-      </div>
-
-      <input type="hidden" id="gradeModalCapstoneId">
-
-      <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:14px 18px; margin-bottom:16px;">
-        <div style="font-size:0.85rem; margin-bottom:6px;">
-          <span style="color:#64748b;">Student Candidate:</span>
-          <strong id="gradeModalStudent" style="color:#0f172a; margin-left:6px;">Alex Rivera (AI-2026-9182)</strong>
-        </div>
-        <div style="font-size:0.85rem; margin-bottom:6px;">
-          <span style="color:#64748b;">Project Title:</span>
-          <strong id="gradeModalProject" style="color:#0284c7; margin-left:6px;">Autonomous Clinical Diagnostic Swarm</strong>
-        </div>
-        <div style="font-size:0.85rem; margin-bottom:8px;">
-          <span style="color:#64748b;">Repository:</span>
-          <a id="gradeModalRepo" href="#" target="_blank" style="color:#1a73e8; font-weight:700; margin-left:6px;">https://github.com/...</a>
-        </div>
-        <div style="font-size:0.8rem; color:#475569; background:#ffffff; padding:10px; border-radius:8px; border:1px solid #e2e8f0;" id="gradeModalSummary">
-          Architecture details...
-        </div>
-      </div>
-
-      <div class="form-group-custom" style="margin-bottom:14px;">
-        <label class="form-label-custom">Faculty Evaluation Grade / Distinction *</label>
-        <select class="select-custom" id="gradeModalScore">
-          <option value="Summa Cum Laude / Distinction (98%)">Summa Cum Laude / Distinction (98%)</option>
-          <option value="High Honors with Merit (95%)" selected>High Honors with Merit (95%)</option>
-          <option value="Honors Certification (90%)">Honors Certification (90%)</option>
-          <option value="Standard Professional Pass (85%)">Standard Professional Pass (85%)</option>
-        </select>
-      </div>
-
-      <div class="form-group-custom" style="margin-bottom:14px;">
-        <label class="form-label-custom">Faculty Review Notes & Mentorship Feedback *</label>
-        <textarea class="textarea-custom" id="gradeModalNotes" rows="3" placeholder="Enter evaluation notes and feedback on model quality, code clarity, and architectural soundness..."></textarea>
-      </div>
-
-      <div style="display:flex; align-items:center; gap:8px; margin-bottom:18px; background:rgba(26,115,232,0.06); padding:10px 14px; border-radius:8px; border:1px solid rgba(26,115,232,0.2);">
-        <input type="checkbox" id="gradeModalAutoCert" checked style="width:18px; height:18px; accent-color:#1a73e8; cursor:pointer;">
-        <label for="gradeModalAutoCert" style="font-size:0.85rem; font-weight:700; color:#1a73e8; cursor:pointer;">
-          <i class="fas fa-stamp"></i> Auto-Allot & Sign Official Google Career Certificate
-        </label>
-      </div>
-
-      <div style="display:flex; gap:10px;">
-        <button class="btn btn-secondary" style="flex:1;" onclick="App.closeModal('gradeCapstoneModal')">
-          Cancel
+    <div class="modal-backdrop" id="gradeCapstoneModal">
+      <div class="modal-box glass-panel" style="max-width: 600px">
+        <button class="modal-close-btn" onclick="App.closeModal('gradeCapstoneModal')">
+          <i class="fas fa-times"></i>
         </button>
-        <button class="btn btn-primary" style="flex:2; justify-content:center; background:linear-gradient(135deg, #1a73e8, #059669); color:#fff;" onclick="CapstonePortal.submitGradeCapstone()">
-          <i class="fas fa-check-circle"></i> Submit Grade & Authorize
-        </button>
+
+        <div style="text-align: center; margin-bottom: 18px">
+          <div
+            style="
+              width: 52px;
+              height: 52px;
+              border-radius: 50%;
+              background: linear-gradient(135deg, #0284c7, #7c3aed);
+              color: #fff;
+              font-size: 1.3rem;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              margin: 0 auto 10px auto;
+              box-shadow: 0 6px 16px rgba(124, 58, 237, 0.3);
+            "
+          >
+            <i class="fas fa-clipboard-check"></i>
+          </div>
+          <h3 style="font-size: 1.35rem; font-weight: 800; color: #0f172a; margin-bottom: 4px">
+            Faculty Capstone Evaluation
+          </h3>
+          <p style="color: #64748b; font-size: 0.875rem">
+            Review code repository, assign academic grade, and authorize certificate.
+          </p>
+        </div>
+
+        <input type="hidden" id="gradeModalCapstoneId" />
+
+        <div
+          style="
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin-bottom: 16px;
+          "
+        >
+          <div style="font-size: 0.85rem; margin-bottom: 6px">
+            <span style="color: #64748b">Student Candidate:</span>
+            <strong id="gradeModalStudent" style="color: #0f172a; margin-left: 6px">Alex Rivera (AI-2026-9182)</strong>
+          </div>
+          <div style="font-size: 0.85rem; margin-bottom: 6px">
+            <span style="color: #64748b">Project Title:</span>
+            <strong id="gradeModalProject" style="color: #0284c7; margin-left: 6px"
+              >Autonomous Clinical Diagnostic Swarm</strong
+            >
+          </div>
+          <div style="font-size: 0.85rem; margin-bottom: 8px">
+            <span style="color: #64748b">Repository:</span>
+            <a id="gradeModalRepo" href="#" target="_blank" style="color: #1a73e8; font-weight: 700; margin-left: 6px"
+              >https://github.com/...</a
+            >
+          </div>
+          <div
+            style="
+              font-size: 0.8rem;
+              color: #475569;
+              background: #ffffff;
+              padding: 10px;
+              border-radius: 8px;
+              border: 1px solid #e2e8f0;
+            "
+            id="gradeModalSummary"
+          >
+            Architecture details...
+          </div>
+        </div>
+
+        <div class="form-group-custom" style="margin-bottom: 14px">
+          <label class="form-label-custom">Faculty Evaluation Grade / Distinction *</label>
+          <select class="select-custom" id="gradeModalScore">
+            <option value="Summa Cum Laude / Distinction (98%)">Summa Cum Laude / Distinction (98%)</option>
+            <option value="High Honors with Merit (95%)" selected>High Honors with Merit (95%)</option>
+            <option value="Honors Certification (90%)">Honors Certification (90%)</option>
+            <option value="Standard Professional Pass (85%)">Standard Professional Pass (85%)</option>
+          </select>
+        </div>
+
+        <div class="form-group-custom" style="margin-bottom: 14px">
+          <label class="form-label-custom">Faculty Review Notes & Mentorship Feedback *</label>
+          <textarea
+            class="textarea-custom"
+            id="gradeModalNotes"
+            rows="3"
+            placeholder="Enter evaluation notes and feedback on model quality, code clarity, and architectural soundness..."
+          ></textarea>
+        </div>
+
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 18px;
+            background: rgba(26, 115, 232, 0.06);
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid rgba(26, 115, 232, 0.2);
+          "
+        >
+          <input
+            type="checkbox"
+            id="gradeModalAutoCert"
+            checked
+            style="width: 18px; height: 18px; accent-color: #1a73e8; cursor: pointer"
+          />
+          <label for="gradeModalAutoCert" style="font-size: 0.85rem; font-weight: 700; color: #1a73e8; cursor: pointer">
+            <i class="fas fa-stamp"></i> Auto-Allot & Sign Official Google Career Certificate
+          </label>
+        </div>
+
+        <div style="display: flex; gap: 10px">
+          <button class="btn btn-secondary" style="flex: 1" onclick="App.closeModal('gradeCapstoneModal')">
+            Cancel
+          </button>
+          <button
+            class="btn btn-primary"
+            style="flex: 2; justify-content: center; background: linear-gradient(135deg, #1a73e8, #059669); color: #fff"
+            onclick="CapstonePortal.submitGradeCapstone()"
+          >
+            <i class="fas fa-check-circle"></i> Submit Grade & Authorize
+          </button>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- ========================================================================
+    <!-- ========================================================================
        4. SIDE-SLIDING OVERLAY DRAWER (Three-Dots Option)
        ======================================================================== -->
-  <div class="admin-drawer-backdrop" id="adminDrawerBackdrop" onclick="AdminDashboard.closeSlideDrawer()"></div>
-  <aside class="admin-slide-drawer" id="adminSlideDrawer"></aside>
+    <div class="admin-drawer-backdrop" id="adminDrawerBackdrop" onclick="AdminDashboard.closeSlideDrawer()"></div>
+    <aside class="admin-slide-drawer" id="adminSlideDrawer"></aside>
 
-  <!-- Firebase Cloud SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics-compat.js"></script>
-  <script src="js/firebase-config.js"></script>
+    <!-- Firebase Cloud SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
 
-  <!-- Javascript Modules & Admin Controller -->
-  <script src="js/data.js"></script>
-  <script src="js/auth.js"></script>
-  <script src="js/id-card.js"></script>
-  <script src="js/certificate.js"></script>
-  <script src="js/messaging-capstone.js"></script>
-  <script src="js/admin.js"></script>
-  <script src="js/app.js"></script>
-  
-  <script>
-    // Standalone Admin Console Controller
-    const AdminApp = {
-      currentTab: 'tab-overview',
+    <!-- Javascript Modules & Admin Controller -->
+    <script src="js/data.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/id-card.js"></script>
+    <script src="js/certificate.js"></script>
+    <script src="js/messaging-capstone.js"></script>
+    <script src="js/admin.js"></script>
+    <script src="js/app.js"></script>
 
-      init: function() {
-        StorageService.init();
-        AdminDashboard.init();
-        this.renderOverviewRecentTable();
-        this.renderBatchDetailGrid();
-        this.renderCertificateRegistry();
-        if (typeof CapstonePortal !== 'undefined') {
-          CapstonePortal.renderAdminCapstoneTable('adminCapstonesTableBody');
-        }
-        if (typeof MessagingPortal !== 'undefined') {
-          MessagingPortal.renderAdminChatQueue('adminInquiriesQueueContainer');
-        }
-        this.updateBadgeCounts();
+    <script>
+      // Standalone Admin Console Controller
+      const AdminApp = {
+        currentTab: "tab-overview",
 
-        // Default tomorrow for batch picker
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 7);
-        const dateInput = document.getElementById('modalBatchStart');
-        if (dateInput) dateInput.value = tomorrow.toISOString().slice(0, 10);
-      },
+        init: function () {
+          StorageService.init();
+          AdminDashboard.init();
+          this.renderOverviewRecentTable();
+          this.renderBatchDetailGrid();
+          this.renderCertificateRegistry();
+          if (typeof CapstonePortal !== "undefined") {
+            CapstonePortal.renderAdminCapstoneTable("adminCapstonesTableBody");
+          }
+          if (typeof MessagingPortal !== "undefined") {
+            MessagingPortal.renderAdminChatQueue("adminInquiriesQueueContainer");
+          }
+          this.updateBadgeCounts();
 
-      switchTab: function(tabId) {
-        this.currentTab = tabId;
+          // Default tomorrow for batch picker
+          const tomorrow = new Date();
+          tomorrow.setDate(tomorrow.getDate() + 7);
+          const dateInput = document.getElementById("modalBatchStart");
+          if (dateInput) dateInput.value = tomorrow.toISOString().slice(0, 10);
+        },
 
-        // Update nav items
-        document.querySelectorAll('.admin-nav-item').forEach(item => {
-          item.classList.toggle('active', item.dataset.tab === tabId);
-        });
+        switchTab: function (tabId) {
+          this.currentTab = tabId;
 
-        // Update panes
-        document.querySelectorAll('.admin-pane').forEach(pane => {
-          pane.classList.toggle('active', pane.id === tabId);
-        });
+          // Update hidden sidebar stubs (JS compat)
+          document.querySelectorAll(".admin-nav-item").forEach((item) => {
+            item.classList.toggle("active", item.dataset.tab === tabId);
+          });
 
-        // Update breadcrumb
-        const tabNames = {
-          'tab-overview': 'Dashboard Overview',
-          'tab-students': 'Student Database & CRM',
-          'tab-batches': 'Cohorts & Batches',
-          'tab-certificates': 'Google Certificate Registry',
-          'tab-capstones': 'Capstone Projects & Mentorship Queue'
-        };
-        const bc = document.getElementById('breadcrumbCurrentTab');
-        if (bc) bc.textContent = tabNames[tabId] || 'Admin Console';
+          // Update tab bar buttons
+          document.querySelectorAll(".admin-tab-btn").forEach((btn) => {
+            btn.classList.remove("active");
+          });
+          const activeTabBtn = document.getElementById("tabBtn-" + tabId.replace("tab-", ""));
+          if (activeTabBtn) activeTabBtn.classList.add("active");
 
-        if (tabId === 'tab-students') AdminDashboard.renderTable();
-        if (tabId === 'tab-batches') this.renderBatchDetailGrid();
-        if (tabId === 'tab-certificates') this.renderCertificateRegistry();
-        if (tabId === 'tab-capstones') {
-          if (typeof CapstonePortal !== 'undefined') CapstonePortal.renderAdminCapstoneTable('adminCapstonesTableBody');
-          if (typeof MessagingPortal !== 'undefined') MessagingPortal.renderAdminChatQueue('adminInquiriesQueueContainer');
-        }
-        this.updateBadgeCounts();
+          // Update panes
+          document.querySelectorAll(".admin-pane").forEach((pane) => {
+            pane.classList.toggle("active", pane.id === tabId);
+          });
 
-        // Smoothly close left sliding drawer after selecting tab
-        this.toggleSidebar(false);
-      },
+          if (tabId === "tab-students") AdminDashboard.renderTable();
+          if (tabId === "tab-batches") this.renderBatchDetailGrid();
+          if (tabId === "tab-certificates") this.renderCertificateRegistry();
+          if (tabId === "tab-capstones") {
+            if (typeof CapstonePortal !== "undefined")
+              CapstonePortal.renderAdminCapstoneTable("adminCapstonesTableBody");
+            if (typeof MessagingPortal !== "undefined")
+              MessagingPortal.renderAdminChatQueue("adminInquiriesQueueContainer");
+          }
+          this.updateBadgeCounts();
+        },
 
-      updateBadgeCounts: function() {
-        const students = StorageService.getStudents();
-        const count = students.length;
-        const capstoneCount = StorageService.getCapstones ? StorageService.getCapstones().length : 0;
-        const oEl = document.getElementById('badgeTotalOverview');
-        const sEl = document.getElementById('badgeStudentRoster');
-        const cEl = document.getElementById('badgeCapstonesCount');
-        if (oEl) oEl.textContent = count;
-        if (sEl) sEl.textContent = count;
-        if (cEl) cEl.textContent = capstoneCount;
+        updateBadgeCounts: function () {
+          const students = StorageService.getStudents();
+          const count = students.length;
+          const capstoneCount = StorageService.getCapstones ? StorageService.getCapstones().length : 0;
+          const oEl = document.getElementById("badgeTotalOverview");
+          const sEl = document.getElementById("badgeStudentRoster");
+          const cEl = document.getElementById("badgeCapstonesCount");
+          if (oEl) oEl.textContent = count;
+          if (sEl) sEl.textContent = count;
+          if (cEl) cEl.textContent = capstoneCount;
 
-        const cAll = document.getElementById('chipCountAll');
-        const cConf = document.getElementById('chipCountConfirmed');
-        const cVer = document.getElementById('chipCountVerified');
-        const cPend = document.getElementById('chipCountPending');
+          const cAll = document.getElementById("chipCountAll");
+          const cConf = document.getElementById("chipCountConfirmed");
+          const cVer = document.getElementById("chipCountVerified");
+          const cPend = document.getElementById("chipCountPending");
 
-        if (cAll) cAll.textContent = count;
-        if (cConf) cConf.textContent = students.filter(s => s.status === 'Confirmed').length;
-        if (cVer) cVer.textContent = students.filter(s => s.status === 'Payment Verified').length;
-        if (cPend) cPend.textContent = students.filter(s => s.status === 'Pending').length;
-      },
+          if (cAll) cAll.textContent = count;
+          if (cConf) cConf.textContent = students.filter((s) => s.status === "Confirmed").length;
+          if (cVer) cVer.textContent = students.filter((s) => s.status === "Payment Verified").length;
+          if (cPend) cPend.textContent = students.filter((s) => s.status === "Pending").length;
+        },
 
-      quickFilterStatus: function(status, btn) {
-        document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
-        if (btn) btn.classList.add('active');
+        quickFilterStatus: function (status, btn) {
+          document.querySelectorAll(".filter-chip").forEach((c) => c.classList.remove("active"));
+          if (btn) btn.classList.add("active");
 
-        const statusSelect = document.getElementById('adminStatusFilter');
-        if (statusSelect) {
-          statusSelect.value = status;
-          AdminDashboard.renderStudentTable(StorageService.getStudents());
-        }
-      },
+          const statusSelect = document.getElementById("adminStatusFilter");
+          if (statusSelect) {
+            statusSelect.value = status;
+            AdminDashboard.renderStudentTable(StorageService.getStudents());
+          }
+        },
 
-      renderOverviewRecentTable: function() {
-        const tbody = document.getElementById('overviewRecentStudentsTable');
-        if (!tbody) return;
-        const students = StorageService.getStudents().slice(0, 3);
-        tbody.innerHTML = students.map(s => `
+        renderOverviewRecentTable: function () {
+          const tbody = document.getElementById("overviewRecentStudentsTable");
+          if (!tbody) return;
+          const students = StorageService.getStudents().slice(0, 3);
+          tbody.innerHTML = students
+            .map(
+              (s) => `
           <tr>
             <td><strong style="color:var(--neon-cyan); font-family:var(--font-mono); font-size:0.85rem;">${s.id}</strong></td>
             <td>
@@ -1233,14 +1229,18 @@
             </td>
             <td><div style="font-size:0.85rem; font-weight:600; color:#334155;">${s.trackTitle}</div></td>
             <td><strong style="color:#0f172a; font-family:var(--font-mono);">₹${(s.totalPaid || 0).toLocaleString()}</strong></td>
-            <td><span class="status-badge ${s.status === 'Confirmed' ? 'status-confirmed' : s.status === 'Payment Verified' ? 'status-payment' : 'status-pending'}">${s.status}</span></td>
+            <td><span class="status-badge ${s.status === "Confirmed" ? "status-confirmed" : s.status === "Payment Verified" ? "status-payment" : "status-pending"}">${s.status}</span></td>
             <td>
               <div style="display:flex; gap:6px; align-items:center;">
-                ${(s.status === 'Pending Approval' || s.status === 'Pending') ? `
+                ${
+                  s.status === "Pending Approval" || s.status === "Pending"
+                    ? `
                   <button class="btn btn-sm" style="padding:6px 12px; font-size:0.775rem; background:#059669; color:#fff; font-weight:700; box-shadow:0 2px 8px rgba(5,150,105,0.35);" onclick="AdminDashboard.acceptPayment('${s.id}')" title="Accept Payment & Release Credentials">
                     <i class="fas fa-check-circle"></i> Accept
                   </button>
-                ` : ''}
+                `
+                    : ""
+                }
                 <button class="btn btn-secondary btn-sm" style="padding:6px 10px; font-size:0.8rem;" onclick="AdminDashboard.viewStudentPass('${s.id}')">
                   <i class="fas fa-id-card"></i> Pass
                 </button>
@@ -1253,25 +1253,28 @@
               </div>
             </td>
           </tr>
-        `).join('');
-      },
+        `
+            )
+            .join("");
+        },
 
-      renderBatchDetailGrid: function() {
-        const container = document.getElementById('adminBatchDetailGrid');
-        if (!container) return;
-        const batches = StorageService.getBatches();
-        container.innerHTML = batches.map(b => {
-          const isCompleted = StorageService.isBatchCompleted(b);
-          const percent = Math.round((b.enrolledSeats / b.maxSeats) * 100);
-          return `
-            <div style="background:#ffffff; border:1px solid ${isCompleted ? '#cbd5e1' : '#e2e8f0'}; border-radius:12px; padding:20px; box-shadow:var(--shadow-sm); opacity:${isCompleted ? '0.75' : '1'};">
+        renderBatchDetailGrid: function () {
+          const container = document.getElementById("adminBatchDetailGrid");
+          if (!container) return;
+          const batches = StorageService.getBatches();
+          container.innerHTML = batches
+            .map((b) => {
+              const isCompleted = StorageService.isBatchCompleted(b);
+              const percent = Math.round((b.enrolledSeats / b.maxSeats) * 100);
+              return `
+            <div style="background:#ffffff; border:1px solid ${isCompleted ? "#cbd5e1" : "#e2e8f0"}; border-radius:12px; padding:20px; box-shadow:var(--shadow-sm); opacity:${isCompleted ? "0.75" : "1"};">
               <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;">
                 <div>
                   <h4 style="font-size:1.05rem; font-weight:800; color:#0f172a; margin-bottom:4px;">${b.name}</h4>
                   <div style="font-size:0.8rem; color:#64748b;"><i class="fas fa-calendar-alt" style="color:var(--neon-cyan); margin-right:4px;"></i> Starts: ${b.startDate}</div>
                 </div>
-                <span class="status-badge ${isCompleted ? 'status-pending' : (percent > 80 ? 'status-waitlisted' : 'status-confirmed')}">
-                  ${isCompleted ? 'Class Completed (Retired)' : b.status}
+                <span class="status-badge ${isCompleted ? "status-pending" : percent > 80 ? "status-waitlisted" : "status-confirmed"}">
+                  ${isCompleted ? "Class Completed (Retired)" : b.status}
                 </span>
               </div>
               <div style="font-size:0.85rem; color:#334155; margin-bottom:12px;">
@@ -1282,96 +1285,115 @@
                 <span><strong>${percent}%</strong> Capacity</span>
               </div>
               <div class="batch-capacity-bar" style="margin-bottom:14px;">
-                <div class="batch-capacity-fill" style="width:${percent}%; background:${isCompleted ? '#94a3b8' : 'var(--grad-primary)'};"></div>
+                <div class="batch-capacity-fill" style="width:${percent}%; background:${isCompleted ? "#94a3b8" : "var(--grad-primary)"};"></div>
               </div>
               <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #f1f3f4; padding-top:12px;">
-                <span style="font-size:0.75rem; color:${isCompleted ? '#64748b' : '#7c3aed'}; font-weight:700;">
-                  <i class="${isCompleted ? 'fas fa-check-double' : 'fas fa-video'}"></i> ${isCompleted ? 'Class Ended' : b.mode}
+                <span style="font-size:0.75rem; color:${isCompleted ? "#64748b" : "#7c3aed"}; font-weight:700;">
+                  <i class="${isCompleted ? "fas fa-check-double" : "fas fa-video"}"></i> ${isCompleted ? "Class Ended" : b.mode}
                 </span>
-                ${isCompleted ? `
+                ${
+                  isCompleted
+                    ? `
                   <button class="btn btn-secondary btn-sm" style="font-size:0.75rem; padding:4px 10px;" onclick="AdminDashboard.toggleBatchCompletion('${b.id}', false); AdminApp.renderBatchDetailGrid();">
                     <i class="fas fa-redo"></i> Re-open
                   </button>
-                ` : `
+                `
+                    : `
                   <button class="btn btn-secondary btn-sm" style="font-size:0.75rem; padding:4px 10px; color:#d97706;" onclick="AdminDashboard.toggleBatchCompletion('${b.id}', true); AdminApp.renderBatchDetailGrid();">
                     <i class="fas fa-ban"></i> Mark Done
                   </button>
-                `}
+                `
+                }
               </div>
             </div>
           `;
-        }).join('');
-      },
+            })
+            .join("");
+        },
 
-      renderCertificateRegistry: function() {
-        const tbody = document.getElementById('adminCertificatesTableBody');
-        if (!tbody) return;
-        const students = StorageService.getStudents();
-        tbody.innerHTML = students.map(s => `
+        renderCertificateRegistry: function () {
+          const tbody = document.getElementById("adminCertificatesTableBody");
+          if (!tbody) return;
+          const students = StorageService.getStudents();
+          tbody.innerHTML = students
+            .map(
+              (s) => `
           <tr>
             <td>
-              ${s.certificateAllotted ? `
-                <strong style="color:#1a73e8; font-family:var(--font-mono); font-size:0.85rem;">${s.certificateId || `G-NEX-2026-${s.id.split('-').pop()}`}</strong>
-              ` : `
+              ${
+                s.certificateAllotted
+                  ? `
+                <strong style="color:#1a73e8; font-family:var(--font-mono); font-size:0.85rem;">${s.certificateId || `G-NEX-2026-${s.id.split("-").pop()}`}</strong>
+              `
+                  : `
                 <span style="color:#94a3b8; font-family:var(--font-mono); font-size:0.8rem; font-style:italic;">Not Generated</span>
-              `}
+              `
+              }
             </td>
             <td><strong style="color:#0f172a;">${s.fullName}</strong></td>
             <td><span style="color:#334155; font-weight:600; font-size:0.85rem;">${s.trackTitle}</span></td>
             <td>
-              ${s.certificateAllotted ? `
-                <span style="color:#059669; font-weight:700; font-size:0.8rem;"><i class="fas fa-medal" style="color:#fbbc04;"></i> ${s.certificateGrade || 'High Honors'}</span>
-              ` : `
+              ${
+                s.certificateAllotted
+                  ? `
+                <span style="color:#059669; font-weight:700; font-size:0.8rem;"><i class="fas fa-medal" style="color:#fbbc04;"></i> ${s.certificateGrade || "High Honors"}</span>
+              `
+                  : `
                 <span style="color:#94a3b8; font-size:0.8rem;">—</span>
-              `}
+              `
+              }
             </td>
             <td style="font-size:0.8rem; color:#64748b;">
-              ${s.certificateAllotted ? (s.certificateDate || '2026-08-14') : 'Pending'}
+              ${s.certificateAllotted ? s.certificateDate || "2026-08-14" : "Pending"}
             </td>
             <td>
-              ${s.certificateAllotted ? `
+              ${
+                s.certificateAllotted
+                  ? `
                 <span class="status-badge status-confirmed"><i class="fas fa-check-circle"></i> Allotted & Issued</span>
-              ` : `
+              `
+                  : `
                 <span class="status-badge status-pending"><i class="fas fa-clock"></i> Pending Allotment</span>
-              `}
+              `
+              }
             </td>
             <td>
               <div style="display:flex; gap:6px; align-items:center;">
-                ${s.certificateAllotted ? `
+                ${
+                  s.certificateAllotted
+                    ? `
                   <button class="btn btn-primary btn-sm" style="padding:6px 10px; font-size:0.75rem; background:#1a73e8; color:#fff;" onclick="AdminDashboard.viewStudentCertificate('${s.id}')" title="View & Print Certificate">
                     <i class="fas fa-eye"></i> View & Print
                   </button>
                   <button class="btn btn-secondary btn-sm" style="padding:6px 10px; font-size:0.75rem; color:#e11d48;" onclick="AdminDashboard.revokeStudentCertificate('${s.id}')" title="Revoke Certificate">
                     <i class="fas fa-ban"></i> Revoke
                   </button>
-                ` : `
+                `
+                    : `
                   <button class="btn btn-primary btn-sm" style="padding:6px 10px; font-size:0.75rem; background:#059669; color:#fff;" onclick="AdminDashboard.provideCertificateDirect('${s.id}')" title="Provide Certificate Immediately">
                     <i class="fas fa-check-circle"></i> Provide
                   </button>
                   <button class="btn btn-secondary btn-sm" style="padding:6px 10px; font-size:0.75rem;" onclick="AdminDashboard.openAllotCertModal('${s.id}')" title="Customize Allotment Details">
                     <i class="fas fa-stamp"></i> Allot...
                   </button>
-                `}
+                `
+                }
               </div>
             </td>
           </tr>
-        `).join('');
-      },
+        `
+            )
+            .join("");
+        },
 
-      toggleSidebar: function(forceState) {
-        const sidebar = document.getElementById('adminSidebar');
-        const backdrop = document.getElementById('adminLeftNavBackdrop');
-        if (!sidebar) return;
+        toggleSidebar: function () {
+          /* no-op: sidebar removed */
+        },
+      };
 
-        const isOpen = (forceState !== undefined) ? forceState : !sidebar.classList.contains('open');
-        sidebar.classList.toggle('open', isOpen);
-        if (backdrop) backdrop.classList.toggle('active', isOpen);
-      }
-    };
-
-    document.addEventListener('DOMContentLoaded', () => {
-      AdminApp.init();
-    });
-  </script>
-</body>
+      document.addEventListener("DOMContentLoaded", () => {
+        AdminApp.init();
+      });
+    </script>
+  </body>
 </html>

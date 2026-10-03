@@ -1,16 +1,16 @@
-// AI Nexus Academy - Admin & Admissions Management Suite (Feature 6A)
+// NEXVION AI ACADEMY - Admin & Admissions Management Suite (Feature 6A)
 
 const AdminDashboard = {
   currentSearch: "",
   currentTrackFilter: "ALL",
   currentStatusFilter: "ALL",
 
-  init: function() {
+  init: function () {
     this.render();
     this.setupEventListeners();
   },
 
-  render: function() {
+  render: function () {
     const students = StorageService.getStudents();
     const batches = StorageService.getBatches();
 
@@ -20,17 +20,17 @@ const AdminDashboard = {
   },
 
   // 1. Calculate & Render KPI Metrics Cards
-  renderKPIs: function(students, batches) {
+  renderKPIs: function (students, batches) {
     const totalStudents = students.length;
     const totalRevenue = students.reduce((acc, s) => acc + (s.totalPaid || 0), 0);
-    
+
     const totalSeats = batches.reduce((acc, b) => acc + b.maxSeats, 0);
     const filledSeats = batches.reduce((acc, b) => acc + b.enrolledSeats, 0);
     const occupancyPercent = totalSeats > 0 ? Math.round((filledSeats / totalSeats) * 100) : 0;
 
     // Find top track
     const trackCounts = {};
-    students.forEach(s => {
+    students.forEach((s) => {
       if (s.trackTitle) trackCounts[s.trackTitle] = (trackCounts[s.trackTitle] || 0) + 1;
     });
     let topTrack = "—";
@@ -38,14 +38,14 @@ const AdminDashboard = {
     for (const track in trackCounts) {
       if (trackCounts[track] > maxCount) {
         maxCount = trackCounts[track];
-        topTrack = track.split('&')[0].trim();
+        topTrack = track.split("&")[0].trim();
       }
     }
 
-    const kpiTotalStudents = document.getElementById('kpiTotalStudents');
-    const kpiTotalRevenue = document.getElementById('kpiTotalRevenue');
-    const kpiOccupancy = document.getElementById('kpiOccupancy');
-    const kpiTopTrack = document.getElementById('kpiTopTrack');
+    const kpiTotalStudents = document.getElementById("kpiTotalStudents");
+    const kpiTotalRevenue = document.getElementById("kpiTotalRevenue");
+    const kpiOccupancy = document.getElementById("kpiOccupancy");
+    const kpiTopTrack = document.getElementById("kpiTopTrack");
 
     if (kpiTotalStudents) kpiTotalStudents.textContent = totalStudents;
     if (kpiTotalRevenue) kpiTotalRevenue.textContent = `₹${totalRevenue.toLocaleString()}`;
@@ -54,39 +54,43 @@ const AdminDashboard = {
   },
 
   // 2. Render Batch Occupancy Progress Meters & Lifecycle Controls
-  renderBatchMeters: function(batches) {
-    const container = document.getElementById('adminBatchMeters');
+  renderBatchMeters: function (batches) {
+    const container = document.getElementById("adminBatchMeters");
     if (!container) return;
 
-    let html = '';
-    batches.forEach(b => {
+    let html = "";
+    batches.forEach((b) => {
       const isCompleted = StorageService.isBatchCompleted(b);
       const percent = Math.round((b.enrolledSeats / b.maxSeats) * 100);
-      
+
       html += `
-        <div style="background:#ffffff; border:1px solid ${isCompleted ? '#cbd5e1' : '#e2e8f0'}; border-radius:12px; padding: 16px 20px; margin-bottom: 12px; box-shadow:0 2px 6px rgba(0,0,0,0.02); opacity:${isCompleted ? '0.75' : '1'};">
+        <div style="background:#ffffff; border:1px solid ${isCompleted ? "#cbd5e1" : "#e2e8f0"}; border-radius:12px; padding: 16px 20px; margin-bottom: 12px; box-shadow:0 2px 6px rgba(0,0,0,0.02); opacity:${isCompleted ? "0.75" : "1"};">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px; flex-wrap:wrap; gap:8px;">
             <div>
               <strong style="color:#0f172a; font-size:0.95rem;">${b.name}</strong>
               <div style="font-size:0.775rem; color:#64748b;"><i class="fas fa-clock" style="color:#0284c7; margin-right:4px;"></i> ${b.schedule} &bull; Starts: ${b.startDate}</div>
             </div>
             <div style="display:flex; align-items:center; gap:8px;">
-              <span class="status-badge ${isCompleted ? 'status-pending' : (percent > 80 ? 'status-waitlisted' : 'status-confirmed')}" style="font-size:0.72rem; padding:3px 8px;">
+              <span class="status-badge ${isCompleted ? "status-pending" : percent > 80 ? "status-waitlisted" : "status-confirmed"}" style="font-size:0.72rem; padding:3px 8px;">
                 ${isCompleted ? '<i class="fas fa-check-double"></i> Class Completed (Retired)' : `<i class="fas fa-circle" style="color:#059669; font-size:0.5rem; vertical-align:middle;"></i> Active (${b.enrolledSeats}/${b.maxSeats})`}
               </span>
-              ${isCompleted ? `
+              ${
+                isCompleted
+                  ? `
                 <button class="btn btn-secondary btn-sm" style="font-size:0.7rem; padding:3px 8px;" onclick="AdminDashboard.toggleBatchCompletion('${b.id}', false)">
                   <i class="fas fa-redo"></i> Re-open
                 </button>
-              ` : `
+              `
+                  : `
                 <button class="btn btn-secondary btn-sm" style="font-size:0.7rem; padding:3px 8px; color:#d97706;" onclick="AdminDashboard.toggleBatchCompletion('${b.id}', true)">
                   <i class="fas fa-ban"></i> Mark Class Done
                 </button>
-              `}
+              `
+              }
             </div>
           </div>
           <div class="batch-capacity-bar">
-            <div class="batch-capacity-fill" style="width: ${percent}%; background:${isCompleted ? '#94a3b8' : 'var(--grad-primary)'};"></div>
+            <div class="batch-capacity-fill" style="width: ${percent}%; background:${isCompleted ? "#94a3b8" : "var(--grad-primary)"};"></div>
           </div>
         </div>
       `;
@@ -94,7 +98,7 @@ const AdminDashboard = {
     container.innerHTML = html;
   },
 
-  toggleBatchCompletion: function(batchId, markDone) {
+  toggleBatchCompletion: function (batchId, markDone) {
     if (markDone) {
       StorageService.markBatchCompleted(batchId);
       App.showToast("Batch Retired", "Class completed! This batch is now removed from public student options.", "info");
@@ -103,36 +107,32 @@ const AdminDashboard = {
       App.showToast("Batch Re-opened", "This batch is now live and selectable for enrollment.", "success");
     }
     this.render();
-    if (typeof Wizard !== 'undefined') {
+    if (typeof Wizard !== "undefined") {
       Wizard.renderStep1BatchSelect();
       Wizard.renderBatchOptions();
     }
   },
 
   // 3. Render Student Applications Table with Search & Filter
-  renderStudentTable: function(students) {
-    const tbody = document.getElementById('adminStudentTableBody');
+  renderStudentTable: function (students) {
+    const tbody = document.getElementById("adminStudentTableBody");
     if (!tbody) return;
 
-    let filtered = students.filter(s => {
-      const matchQuery = 
+    let filtered = students.filter((s) => {
+      const matchQuery =
         !this.currentSearch ||
         s.fullName.toLowerCase().includes(this.currentSearch) ||
         s.email.toLowerCase().includes(this.currentSearch) ||
         s.id.toLowerCase().includes(this.currentSearch);
 
-      const matchTrack = 
-        this.currentTrackFilter === "ALL" ||
-        s.trackId === this.currentTrackFilter;
+      const matchTrack = this.currentTrackFilter === "ALL" || s.trackId === this.currentTrackFilter;
 
-      const matchStatus = 
-        this.currentStatusFilter === "ALL" ||
-        s.status === this.currentStatusFilter;
+      const matchStatus = this.currentStatusFilter === "ALL" || s.status === this.currentStatusFilter;
 
       return matchQuery && matchTrack && matchStatus;
     });
 
-    const countLabel = document.getElementById('adminStudentCountBadge');
+    const countLabel = document.getElementById("adminStudentCountBadge");
     if (countLabel) countLabel.textContent = `${filtered.length} Applications`;
 
     if (filtered.length === 0) {
@@ -147,8 +147,8 @@ const AdminDashboard = {
       return;
     }
 
-    let rowsHTML = '';
-    filtered.forEach(s => {
+    let rowsHTML = "";
+    filtered.forEach((s) => {
       rowsHTML += `
         <tr>
           <td>
@@ -164,38 +164,46 @@ const AdminDashboard = {
           </td>
           <td>
             <strong style="color:#0f172a; font-family:var(--font-mono);">₹${(s.totalPaid || 0).toLocaleString()}</strong>
-            ${s.voucherApplied && s.voucherApplied !== 'NONE' ? `<div style="font-size:0.7rem; color:var(--neon-emerald);">${s.voucherApplied}</div>` : ''}
+            ${s.voucherApplied && s.voucherApplied !== "NONE" ? `<div style="font-size:0.7rem; color:var(--neon-emerald);">${s.voucherApplied}</div>` : ""}
           </td>
           <td>
             <select class="select-custom" style="padding:4px 8px; font-size:0.75rem; width:auto;" onchange="AdminDashboard.updateStatus('${s.id}', this.value)">
-              <option value="Confirmed" ${s.status === 'Confirmed' ? 'selected' : ''}>Confirmed</option>
-              <option value="Payment Verified" ${s.status === 'Payment Verified' ? 'selected' : ''}>Payment Verified</option>
-              <option value="Pending Approval" ${s.status === 'Pending Approval' || s.status === 'Pending' ? 'selected' : ''}>Pending Approval</option>
-              <option value="Waitlisted" ${s.status === 'Waitlisted' ? 'selected' : ''}>Waitlisted</option>
+              <option value="Confirmed" ${s.status === "Confirmed" ? "selected" : ""}>Confirmed</option>
+              <option value="Payment Verified" ${s.status === "Payment Verified" ? "selected" : ""}>Payment Verified</option>
+              <option value="Pending Approval" ${s.status === "Pending Approval" || s.status === "Pending" ? "selected" : ""}>Pending Approval</option>
+              <option value="Waitlisted" ${s.status === "Waitlisted" ? "selected" : ""}>Waitlisted</option>
             </select>
           </td>
           <td style="font-size:0.775rem; color:var(--text-muted);">${s.registeredAt}</td>
           <td>
             <div style="display:flex; gap:6px; align-items:center;">
-              ${(s.status === 'Pending Approval' || s.status === 'Pending') ? `
+              ${
+                s.status === "Pending Approval" || s.status === "Pending"
+                  ? `
                 <button class="btn btn-sm" style="padding:6px 12px; font-size:0.775rem; background:#059669; color:#fff; font-weight:700; box-shadow:0 2px 8px rgba(5,150,105,0.35);" onclick="AdminDashboard.acceptPayment('${s.id}')" title="Accept Payment & Release Credentials">
                   <i class="fas fa-check-circle"></i> Accept
                 </button>
-              ` : ''}
+              `
+                  : ""
+              }
 
               <button class="btn btn-secondary btn-sm" style="padding:6px 10px; font-size:0.8rem;" onclick="AdminDashboard.viewStudentPass('${s.id}')" title="View Digital Pass">
                 <i class="fas fa-id-card"></i> Pass
               </button>
 
-              ${s.certificateAllotted ? `
+              ${
+                s.certificateAllotted
+                  ? `
                 <button class="btn btn-primary btn-sm" style="padding:6px 10px; font-size:0.8rem; background:#1a73e8; color:#fff;" onclick="AdminDashboard.viewStudentCertificate('${s.id}')" title="View Official Google Certificate">
                   <i class="fas fa-award"></i> Cert
                 </button>
-              ` : `
+              `
+                  : `
                 <button class="btn btn-primary btn-sm" style="padding:6px 10px; font-size:0.8rem; background:linear-gradient(135deg, #d97706, #b45309); color:#fff;" onclick="AdminDashboard.openAllotCertModal('${s.id}')" title="Allot Google-Grade Certificate">
                   <i class="fas fa-stamp"></i> Allot
                 </button>
-              `}
+              `
+              }
 
               <button class="btn btn-secondary btn-sm" style="padding:6px 10px; font-size:0.85rem;" onclick="AdminDashboard.openStudentSlideDrawer('${s.id}')" title="More Options & Full Student Dossier">
                 <i class="fas fa-ellipsis-v"></i>
@@ -209,78 +217,87 @@ const AdminDashboard = {
     tbody.innerHTML = rowsHTML;
   },
 
-  renderTable: function() {
+  renderTable: function () {
     this.renderStudentTable(StorageService.getStudents());
   },
 
   // ------------------------------------------------------------------------
   // CERTIFICATE ALLOTMENT CONTROLLER (Feature: Allow Admin to Allot Certificate)
   // ------------------------------------------------------------------------
-  openAllotCertModal: function(studentId) {
+  openAllotCertModal: function (studentId) {
     const students = StorageService.getStudents();
-    const select = document.getElementById('allotSelectStudent');
+    const select = document.getElementById("allotSelectStudent");
     if (!select) {
       App.showToast("Allot Certificate", "Certificate allotment initialized.", "info");
       return;
     }
 
     // Populate student select dropdown
-    select.innerHTML = students.map(s => `
-      <option value="${s.id}" ${s.id === studentId ? 'selected' : ''}>
-        ${s.fullName} (${s.id}) - ${s.trackTitle.split('&')[0]}
+    select.innerHTML = students
+      .map(
+        (s) => `
+      <option value="${s.id}" ${s.id === studentId ? "selected" : ""}>
+        ${s.fullName} (${s.id}) - ${s.trackTitle.split("&")[0]}
       </option>
-    `).join('');
+    `
+      )
+      .join("");
 
     const targetId = studentId || (students.length > 0 ? students[0].id : null);
     if (targetId) {
       this.onAllotStudentSelected(targetId);
     }
 
-    const dateInput = document.getElementById('allotIssueDate');
+    const dateInput = document.getElementById("allotIssueDate");
     if (dateInput) dateInput.value = new Date().toISOString().slice(0, 10);
 
-    App.openModal('allotCertModal');
+    App.openModal("allotCertModal");
   },
 
-  onAllotStudentSelected: function(studentId) {
+  onAllotStudentSelected: function (studentId) {
     const students = StorageService.getStudents();
-    const s = students.find(item => item.id === studentId);
+    const s = students.find((item) => item.id === studentId);
     if (!s) return;
 
-    const displayTrack = document.getElementById('allotDisplayTrack');
-    const displayCohort = document.getElementById('allotDisplayCohort');
-    const credInput = document.getElementById('allotCredentialId');
+    const displayTrack = document.getElementById("allotDisplayTrack");
+    const displayCohort = document.getElementById("allotDisplayCohort");
+    const credInput = document.getElementById("allotCredentialId");
 
     if (displayTrack) displayTrack.textContent = s.trackTitle;
-    if (displayCohort) displayCohort.textContent = `${s.batchName} (${s.mode || 'Live Cohort'})`;
+    if (displayCohort) displayCohort.textContent = `${s.batchName} (${s.mode || "Live Cohort"})`;
     if (credInput) {
-      credInput.value = s.certificateId || `G-NEX-2026-${s.id.split('-').pop()}`;
+      credInput.value = s.certificateId || `G-NEX-2026-${s.id.split("-").pop()}`;
     }
   },
 
-  submitAllotCertificate: function() {
-    const studentSelect = document.getElementById('allotSelectStudent');
+  submitAllotCertificate: function () {
+    const studentSelect = document.getElementById("allotSelectStudent");
     const studentId = studentSelect ? studentSelect.value : null;
     if (!studentId) {
       App.showToast("Candidate Required", "Please select a student to allot certificate.", "error");
       return;
     }
 
-    const credId = document.getElementById('allotCredentialId')?.value.trim() || `G-NEX-2026-${studentId.split('-').pop()}`;
-    const issueDate = document.getElementById('allotIssueDate')?.value || new Date().toISOString().slice(0, 10);
-    const honors = document.getElementById('allotAcademicHonors')?.value || "High Honors with Merit (95%)";
+    const credId =
+      document.getElementById("allotCredentialId")?.value.trim() || `G-NEX-2026-${studentId.split("-").pop()}`;
+    const issueDate = document.getElementById("allotIssueDate")?.value || new Date().toISOString().slice(0, 10);
+    const honors = document.getElementById("allotAcademicHonors")?.value || "High Honors with Merit (95%)";
 
     const updated = StorageService.allotCertificate(studentId, {
       id: credId,
       date: issueDate,
-      grade: honors
+      grade: honors,
     });
 
     if (updated) {
-      App.closeModal('allotCertModal');
-      App.showToast("Certificate Allotted! 🎓", `Google-Grade Certificate granted to ${updated.fullName} (${credId})`, "success");
+      App.closeModal("allotCertModal");
+      App.showToast(
+        "Certificate Allotted! 🎓",
+        `Google-Grade Certificate granted to ${updated.fullName} (${credId})`,
+        "success"
+      );
       this.render();
-      if (typeof AdminApp !== 'undefined') {
+      if (typeof AdminApp !== "undefined") {
         AdminApp.renderOverviewRecentTable();
         AdminApp.renderCertificateRegistry();
         AdminApp.updateBadgeCounts();
@@ -288,14 +305,14 @@ const AdminDashboard = {
     }
   },
 
-  revokeStudentCertificate: function(studentId) {
+  revokeStudentCertificate: function (studentId) {
     if (!confirm("Are you sure you want to revoke this student's official certificate allotment?")) return;
 
     const success = StorageService.revokeCertificate(studentId);
     if (success) {
       App.showToast("Certificate Revoked", "Student certificate allotment has been revoked.", "info");
       this.render();
-      if (typeof AdminApp !== 'undefined') {
+      if (typeof AdminApp !== "undefined") {
         AdminApp.renderOverviewRecentTable();
         AdminApp.renderCertificateRegistry();
       }
@@ -303,13 +320,17 @@ const AdminDashboard = {
     }
   },
 
-  allotAllEligibleStudents: function() {
+  allotAllEligibleStudents: function () {
     if (!confirm("Allot and grant Google-Grade AI Certificates to ALL enrolled candidates?")) return;
 
     StorageService.allotAllCertificates();
-    App.showToast("All Certificates Allotted! 🏆", "All student credentials have been authorized and published.", "success");
+    App.showToast(
+      "All Certificates Allotted! 🏆",
+      "All student credentials have been authorized and published.",
+      "success"
+    );
     this.render();
-    if (typeof AdminApp !== 'undefined') {
+    if (typeof AdminApp !== "undefined") {
       AdminApp.renderOverviewRecentTable();
       AdminApp.renderCertificateRegistry();
       AdminApp.updateBadgeCounts();
@@ -317,43 +338,44 @@ const AdminDashboard = {
   },
 
   // 4. Admin 1-Click Payment Acceptance & Admission Release (Admin Dashboard Only)
-  acceptPayment: function(studentId) {
-    if (typeof Auth !== 'undefined' && !Auth.isAdminLoggedIn()) {
-      App.showToast("Admin Privileges Required", "Only authorized administrators can verify and accept payments.", "error");
+  acceptPayment: function (studentId) {
+    if (typeof Auth !== "undefined" && !Auth.isAdminLoggedIn()) {
+      App.showToast(
+        "Admin Privileges Required",
+        "Only authorized administrators can verify and accept payments.",
+        "error"
+      );
       return;
     }
 
     const students = StorageService.getStudents();
-    const student = students.find(s => s.id === studentId);
+    const student = students.find((s) => s.id === studentId);
     if (!student) {
       App.showToast("Student Not Found", `Could not locate record ${studentId}`, "error");
       return;
     }
 
-    student.status = "Payment Verified";
-    student.certificateAllotted = true;
+    // Bug Fix #1 & #2: Use updateStudentStatus (patches status only, no seat re-increment)
+    // instead of saveStudent (which calls incrementBatchSeat again causing double-counting).
+    // Set status to "Confirmed" so the wizard polling listener reliably detects approval.
+    StorageService.updateStudentStatus(studentId, "Confirmed");
 
-    // Update batch capacity seat count if newly confirmed
-    const batches = StorageService.getBatches();
-    const batch = batches.find(b => b.id === student.batchId);
-    if (batch) {
-      batch.enrolledSeats = Math.min(batch.maxSeats, (batch.enrolledSeats || 0) + 1);
-      StorageService.saveBatch(batch);
-    }
-
-    // Persist updated student record
-    StorageService.saveStudent(student);
-    StorageService.setCurrentStudent(student);
+    // Refresh the student object from storage after status patch
+    const updatedStudent = StorageService.getStudents().find((s) => s.id === studentId);
 
     // Sync to Cloud Firestore if connected
-    if (typeof FirebaseService !== 'undefined' && (FirebaseService.isInitialized || FirebaseService.isConfigured)) {
-      FirebaseService.saveStudentAdmission(student);
+    if (typeof FirebaseService !== "undefined" && (FirebaseService.isInitialized || FirebaseService.isConfigured)) {
+      FirebaseService.saveStudentAdmission(updatedStudent || student);
     }
 
-    App.showToast("Payment Accepted! ✅", `Admission confirmed for ${student.fullName}! Student ID & certificate released.`, "success");
+    App.showToast(
+      "Payment Accepted! ✅",
+      `Admission confirmed for ${student.fullName}! Student ID & certificate released.`,
+      "success"
+    );
 
     this.render();
-    if (typeof AdminApp !== 'undefined') {
+    if (typeof AdminApp !== "undefined") {
       AdminApp.renderOverviewRecentTable();
       AdminApp.renderCertificateRegistry();
       AdminApp.updateBadgeCounts();
@@ -361,12 +383,12 @@ const AdminDashboard = {
   },
 
   // 5. Inline Status Updater
-  updateStatus: function(studentId, newStatus) {
+  updateStatus: function (studentId, newStatus) {
     const success = StorageService.updateStudentStatus(studentId, newStatus);
     if (success) {
       App.showToast("Status Updated", `Student ${studentId} status changed to ${newStatus}`, "success");
       this.render();
-      if (typeof AdminApp !== 'undefined') {
+      if (typeof AdminApp !== "undefined") {
         AdminApp.renderOverviewRecentTable();
         AdminApp.renderCertificateRegistry();
       }
@@ -374,39 +396,43 @@ const AdminDashboard = {
   },
 
   // View specific student's ID pass in modal
-  viewStudentPass: function(studentId) {
+  viewStudentPass: function (studentId) {
     const students = StorageService.getStudents();
-    const target = students.find(s => s.id === studentId);
+    const target = students.find((s) => s.id === studentId);
     if (!target) return;
 
     StorageService.setCurrentStudent(target);
-    if (document.getElementById('adminPassModalContent')) {
-      IDCardGenerator.renderCard(target, 'adminPassModalContent');
+    if (document.getElementById("adminPassModalContent")) {
+      IDCardGenerator.renderCard(target, "adminPassModalContent");
     }
-    if (document.getElementById('modalPassContainer')) {
-      IDCardGenerator.renderCard(target, 'modalPassContainer');
+    if (document.getElementById("modalPassContainer")) {
+      IDCardGenerator.renderCard(target, "modalPassContainer");
     }
-    const modalId = document.getElementById('adminPassModal') ? 'adminPassModal' : 'passModal';
+    const modalId = document.getElementById("adminPassModal") ? "adminPassModal" : "passModal";
     App.openModal(modalId);
   },
 
   // Direct 1-Click Provide / Issue Certificate to a Student
-  provideCertificateDirect: function(studentId) {
+  provideCertificateDirect: function (studentId) {
     const students = StorageService.getStudents();
-    const target = students.find(s => s.id === studentId);
+    const target = students.find((s) => s.id === studentId);
     if (!target) return;
 
-    const certId = target.certificateId || `G-NEX-2026-${target.id.split('-').pop()}`;
+    const certId = target.certificateId || `G-NEX-2026-${target.id.split("-").pop()}`;
     const updated = StorageService.allotCertificate(studentId, {
       id: certId,
       date: new Date().toISOString().slice(0, 10),
-      grade: target.certificateGrade || "Distinction (98%)"
+      grade: target.certificateGrade || "Distinction (98%)",
     });
 
     if (updated) {
-      App.showToast("Certificate Provided & Issued! 🎓", `Official credential released for ${updated.fullName} (${certId}). Student can now access it in their Hub.`, "success");
+      App.showToast(
+        "Certificate Provided & Issued! 🎓",
+        `Official credential released for ${updated.fullName} (${certId}). Student can now access it in their Hub.`,
+        "success"
+      );
       this.render();
-      if (typeof AdminApp !== 'undefined') {
+      if (typeof AdminApp !== "undefined") {
         AdminApp.renderOverviewRecentTable();
         AdminApp.renderCertificateRegistry();
         AdminApp.updateBadgeCounts();
@@ -415,40 +441,52 @@ const AdminDashboard = {
   },
 
   // View specific student's Official AI Certificate in modal (Admin Authorized)
-  viewStudentCertificate: function(studentId) {
+  viewStudentCertificate: function (studentId) {
     const students = StorageService.getStudents();
-    const target = students.find(s => s.id === studentId);
+    const target = students.find((s) => s.id === studentId);
     if (!target) return;
 
-    AICertificateGenerator.renderCertificate(target, 'modalCertContainer', true);
-    App.openModal('certModal');
+    AICertificateGenerator.renderCertificate(target, "modalCertContainer", true);
+    App.openModal("certModal");
   },
 
   // 5. 1-Click Export to CSV Functionality (Feature 6A)
-  exportToCSV: function() {
+  exportToCSV: function () {
     const students = StorageService.getStudents();
     if (students.length === 0) {
       App.showToast("No Data", "No student registrations to export.", "error");
       return;
     }
 
-    const headers = ["Student ID", "Full Name", "Email", "Phone", "Education", "Course Track", "Batch", "Tuition Paid ($)", "Voucher", "Status", "Registered Date"];
-    
-    const rows = students.map(s => [
+    const headers = [
+      "Student ID",
+      "Full Name",
+      "Email",
+      "Phone",
+      "Education",
+      "Course Track",
+      "Batch",
+      "Tuition Paid ($)",
+      "Voucher",
+      "Status",
+      "Registered Date",
+    ];
+
+    const rows = students.map((s) => [
       `"${s.id}"`,
       `"${s.fullName}"`,
       `"${s.email}"`,
-      `"${s.phone || ''}"`,
-      `"${s.education || ''}"`,
+      `"${s.phone || ""}"`,
+      `"${s.education || ""}"`,
       `"${s.trackTitle}"`,
       `"${s.batchName}"`,
       `"${s.totalPaid}"`,
-      `"${s.voucherApplied || 'NONE'}"`,
+      `"${s.voucherApplied || "NONE"}"`,
       `"${s.status}"`,
-      `"${s.registeredAt}"`
+      `"${s.registeredAt}"`,
     ]);
 
-    const csvContent = "data:text/csv;charset=utf-8," + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+    const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows.map((e) => e.join(","))].join("\n");
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
@@ -461,21 +499,37 @@ const AdminDashboard = {
   },
 
   // Open modal to create a new batch
-  openAddBatchModal: function() {
-    App.openModal('addBatchModal');
+  openAddBatchModal: function () {
+    App.openModal("addBatchModal");
   },
 
   // Submit new batch (compatible with both admin.html and index.html)
-  saveNewBatch: function(e) {
+  saveNewBatch: function (e) {
     if (e) e.preventDefault();
 
-    const name = (document.getElementById('modalBatchName')?.value || document.getElementById('newBatchName')?.value || "").trim();
-    const schedule = (document.getElementById('modalBatchSchedule')?.value || document.getElementById('newBatchSchedule')?.value || "").trim();
-    const startDate = (document.getElementById('modalBatchStart')?.value || document.getElementById('newBatchStartDate')?.value || "").trim();
-    const maxSeats = parseInt(document.getElementById('modalBatchSeats')?.value || document.getElementById('newBatchMaxSeats')?.value, 10) || 30;
-    const mode = document.getElementById('modalBatchMode')?.value || "Live Interactive Online";
+    const name = (
+      document.getElementById("modalBatchName")?.value ||
+      document.getElementById("newBatchName")?.value ||
+      ""
+    ).trim();
+    const schedule = (
+      document.getElementById("modalBatchSchedule")?.value ||
+      document.getElementById("newBatchSchedule")?.value ||
+      ""
+    ).trim();
+    const startDate = (
+      document.getElementById("modalBatchStart")?.value ||
+      document.getElementById("newBatchStartDate")?.value ||
+      ""
+    ).trim();
+    const maxSeats =
+      parseInt(
+        document.getElementById("modalBatchSeats")?.value || document.getElementById("newBatchMaxSeats")?.value,
+        10
+      ) || 30;
+    const mode = document.getElementById("modalBatchMode")?.value || "Live Interactive Online";
 
-    const endDate = (document.getElementById('modalBatchEnd')?.value || "").trim();
+    const endDate = (document.getElementById("modalBatchEnd")?.value || "").trim();
 
     if (!name || !schedule || !startDate) {
       App.showToast("Required Fields", "Please complete all batch details.", "error");
@@ -493,47 +547,47 @@ const AdminDashboard = {
       maxSeats: maxSeats,
       enrolledSeats: 0,
       status: "Seats Available",
-      isCompleted: false
+      isCompleted: false,
     };
 
     StorageService.saveBatch(newBatch);
-    if (typeof Wizard !== 'undefined') {
+    if (typeof Wizard !== "undefined") {
       Wizard.renderStep1BatchSelect();
       Wizard.renderBatchOptions();
     }
-    if (typeof AdminApp !== 'undefined') {
+    if (typeof AdminApp !== "undefined") {
       AdminApp.renderBatchDetailGrid();
       AdminApp.updateBadgeCounts();
     }
     this.render();
-    App.closeModal('addBatchModal');
+    App.closeModal("addBatchModal");
     App.showToast("Batch Created", `Successfully launched ${name}!`, "success");
   },
 
-  createBatch: function(e) {
+  createBatch: function (e) {
     this.saveNewBatch(e);
   },
 
-  setupEventListeners: function() {
-    const searchInput = document.getElementById('adminSearchInput');
+  setupEventListeners: function () {
+    const searchInput = document.getElementById("adminSearchInput");
     if (searchInput) {
-      searchInput.addEventListener('input', (e) => {
+      searchInput.addEventListener("input", (e) => {
         this.currentSearch = e.target.value.toLowerCase().trim();
         this.renderStudentTable(StorageService.getStudents());
       });
     }
 
-    const trackSelect = document.getElementById('adminTrackFilter');
+    const trackSelect = document.getElementById("adminTrackFilter");
     if (trackSelect) {
-      trackSelect.addEventListener('change', (e) => {
+      trackSelect.addEventListener("change", (e) => {
         this.currentTrackFilter = e.target.value;
         this.renderStudentTable(StorageService.getStudents());
       });
     }
 
-    const statusSelect = document.getElementById('adminStatusFilter');
+    const statusSelect = document.getElementById("adminStatusFilter");
     if (statusSelect) {
-      statusSelect.addEventListener('change', (e) => {
+      statusSelect.addEventListener("change", (e) => {
         this.currentStatusFilter = e.target.value;
         this.renderStudentTable(StorageService.getStudents());
       });
@@ -543,16 +597,21 @@ const AdminDashboard = {
   // ------------------------------------------------------------------------
   // SLIDE-OVER DRAWER METHODS (Feature: Three Dots Side Drawer)
   // ------------------------------------------------------------------------
-  openStudentSlideDrawer: function(studentId) {
+  openStudentSlideDrawer: function (studentId) {
     const students = StorageService.getStudents();
-    const s = students.find(item => item.id === studentId);
+    const s = students.find((item) => item.id === studentId);
     if (!s) return;
 
-    const drawer = document.getElementById('adminSlideDrawer');
-    const backdrop = document.getElementById('adminDrawerBackdrop');
+    const drawer = document.getElementById("adminSlideDrawer");
+    const backdrop = document.getElementById("adminDrawerBackdrop");
     if (!drawer) return;
 
-    const initials = s.fullName.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
+    const initials = s.fullName
+      .split(" ")
+      .map((n) => n[0])
+      .slice(0, 2)
+      .join("")
+      .toUpperCase();
 
     drawer.innerHTML = `
       <div class="drawer-header">
@@ -592,11 +651,11 @@ const AdminDashboard = {
             </div>
             <div>
               <div style="font-size:0.75rem; color:#64748b; font-weight:700;">BATCH SCHEDULE</div>
-              <div style="font-size:0.9rem; font-weight:600; color:#334155;"><i class="fas fa-calendar-alt" style="color:var(--neon-violet); margin-right:4px;"></i> ${s.batchName} (${s.mode || 'Live Online'})</div>
+              <div style="font-size:0.9rem; font-weight:600; color:#334155;"><i class="fas fa-calendar-alt" style="color:var(--neon-violet); margin-right:4px;"></i> ${s.batchName} (${s.mode || "Live Online"})</div>
             </div>
             <div>
               <div style="font-size:0.75rem; color:#64748b; font-weight:700;">PHONE / WHATSAPP</div>
-              <div style="font-size:0.9rem; font-weight:600; color:#334155;">${s.phone || 'Provided during verification'}</div>
+              <div style="font-size:0.9rem; font-weight:600; color:#334155;">${s.phone || "Provided during verification"}</div>
             </div>
             <div>
               <div style="font-size:0.75rem; color:#64748b; font-weight:700;">REGISTRATION DATE</div>
@@ -610,40 +669,46 @@ const AdminDashboard = {
           <div class="drawer-section-title">
             <i class="fas fa-receipt"></i> Tuition & Billing Summary
           </div>
-          ${(s.status === 'Pending Approval' || s.status === 'Pending') ? `
+          ${
+            s.status === "Pending Approval" || s.status === "Pending"
+              ? `
             <div style="margin-bottom:14px;">
-              <button class="btn btn-primary" style="width:100%; justify-content:center; background:#059669; font-weight:800; font-size:0.9rem; padding:12px; box-shadow:0 4px 14px rgba(5,150,105,0.35);" onclick="AdminDashboard.acceptPayment('${s.id}'); AdminDashboard.openStudentSlideDrawer('${s.id}');">
+              <button class="btn btn-primary" style="width:100%; justify-content:center; background:#059669; font-weight:800; font-size:0.9rem; padding:12px; box-shadow:0 4px 14px rgba(5,150,105,0.35);" onclick="AdminDashboard.acceptPayment('${s.id}'); setTimeout(() => AdminDashboard.openStudentSlideDrawer('${s.id}'), 150);">
                 <i class="fas fa-check-circle"></i> Accept Payment & Release Credentials
               </button>
             </div>
-          ` : ''}
+          `
+              : ""
+          }
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
             <span style="font-size:0.875rem; color:#64748b;">Total Tuition:</span>
             <strong style="font-size:1.1rem; color:#0f172a; font-family:var(--font-mono);">₹${(s.totalPaid || 0).toLocaleString()}</strong>
           </div>
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
             <span style="font-size:0.875rem; color:#64748b;">Voucher / Promo Code:</span>
-            <span class="status-badge status-confirmed" style="font-size:0.75rem;">${s.voucherApplied || 'STANDARD'}</span>
+            <span class="status-badge status-confirmed" style="font-size:0.75rem;">${s.voucherApplied || "STANDARD"}</span>
           </div>
           <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #e2e8f0; padding-top:10px;">
             <span style="font-size:0.875rem; font-weight:700; color:#0f172a;">Admission Status:</span>
             <select class="select-custom" style="padding:6px 12px; font-size:0.85rem; width:auto; font-weight:700;" onchange="AdminDashboard.updateStatus('${s.id}', this.value); AdminDashboard.openStudentSlideDrawer('${s.id}');">
-              <option value="Confirmed" ${s.status === 'Confirmed' ? 'selected' : ''}>Confirmed</option>
-              <option value="Payment Verified" ${s.status === 'Payment Verified' ? 'selected' : ''}>Payment Verified</option>
-              <option value="Pending Approval" ${s.status === 'Pending Approval' || s.status === 'Pending' ? 'selected' : ''}>Pending Approval</option>
-              <option value="Waitlisted" ${s.status === 'Waitlisted' ? 'selected' : ''}>Waitlisted</option>
+              <option value="Confirmed" ${s.status === "Confirmed" ? "selected" : ""}>Confirmed</option>
+              <option value="Payment Verified" ${s.status === "Payment Verified" ? "selected" : ""}>Payment Verified</option>
+              <option value="Pending Approval" ${s.status === "Pending Approval" || s.status === "Pending" ? "selected" : ""}>Pending Approval</option>
+              <option value="Waitlisted" ${s.status === "Waitlisted" ? "selected" : ""}>Waitlisted</option>
             </select>
           </div>
         </div>
-        <div class="drawer-section" style="border-left: 4px solid ${s.certificateAllotted ? '#1a73e8' : '#d97706'};">
+        <div class="drawer-section" style="border-left: 4px solid ${s.certificateAllotted ? "#1a73e8" : "#d97706"};">
           <div class="drawer-section-title" style="display:flex; justify-content:space-between; align-items:center;">
             <span><i class="fas fa-award" style="color:#1a73e8;"></i> Google Certificate Allotment</span>
-            <span class="status-badge ${s.certificateAllotted ? 'status-confirmed' : 'status-pending'}">
+            <span class="status-badge ${s.certificateAllotted ? "status-confirmed" : "status-pending"}">
               ${s.certificateAllotted ? '<i class="fas fa-check-circle"></i> Allotted' : '<i class="fas fa-clock"></i> Not Allotted'}
             </span>
           </div>
 
-          ${s.certificateAllotted ? `
+          ${
+            s.certificateAllotted
+              ? `
             <div style="font-size:0.875rem; margin-bottom:6px; color:#334155;"><strong>Credential ID:</strong> <span style="font-family:var(--font-mono); color:#1a73e8; font-weight:700;">${s.certificateId}</span></div>
             <div style="font-size:0.875rem; margin-bottom:6px; color:#334155;"><strong>Academic Honors:</strong> <span style="color:#059669; font-weight:700;">${s.certificateGrade}</span></div>
             <div style="font-size:0.875rem; margin-bottom:14px; color:#334155;"><strong>Authorized On:</strong> ${s.certificateDate}</div>
@@ -655,21 +720,27 @@ const AdminDashboard = {
                 <i class="fas fa-ban"></i> Revoke
               </button>
             </div>
-          ` : `
+          `
+              : `
             <p style="font-size:0.85rem; color:#64748b; margin-bottom:12px;">This student has not yet been granted an official accredited certificate.</p>
             <button class="btn btn-primary btn-sm" style="width:100%; justify-content:center; background:linear-gradient(135deg, #1a73e8, #7c3aed); color:#fff;" onclick="AdminDashboard.openAllotCertModal('${s.id}')">
               <i class="fas fa-stamp"></i> Allot Accredited Certificate
             </button>
-          `}
+          `
+          }
         </div>
 
         <!-- Quick Action Buttons List -->
         <div style="display:flex; flex-direction:column; gap:10px;">
-          ${s.certificateAllotted ? `
+          ${
+            s.certificateAllotted
+              ? `
             <button class="btn btn-primary" style="width:100%; justify-content:center; background:#1a73e8; color:#fff;" onclick="AdminDashboard.viewStudentCertificate('${s.id}')">
               <i class="fas fa-award"></i> View Official Certificate
             </button>
-          ` : ''}
+          `
+              : ""
+          }
           <button class="btn btn-secondary" style="width:100%; justify-content:center;" onclick="AdminDashboard.viewStudentPass('${s.id}')">
             <i class="fas fa-id-card"></i> View Digital Student Pass
           </button>
@@ -686,13 +757,13 @@ const AdminDashboard = {
       </div>
     `;
 
-    drawer.classList.add('open');
-    if (backdrop) backdrop.classList.add('active');
+    drawer.classList.add("open");
+    if (backdrop) backdrop.classList.add("active");
   },
 
-  openSystemDrawer: function() {
-    const drawer = document.getElementById('adminSlideDrawer');
-    const backdrop = document.getElementById('adminDrawerBackdrop');
+  openSystemDrawer: function () {
+    const drawer = document.getElementById("adminSlideDrawer");
+    const backdrop = document.getElementById("adminDrawerBackdrop");
     if (!drawer) return;
 
     const students = StorageService.getStudents();
@@ -751,15 +822,14 @@ const AdminDashboard = {
       </div>
     `;
 
-    drawer.classList.add('open');
-    if (backdrop) backdrop.classList.add('active');
+    drawer.classList.add("open");
+    if (backdrop) backdrop.classList.add("active");
   },
 
-  closeSlideDrawer: function() {
-    const drawer = document.getElementById('adminSlideDrawer');
-    const backdrop = document.getElementById('adminDrawerBackdrop');
-    if (drawer) drawer.classList.remove('open');
-    if (backdrop) backdrop.classList.remove('active');
-  }
+  closeSlideDrawer: function () {
+    const drawer = document.getElementById("adminSlideDrawer");
+    const backdrop = document.getElementById("adminDrawerBackdrop");
+    if (drawer) drawer.classList.remove("open");
+    if (backdrop) backdrop.classList.remove("active");
+  },
 };
-

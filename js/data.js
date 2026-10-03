@@ -1,14 +1,45 @@
-// AI Nexus Academy - Platform Data & Configuration
+// NEXVION AI ACADEMY - Platform Data & Configuration
 
 const ACADEMY_DATA = {
-  academyName: "AI Nexus Academy",
+  academyName: "NEXVION AI ACADEMY",
   tagline: "Empowering the Next Generation of AI Innovators & Leaders",
   contactEmail: "abddeveloper@gmail.com",
   contactPhones: ["+91 9844691633", "+91 9061106019", "+91 9061106009"],
   contactPhone: "+91 9844691633 / +91 9061106019 / +91 9061106009",
-  
-  // 1. Pure AI Course Tracks & Specializations (4 Tiers)
+
+  // 1. Pure AI Course Tracks & Specializations (Open Access Free + Tiered Tracks)
   courses: [
+    {
+      id: "ai-foundations-free",
+      code: "AI-001",
+      tier: "Free Tier (Open Access)",
+      title: "Generative AI Foundations & Prompt Engineering",
+      category: "Generative AI & Prompt Engineering",
+      level: "Free",
+      badge: "🎁 Free Tier · 100% Scholarship",
+      duration: "2 Weeks (16 Hours)",
+      format: "On-Demand Interactive Labs + Digital Certificate",
+      price: 0,
+      originalPrice: 1500,
+      rating: 4.96,
+      reviewCount: 940,
+      icon: "fa-gift",
+      gradient: "linear-gradient(135deg, #10b981 0%, #0051d5 100%)",
+      accentColor: "#10b981",
+      description:
+        "A comprehensive, 100% tuition-free masterclass sponsored by the NEXVION Foundation. Master the principles of Generative AI, few-shot prompt crafting, LLM reasoning architectures, and practical workflow automation with verified digital credential issuance.",
+      highlights: [
+        "100% Free Open Access: Fully sponsored by NEXVION Educational Foundation",
+        "Prompt Engineering Mastery: Chain-of-Thought, ReAct pattern & role prompt framing",
+        "Frontier AI Workflows: Daily productivity compounding with ChatGPT 4o, Claude 3.7 & Gemini",
+        "Verifiable Credential: Free cryptographic Certificate of Completion with LinkedIn badge",
+      ],
+      syllabus: [
+        { week: "Week 1", title: "Mental Models of LLMs: Tokens, Embeddings & Zero-Shot Prompt Framing" },
+        { week: "Week 2", title: "Few-Shot Context Ingestion, AI Productivity Loops & Digital Credential Capstone" },
+      ],
+      prerequisites: "Zero technical background needed. Open to all students, founders, and professionals worldwide.",
+    },
     {
       id: "ai-beginners",
       code: "AI-101",
@@ -26,20 +57,21 @@ const ACADEMY_DATA = {
       icon: "fa-magic",
       gradient: "linear-gradient(135deg, #00f0ff 0%, #0072ff 100%)",
       accentColor: "#00f0ff",
-      description: "Master the art of Vibe Coding: build complete websites, web applications, and software tools purely with AI prompts using Cursor AI, Windsurf, Lovable, Bolt.new, and v0.dev without manual syntax coding.",
+      description:
+        "Master the art of Vibe Coding: build complete websites, web applications, and software tools purely with AI prompts using Cursor AI, Windsurf, Lovable, Bolt.new, and v0.dev without manual syntax coding.",
       highlights: [
         "Vibe Coding Foundations: Cursor AI, Windsurf IDE & Natural Language Code Generation",
         "AI Full-Stack App Builders: Instant generation with Lovable, Bolt.new & v0.dev",
         "AI Coding Agents: Multi-file project generation with Replit Agent & Claude 3.5 Sonnet",
-        "Debugging with AI: ChatGPT Canvas, GitHub Copilot & Rapid AI Prototyping"
+        "Debugging with AI: ChatGPT Canvas, GitHub Copilot & Rapid AI Prototyping",
       ],
       syllabus: [
         { week: "Week 1", title: "Vibe Coding Setup: Cursor AI, Windsurf & Natural Language Development" },
         { week: "Week 2", title: "AI-Powered UI & App Builders: v0.dev, Lovable & Bolt.new Workflows" },
         { week: "Week 3", title: "Multi-File Project Architecture with Replit Agent & Claude Artifacts" },
-        { week: "Week 4", title: "Capstone: Building & Shipping a Live SaaS App Purely via Vibe Coding" }
+        { week: "Week 4", title: "Capstone: Building & Shipping a Live SaaS App Purely via Vibe Coding" },
       ],
-      prerequisites: "Zero coding experience required. Designed for creators, founders, and absolute beginners."
+      prerequisites: "Zero coding experience required. Designed for creators, founders, and absolute beginners.",
     },
     {
       id: "applied-ml-ds",
@@ -58,20 +90,21 @@ const ACADEMY_DATA = {
       icon: "fa-cloud-upload-alt",
       gradient: "linear-gradient(135deg, #a855f7 0%, #6366f1 100%)",
       accentColor: "#a855f7",
-      description: "Take your vibe-coded and custom applications live to the world: learn modern cloud hosting (Vercel, Netlify, Render, Railway), database setups (Supabase, Firebase), custom domain routing, SSL, and software integration.",
+      description:
+        "Take your vibe-coded and custom applications live to the world: learn modern cloud hosting (Vercel, Netlify, Render, Railway), database setups (Supabase, Firebase), custom domain routing, SSL, and software integration.",
       highlights: [
         "1-Click Production Hosting & Deployment: Vercel, Netlify, Render & Railway",
         "Cloud Databases & Backend Setup: Supabase, Firebase & Managed PostgreSQL",
         "Custom Domain Setup, DNS Management, SSL Certificates & CDN Acceleration",
-        "Modern Software Stacks: Docker Containers, Environment Configs & GitHub CI/CD"
+        "Modern Software Stacks: Docker Containers, Environment Configs & GitHub CI/CD",
       ],
       syllabus: [
         { week: "Week 1-2", title: "Cloud Hosting Platforms: Deploying Next.js, React & Node on Vercel & Render" },
         { week: "Week 3-4", title: "Cloud Database Hosting: Supabase, Firebase, Realtime DB & PostgreSQL" },
         { week: "Week 5-6", title: "Custom Domains, SSL, Environment Secrets & Production Security" },
-        { week: "Week 7-8", title: "Capstone: Deploying a Scalable Multi-Service Production Web System" }
+        { week: "Week 7-8", title: "Capstone: Deploying a Scalable Multi-Service Production Web System" },
       ],
-      prerequisites: "Basic computer literacy and understanding of web pages."
+      prerequisites: "Basic computer literacy and understanding of web pages.",
     },
     {
       id: "genai-agents",
@@ -90,20 +123,21 @@ const ACADEMY_DATA = {
       icon: "fa-network-wired",
       gradient: "linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%)",
       accentColor: "#ec4899",
-      description: "Connect software to external intelligence and services using APIs: master REST APIs, OpenAI & Claude APIs, Google Gemini, Webhooks, FastAPI backends, vector search APIs (Pinecone), and payment gateway integrations.",
+      description:
+        "Connect software to external intelligence and services using APIs: master REST APIs, OpenAI & Claude APIs, Google Gemini, Webhooks, FastAPI backends, vector search APIs (Pinecone), and payment gateway integrations.",
       highlights: [
         "RESTful API Architecture: Building Async APIs with Python FastAPI & Node.js",
         "AI Engine API Integrations: OpenAI GPT-4o, Anthropic Claude 3.5, Gemini & DeepSeek",
         "Vector Search & Retrieval APIs: Pinecone, ChromaDB & Webhook Automations",
-        "Authentication APIs, Secure Token Auth & Stripe/UPI Payment Gateway APIs"
+        "Authentication APIs, Secure Token Auth & Stripe/UPI Payment Gateway APIs",
       ],
       syllabus: [
         { week: "Week 1-2", title: "API Fundamentals: JSON Payloads, Headers & Python FastAPI Endpoints" },
         { week: "Week 3-4", title: "Direct AI Engine API Integration (OpenAI, Claude, Gemini & DeepSeek)" },
         { week: "Week 5-7", title: "Vector DB APIs (Pinecone), Webhooks & Third-Party Software Connections" },
-        { week: "Week 8-10", title: "Capstone: Building a Production API-Driven AI SaaS Application" }
+        { week: "Week 8-10", title: "Capstone: Building a Production API-Driven AI SaaS Application" },
       ],
-      prerequisites: "Basic programming concepts or completion of Tier 1 & 2."
+      prerequisites: "Basic programming concepts or completion of Tier 1 & 2.",
     },
     {
       id: "fullstack-ai-engineer",
@@ -122,21 +156,22 @@ const ACADEMY_DATA = {
       icon: "fa-microchip",
       gradient: "linear-gradient(135deg, #10b981 0%, #00f0ff 100%)",
       accentColor: "#10b981",
-      description: "Advance to cutting-edge AI engineering: architect autonomous multi-agent swarms (CrewAI, LangGraph), enterprise RAG with hybrid search, local model serving (Ollama/vLLM), and scalable cloud GPU MLOps pipelines.",
+      description:
+        "Advance to cutting-edge AI engineering: architect autonomous multi-agent swarms (CrewAI, LangGraph), enterprise RAG with hybrid search, local model serving (Ollama/vLLM), and scalable cloud GPU MLOps pipelines.",
       highlights: [
         "Autonomous Multi-Agent AI Swarms with CrewAI, LangGraph & Tool Calling",
         "Enterprise RAG Architecture: Vector DBs, Hybrid Search, Chunking & Rerankers",
         "Local & Cloud LLM Serving: Fine-tuning, Ollama, vLLM on Cloud GPUs (A100)",
-        "Production MLOps, Containerization, Agent Guardrails & 1-on-1 Career Placement"
+        "Production MLOps, Containerization, Agent Guardrails & 1-on-1 Career Placement",
       ],
       syllabus: [
         { week: "Week 1-4", title: "Advanced LLM Architecture, Prompt Optimization & Local Models (Ollama)" },
         { week: "Week 5-8", title: "Enterprise RAG Pipelines & High-Precision Hybrid Search" },
         { week: "Week 9-11", title: "Autonomous Multi-Agent Swarms (CrewAI & LangGraph) in Production" },
-        { week: "Week 12-14", title: "Grand Capstone: Full-Scale Autonomous AI Enterprise System & Placement" }
+        { week: "Week 12-14", title: "Grand Capstone: Full-Scale Autonomous AI Enterprise System & Placement" },
       ],
-      prerequisites: "Open to all motivated learners. Includes progressive foundations."
-    }
+      prerequisites: "Open to all motivated learners. Includes progressive foundations.",
+    },
   ],
 
   // 2. Available Batches with Live Capacity
@@ -149,7 +184,7 @@ const ACADEMY_DATA = {
       startDate: "Sept 05, 2026",
       maxSeats: 30,
       enrolledSeats: 0,
-      status: "Open Enrollment"
+      status: "Open Enrollment",
     },
     {
       id: "batch-weekday-pm",
@@ -159,7 +194,7 @@ const ACADEMY_DATA = {
       startDate: "Sept 08, 2026",
       maxSeats: 30,
       enrolledSeats: 0,
-      status: "Open Enrollment"
+      status: "Open Enrollment",
     },
     {
       id: "batch-hybrid-flex",
@@ -170,7 +205,7 @@ const ACADEMY_DATA = {
       maxSeats: 50,
       enrolledSeats: 0,
       status: "Open Enrollment",
-      isCompleted: false
+      isCompleted: false,
     },
     {
       id: "batch-inaugural-summer",
@@ -183,8 +218,8 @@ const ACADEMY_DATA = {
       maxSeats: 40,
       enrolledSeats: 40,
       status: "Class Completed",
-      isCompleted: true
-    }
+      isCompleted: true,
+    },
   ],
 
   // 3. Add-on Options for Customizer Wizard (4B)
@@ -193,27 +228,31 @@ const ACADEMY_DATA = {
       id: "addon-gpu",
       name: "Dedicated Cloud GPU Lab Pass (A100/H100 Credits)",
       price: 499,
-      description: "50 hours of cloud GPU compute for training models without needing high-end local hardware."
+      description: "50 hours of cloud GPU compute for training models without needing high-end local hardware.",
     },
     {
       id: "addon-mentorship",
       name: "3x 1-on-1 VIP Mentor Strategy Sessions",
       price: 799,
-      description: "Direct 45-minute private code & project review sessions with senior AI engineers."
+      description: "Direct 45-minute private code & project review sessions with senior AI engineers.",
     },
     {
       id: "addon-career",
       name: "AI Portfolio & Career Placement Accelerator",
       price: 999,
-      description: "AI resume tailoring, LinkedIn optimization, mock tech interview, and hiring partner referrals."
-    }
+      description: "AI resume tailoring, LinkedIn optimization, mock tech interview, and hiring partner referrals.",
+    },
   ],
 
   // 4. Promo Vouchers (3C)
   vouchers: {
-    "FUTUREAI20": { discountPercent: 20, description: "20% Early Bird AI Innovator Discount" },
-    "STUDENT50": { discountPercent: 50, description: "50% University / Student Scholarship Voucher" },
-    "LAUNCH100": { flatDiscount: 500, description: "₹500 Flat Launch Special Voucher" }
+    FUTUREAI20: { discountPercent: 20, description: "20% Early Bird AI Innovator Discount" },
+    STUDENT50: { discountPercent: 50, description: "50% University / Student Scholarship Voucher" },
+    LAUNCH100: { flatDiscount: 500, description: "₹500 Flat Launch Special Voucher" },
+    "NEXVION-SCHOLAR-20": { discountPercent: 20, description: "20% Merit Scholarship Tuition Grant" },
+    "NEXVION-SCHOLAR-25": { discountPercent: 25, description: "25% Merit Scholarship Tuition Grant" },
+    "NEXVION-SCHOLAR-30": { discountPercent: 30, description: "30% Executive AI Fellowship Grant" },
+    "NEXVION-SCHOLAR-35": { discountPercent: 35, description: "35% Presidential Frontier AI Fellowship" },
   },
 
   // 5. Initial Registrations (Starting at 0)
@@ -226,34 +265,34 @@ const ACADEMY_DATA = {
       role: "AI Product Specialist at TechVentures",
       text: "The AI for Beginners track completely transformed how our business team operates. We automated 15+ hours of repetitive research weekly using custom GPTs and Zapier.",
       avatar: "MV",
-      rating: 5
+      rating: 5,
     },
     {
       name: "Dr. Priya Sharma",
       role: "ML Researcher & Lead Engineer",
       text: "The GenAI & Agents curriculum is the most up-to-date program anywhere. We built actual multi-agent systems and RAG pipelines that landed me senior AI offers.",
       avatar: "PS",
-      rating: 5
+      rating: 5,
     },
     {
       name: "Liam O'Connor",
       role: "Full-Stack AI Developer",
       text: "From zero neural network experience to deploying an end-to-end LLM application on cloud GPUs. The instructor mentorship was world-class.",
       avatar: "LO",
-      rating: 5
-    }
+      rating: 5,
+    },
   ],
 
   // 7. Initial Capstone Projects (Starting at 0)
   initialCapstones: [],
 
   // 8. Initial Mentorship Messages (Starting at 0)
-  initialMessages: []
+  initialMessages: [],
 };
 
 // Storage helper to persist data
 const StorageService = {
-  init: function() {
+  init: function () {
     if (!localStorage.getItem("nexus_clean_zero_v2")) {
       localStorage.setItem("nexus_students", JSON.stringify([]));
       localStorage.removeItem("nexus_current_student");
@@ -268,13 +307,13 @@ const StorageService = {
     this.getMessages();
   },
 
-  getStudents: function() {
+  getStudents: function () {
     const data = localStorage.getItem("nexus_students");
     let rawList = ACADEMY_DATA.initialStudents;
     if (data) {
       try {
         rawList = JSON.parse(data);
-      } catch(e) {
+      } catch (e) {
         rawList = ACADEMY_DATA.initialStudents;
       }
     }
@@ -284,16 +323,16 @@ const StorageService = {
     const seenEmails = new Set();
     const uniqueStudents = [];
 
-    rawList.forEach(s => {
+    rawList.forEach((s) => {
       if (!s || !s.id) return;
-      const emailLower = (s.email || '').toLowerCase();
+      const emailLower = (s.email || "").toLowerCase();
       if (!seenIds.has(s.id) && (!emailLower || !seenEmails.has(emailLower))) {
         seenIds.add(s.id);
         if (emailLower) seenEmails.add(emailLower);
 
         if (s.certificateAllotted === undefined) {
           s.certificateAllotted = false;
-          s.certificateId = s.certificateId || `G-NEX-2026-${s.id.split('-').pop()}`;
+          s.certificateId = s.certificateId || `G-NEX-2026-${s.id.split("-").pop()}`;
           s.certificateGrade = s.certificateGrade || "Distinction (98%)";
           s.certificateDate = s.certificateDate || new Date().toISOString().slice(0, 10);
         }
@@ -304,13 +343,13 @@ const StorageService = {
     localStorage.setItem("nexus_students", JSON.stringify(uniqueStudents));
     return uniqueStudents;
   },
-  
-  saveStudent: function(student) {
+
+  saveStudent: function (student) {
     let students = this.getStudents();
-    const emailLower = (student.email || '').toLowerCase();
-    
+    const emailLower = (student.email || "").toLowerCase();
+
     // Remove any duplicate records matching ID or Email
-    students = students.filter(s => s.id !== student.id && (!emailLower || s.email.toLowerCase() !== emailLower));
+    students = students.filter((s) => s.id !== student.id && (!emailLower || s.email.toLowerCase() !== emailLower));
 
     if (student.certificateAllotted === undefined) {
       student.certificateAllotted = false;
@@ -324,33 +363,35 @@ const StorageService = {
     this.incrementBatchSeat(student.batchId);
 
     // Sync to Firebase Cloud Firestore & Realtime DB
-    if (typeof FirebaseService !== 'undefined' && FirebaseService.isInitialized) {
+    if (typeof FirebaseService !== "undefined" && FirebaseService.isInitialized) {
       FirebaseService.saveStudentAdmission(student);
     }
 
     return student;
   },
 
-  getCurrentStudent: function() {
+  getCurrentStudent: function () {
     const data = localStorage.getItem("nexus_current_student");
     if (data) {
-      try { return JSON.parse(data); } catch(e) {}
+      try {
+        return JSON.parse(data);
+      } catch (e) {}
     }
     const students = this.getStudents();
     return students.length > 0 ? students[0] : null;
   },
 
-  setCurrentStudent: function(student) {
+  setCurrentStudent: function (student) {
     localStorage.setItem("nexus_current_student", JSON.stringify(student));
   },
 
-  updateStudentStatus: function(studentId, newStatus) {
+  updateStudentStatus: function (studentId, newStatus) {
     const students = this.getStudents();
-    const target = students.find(s => s.id === studentId);
+    const target = students.find((s) => s.id === studentId);
     if (target) {
       target.status = newStatus;
       localStorage.setItem("nexus_students", JSON.stringify(students));
-      
+
       const current = this.getCurrentStudent();
       if (current && current.id === studentId) {
         current.status = newStatus;
@@ -362,16 +403,16 @@ const StorageService = {
   },
 
   // Allot certificate to a student by Admin
-  allotCertificate: function(studentId, certDetails = {}) {
+  allotCertificate: function (studentId, certDetails = {}) {
     const students = this.getStudents();
-    const target = students.find(s => s.id === studentId);
+    const target = students.find((s) => s.id === studentId);
     if (target) {
       target.certificateAllotted = true;
-      target.certificateId = certDetails.id || `G-NEX-2026-${target.id.split('-').pop()}`;
+      target.certificateId = certDetails.id || `G-NEX-2026-${target.id.split("-").pop()}`;
       target.certificateGrade = certDetails.grade || "Distinction (98%)";
       target.certificateDate = certDetails.date || new Date().toISOString().slice(0, 10);
-      target.status = target.status === 'Pending' ? 'Confirmed' : target.status;
-      
+      target.status = target.status === "Pending" ? "Confirmed" : target.status;
+
       localStorage.setItem("nexus_students", JSON.stringify(students));
 
       const current = this.getCurrentStudent();
@@ -388,9 +429,9 @@ const StorageService = {
   },
 
   // Revoke certificate allotment
-  revokeCertificate: function(studentId) {
+  revokeCertificate: function (studentId) {
     const students = this.getStudents();
-    const target = students.find(s => s.id === studentId);
+    const target = students.find((s) => s.id === studentId);
     if (target) {
       target.certificateAllotted = false;
       localStorage.setItem("nexus_students", JSON.stringify(students));
@@ -406,11 +447,11 @@ const StorageService = {
   },
 
   // Allot certificates in bulk to all students
-  allotAllCertificates: function() {
+  allotAllCertificates: function () {
     const students = this.getStudents();
-    students.forEach(s => {
+    students.forEach((s) => {
       s.certificateAllotted = true;
-      s.certificateId = s.certificateId || `G-NEX-2026-${s.id.split('-').pop()}`;
+      s.certificateId = s.certificateId || `G-NEX-2026-${s.id.split("-").pop()}`;
       s.certificateGrade = s.certificateGrade || "Distinction (98%)";
       s.certificateDate = s.certificateDate || new Date().toISOString().slice(0, 10);
       s.status = "Confirmed";
@@ -422,21 +463,21 @@ const StorageService = {
   // ------------------------------------------------------------------------
   // CAPSTONE PROJECT PORTAL STORAGE
   // ------------------------------------------------------------------------
-  getCapstones: function() {
+  getCapstones: function () {
     const data = localStorage.getItem("nexus_capstones");
     let rawList = ACADEMY_DATA.initialCapstones;
     if (data) {
       try {
         rawList = JSON.parse(data);
-      } catch(e) {
+      } catch (e) {
         rawList = ACADEMY_DATA.initialCapstones;
       }
     }
-    
+
     // De-duplicate capstones by ID
     const seen = new Set();
     const unique = [];
-    rawList.forEach(c => {
+    rawList.forEach((c) => {
       if (c && c.id && !seen.has(c.id)) {
         seen.add(c.id);
         unique.push(c);
@@ -447,28 +488,32 @@ const StorageService = {
     return unique;
   },
 
-  submitCapstone: function(capstone) {
+  submitCapstone: function (capstone) {
     let capstones = this.getCapstones();
     const newEntry = {
       id: `CAP-${Date.now().toString().slice(-4)}`,
-      submittedAt: new Date().toISOString().slice(0, 16).replace('T', ' '),
+      submittedAt: new Date().toISOString().slice(0, 16).replace("T", " "),
       status: "Under Review",
       grade: "",
-      facultyNotes: "Received by Faculty. Dr. Sarah Sterling and the academic board are reviewing your model code and architecture.",
+      facultyNotes:
+        "Received by Faculty. Dr. Sarah Sterling and the academic board are reviewing your model code and architecture.",
       reviewedBy: "",
       reviewedAt: "",
-      ...capstone
+      ...capstone,
     };
     // De-duplicate any matching project title or ID
-    capstones = capstones.filter(c => c.id !== newEntry.id && (c.projectTitle || '').toLowerCase() !== (newEntry.projectTitle || '').toLowerCase());
+    capstones = capstones.filter(
+      (c) =>
+        c.id !== newEntry.id && (c.projectTitle || "").toLowerCase() !== (newEntry.projectTitle || "").toLowerCase()
+    );
     capstones.unshift(newEntry);
     localStorage.setItem("nexus_capstones", JSON.stringify(capstones));
     return newEntry;
   },
 
-  gradeCapstone: function(capstoneId, grade, notes, autoAllotCert = true) {
+  gradeCapstone: function (capstoneId, grade, notes, autoAllotCert = true) {
     const capstones = this.getCapstones();
-    const target = capstones.find(c => c.id === capstoneId);
+    const target = capstones.find((c) => c.id === capstoneId);
     if (target) {
       target.status = "Approved";
       target.grade = grade || "Distinction (98%)";
@@ -481,7 +526,7 @@ const StorageService = {
       if (autoAllotCert && target.studentId) {
         this.allotCertificate(target.studentId, {
           grade: target.grade,
-          date: target.reviewedAt
+          date: target.reviewedAt,
         });
       }
       return target;
@@ -492,17 +537,19 @@ const StorageService = {
   // ------------------------------------------------------------------------
   // MESSAGING & MENTORSHIP STORAGE
   // ------------------------------------------------------------------------
-  getMessages: function(studentId) {
+  getMessages: function (studentId) {
     const data = localStorage.getItem("nexus_messages");
     let allMsgs = ACADEMY_DATA.initialMessages;
     if (data) {
-      try { allMsgs = JSON.parse(data); } catch(e) {}
+      try {
+        allMsgs = JSON.parse(data);
+      } catch (e) {}
     }
 
     // De-duplicate messages by ID
     const seen = new Set();
     const unique = [];
-    allMsgs.forEach(m => {
+    allMsgs.forEach((m) => {
       if (m && m.id && !seen.has(m.id)) {
         seen.add(m.id);
         unique.push(m);
@@ -512,31 +559,31 @@ const StorageService = {
     localStorage.setItem("nexus_messages", JSON.stringify(unique));
 
     if (studentId) {
-      return unique.filter(m => m.studentId === studentId);
+      return unique.filter((m) => m.studentId === studentId);
     }
     return unique;
   },
 
-  sendMessage: function(msg) {
+  sendMessage: function (msg) {
     let allMsgs = this.getMessages();
     const newMsg = {
       id: `msg-${Date.now()}`,
-      timestamp: new Date().toISOString().slice(0, 16).replace('T', ' '),
-      ...msg
+      timestamp: new Date().toISOString().slice(0, 16).replace("T", " "),
+      ...msg,
     };
-    allMsgs = allMsgs.filter(m => m.id !== newMsg.id);
+    allMsgs = allMsgs.filter((m) => m.id !== newMsg.id);
     allMsgs.push(newMsg);
     localStorage.setItem("nexus_messages", JSON.stringify(allMsgs));
     return newMsg;
   },
 
-  getBatches: function() {
+  getBatches: function () {
     const data = localStorage.getItem("nexus_batches");
     let rawList = ACADEMY_DATA.batches;
     if (data) {
       try {
         rawList = JSON.parse(data);
-      } catch(e) {
+      } catch (e) {
         rawList = ACADEMY_DATA.batches;
       }
     }
@@ -546,10 +593,10 @@ const StorageService = {
     const unique = [];
     const now = Date.now();
 
-    rawList.forEach(b => {
+    rawList.forEach((b) => {
       if (b && b.id && !seen.has(b.id)) {
         seen.add(b.id);
-        
+
         // Auto-check if classEndTime or endDate has passed
         if (b.classEndTime && new Date(b.classEndTime).getTime() <= now) {
           b.status = "Class Completed";
@@ -569,9 +616,14 @@ const StorageService = {
   },
 
   // Check if a batch has completed its class time or is marked completed
-  isBatchCompleted: function(batch) {
+  isBatchCompleted: function (batch) {
     if (!batch) return true;
-    if (batch.isCompleted || batch.status === "Class Completed" || batch.status === "Completed" || batch.status === "Closed") {
+    if (
+      batch.isCompleted ||
+      batch.status === "Class Completed" ||
+      batch.status === "Completed" ||
+      batch.status === "Closed"
+    ) {
       return true;
     }
     if (batch.classEndTime && new Date(batch.classEndTime).getTime() <= Date.now()) {
@@ -584,15 +636,15 @@ const StorageService = {
   },
 
   // Returns ONLY active, uncompleted batches available for student enrollment
-  getActiveBatches: function() {
+  getActiveBatches: function () {
     const allBatches = this.getBatches();
-    return allBatches.filter(b => !this.isBatchCompleted(b));
+    return allBatches.filter((b) => !this.isBatchCompleted(b));
   },
 
   // Mark a batch class completed (Admin or automated)
-  markBatchCompleted: function(batchId) {
+  markBatchCompleted: function (batchId) {
     const batches = this.getBatches();
-    const target = batches.find(b => b.id === batchId);
+    const target = batches.find((b) => b.id === batchId);
     if (target) {
       target.status = "Class Completed";
       target.isCompleted = true;
@@ -604,9 +656,9 @@ const StorageService = {
   },
 
   // Re-open a batch for enrollment
-  reopenBatch: function(batchId) {
+  reopenBatch: function (batchId) {
     const batches = this.getBatches();
-    const target = batches.find(b => b.id === batchId);
+    const target = batches.find((b) => b.id === batchId);
     if (target) {
       target.status = "Open Enrollment";
       target.isCompleted = false;
@@ -617,28 +669,28 @@ const StorageService = {
     return null;
   },
 
-  saveBatch: function(batch) {
+  saveBatch: function (batch) {
     let batches = this.getBatches();
-    batches = batches.filter(b => b.id !== batch.id);
+    batches = batches.filter((b) => b.id !== batch.id);
     batches.push(batch);
     localStorage.setItem("nexus_batches", JSON.stringify(batches));
     return batch;
   },
 
-  incrementBatchSeat: function(batchId) {
+  incrementBatchSeat: function (batchId) {
     const batches = this.getBatches();
-    const batch = batches.find(b => b.id === batchId);
+    const batch = batches.find((b) => b.id === batchId);
     if (batch && batch.enrolledSeats < batch.maxSeats) {
       batch.enrolledSeats += 1;
       localStorage.setItem("nexus_batches", JSON.stringify(batches));
     }
   },
 
-  resetToDefault: function() {
+  resetToDefault: function () {
     localStorage.setItem("nexus_students", JSON.stringify([]));
     localStorage.setItem("nexus_batches", JSON.stringify(ACADEMY_DATA.batches));
     localStorage.removeItem("nexus_current_student");
     localStorage.setItem("nexus_capstones", JSON.stringify([]));
     localStorage.setItem("nexus_messages", JSON.stringify([]));
-  }
+  },
 };

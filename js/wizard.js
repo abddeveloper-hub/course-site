@@ -1,10 +1,10 @@
-// AI Nexus Academy - Multi-Step Registration Wizard (Features 4A, 4B, 4C & 3C)
+// NEXVION AI ACADEMY - Multi-Step Registration Wizard (Features 4A, 4B, 4C & 3C)
 
 const Wizard = {
   currentStep: 1,
   totalSteps: 5,
   isExpressMode: false,
-  
+
   formData: {
     fullName: "",
     email: "",
@@ -16,10 +16,10 @@ const Wizard = {
     addons: [],
     voucherCode: "",
     voucherDiscount: 0,
-    paymentMethod: "card"
+    paymentMethod: "card",
   },
 
-  init: function() {
+  init: function () {
     this.renderStep1BatchSelect();
     this.renderTrackOptions();
     this.renderBatchOptions();
@@ -30,8 +30,8 @@ const Wizard = {
   },
 
   // Render Batch selection dropdown in Step 1 (Student details step)
-  renderStep1BatchSelect: function() {
-    const select = document.getElementById('wizBatchSelect');
+  renderStep1BatchSelect: function () {
+    const select = document.getElementById("wizBatchSelect");
     if (!select) return;
 
     const batches = StorageService.getActiveBatches();
@@ -41,87 +41,137 @@ const Wizard = {
       return;
     }
 
-    select.innerHTML = batches.map(b => {
-      const seatsLeft = Math.max(0, b.maxSeats - b.enrolledSeats);
-      return `<option value="${b.id}" ${this.formData.batchId === b.id ? 'selected' : ''}>${b.name} &bull; Starts ${b.startDate} (${b.schedule}) [${seatsLeft} seats left]</option>`;
-    }).join('');
+    select.innerHTML = batches
+      .map((b) => {
+        const seatsLeft = Math.max(0, b.maxSeats - b.enrolledSeats);
+        return `<option value="${b.id}" ${this.formData.batchId === b.id ? "selected" : ""}>${b.name} &bull; Starts ${b.startDate} (${b.schedule}) [${seatsLeft} seats left]</option>`;
+      })
+      .join("");
 
     // Ensure valid active batch is selected
-    if (!batches.some(b => b.id === this.formData.batchId)) {
+    if (!batches.some((b) => b.id === this.formData.batchId)) {
       this.formData.batchId = batches[0].id;
       select.value = this.formData.batchId;
     }
   },
 
   // Switch between Standard (5-step) and Express (2-step) mode
-  setMode: function(express) {
+  setMode: function (express) {
     this.isExpressMode = express;
-    document.querySelectorAll('.mode-pill').forEach(pill => {
-      pill.classList.toggle('active', pill.dataset.mode === (express ? 'express' : 'standard'));
+    document.querySelectorAll(".mode-pill").forEach((pill) => {
+      pill.classList.toggle("active", pill.dataset.mode === (express ? "express" : "standard"));
     });
 
-    const progressWrap = document.getElementById('wizardProgressWrap');
+    const progressWrap = document.getElementById("wizardProgressWrap");
     if (progressWrap) {
-      progressWrap.style.display = express ? 'none' : 'flex';
+      progressWrap.style.display = express ? "none" : "flex";
     }
 
     // Toggle Express container vs standard steps
-    const expressPane = document.getElementById('expressStepPane');
-    const standardContainer = document.getElementById('standardStepsContainer');
+    const expressPane = document.getElementById("expressStepPane");
+    const standardContainer = document.getElementById("standardStepsContainer");
 
     if (express) {
-      if (expressPane) expressPane.style.display = 'block';
-      if (standardContainer) standardContainer.style.display = 'none';
+      if (expressPane) expressPane.style.display = "block";
+      if (standardContainer) standardContainer.style.display = "none";
       this.populateExpressOptions();
     } else {
-      if (expressPane) expressPane.style.display = 'none';
-      if (standardContainer) standardContainer.style.display = 'block';
+      if (expressPane) expressPane.style.display = "none";
+      if (standardContainer) standardContainer.style.display = "block";
       this.goToStep(1);
     }
   },
 
   // Render Track Selector Cards (Step 2 - Square Grid Tiles with Pure AI Details & Fees)
-  renderTrackOptions: function() {
-    const container = document.getElementById('wizardTrackContainer');
+  renderTrackOptions: function () {
+    const container = document.getElementById("wizardTrackContainer");
     if (!container) return;
 
     const courseTechMap = {
-      'ai-beginners': ['Cursor AI', 'Windsurf IDE', 'Lovable.dev', 'Bolt.new', 'v0.dev', 'Replit Agent'],
-      'applied-ml-ds': ['Vercel Cloud', 'Render / Netlify', 'Supabase DB', 'Firebase Backend', 'Docker', 'GitHub CI/CD'],
-      'genai-agents': ['Python FastAPI', 'OpenAI GPT-4o API', 'Claude 3.5 API', 'Google Gemini API', 'Pinecone Vector DB', 'Webhooks'],
-      'fullstack-ai-engineer': ['CrewAI Multi-Agents', 'LangGraph Swarms', 'Enterprise RAG', 'Ollama Local LLM', 'vLLM Serving', 'Cloud GPUs']
+      "ai-foundations-free": [
+        "ChatGPT 4o",
+        "Claude 3.7",
+        "Prompt Crafting",
+        "Few-Shot Chains",
+        "Workflow Automation",
+        "AI Ethics",
+      ],
+      "ai-beginners": ["Cursor AI", "Windsurf IDE", "Lovable.dev", "Bolt.new", "v0.dev", "Replit Agent"],
+      "applied-ml-ds": [
+        "Vercel Cloud",
+        "Render / Netlify",
+        "Supabase DB",
+        "Firebase Backend",
+        "Docker",
+        "GitHub CI/CD",
+      ],
+      "genai-agents": [
+        "Python FastAPI",
+        "OpenAI GPT-4o API",
+        "Claude 3.5 API",
+        "Google Gemini API",
+        "Pinecone Vector DB",
+        "Webhooks",
+      ],
+      "fullstack-ai-engineer": [
+        "CrewAI Multi-Agents",
+        "LangGraph Swarms",
+        "Enterprise RAG",
+        "Ollama Local LLM",
+        "vLLM Serving",
+        "Cloud GPUs",
+      ],
     };
 
     const courseBadgeMap = {
-      'ai-beginners': { class: 'track-badge-zero', text: '🌱 Low Tier · Vibe Coding Softwares (₹1,500)' },
-      'applied-ml-ds': { class: 'track-badge-popular', text: '⭐ Mid Tier · Hosting & Deployment (₹2,500)' },
-      'genai-agents': { class: 'track-badge-trending', text: '🔥 High Tier · APIs & Backend (₹3,500)' },
-      'fullstack-ai-engineer': { class: 'track-badge-career', text: '🚀 Highest Tier · Advanced AI & Agents (₹5,000)' }
+      "ai-foundations-free": { class: "track-badge-zero", text: "🎁 Free Tier · 100% Scholarship (₹0)" },
+      "ai-beginners": { class: "track-badge-zero", text: "🌱 Low Tier · Vibe Coding Softwares (₹1,500)" },
+      "applied-ml-ds": { class: "track-badge-popular", text: "⭐ Mid Tier · Hosting & Deployment (₹2,500)" },
+      "genai-agents": { class: "track-badge-trending", text: "🔥 High Tier · APIs & Backend (₹3,500)" },
+      "fullstack-ai-engineer": { class: "track-badge-career", text: "🚀 Highest Tier · Advanced AI & Agents (₹5,000)" },
     };
 
-    let html = '';
-    ACADEMY_DATA.courses.forEach(course => {
+    let html = "";
+    ACADEMY_DATA.courses.forEach((course) => {
       const isSelected = this.formData.trackId === course.id;
-      const discount = course.originalPrice ? Math.round(((course.originalPrice - course.price) / course.originalPrice) * 100) : 0;
-      const techChips = (courseTechMap[course.id] || []).map(tech => `<span class="tech-chip"><i class="fas fa-robot" style="font-size:0.65rem; color:var(--neon-cyan);"></i>${tech}</span>`).join('');
-      const badgeInfo = courseBadgeMap[course.id] || { class: 'track-badge-zero', text: course.badge || 'Certified AI' };
+      const isFree = course.price === 0;
+      const discount = course.originalPrice
+        ? Math.round(((course.originalPrice - course.price) / course.originalPrice) * 100)
+        : 0;
+      const techChips = (courseTechMap[course.id] || [])
+        .map(
+          (tech) =>
+            `<span class="tech-chip"><i class="fas fa-robot" style="font-size:0.65rem; color:var(--secondary);"></i>${tech}</span>`
+        )
+        .join("");
+      const badgeInfo = courseBadgeMap[course.id] || {
+        class: "track-badge-zero",
+        text: course.badge || "Certified AI",
+      };
       const monthlyInstallment = Math.round(course.price / 3);
 
-      const highlightItems = course.highlights ? course.highlights.slice(0, 4).map(h => `
+      const highlightItems = course.highlights
+        ? course.highlights
+            .slice(0, 4)
+            .map(
+              (h) => `
         <li>
-          <i class="fas fa-check-circle" style="color:var(--neon-emerald); margin-top:3px; font-size:0.8rem; flex-shrink:0;"></i>
+          <i class="fas fa-check-circle" style="color:var(--success); margin-top:3px; font-size:0.8rem; flex-shrink:0;"></i>
           <span>${h}</span>
         </li>
-      `).join('') : '';
+      `
+            )
+            .join("")
+        : "";
 
       html += `
-        <div class="track-square-card track-select-card ${isSelected ? 'selected' : ''}" onclick="Wizard.selectTrack('${course.id}')" id="track-card-${course.id}">
+        <div class="track-square-card track-select-card ${isSelected ? "selected" : ""}" onclick="Wizard.selectTrack('${course.id}')" id="track-card-${course.id}" style="${isFree ? "border-color:rgba(16,185,129,0.3);" : ""}">
           
           <!-- TOP ROW: AI ICON + BADGES + RADIO -->
           <div class="square-card-header">
             <div style="display:flex; align-items:center; gap:10px;">
-              <div class="square-icon-wrap" style="background:${course.gradient || 'var(--grad-primary)'};">
-                <i class="fas ${course.icon || 'fa-brain'}"></i>
+              <div class="square-icon-wrap" style="background:${course.gradient || "var(--grad-primary)"};">
+                <i class="fas ${course.icon || "fa-brain"}"></i>
               </div>
               <div>
                 <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
@@ -142,21 +192,27 @@ const Wizard = {
           <!-- AI TITLE & DESCRIPTION -->
           <div>
             <h4 class="square-title">${course.title}</h4>
-            <div style="font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--neon-cyan); margin-top:2px;">${course.category} &bull; ${course.tier || ''}</div>
+            <div style="font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--secondary); margin-top:2px;">${course.category} &bull; ${course.tier || ""}</div>
             <p class="square-desc">${course.description}</p>
           </div>
 
           <!-- DEDICATED PROMINENT AI TUITION FEE BOX -->
-          <div class="square-fee-box">
+          <div class="square-fee-box" style="${isFree ? "background:rgba(16,185,129,0.06); border-color:rgba(16,185,129,0.3);" : ""}">
             <div class="square-fee-top">
-              <span>All-Inclusive AI Tuition Fee</span>
-              ${discount > 0 ? `<span class="square-savings-tag"><i class="fas fa-bolt"></i> Save ₹${(course.originalPrice - course.price).toLocaleString()} (${discount}% OFF)</span>` : ''}
+              <span>${isFree ? "Open Access Fellowship" : "All-Inclusive AI Tuition Fee"}</span>
+              ${
+                isFree
+                  ? `<span class="square-savings-tag" style="background:var(--success); color:#ffffff;"><i class="fas fa-gift"></i> 100% Free Grant</span>`
+                  : discount > 0
+                    ? `<span class="square-savings-tag"><i class="fas fa-bolt"></i> Save ${typeof CurrencyManager !== "undefined" ? CurrencyManager.format(course.originalPrice - course.price) : "₹" + (course.originalPrice - course.price).toLocaleString()} (${discount}% OFF)</span>`
+                    : ""
+              }
             </div>
             <div class="square-price-row">
-              <span class="square-price">₹${course.price.toLocaleString()}</span>
-              ${course.originalPrice ? `<span class="square-orig-price">₹${course.originalPrice.toLocaleString()}</span>` : ''}
+              <span class="square-price" style="${isFree ? "color:var(--success);" : ""}">${isFree ? "FREE" : typeof CurrencyManager !== "undefined" ? CurrencyManager.format(course.price) : "₹" + course.price.toLocaleString()}</span>
+              ${course.originalPrice ? `<span class="square-orig-price">${typeof CurrencyManager !== "undefined" ? CurrencyManager.format(course.originalPrice) : "₹" + course.originalPrice.toLocaleString()}</span>` : ""}
             </div>
-            <div class="square-installment-text">or 3 flexible monthly payments of ₹${monthlyInstallment.toLocaleString()}/mo</div>
+            <div class="square-installment-text">${isFree ? "✓ No Credit Card or Payment Required &bull; Instant Admission" : `or 3 flexible monthly payments of ${typeof CurrencyManager !== "undefined" ? CurrencyManager.format(monthlyInstallment) : "₹" + monthlyInstallment.toLocaleString()}/mo`}</div>
           </div>
 
           <!-- AI TECH STACK & CURRICULUM BULLETS -->
@@ -164,7 +220,7 @@ const Wizard = {
             <div class="square-tech-chips">
               ${techChips}
             </div>
-            ${highlightItems ? `<ul class="square-highlights-list" style="margin-top:10px;">${highlightItems}</ul>` : ''}
+            ${highlightItems ? `<ul class="square-highlights-list" style="margin-top:10px;">${highlightItems}</ul>` : ""}
           </div>
 
           <!-- DURATION & LIVE AI LAB INFO -->
@@ -174,7 +230,7 @@ const Wizard = {
           </div>
 
           <!-- SELECTION ACTION BUTTON -->
-          <div class="square-select-btn ${isSelected ? 'selected' : ''}">
+          <div class="square-select-btn ${isSelected ? "selected" : ""}">
             ${isSelected ? `<i class="fas fa-check-circle"></i> <span>✓ AI Track Selected</span>` : `<i class="far fa-circle"></i> <span>Select This AI Track</span>`}
           </div>
 
@@ -184,23 +240,23 @@ const Wizard = {
     container.innerHTML = html;
   },
 
-  selectTrack: function(trackId) {
+  selectTrack: function (trackId) {
     this.formData.trackId = trackId;
-    document.querySelectorAll('.track-select-card').forEach(card => {
-      card.classList.remove('selected');
-      const btn = card.querySelector('.square-select-btn');
+    document.querySelectorAll(".track-select-card").forEach((card) => {
+      card.classList.remove("selected");
+      const btn = card.querySelector(".square-select-btn");
       if (btn) {
-        btn.classList.remove('selected');
+        btn.classList.remove("selected");
         btn.innerHTML = `<i class="far fa-circle"></i> <span>Select This Course Track</span>`;
       }
     });
 
     const target = document.getElementById(`track-card-${trackId}`);
     if (target) {
-      target.classList.add('selected');
-      const btn = target.querySelector('.square-select-btn');
+      target.classList.add("selected");
+      const btn = target.querySelector(".square-select-btn");
       if (btn) {
-        btn.classList.add('selected');
+        btn.classList.add("selected");
         btn.innerHTML = `<i class="fas fa-check-circle"></i> <span>✓ Course Track Selected</span>`;
       }
     }
@@ -209,8 +265,8 @@ const Wizard = {
   },
 
   // Render Batch Selector Cards (Step 3) - Filters out completed batches automatically
-  renderBatchOptions: function() {
-    const container = document.getElementById('wizardBatchContainer');
+  renderBatchOptions: function () {
+    const container = document.getElementById("wizardBatchContainer");
     if (!container) return;
 
     const batches = StorageService.getActiveBatches();
@@ -230,20 +286,20 @@ const Wizard = {
       return;
     }
 
-    let html = '';
-    batches.forEach(batch => {
+    let html = "";
+    batches.forEach((batch) => {
       const isSelected = this.formData.batchId === batch.id;
       const percent = Math.round((batch.enrolledSeats / batch.maxSeats) * 100);
       const isFull = batch.enrolledSeats >= batch.maxSeats;
 
       html += `
-        <div class="batch-select-card ${isSelected ? 'selected' : ''} ${isFull ? 'opacity-50' : ''}" onclick="${isFull ? '' : `Wizard.selectBatch('${batch.id}')`}" id="batch-card-${batch.id}">
+        <div class="batch-select-card ${isSelected ? "selected" : ""} ${isFull ? "opacity-50" : ""}" onclick="${isFull ? "" : `Wizard.selectBatch('${batch.id}')`}" id="batch-card-${batch.id}">
           <div class="batch-card-header">
             <div>
               <strong style="color:#0f172a; font-size:1.05rem;">${batch.name}</strong>
               <div style="font-size:0.8rem; color:var(--text-muted);"><i class="fas fa-calendar-alt" style="color:var(--neon-cyan); margin-right:4px;"></i> Starts: ${batch.startDate}</div>
             </div>
-            <span class="status-badge ${percent > 80 ? 'status-waitlisted' : 'status-confirmed'}">
+            <span class="status-badge ${percent > 80 ? "status-waitlisted" : "status-confirmed"}">
               <i class="fas fa-check-circle"></i> Active Cohort
             </span>
           </div>
@@ -261,70 +317,70 @@ const Wizard = {
     container.innerHTML = html;
   },
 
-  selectBatch: function(batchId) {
+  selectBatch: function (batchId) {
     this.formData.batchId = batchId;
 
     // Sync Step 1 dropdown if exists
-    const step1Select = document.getElementById('wizBatchSelect');
+    const step1Select = document.getElementById("wizBatchSelect");
     if (step1Select && step1Select.value !== batchId) {
       step1Select.value = batchId;
     }
 
     // Sync Express select if exists
-    const expressSelect = document.getElementById('expressBatchSelect');
+    const expressSelect = document.getElementById("expressBatchSelect");
     if (expressSelect && expressSelect.value !== batchId) {
       expressSelect.value = batchId;
     }
 
     // Highlight active card in Step 3
-    document.querySelectorAll('.batch-select-card').forEach(card => card.classList.remove('selected'));
+    document.querySelectorAll(".batch-select-card").forEach((card) => card.classList.remove("selected"));
     const target = document.getElementById(`batch-card-${batchId}`);
-    if (target) target.classList.add('selected');
+    if (target) target.classList.add("selected");
   },
 
   // Render Addons (Step 2 & Calculator)
-  renderAddonOptions: function() {
-    const container = document.getElementById('wizardAddonsContainer');
+  renderAddonOptions: function () {
+    const container = document.getElementById("wizardAddonsContainer");
     if (!container) return;
 
-    let html = '';
-    ACADEMY_DATA.addons.forEach(addon => {
+    let html = "";
+    ACADEMY_DATA.addons.forEach((addon) => {
       const isChecked = this.formData.addons.includes(addon.id);
       html += `
-        <label class="addon-label-card ${isChecked ? 'selected' : ''}" id="addon-label-${addon.id}">
+        <label class="addon-label-card ${isChecked ? "selected" : ""}" id="addon-label-${addon.id}">
           <div class="addon-info">
-            <input type="checkbox" value="${addon.id}" ${isChecked ? 'checked' : ''} onchange="Wizard.toggleAddon('${addon.id}', this.checked)">
+            <input type="checkbox" value="${addon.id}" ${isChecked ? "checked" : ""} onchange="Wizard.toggleAddon('${addon.id}', this.checked)">
             <div class="addon-text">
               <h5>${addon.name}</h5>
               <p>${addon.description}</p>
             </div>
           </div>
-          <div class="addon-price-tag">+₹${addon.price}</div>
+          <div class="addon-price-tag">+${typeof CurrencyManager !== "undefined" ? CurrencyManager.format(addon.price) : "₹" + addon.price}</div>
         </label>
       `;
     });
     container.innerHTML = html;
   },
 
-  toggleAddon: function(addonId, isChecked) {
+  toggleAddon: function (addonId, isChecked) {
     if (isChecked) {
       if (!this.formData.addons.includes(addonId)) this.formData.addons.push(addonId);
     } else {
-      this.formData.addons = this.formData.addons.filter(id => id !== addonId);
+      this.formData.addons = this.formData.addons.filter((id) => id !== addonId);
     }
     const card = document.getElementById(`addon-label-${addonId}`);
-    if (card) card.classList.toggle('selected', isChecked);
+    if (card) card.classList.toggle("selected", isChecked);
     this.calculatePricing();
   },
 
   // Calculate Real-time dynamic pricing & vouchers (Feature 3C)
-  calculatePricing: function() {
-    const selectedCourse = ACADEMY_DATA.courses.find(c => c.id === this.formData.trackId) || ACADEMY_DATA.courses[0];
+  calculatePricing: function () {
+    const selectedCourse = ACADEMY_DATA.courses.find((c) => c.id === this.formData.trackId) || ACADEMY_DATA.courses[0];
     const basePrice = selectedCourse.price;
 
     let addonTotal = 0;
-    this.formData.addons.forEach(addonId => {
-      const addon = ACADEMY_DATA.addons.find(a => a.id === addonId);
+    this.formData.addons.forEach((addonId) => {
+      const addon = ACADEMY_DATA.addons.find((a) => a.id === addonId);
       if (addon) addonTotal += addon.price;
     });
 
@@ -343,36 +399,41 @@ const Wizard = {
     const total = Math.max(0, subtotal - discountAmount);
 
     // Update Step 4 Summary Elements
-    const step4TrackName = document.getElementById('step4TrackName');
-    const step4TrackPrice = document.getElementById('step4TrackPrice');
-    const step4AddonsPrice = document.getElementById('step4AddonsPrice');
-    const step4DiscountRow = document.getElementById('step4DiscountRow');
-    const step4DiscountVal = document.getElementById('step4DiscountVal');
-    const step4TotalPrice = document.getElementById('step4TotalPrice');
+    const step4TrackName = document.getElementById("step4TrackName");
+    const step4TrackPrice = document.getElementById("step4TrackPrice");
+    const step4AddonsPrice = document.getElementById("step4AddonsPrice");
+    const step4DiscountRow = document.getElementById("step4DiscountRow");
+    const step4DiscountVal = document.getElementById("step4DiscountVal");
+    const step4TotalPrice = document.getElementById("step4TotalPrice");
 
     if (step4TrackName) step4TrackName.textContent = selectedCourse.title;
-    if (step4TrackPrice) step4TrackPrice.textContent = `₹${basePrice.toLocaleString()}`;
-    if (step4AddonsPrice) step4AddonsPrice.textContent = `+₹${addonTotal.toLocaleString()}`;
-    
+    if (step4TrackPrice)
+      step4TrackPrice.textContent =
+        typeof CurrencyManager !== "undefined" ? CurrencyManager.format(basePrice) : `₹${basePrice.toLocaleString()}`;
+    if (step4AddonsPrice)
+      step4AddonsPrice.textContent = `+${typeof CurrencyManager !== "undefined" ? CurrencyManager.format(addonTotal) : "₹" + addonTotal.toLocaleString()}`;
+
     if (step4DiscountRow && step4DiscountVal) {
       if (discountAmount > 0) {
-        step4DiscountRow.style.display = 'flex';
-        step4DiscountVal.textContent = `-₹${discountAmount.toLocaleString()}`;
+        step4DiscountRow.style.display = "flex";
+        step4DiscountVal.textContent = `-${typeof CurrencyManager !== "undefined" ? CurrencyManager.format(discountAmount) : "₹" + discountAmount.toLocaleString()}`;
       } else {
-        step4DiscountRow.style.display = 'none';
+        step4DiscountRow.style.display = "none";
       }
     }
 
-    if (step4TotalPrice) step4TotalPrice.textContent = `₹${total.toLocaleString()}`;
+    if (step4TotalPrice)
+      step4TotalPrice.textContent =
+        typeof CurrencyManager !== "undefined" ? CurrencyManager.format(total) : `₹${total.toLocaleString()}`;
 
     return { basePrice, addonTotal, subtotal, discountAmount, total, course: selectedCourse };
   },
 
   // Apply Voucher Code
-  applyVoucher: function(code) {
-    const voucherInput = document.getElementById('wizardVoucherInput');
-    const cleanCode = (code || (voucherInput ? voucherInput.value : '')).trim().toUpperCase();
-    const msgEl = document.getElementById('voucherFeedbackMsg');
+  applyVoucher: function (code) {
+    const voucherInput = document.getElementById("wizardVoucherInput");
+    const cleanCode = (code || (voucherInput ? voucherInput.value : "")).trim().toUpperCase();
+    const msgEl = document.getElementById("voucherFeedbackMsg");
 
     if (!cleanCode) {
       if (msgEl) {
@@ -401,7 +462,7 @@ const Wizard = {
   },
 
   // Navigation between steps
-  nextStep: function() {
+  nextStep: function () {
     if (this.validateStep(this.currentStep)) {
       if (this.currentStep < this.totalSteps) {
         this.goToStep(this.currentStep + 1);
@@ -409,13 +470,13 @@ const Wizard = {
     }
   },
 
-  prevStep: function() {
+  prevStep: function () {
     if (this.currentStep > 1) {
       this.goToStep(this.currentStep - 1);
     }
   },
 
-  goToStep: function(stepNumber) {
+  goToStep: function (stepNumber) {
     this.currentStep = stepNumber;
     this.updateWizardUI();
 
@@ -428,13 +489,13 @@ const Wizard = {
       this.renderQRPaymentGateway();
     }
 
-    const viewReg = document.getElementById('view-register');
+    const viewReg = document.getElementById("view-register");
     if (viewReg) {
-      window.scrollTo({ top: viewReg.offsetTop - 40, behavior: 'smooth' });
+      window.scrollTo({ top: viewReg.offsetTop - 40, behavior: "smooth" });
     }
   },
 
-  onStepNodeClick: function(targetStep) {
+  onStepNodeClick: function (targetStep) {
     if (targetStep === this.currentStep) return;
     if (targetStep < this.currentStep) {
       this.goToStep(targetStep);
@@ -452,40 +513,42 @@ const Wizard = {
     }
   },
 
-  updateWizardUI: function() {
+  updateWizardUI: function () {
     // Hide all step panes
-    document.querySelectorAll('.wizard-step-pane').forEach((pane, idx) => {
-      pane.classList.toggle('active', (idx + 1) === this.currentStep);
+    document.querySelectorAll(".wizard-step-pane").forEach((pane, idx) => {
+      pane.classList.toggle("active", idx + 1 === this.currentStep);
     });
 
     // Update progress node markers
-    document.querySelectorAll('.step-node').forEach((node, idx) => {
+    document.querySelectorAll(".step-node").forEach((node, idx) => {
       const stepIndex = idx + 1;
-      node.classList.toggle('active', stepIndex === this.currentStep);
-      node.classList.toggle('completed', stepIndex < this.currentStep);
+      node.classList.toggle("active", stepIndex === this.currentStep);
+      node.classList.toggle("completed", stepIndex < this.currentStep);
     });
 
     // Update progress bar line fill
-    const fill = document.getElementById('wizardProgressBarFill');
+    const fill = document.getElementById("wizardProgressBarFill");
     if (fill) {
       const percentage = ((this.currentStep - 1) / (this.totalSteps - 1)) * 100;
       fill.style.width = `${percentage}%`;
     }
 
     // Hide or show back/next buttons
-    const prevBtn = document.getElementById('wizardPrevBtn');
-    const nextBtn = document.getElementById('wizardNextBtn');
+    const prevBtn = document.getElementById("wizardPrevBtn");
+    const nextBtn = document.getElementById("wizardNextBtn");
 
-    if (prevBtn) prevBtn.style.display = this.currentStep === 1 || this.currentStep === 5 || this.currentStep === 6 ? 'none' : 'inline-flex';
+    if (prevBtn)
+      prevBtn.style.display =
+        this.currentStep === 1 || this.currentStep === 5 || this.currentStep === 6 ? "none" : "inline-flex";
     if (nextBtn) {
       if (this.currentStep === 4) {
         nextBtn.innerHTML = `Proceed to Secure QR Payment <i class="fas fa-qrcode" style="margin-left:6px;"></i>`;
-        nextBtn.style.display = 'inline-flex';
+        nextBtn.style.display = "inline-flex";
       } else if (this.currentStep === 5 || this.currentStep === 6) {
-        nextBtn.style.display = 'none';
+        nextBtn.style.display = "none";
       } else {
         nextBtn.innerHTML = `Continue <i class="fas fa-arrow-right"></i>`;
-        nextBtn.style.display = 'inline-flex';
+        nextBtn.style.display = "inline-flex";
       }
     }
 
@@ -495,26 +558,26 @@ const Wizard = {
   },
 
   // Validate fields for current step
-  validateStep: function(step) {
+  validateStep: function (step) {
     if (step === 1) {
-      const name = document.getElementById('wizFullName').value.trim();
-      const email = document.getElementById('wizEmail').value.trim();
-      const phone = document.getElementById('wizPhone').value.trim();
-      const edu = document.getElementById('wizEducation').value;
+      const name = document.getElementById("wizFullName").value.trim();
+      const email = document.getElementById("wizEmail").value.trim();
+      const phone = document.getElementById("wizPhone").value.trim();
+      const edu = document.getElementById("wizEducation").value;
 
       if (!name || name.length < 2) {
         App.showToast("Required Field", "Please enter your full name.", "error");
-        document.getElementById('wizFullName').focus();
+        document.getElementById("wizFullName").focus();
         return false;
       }
-      if (!email || !email.includes('@') || !email.includes('.')) {
+      if (!email || !email.includes("@") || !email.includes(".")) {
         App.showToast("Invalid Email", "Please enter a valid email address.", "error");
-        document.getElementById('wizEmail').focus();
+        document.getElementById("wizEmail").focus();
         return false;
       }
       if (!phone || phone.length < 7) {
         App.showToast("Required Field", "Please enter your contact phone/WhatsApp number.", "error");
-        document.getElementById('wizPhone').focus();
+        document.getElementById("wizPhone").focus();
         return false;
       }
 
@@ -522,9 +585,11 @@ const Wizard = {
       this.formData.email = email;
       this.formData.phone = phone;
       this.formData.education = edu;
-      this.formData.linkedin = (document.getElementById('wizLinkedin') ? document.getElementById('wizLinkedin').value.trim() : '');
+      this.formData.linkedin = document.getElementById("wizLinkedin")
+        ? document.getElementById("wizLinkedin").value.trim()
+        : "";
 
-      const batchSelect = document.getElementById('wizBatchSelect');
+      const batchSelect = document.getElementById("wizBatchSelect");
       if (batchSelect && batchSelect.value) {
         this.formData.batchId = batchSelect.value;
       }
@@ -552,14 +617,46 @@ const Wizard = {
   },
 
   // Render Step 5: Secure QR Code Payment Gateway
-  renderQRPaymentGateway: function() {
+  renderQRPaymentGateway: function () {
     const pricing = this.calculatePricing();
     const tempStudentId = `AI-2026-${Math.floor(1000 + Math.random() * 9000)}`;
 
-    const qrContainer = document.getElementById('wizardPaymentQrSlot');
-    const amountDisplay = document.getElementById('qrPaymentTotalDisplay');
-    const studentDisplay = document.getElementById('qrPaymentCandidateName');
-    const trackDisplay = document.getElementById('qrPaymentTrackName');
+    const qrContainer = document.getElementById("wizardPaymentQrSlot");
+    const amountDisplay = document.getElementById("qrPaymentTotalDisplay");
+    const studentDisplay = document.getElementById("qrPaymentCandidateName");
+    const trackDisplay = document.getElementById("qrPaymentTrackName");
+    const txnInput = document.getElementById("qrPaymentTxnRef");
+    const txnRow = txnInput ? txnInput.closest(".form-group-custom") || txnInput.parentElement : null;
+    const verifyBtn = document.getElementById("verifyQrPaymentBtn");
+
+    if (pricing.total === 0) {
+      if (qrContainer) {
+        qrContainer.innerHTML = `
+          <div style="width:100%; text-align:center; padding:28px 20px; background:rgba(16,185,129,0.06); border:1.5px solid rgba(16,185,129,0.3); border-radius:14px;">
+            <div style="width:68px; height:68px; border-radius:50%; background:rgba(16,185,129,0.15); color:var(--success); font-size:2rem; display:flex; align-items:center; justify-content:center; margin:0 auto 16px auto;">
+              <i class="fas fa-gift"></i>
+            </div>
+            <span class="badge badge-positive" style="margin-bottom:10px;">100% TUITION SCHOLARSHIP</span>
+            <h3 class="headline-sm" style="margin-bottom:8px; color:var(--ink-primary);">Zero-Fee Open Access Grant</h3>
+            <p class="body-sm" style="color:var(--ink-secondary); max-width:380px; margin:0 auto 18px auto; line-height:1.5;">
+              Your enrollment in <strong>${pricing.course.title}</strong> is 100% funded by NEXVION Educational Foundation. No payment or credit card is required.
+            </p>
+            <button class="btn btn-primary" style="background:var(--success); border-color:var(--success); color:#ffffff; font-weight:800; padding:12px 28px; width:100%; max-width:320px; margin:0 auto; justify-content:center;" onclick="Wizard.completeFreeEnrollment()">
+              <i class="fas fa-check-circle"></i> Activate Free Admission Now
+            </button>
+          </div>
+        `;
+      }
+      if (amountDisplay) amountDisplay.textContent = "FREE (₹0)";
+      if (studentDisplay) studentDisplay.textContent = this.formData.fullName || "Candidate";
+      if (trackDisplay) trackDisplay.textContent = pricing.course.title;
+      if (txnRow) txnRow.style.display = "none";
+      if (verifyBtn) verifyBtn.style.display = "none";
+      return;
+    } else {
+      if (txnRow) txnRow.style.display = "block";
+      if (verifyBtn) verifyBtn.style.display = "inline-flex";
+    }
 
     if (qrContainer) {
       qrContainer.innerHTML = `
@@ -568,35 +665,49 @@ const Wizard = {
         </div>
       `;
     }
-    if (amountDisplay) amountDisplay.textContent = `₹${pricing.total.toLocaleString()}`;
+    if (amountDisplay)
+      amountDisplay.textContent =
+        typeof CurrencyManager !== "undefined"
+          ? CurrencyManager.format(pricing.total)
+          : `₹${pricing.total.toLocaleString()}`;
     if (studentDisplay) studentDisplay.textContent = this.formData.fullName || "Candidate";
     if (trackDisplay) trackDisplay.textContent = pricing.course.title;
   },
 
+  completeFreeEnrollment: function () {
+    App.showToast("Free Scholarship Active", "Activating your complimentary admission...", "success");
+    if (typeof SoundFX !== "undefined") SoundFX.playChime(650);
+    this.submitPaymentForAdminApproval(`FREE-FELLOWSHIP-${Math.floor(100000 + Math.random() * 900000)}`);
+  },
+
   // Payment Verification & Admin Acceptance Waiting Room
-  verifyQRPayment: function() {
-    const verifyBtn = document.getElementById('verifyQrPaymentBtn');
+  verifyQRPayment: function () {
+    const verifyBtn = document.getElementById("verifyQrPaymentBtn");
     if (verifyBtn) {
       verifyBtn.disabled = true;
       verifyBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Submitting Payment Hash & UTR...`;
     }
 
-    const txnRef = (document.getElementById('qrPaymentTxnRef')?.value || "").trim() || `UPI-TXN-${Math.floor(10000000 + Math.random() * 90000000)}`;
+    const txnRef =
+      (document.getElementById("qrPaymentTxnRef")?.value || "").trim() ||
+      `UPI-TXN-${Math.floor(10000000 + Math.random() * 90000000)}`;
 
     setTimeout(() => {
       this.submitPaymentForAdminApproval(txnRef);
     }, 1200);
   },
 
-  submitPaymentForAdminApproval: function(txnRef) {
+  submitPaymentForAdminApproval: function (txnRef) {
     const pricing = this.calculatePricing();
-    const batch = StorageService.getBatches().find(b => b.id === this.formData.batchId) || StorageService.getBatches()[0];
+    const batch =
+      StorageService.getBatches().find((b) => b.id === this.formData.batchId) || StorageService.getBatches()[0];
 
     const randomSuffix = Math.floor(1000 + Math.random() * 9000);
     const studentId = `AI-2026-${randomSuffix}`;
 
     const now = new Date();
-    const formattedDate = now.toISOString().slice(0, 10) + ' ' + now.toTimeString().slice(0, 5);
+    const formattedDate = now.toISOString().slice(0, 10) + " " + now.toTimeString().slice(0, 5);
+    const isFree = pricing.total === 0;
 
     const studentRecord = {
       id: studentId,
@@ -612,14 +723,14 @@ const Wizard = {
       addons: this.formData.addons,
       totalPaid: pricing.total,
       txnRef: txnRef,
-      voucherApplied: this.formData.voucherCode || "NONE",
-      status: "Pending Approval",
+      voucherApplied: this.formData.voucherCode || (isFree ? "OPEN_ACCESS_GRANT" : "NONE"),
+      status: isFree ? "Confirmed" : "Pending Approval",
       registeredAt: formattedDate,
       mode: batch.mode.includes("Hybrid") ? "Hybrid" : "Live Online",
       certificateAllotted: false,
       certificateId: `G-NEX-2026-${randomSuffix}`,
       certificateGrade: "Distinction (98%)",
-      certificateDate: now.toISOString().slice(0, 10)
+      certificateDate: now.toISOString().slice(0, 10),
     };
 
     // Save student to StorageService & Firebase
@@ -627,72 +738,83 @@ const Wizard = {
     StorageService.setCurrentStudent(studentRecord);
     this.activePendingStudentId = studentId;
 
+    if (isFree) {
+      this.unlockApprovedAdmission(studentRecord);
+      return;
+    }
+
     // Populate Pending Screen Elements
-    const nameEl = document.getElementById('pendingCandidateName');
-    const idEl = document.getElementById('pendingApplicationId');
-    const trackEl = document.getElementById('pendingTrackTitle');
-    const batchEl = document.getElementById('pendingBatchName');
-    const totalEl = document.getElementById('pendingTotalPaid');
-    const txnEl = document.getElementById('pendingTxnRefDisplay');
-    const emailEl = document.getElementById('pendingCandidateEmail');
-    const timeEl = document.getElementById('pendingSubmittedTime');
+    const nameEl = document.getElementById("pendingCandidateName");
+    const idEl = document.getElementById("pendingApplicationId");
+    const trackEl = document.getElementById("pendingTrackTitle");
+    const batchEl = document.getElementById("pendingBatchName");
+    const totalEl = document.getElementById("pendingTotalPaid");
+    const txnEl = document.getElementById("pendingTxnRefDisplay");
+    const emailEl = document.getElementById("pendingCandidateEmail");
+    const timeEl = document.getElementById("pendingSubmittedTime");
 
     if (nameEl) nameEl.textContent = studentRecord.fullName;
     if (idEl) idEl.textContent = studentRecord.id;
     if (trackEl) trackEl.textContent = studentRecord.trackTitle;
     if (batchEl) batchEl.textContent = studentRecord.batchName;
-    if (totalEl) totalEl.textContent = `₹${studentRecord.totalPaid.toLocaleString()}`;
+    if (totalEl)
+      totalEl.textContent =
+        typeof CurrencyManager !== "undefined"
+          ? CurrencyManager.format(studentRecord.totalPaid)
+          : `₹${studentRecord.totalPaid.toLocaleString()}`;
     if (txnEl) txnEl.textContent = txnRef;
     if (emailEl) emailEl.textContent = studentRecord.email;
     if (timeEl) timeEl.textContent = studentRecord.registeredAt;
 
     // Transition to Pending Approval Pane
-    document.querySelectorAll('.wizard-step-pane').forEach(p => p.classList.remove('active'));
-    const pendingPane = document.getElementById('stepPanePendingApproval');
-    if (pendingPane) pendingPane.classList.add('active');
+    document.querySelectorAll(".wizard-step-pane").forEach((p) => p.classList.remove("active"));
+    const pendingPane = document.getElementById("stepPanePendingApproval");
+    if (pendingPane) pendingPane.classList.add("active");
 
     // Hide Next/Prev buttons in footer
-    const nextBtn = document.getElementById('wizardNextBtn');
-    const prevBtn = document.getElementById('wizardPrevBtn');
-    if (nextBtn) nextBtn.style.display = 'none';
-    if (prevBtn) prevBtn.style.display = 'none';
+    const nextBtn = document.getElementById("wizardNextBtn");
+    const prevBtn = document.getElementById("wizardPrevBtn");
+    if (nextBtn) nextBtn.style.display = "none";
+    if (prevBtn) prevBtn.style.display = "none";
 
     // Start background live polling listener
     this.startPendingApprovalListener(studentId);
 
     // Refresh Admin dashboard in background
     AdminDashboard.render();
-    if (typeof AdminApp !== 'undefined') AdminApp.updateBadgeCounts();
+    if (typeof AdminApp !== "undefined") AdminApp.updateBadgeCounts();
 
     App.showToast("Payment Submitted!", "Waiting for Admin to accept payment & release credentials.", "info");
   },
 
-  startPendingApprovalListener: function(studentId) {
+  startPendingApprovalListener: function (studentId) {
     if (this.approvalPollTimer) clearInterval(this.approvalPollTimer);
 
     this.approvalPollTimer = setInterval(() => {
       const students = StorageService.getStudents();
-      const student = students.find(s => s.id === studentId);
+      const student = students.find((s) => s.id === studentId);
 
-      if (student && (student.status === 'Confirmed' || student.status === 'Payment Verified')) {
+      if (student && (student.status === "Confirmed" || student.status === "Payment Verified")) {
         clearInterval(this.approvalPollTimer);
         this.unlockApprovedAdmission(student);
       }
     }, 2000);
   },
 
-  checkPaymentStatusManual: function() {
-    const btn = document.getElementById('checkStatusManualBtn');
+  checkPaymentStatusManual: function () {
+    const btn = document.getElementById("checkStatusManualBtn");
     if (btn) {
       btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Checking Live Database...`;
       btn.disabled = true;
     }
 
     setTimeout(() => {
-      const studentId = this.activePendingStudentId || (StorageService.getCurrentStudent() ? StorageService.getCurrentStudent().id : null);
-      const student = StorageService.getStudents().find(s => s.id === studentId);
+      const studentId =
+        this.activePendingStudentId ||
+        (StorageService.getCurrentStudent() ? StorageService.getCurrentStudent().id : null);
+      const student = StorageService.getStudents().find((s) => s.id === studentId);
 
-      if (student && (student.status === 'Confirmed' || student.status === 'Payment Verified')) {
+      if (student && (student.status === "Confirmed" || student.status === "Payment Verified")) {
         if (this.approvalPollTimer) clearInterval(this.approvalPollTimer);
         this.unlockApprovedAdmission(student);
       } else {
@@ -705,39 +827,47 @@ const Wizard = {
     }, 800);
   },
 
-  unlockApprovedAdmission: function(student) {
+  unlockApprovedAdmission: function (student) {
     StorageService.setCurrentStudent(student);
 
     // Render Digital ID Card into Step 6
-    IDCardGenerator.renderCard(student, 'wizardIdCardResult');
+    IDCardGenerator.renderCard(student, "wizardIdCardResult");
 
     // Display confirmation pane
-    document.querySelectorAll('.wizard-step-pane').forEach(p => p.classList.remove('active'));
-    const successPane = document.getElementById('stepPaneSuccess');
-    if (successPane) successPane.classList.add('active');
+    document.querySelectorAll(".wizard-step-pane").forEach((p) => p.classList.remove("active"));
+    const successPane = document.getElementById("stepPaneSuccess");
+    if (successPane) successPane.classList.add("active");
 
     // Refresh Admin & Student Hub views
     AdminDashboard.render();
     StudentHub.render();
-    if (typeof AdminApp !== 'undefined') AdminApp.updateBadgeCounts();
+    if (typeof AdminApp !== "undefined") AdminApp.updateBadgeCounts();
 
-    App.showToast("Payment Approved & Confirmed! 🏆", `Welcome to AI Nexus Academy, ${student.fullName}! Your student admission pass is ready.`, "success");
+    App.showToast(
+      "Payment Approved & Confirmed! 🏆",
+      `Welcome to NEXVION AI ACADEMY, ${student.fullName}! Your student admission pass is ready.`,
+      "success"
+    );
   },
 
   // Submit complete enrollment
-  submitEnrollment: function() {
+  submitEnrollment: function () {
     this.goToStep(5);
   },
 
   // Populate Express 2-step option
-  populateExpressOptions: function() {
-    const trackSelect = document.getElementById('expressTrackSelect');
-    const batchSelect = document.getElementById('expressBatchSelect');
+  populateExpressOptions: function () {
+    const trackSelect = document.getElementById("expressTrackSelect");
+    const batchSelect = document.getElementById("expressBatchSelect");
 
     if (trackSelect) {
-      trackSelect.innerHTML = ACADEMY_DATA.courses.map(c => `
+      trackSelect.innerHTML = ACADEMY_DATA.courses
+        .map(
+          (c) => `
         <option value="${c.id}">${c.code} - ${c.title} ($${c.price})</option>
-      `).join('');
+      `
+        )
+        .join("");
     }
 
     if (batchSelect) {
@@ -745,20 +875,24 @@ const Wizard = {
       if (activeBatches.length === 0) {
         batchSelect.innerHTML = `<option value="batch-hybrid-flex">Hybrid Self-Paced (Immediate Access)</option>`;
       } else {
-        batchSelect.innerHTML = activeBatches.map(b => `
+        batchSelect.innerHTML = activeBatches
+          .map(
+            (b) => `
           <option value="${b.id}">${b.name} &bull; Starts ${b.startDate} (${b.schedule})</option>
-        `).join('');
+        `
+          )
+          .join("");
       }
     }
   },
 
   // Submit Express Enrollment
-  submitExpressEnrollment: function() {
-    const name = document.getElementById('expressFullName').value.trim();
-    const email = document.getElementById('expressEmail').value.trim();
-    const phone = document.getElementById('expressPhone').value.trim();
-    const trackId = document.getElementById('expressTrackSelect').value;
-    const batchId = document.getElementById('expressBatchSelect').value;
+  submitExpressEnrollment: function () {
+    const name = document.getElementById("expressFullName").value.trim();
+    const email = document.getElementById("expressEmail").value.trim();
+    const phone = document.getElementById("expressPhone").value.trim();
+    const trackId = document.getElementById("expressTrackSelect").value;
+    const batchId = document.getElementById("expressBatchSelect").value;
 
     if (!name || !email || !phone) {
       App.showToast("Required Fields", "Please complete name, email, and phone.", "error");
@@ -777,16 +911,16 @@ const Wizard = {
     this.submitEnrollment();
   },
 
-  setupEventListeners: function() {
+  setupEventListeners: function () {
     // Voucher input enter key
-    const voucherInput = document.getElementById('wizardVoucherInput');
+    const voucherInput = document.getElementById("wizardVoucherInput");
     if (voucherInput) {
-      voucherInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
+      voucherInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
           e.preventDefault();
           this.applyVoucher();
         }
       });
     }
-  }
+  },
 };

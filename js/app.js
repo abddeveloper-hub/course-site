@@ -1,11 +1,11 @@
-// AI Nexus Academy - Main Application Coordinator
+// NEXVION AI ACADEMY - Main Application Coordinator
 
 const App = {
-  currentView: 'home',
+  currentView: "home",
 
-  init: function() {
+  init: function () {
     // Initialize Cloud Infrastructure
-    if (typeof FirebaseService !== 'undefined') {
+    if (typeof FirebaseService !== "undefined") {
       FirebaseService.init();
     }
 
@@ -15,102 +15,132 @@ const App = {
     this.setupFAQ();
     this.setupScrollListener();
     this.startCyberTelemetry();
-    
+
     // Initialize child modules safely
-    if (typeof Auth !== 'undefined' && Auth.init) Auth.init();
-    if (typeof Wizard !== 'undefined' && Wizard.init) Wizard.init();
-    if (typeof AdminDashboard !== 'undefined' && AdminDashboard.init) AdminDashboard.init();
-    if (typeof StudentHub !== 'undefined' && StudentHub.init) StudentHub.init();
+    if (typeof CurrencyManager !== "undefined" && CurrencyManager.init) CurrencyManager.init();
+    if (typeof Auth !== "undefined" && Auth.init) Auth.init();
+    if (typeof Wizard !== "undefined" && Wizard.init) Wizard.init();
+    if (typeof AdminDashboard !== "undefined" && AdminDashboard.init) AdminDashboard.init();
+    if (typeof StudentHub !== "undefined" && StudentHub.init) StudentHub.init();
+    if (typeof ThreeBackground !== "undefined" && ThreeBackground.init) ThreeBackground.init();
+    if (typeof SoundFX !== "undefined" && SoundFX.init) SoundFX.init();
+    if (typeof ThemeManager !== "undefined" && ThemeManager.init) ThemeManager.init();
+    if (typeof AIAssistant !== "undefined" && AIAssistant.init) AIAssistant.init();
+
+    // Register Progressive Web App Service Worker
+    if ("serviceWorker" in navigator) {
+      const registerSW = () => {
+        navigator.serviceWorker.register("sw.js").catch((err) => {
+          console.debug("[PWA] SW register:", err);
+        });
+      };
+      if (document.readyState === "complete") {
+        registerSW();
+      } else {
+        window.addEventListener("load", registerSW);
+      }
+    }
 
     // Check URL hash for direct routing if present
-    const homeView = document.getElementById('view-home');
+    const homeView = document.getElementById("view-home");
     if (homeView) {
-      const hash = window.location.hash.replace('#', '');
-      if (hash && ['home', 'courses', 'auth', 'register', 'student-hub', 'admin-portal'].includes(hash)) {
+      const hash = window.location.hash.replace("#", "");
+      if (hash && ["home", "courses", "auth", "register", "student-hub", "admin-portal"].includes(hash)) {
         this.showView(hash);
       } else {
-        this.showView('home');
+        this.showView("home");
       }
     }
   },
 
   // View Switching Router
-  showView: function(viewId) {
+  showView: function (viewId) {
     // Handling for AI Tracks (Courses section on Home page)
-    if (viewId === 'courses') {
-      this.showView('home');
+    if (viewId === "courses") {
+      this.showView("home");
       setTimeout(() => {
-        const sec = document.getElementById('coursesSection');
+        const sec = document.getElementById("coursesSection");
         if (sec) {
-          sec.scrollIntoView({ behavior: 'smooth' });
+          sec.scrollIntoView({ behavior: "smooth" });
         }
       }, 80);
       return;
     }
 
     // Handling for AI Study Hub dedicated page
-    if (viewId === 'learn' || viewId === 'study-hub') {
-      window.location.href = 'learn.html';
+    if (viewId === "learn" || viewId === "study-hub") {
+      window.location.href = "learn.html";
       return;
     }
 
     // Handling for Nexus AI Lab dedicated page
-    if (viewId === 'ai-lab') {
-      window.location.href = 'ai-lab.html';
+    if (viewId === "ai-lab") {
+      window.location.href = "ai-lab.html";
       return;
     }
 
     // Deprecated / Restricted public certificate route redirect
-    if (viewId === 'certificate') {
-      this.showToast("Official Certificate Policy", "Certificates are issued and authorized exclusively by the Academy Administration to enrolled students.", "info");
-      const student = typeof StorageService !== 'undefined' ? StorageService.getCurrentStudent() : null;
+    if (viewId === "certificate") {
+      this.showToast(
+        "Official Certificate Policy",
+        "Certificates are issued and authorized exclusively by the Academy Administration to enrolled students.",
+        "info"
+      );
+      const student = typeof StorageService !== "undefined" ? StorageService.getCurrentStudent() : null;
       if (student) {
-        this.showView('student-hub');
+        this.showView("student-hub");
       } else {
-        this.showView('courses');
+        this.showView("courses");
       }
       return;
     }
 
     // Admin Route Protection Guard
-    if (viewId === 'admin-portal') {
-      if (typeof Auth !== 'undefined' && (!Auth.currentUser || Auth.currentUser.role !== 'admin')) {
-        this.showToast("Administrator Authentication Required", "Please sign in with Admin credentials to access the CRM console.", "error");
-        if (Auth.setAuthTab) Auth.setAuthTab('signin');
-        if (Auth.fillDemoCreds) Auth.fillDemoCreds('admin');
-        viewId = 'auth';
+    if (viewId === "admin-portal") {
+      if (typeof Auth !== "undefined" && (!Auth.currentUser || Auth.currentUser.role !== "admin")) {
+        this.showToast(
+          "Administrator Authentication Required",
+          "Please sign in with Admin credentials to access the CRM console.",
+          "error"
+        );
+        if (Auth.setAuthTab) Auth.setAuthTab("signin");
+        if (Auth.fillDemoCreds) Auth.fillDemoCreds("admin");
+        viewId = "auth";
       }
     }
 
     this.currentView = viewId;
 
     // Toggle view elements
-    document.querySelectorAll('.view-section').forEach(view => {
-      view.classList.remove('active');
+    document.querySelectorAll(".view-section").forEach((view) => {
+      view.classList.remove("active");
     });
 
     const target = document.getElementById(`view-${viewId}`);
     if (target) {
-      target.classList.add('active');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      target.classList.add("active");
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
     // Pause heavy 3D WebGL background when off-home to give 100% frame rate to current view
-    if (typeof ThreeBackground !== 'undefined') {
-      ThreeBackground.isPaused = (viewId !== 'home');
+    if (typeof ThreeBackground !== "undefined") {
+      ThreeBackground.isPaused = viewId !== "home";
     }
 
     // Update nav active states
-    document.querySelectorAll('.nav-link').forEach(link => {
-      link.classList.toggle('active', link.dataset.view === viewId || (viewId === 'courses' && link.dataset.view === 'courses'));
+    document.querySelectorAll(".nav-link").forEach((link) => {
+      link.classList.toggle(
+        "active",
+        link.dataset.view === viewId || (viewId === "courses" && link.dataset.view === "courses")
+      );
     });
 
     // Sub-module refresh when view activates
-    if (viewId === 'admin-portal' && typeof AdminDashboard !== 'undefined') {
+    if (viewId === "admin-portal" && typeof AdminDashboard !== "undefined") {
       AdminDashboard.render();
-    } else if (viewId === 'student-hub' && typeof StudentHub !== 'undefined') {
+    } else if (viewId === "student-hub" && typeof StudentHub !== "undefined") {
       StudentHub.render();
-    } else if (viewId === 'register' && typeof Wizard !== 'undefined') {
+    } else if (viewId === "register" && typeof Wizard !== "undefined") {
       Wizard.renderTrackOptions();
       Wizard.renderBatchOptions();
       Wizard.renderAddonOptions();
@@ -119,9 +149,9 @@ const App = {
   },
 
   // 1-Click Track Enrollment Initialization
-  startEnrollment: function(trackId) {
-    this.showView('register');
-    if (trackId && typeof Wizard !== 'undefined') {
+  startEnrollment: function (trackId) {
+    this.showView("register");
+    if (trackId && typeof Wizard !== "undefined") {
       Wizard.formData.trackId = trackId;
       Wizard.goToStep(2);
       setTimeout(() => {
@@ -131,9 +161,9 @@ const App = {
   },
 
   // Delegated Global Navigation Handler (Works for all buttons & links dynamically)
-  setupNavigation: function() {
-    document.addEventListener('click', (e) => {
-      const routeEl = e.target.closest('[data-route]');
+  setupNavigation: function () {
+    document.addEventListener("click", (e) => {
+      const routeEl = e.target.closest("[data-route]");
       if (routeEl) {
         e.preventDefault();
         const route = routeEl.dataset.route;
@@ -143,15 +173,15 @@ const App = {
   },
 
   // Mobile Drawer Toggle
-  toggleMobileDrawer: function(open) {
-    const drawer = document.getElementById('mobileDrawer');
-    const overlay = document.getElementById('mobileDrawerOverlay');
-    if (drawer) drawer.classList.toggle('open', open);
-    if (overlay) overlay.classList.toggle('open', open);
+  toggleMobileDrawer: function (open) {
+    const drawer = document.getElementById("mobileDrawer");
+    const overlay = document.getElementById("mobileDrawerOverlay");
+    if (drawer) drawer.classList.toggle("open", open);
+    if (overlay) overlay.classList.toggle("open", open);
   },
 
   // Open verified certificate in modal for authorized students
-  openStudentHubCertificate: function() {
+  openStudentHubCertificate: function () {
     const student = StorageService.getCurrentStudent();
     if (!student) {
       this.showToast("No Active Enrollment", "Please register for a course to access your student records.", "error");
@@ -167,54 +197,65 @@ const App = {
       return;
     }
 
-    AICertificateGenerator.renderCertificate(student, 'modalCertContainer');
-    this.openModal('certModal');
+    AICertificateGenerator.renderCertificate(student, "modalCertContainer");
+    this.openModal("certModal");
   },
 
   // Setup FAQ accordion
-  setupFAQ: function() {
-    document.querySelectorAll('.faq-item').forEach(item => {
-      const question = item.querySelector('.faq-question');
+  setupFAQ: function () {
+    document.querySelectorAll(".faq-item").forEach((item) => {
+      const question = item.querySelector(".faq-question");
       if (question) {
-        question.addEventListener('click', () => {
-          const isOpen = item.classList.contains('open');
-          document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
-          if (!isOpen) item.classList.add('open');
+        question.addEventListener("click", () => {
+          const isOpen = item.classList.contains("open");
+          document.querySelectorAll(".faq-item").forEach((i) => i.classList.remove("open"));
+          if (!isOpen) item.classList.add("open");
         });
       }
     });
   },
 
   // Render Course Showcase Grid on Homepage
-  renderCourseShowcase: function(filterLevel = 'All') {
-    const container = document.getElementById('courseShowcaseGrid');
+  renderCourseShowcase: function (filterLevel = "All") {
+    const container = document.getElementById("courseShowcaseGrid");
     if (!container) return;
 
-    const filtered = filterLevel === 'All'
-      ? ACADEMY_DATA.courses
-      : ACADEMY_DATA.courses.filter(c => c.level === filterLevel);
+    let filtered = ACADEMY_DATA.courses;
+    if (filterLevel === "Free") {
+      filtered = ACADEMY_DATA.courses.filter((c) => c.price === 0 || c.level === "Free");
+    } else if (filterLevel && filterLevel.toUpperCase() !== "ALL") {
+      filtered = ACADEMY_DATA.courses.filter((c) => c.level === filterLevel);
+    }
 
-    let html = '';
-    filtered.forEach(course => {
-      const discount = course.originalPrice ? Math.round(((course.originalPrice - course.price) / course.originalPrice) * 100) : 0;
-      const highlightList = (course.highlights || []).slice(0, 3).map(h => `
+    let html = "";
+    filtered.forEach((course) => {
+      const isFree = course.price === 0;
+      const discount = course.originalPrice
+        ? Math.round(((course.originalPrice - course.price) / course.originalPrice) * 100)
+        : 0;
+      const highlightList = (course.highlights || [])
+        .slice(0, 3)
+        .map(
+          (h) => `
         <li><i class="fas fa-check-circle" style="color:var(--neon-emerald); font-size:0.85rem; margin-top:3px;"></i><span>${h}</span></li>
-      `).join('');
+      `
+        )
+        .join("");
 
       html += `
-        <div class="course-card">
+        <div class="course-card" style="${isFree ? "border-color:rgba(16,185,129,0.35);" : ""}">
           <div>
             <div class="course-badge-top">
               <span class="course-code">${course.code}</span>
-              <span class="course-level-tag ${course.level === 'Beginner' ? 'level-beginner' : course.level === 'Intermediate' ? 'level-intermediate' : 'level-advanced'}">${course.badge || course.level}</span>
+              <span class="course-level-tag ${isFree ? "level-free" : course.level === "Beginner" ? "level-beginner" : course.level === "Intermediate" ? "level-intermediate" : "level-advanced"}" style="${isFree ? "background:rgba(16,185,129,0.12); color:var(--success); border:1px solid rgba(16,185,129,0.25);" : ""}">${course.badge || course.level}</span>
             </div>
 
-            <div class="course-icon-wrap" style="background:${course.gradient || 'var(--grad-primary)'}; color:#ffffff;">
-              <i class="fas ${course.icon || 'fa-brain'}"></i>
+            <div class="course-icon-wrap" style="background:${course.gradient || "var(--grad-primary)"}; color:#ffffff;">
+              <i class="fas ${course.icon || "fa-brain"}"></i>
             </div>
 
             <h3 class="course-title">${course.title}</h3>
-            <div style="font-size:0.8rem; font-weight:700; color:var(--neon-cyan); text-transform:uppercase; margin-bottom:8px;">${course.category} &bull; ${course.tier || ''}</div>
+            <div style="font-size:0.8rem; font-weight:700; color:var(--secondary); text-transform:uppercase; margin-bottom:8px;">${course.category} &bull; ${course.tier || ""}</div>
             <p class="course-desc">${course.description}</p>
 
             <ul class="course-features">
@@ -224,19 +265,21 @@ const App = {
 
           <div>
             <div class="course-meta">
-              <span class="meta-item"><i class="fas fa-clock" style="color:var(--neon-cyan);"></i> ${course.duration}</span>
+              <span class="meta-item"><i class="fas fa-clock" style="color:var(--secondary);"></i> ${course.duration}</span>
               <span class="meta-item"><i class="fas fa-star" style="color:#f59e0b;"></i> ${course.rating} (${course.reviewCount})</span>
             </div>
 
-            <div class="course-price-wrap">
-              <span class="course-price">₹${course.price.toLocaleString()}</span>
-              ${course.originalPrice ? `<span class="course-original-price">₹${course.originalPrice.toLocaleString()}</span>` : ''}
-              ${discount > 0 ? `<span class="badge" style="background:rgba(5,150,105,0.1); color:var(--neon-emerald); font-size:0.75rem; padding:3px 8px; border-radius:12px; margin-left:auto;">${discount}% OFF</span>` : ''}
+            <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:14px; padding:10px 14px; background:${isFree ? "rgba(16,185,129,0.06)" : "var(--surface-container-low)"}; border-radius:10px; border:1px solid ${isFree ? "rgba(16,185,129,0.25)" : "var(--border-subtle)"};">
+              <div>
+                <span style="font-size:1.3rem; font-weight:900; color:${isFree ? "var(--success)" : "var(--ink-primary)"};">${isFree ? "FREE" : typeof CurrencyManager !== "undefined" ? CurrencyManager.format(course.price) : "₹" + course.price.toLocaleString()}</span>
+                ${course.originalPrice ? `<span style="font-size:0.85rem; color:var(--ink-muted); text-decoration:line-through; margin-left:6px;">${typeof CurrencyManager !== "undefined" ? CurrencyManager.format(course.originalPrice) : "₹" + course.originalPrice.toLocaleString()}</span>` : ""}
+              </div>
+              ${isFree ? `<span class="badge badge-positive" style="font-size:0.75rem; padding:2px 8px;">100% SCHOLARSHIP</span>` : discount > 0 ? `<span class="status-badge status-confirmed" style="font-size:0.75rem; padding:2px 8px;">${discount}% OFF</span>` : ""}
             </div>
 
             <div style="display:flex; gap:10px;">
-              <button class="btn btn-primary" style="flex:1;" onclick="App.startEnrollment('${course.id}')">
-                <i class="fas fa-arrow-right"></i> Enroll Now
+              <button class="btn btn-primary" style="flex:1; ${isFree ? "background:var(--success); border-color:var(--success); color:#ffffff;" : ""}" onclick="App.startEnrollment('${course.id}')">
+                <i class="fas ${isFree ? "fa-gift" : "fa-arrow-right"}"></i> ${isFree ? "Enroll for Free" : "Enroll Now"}
               </button>
               <button class="btn btn-secondary" onclick="App.openCourseModal('${course.id}')" title="View Detailed Syllabus">
                 <i class="fas fa-info-circle"></i>
@@ -250,19 +293,19 @@ const App = {
     container.innerHTML = html;
   },
 
-  filterCourses: function(level, btn) {
+  filterCourses: function (level, btn) {
     if (btn) {
-      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
+      document.querySelectorAll(".filter-btn").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
     }
     this.renderCourseShowcase(level);
   },
 
-  openCourseModal: function(courseId) {
-    const course = ACADEMY_DATA.courses.find(c => c.id === courseId);
+  openCourseModal: function (courseId) {
+    const course = ACADEMY_DATA.courses.find((c) => c.id === courseId);
     if (!course) return;
 
-    const modalBody = document.getElementById('courseModalBody');
+    const modalBody = document.getElementById("courseModalBody");
     if (!modalBody) return;
 
     modalBody.innerHTML = `
@@ -271,55 +314,58 @@ const App = {
           <i class="fas ${course.icon}"></i>
         </div>
         <div>
-          <span class="course-code">${course.code} &bull; ${course.tier || ''}</span>
-          <h3 style="font-size:1.35rem; color:#0f172a; margin-top:2px;">${course.title}</h3>
+          <span class="course-code">${course.code} &bull; ${course.tier || ""}</span>
+          <h3 style="font-size:1.35rem; color:#f8fafc; margin-top:2px;">${course.title}</h3>
         </div>
       </div>
-      <p style="color:#475569; font-size:0.9rem; line-height:1.6; margin-bottom:20px;">${course.description}</p>
+      <p style="color:#94a3b8; font-size:0.9rem; line-height:1.6; margin-bottom:20px;">${course.description}</p>
       
-      <h4 style="font-size:1rem; color:#0f172a; font-weight:800; margin-bottom:12px;">Curriculum & Weekly Syllabus</h4>
+      <h4 style="font-size:1rem; color:#f8fafc; font-weight:800; margin-bottom:12px;">Curriculum & Weekly Syllabus</h4>
       <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:24px;">
-        ${(course.syllabus || []).map(s => `
-          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px 14px;">
+        ${(course.syllabus || [])
+          .map(
+            (s) => `
+          <div style="background:rgba(13, 18, 30, 0.85); border:1px solid rgba(255, 255, 255, 0.09); border-radius:8px; padding:10px 14px;">
             <strong style="color:var(--neon-cyan); font-size:0.8rem; text-transform:uppercase;">${s.week}:</strong>
-            <span style="color:#1e293b; font-size:0.875rem; font-weight:600; margin-left:6px;">${s.title}</span>
+            <span style="color:#f8fafc; font-size:0.875rem; font-weight:600; margin-left:6px;">${s.title}</span>
           </div>
-        `).join('')}
+        `
+          )
+          .join("")}
       </div>
 
-      <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #f1f5f9; padding-top:16px;">
-        <div>
-          <span style="font-size:0.75rem; color:#64748b;">Tuition Fee</span>
-          <div style="font-size:1.5rem; font-weight:800; color:#0f172a;">₹${course.price.toLocaleString()}</div>
+      <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border-hairline); padding-top:16px;">
+        <div style="display:flex; align-items:center; gap:8px; color:var(--secondary); font-size:0.85rem; font-weight:600;">
+          <i class="fas fa-award"></i> Verified Digital Certificate Included
         </div>
-        <button class="btn btn-primary" onclick="App.closeModal('courseModal'); App.startEnrollment('${course.id}');">
-          <i class="fas fa-bolt"></i> Enroll In This Track
+        <button class="btn btn-primary" style="${course.price === 0 ? "background:var(--success); border-color:var(--success); color:#ffffff;" : ""}" onclick="App.closeModal('courseModal'); App.startEnrollment('${course.id}');">
+          <i class="fas ${course.price === 0 ? "fa-gift" : "fa-bolt"}"></i> ${course.price === 0 ? "Start Free Course" : "Enroll In This Track"}
         </button>
       </div>
     `;
 
-    this.openModal('courseModal');
+    this.openModal("courseModal");
   },
 
   // Render Testimonials
-  renderTestimonials: function() {
-    const container = document.getElementById('testimonialsGrid');
+  renderTestimonials: function () {
+    const container = document.getElementById("testimonialsGrid");
     if (!container) return;
 
-    let html = '';
-    ACADEMY_DATA.testimonials.forEach(t => {
+    let html = "";
+    ACADEMY_DATA.testimonials.forEach((t) => {
       html += `
         <div class="glass-panel" style="padding: 28px;">
           <div style="display:flex; gap:4px; color:var(--neon-amber); margin-bottom:16px;">
-            ${Array(t.rating).fill('<i class="fas fa-star"></i>').join('')}
+            ${Array(t.rating).fill('<i class="fas fa-star"></i>').join("")}
           </div>
-          <p style="font-size:0.95rem; color:#334155; font-style:italic; margin-bottom:20px; line-height:1.6;">"${t.text}"</p>
+          <p style="font-size:0.95rem; color:#cbd5e1; font-style:italic; margin-bottom:20px; line-height:1.6;">"${t.text}"</p>
           <div style="display:flex; align-items:center; gap:14px;">
             <div style="width:42px; height:42px; border-radius:50%; background:var(--grad-primary); display:flex; align-items:center; justify-content:center; color:#ffffff; font-weight:800; font-size:0.9rem; box-shadow:0 4px 12px rgba(2, 132, 199, 0.3);">
               ${t.avatar}
             </div>
             <div>
-              <strong style="color:#0f172a; font-size:0.95rem;">${t.name}</strong>
+              <strong style="color:#f8fafc; font-size:0.95rem;">${t.name}</strong>
               <div style="font-size:0.8rem; color:var(--text-muted);">${t.role}</div>
             </div>
           </div>
@@ -330,27 +376,25 @@ const App = {
   },
 
   // Modal handlers
-  openModal: function(modalId) {
+  openModal: function (modalId) {
     const modal = document.getElementById(modalId);
-    if (modal) modal.classList.add('open');
+    if (modal) modal.classList.add("open");
   },
 
-  closeModal: function(modalId) {
+  closeModal: function (modalId) {
     const modal = document.getElementById(modalId);
-    if (modal) modal.classList.remove('open');
+    if (modal) modal.classList.remove("open");
   },
 
   // Toast notifications
-  showToast: function(title, message, type = 'info') {
-    const container = document.getElementById('toastContainer');
+  showToast: function (title, message, type = "info") {
+    const container = document.getElementById("toastContainer");
     if (!container) return;
 
-    const toast = document.createElement('div');
+    const toast = document.createElement("div");
     toast.className = `toast ${type}`;
-    
-    const icon = 
-      type === 'success' ? 'fa-check-circle' :
-      type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle';
+
+    const icon = type === "success" ? "fa-check-circle" : type === "error" ? "fa-exclamation-circle" : "fa-info-circle";
 
     toast.innerHTML = `
       <div class="toast-icon"><i class="fas ${icon}"></i></div>
@@ -363,36 +407,40 @@ const App = {
     container.appendChild(toast);
 
     setTimeout(() => {
-      toast.style.opacity = '0';
-      toast.style.transform = 'translateX(50px)';
-      toast.style.transition = 'all 0.3s ease';
+      toast.style.opacity = "0";
+      toast.style.transform = "translateX(50px)";
+      toast.style.transition = "all 0.3s ease";
       setTimeout(() => toast.remove(), 300);
     }, 4000);
   },
 
   // High-performance RAF Throttled Navbar scroll listener
-  setupScrollListener: function() {
-    const navbar = document.querySelector('.navbar');
+  setupScrollListener: function () {
+    const navbar = document.querySelector(".navbar");
     if (!navbar) return;
     let isTicking = false;
 
-    window.addEventListener('scroll', () => {
-      if (!isTicking) {
-        window.requestAnimationFrame(() => {
-          navbar.classList.toggle('scrolled', window.scrollY > 40);
-          isTicking = false;
-        });
-        isTicking = true;
-      }
-    }, { passive: true });
+    window.addEventListener(
+      "scroll",
+      () => {
+        if (!isTicking) {
+          window.requestAnimationFrame(() => {
+            navbar.classList.toggle("scrolled", window.scrollY > 40);
+            isTicking = false;
+          });
+          isTicking = true;
+        }
+      },
+      { passive: true }
+    );
   },
 
   // Live Holographic Cyber Telemetry Ticker (Option 5)
-  startCyberTelemetry: function() {
+  startCyberTelemetry: function () {
     if (this.telemetryInterval) clearInterval(this.telemetryInterval);
     this.telemetryInterval = setInterval(() => {
-      const latencyEl = document.getElementById('hudLatencyVal');
-      const scholarsEl = document.getElementById('hudScholarsCount');
+      const latencyEl = document.getElementById("hudLatencyVal");
+      const scholarsEl = document.getElementById("hudScholarsCount");
       if (latencyEl) {
         const ms = Math.floor(10 + Math.random() * 8);
         latencyEl.textContent = `${ms}ms`;
@@ -402,10 +450,10 @@ const App = {
         scholarsEl.textContent = `${count.toLocaleString()}+`;
       }
     }, 3500);
-  }
+  },
 };
 
 // Start application when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
   App.init();
 });

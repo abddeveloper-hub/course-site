@@ -1,0 +1,307 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "NEXVION AI ACADEMY - Runtime Architecture & Admissions Pipeline",
+    "output": "architecture-nexvion-academy.html",
+    "quality_profile": "showcase",
+    "visual_preset": "signal-flow",
+    "description": "High-level architecture showing 12 core runtime components, primary enrollment data path, external dependencies, 4 trust boundaries, and supporting detail cards."
+  },
+  "boundaries": [
+    {
+      "id": "boundary_client",
+      "label": "Client Browser Zone (Untrusted / Public)",
+      "type": "trust_boundary",
+      "color": "cyan",
+      "components": [
+        "user_client",
+        "ai_welcome",
+        "wizard_engine",
+        "learn_sandbox",
+        "auth_manager"
+      ]
+    },
+    {
+      "id": "boundary_admin",
+      "label": "Administrative Management Zone (Privileged Access)",
+      "type": "security_boundary",
+      "color": "amber",
+      "components": [
+        "admin_console"
+      ]
+    },
+    {
+      "id": "boundary_backend",
+      "label": "Backend Application Server (Trusted Host)",
+      "type": "runtime_boundary",
+      "color": "violet",
+      "components": [
+        "node_server",
+        "admissions_api",
+        "credential_svc",
+        "ledger_store"
+      ]
+    },
+    {
+      "id": "boundary_external",
+      "label": "External Infrastructure (Third-Party Cloud)",
+      "type": "network_boundary",
+      "color": "emerald",
+      "components": [
+        "payment_rail",
+        "external_cdn"
+      ]
+    }
+  ],
+  "components": [
+    {
+      "id": "user_client",
+      "type": "client",
+      "label": "Student Browser",
+      "sublabel": "HTML5 / SPA Router / Web Audio",
+      "boundary": "boundary_client",
+      "pos": [60, 220],
+      "size": [160, 70],
+      "tags": ["Client", "SPA", "Web Audio", "SpeechSynthesis"]
+    },
+    {
+      "id": "ai_welcome",
+      "type": "ui",
+      "label": "AI Welcome Engine",
+      "sublabel": "3D Canvas Zoom & Voice Greeting",
+      "boundary": "boundary_client",
+      "pos": [60, 90],
+      "size": [160, 65],
+      "tags": ["Starfield", "Procedural Synth", "CSS3D"]
+    },
+    {
+      "id": "wizard_engine",
+      "type": "frontend",
+      "label": "Enrollment Wizard",
+      "sublabel": "4-Stage Flow & PhonePe QR",
+      "boundary": "boundary_client",
+      "pos": [280, 220],
+      "size": [170, 70],
+      "tags": ["Checkout", "Validation", "UPI QR"]
+    },
+    {
+      "id": "learn_sandbox",
+      "type": "sandbox",
+      "label": "Vibe Coding & AI Lab",
+      "sublabel": "13 Interactive Labs & Swarm Sim",
+      "boundary": "boundary_client",
+      "pos": [60, 380],
+      "size": [160, 70],
+      "tags": ["CrewAI", "FastMCP", "RAG Sandbox"]
+    },
+    {
+      "id": "auth_manager",
+      "type": "security",
+      "label": "Client Auth & RBAC",
+      "sublabel": "Session Tokens & Demo Creds",
+      "boundary": "boundary_client",
+      "pos": [280, 90],
+      "size": [170, 65],
+      "tags": ["RBAC", "LocalStorage", "Token Guard"]
+    },
+    {
+      "id": "payment_rail",
+      "type": "external",
+      "label": "PhonePe / UPI Rail",
+      "sublabel": "External Payment QR & UTR",
+      "boundary": "boundary_external",
+      "pos": [280, 380],
+      "size": [170, 70],
+      "tags": ["UPI", "PhonePe", "UTR Verification"]
+    },
+    {
+      "id": "node_server",
+      "type": "gateway",
+      "label": "Node.js REST Engine",
+      "sublabel": "HTTP Server :3000 & Security Headers",
+      "boundary": "boundary_backend",
+      "pos": [510, 220],
+      "size": [170, 70],
+      "tags": ["NodeJS", "CORS", "Port 3000"]
+    },
+    {
+      "id": "admissions_api",
+      "type": "backend",
+      "label": "Admissions API",
+      "sublabel": "/api/register & /api/verify-payment",
+      "boundary": "boundary_backend",
+      "pos": [740, 220],
+      "size": [170, 70],
+      "tags": ["Controller", "REST", "Verification Gate"]
+    },
+    {
+      "id": "ledger_store",
+      "type": "database",
+      "label": "JSON Ledger Database",
+      "sublabel": "Atomic Persistence & In-Memory Store",
+      "boundary": "boundary_backend",
+      "pos": [740, 90],
+      "size": [170, 65],
+      "tags": ["ACID File I/O", "JSON Store", "Audit Log"]
+    },
+    {
+      "id": "admin_console",
+      "type": "admin",
+      "label": "Admissions CRM",
+      "sublabel": "Seat Quotas & Tuition Approval",
+      "boundary": "boundary_admin",
+      "pos": [740, 380],
+      "size": [170, 70],
+      "tags": ["Admin", "Audit Trail", "Quota Manager"]
+    },
+    {
+      "id": "credential_svc",
+      "type": "security",
+      "label": "Credential Generator",
+      "sublabel": "SHA-256 Hashes & Google Diplomas",
+      "boundary": "boundary_backend",
+      "pos": [970, 220],
+      "size": [170, 70],
+      "tags": ["SHA-256", "Diploma", "Dynamic QR"]
+    },
+    {
+      "id": "external_cdn",
+      "type": "external",
+      "label": "External CDN Assets",
+      "sublabel": "Google Fonts & Cloudflare CDN",
+      "boundary": "boundary_external",
+      "pos": [510, 380],
+      "size": [170, 70],
+      "tags": ["Google Fonts", "FontAwesome 6.5", "CDN"]
+    }
+  ],
+  "relationships": [
+    {
+      "from": "user_client",
+      "to": "wizard_engine",
+      "label": "1. Selects Tier & Submits Bio",
+      "protocol": "DOM Event",
+      "is_primary": true
+    },
+    {
+      "from": "wizard_engine",
+      "to": "payment_rail",
+      "label": "2. UPI QR Scan & Payment",
+      "protocol": "UPI / QR Intent",
+      "is_primary": true
+    },
+    {
+      "from": "wizard_engine",
+      "to": "node_server",
+      "label": "3. POST /api/register (UTR Reference)",
+      "protocol": "HTTPS / JSON",
+      "is_primary": true
+    },
+    {
+      "from": "node_server",
+      "to": "admissions_api",
+      "label": "4. Route Dispatch & Payload Validation",
+      "protocol": "Internal Function Call",
+      "is_primary": true
+    },
+    {
+      "from": "admissions_api",
+      "to": "ledger_store",
+      "label": "5. Persist Pending Application",
+      "protocol": "Atomic File I/O",
+      "is_primary": true
+    },
+    {
+      "from": "admin_console",
+      "to": "admissions_api",
+      "label": "6. POST /api/verify-payment (Admin Token)",
+      "protocol": "REST / Auth Bearer",
+      "is_primary": true
+    },
+    {
+      "from": "admissions_api",
+      "to": "credential_svc",
+      "label": "7. Generate Official Cryptographic Cert",
+      "protocol": "Signature Trigger",
+      "is_primary": true
+    },
+    {
+      "from": "credential_svc",
+      "to": "user_client",
+      "label": "8. Deliver Certificate & Student Pass",
+      "protocol": "JSON Payload & PDF Render",
+      "is_primary": true
+    },
+    {
+      "from": "user_client",
+      "to": "external_cdn",
+      "label": "Font & Asset Fetch",
+      "protocol": "HTTPS GET",
+      "is_primary": false
+    }
+  ],
+  "cards": [
+    {
+      "id": "card_enrollment",
+      "title": "Admissions & 4-Tier Course Matrix",
+      "subtitle": "Structured Curricula & Transparent Pricing",
+      "content": [
+        "Tier 1 (₹1,500): AI for Beginners & Prompt Engineering fundamentals.",
+        "Tier 2 (₹3,500): Applied Machine Learning & Deep Learning with PyTorch.",
+        "Tier 3 (₹6,500): Generative AI, LLMs & Autonomous AI Agents with LangChain/CrewAI.",
+        "Tier 4 (₹12,000): Full-Stack Autonomous Systems, Enterprise RAG & Cloud MLOps on AWS/GCP.",
+        "Strict cohort capacity cap enforced at 30 seats per specialization batch."
+      ],
+      "component_ref": "wizard_engine"
+    },
+    {
+      "id": "card_payment",
+      "title": "Two-Phase Payment Verification Security",
+      "subtitle": "Zero-Trust Payment Lifecycle",
+      "content": [
+        "Phase 1: Student generates dynamic PhonePe UPI QR code embedded with exact tuition amount.",
+        "Phase 2: Student inputs 12-digit UPI Transaction Reference Number (UTR) into wizard.",
+        "Phase 3: System records enrollment with status 'pending_verification'. Customer bypasses are strictly disallowed.",
+        "Phase 4: Privileged Admin verifies bank ledger and executes authenticated approval to confirm seat."
+      ],
+      "component_ref": "payment_rail"
+    },
+    {
+      "id": "card_credentials",
+      "title": "Cryptographic Certificate Verification",
+      "subtitle": "Google-Grade Verifiable Credentials",
+      "content": [
+        "Unique Serial Hash: Dynamically computed SHA-256 digest over student ID, course slug, and graduation timestamp.",
+        "Tamper-Proof QR Code: Encodes instant URL validation endpoint for prospective employer checks.",
+        "Institutional Endorsement: Authenticated digital signatures of Dean & AI Research Director.",
+        "Dual Artifacts: Real-time high-resolution printable diploma and digital Student Identity Card with barcode."
+      ],
+      "component_ref": "credential_svc"
+    },
+    {
+      "id": "card_interactive_labs",
+      "title": "13 Interactive Learning Labs & AI Sandboxes",
+      "subtitle": "Frontier AI Practical Modules",
+      "content": [
+        "Multi-Agent Swarm Sandbox: Visual simulation of autonomous CrewAI / LangGraph coordinator-worker agents.",
+        "Vector RAG Explorer: Real-time embedding distance computation with cosine similarity visualization.",
+        "Prompt Golf & Model Arena: Token efficiency testing and side-by-side LLM response comparisons.",
+        "FastMCP & Cursor Rules: Hands-on Model Context Protocol server configuration."
+      ],
+      "component_ref": "learn_sandbox"
+    },
+    {
+      "id": "card_storage",
+      "title": "Data Persistence & Portability",
+      "subtitle": "Self-Contained Full-Stack Architecture",
+      "content": [
+        "Zero Database Setup: Works natively out of the box with zero external PostgreSQL/MongoDB dependencies.",
+        "Atomic Commit Engine: Server writes application mutations atomically to disk to prevent corrupted JSON states.",
+        "Local Cache Resilience: Browser LocalStorage caches student offline progress and ID card metadata.",
+        "Complete Offline Development: Full Node.js HTTP server operates entirely on localhost with mock fallback modes."
+      ],
+      "component_ref": "ledger_store"
+    }
+  ]
+}

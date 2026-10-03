@@ -1,16 +1,16 @@
-// AI Nexus Academy - Student Hub Portal (Feature 5A)
+﻿// NEXVION AI ACADEMY - Student Hub Portal (Feature 5A)
 
 const StudentHub = {
   countdownInterval: null,
 
-  init: function() {
+  init: function () {
     this.render();
     this.startLiveCountdown();
   },
 
-  render: function() {
+  render: function () {
     const student = StorageService.getCurrentStudent();
-    const container = document.getElementById('studentHubContent');
+    const container = document.getElementById("studentHubContent");
     if (!container) return;
 
     if (!student) {
@@ -28,10 +28,10 @@ const StudentHub = {
     }
 
     // Render Digital ID Card inside the student hub sidebar
-    IDCardGenerator.renderCard(student, 'hubStudentIdCardSlot');
+    IDCardGenerator.renderCard(student, "hubStudentIdCardSlot");
 
     // Render Milestone Progress Tracker & Certificate Status
-    const certProgressCard = document.getElementById('hubCertProgressCard');
+    const certProgressCard = document.getElementById("hubCertProgressCard");
     if (certProgressCard) {
       if (student.certificateAllotted) {
         certProgressCard.innerHTML = `
@@ -39,7 +39,7 @@ const StudentHub = {
             <h4 style="font-size:1.1rem; color:#0f172a;"><i class="fas fa-award" style="color:#1a73e8; margin-right:8px;"></i> Official Google-Grade AI Certificate</h4>
             <span class="status-badge status-confirmed"><i class="fas fa-check-circle"></i> Issued & Authorized by Admin</span>
           </div>
-          <div style="font-size:0.85rem; color:var(--text-muted); margin-bottom:14px;">Credential Serial: <strong style="color:#1a73e8; font-family:var(--font-mono);">${student.certificateId || 'G-NEX-2026'}</strong> &bull; Honors: <strong style="color:#059669;">${student.certificateGrade || 'Distinction'}</strong></div>
+          <div style="font-size:0.85rem; color:var(--text-muted); margin-bottom:14px;">Credential Serial: <strong style="color:#1a73e8; font-family:var(--font-mono);">${student.certificateId || "G-NEX-2026"}</strong> &bull; Honors: <strong style="color:#059669;">${student.certificateGrade || "Distinction"}</strong></div>
           <div class="batch-capacity-bar" style="height:10px; margin-bottom:16px;">
             <div class="batch-capacity-fill" style="width: 100%; background:linear-gradient(90deg, #1a73e8, #34a853);"></div>
           </div>
@@ -75,24 +75,24 @@ const StudentHub = {
     }
 
     // Render Official Google Professional Certificate inside the student hub (guarded)
-    AICertificateGenerator.renderCertificate(student, 'hubCertificateEmbedSlot');
+    AICertificateGenerator.renderCertificate(student, "hubCertificateEmbedSlot");
 
     // Render Faculty Mentorship Chat Stream
-    if (typeof MessagingPortal !== 'undefined') {
-      MessagingPortal.renderStudentChat('studentMentorshipChatContainer', student.id);
+    if (typeof MessagingPortal !== "undefined") {
+      MessagingPortal.renderStudentChat("studentMentorshipChatContainer", student.id);
     }
 
     // Render Capstone Project Submission & Status Desk
-    if (typeof CapstonePortal !== 'undefined') {
-      CapstonePortal.renderStudentCapstoneDesk('studentCapstoneDeskContainer', student.id);
+    if (typeof CapstonePortal !== "undefined") {
+      CapstonePortal.renderStudentCapstoneDesk("studentCapstoneDeskContainer", student.id);
     }
 
     // Update Hub Details
-    const hubStudentName = document.getElementById('hubStudentName');
-    const hubTrackTitle = document.getElementById('hubTrackTitle');
-    const hubBatchName = document.getElementById('hubBatchName');
-    const hubStatusBadge = document.getElementById('hubStatusBadge');
-    const hubEnrolledDate = document.getElementById('hubEnrolledDate');
+    const hubStudentName = document.getElementById("hubStudentName");
+    const hubTrackTitle = document.getElementById("hubTrackTitle");
+    const hubBatchName = document.getElementById("hubBatchName");
+    const hubStatusBadge = document.getElementById("hubStatusBadge");
+    const hubEnrolledDate = document.getElementById("hubEnrolledDate");
 
     if (hubStudentName) hubStudentName.textContent = student.fullName;
     if (hubTrackTitle) hubTrackTitle.textContent = student.trackTitle;
@@ -102,15 +102,19 @@ const StudentHub = {
     if (hubStatusBadge) {
       hubStatusBadge.textContent = student.status || "Confirmed";
       hubStatusBadge.className = `status-badge ${
-        student.status === 'Confirmed' ? 'status-confirmed' :
-        student.status === 'Payment Verified' ? 'status-payment' :
-        student.status === 'Pending' ? 'status-pending' : 'status-waitlisted'
+        student.status === "Confirmed"
+          ? "status-confirmed"
+          : student.status === "Payment Verified"
+            ? "status-payment"
+            : student.status === "Pending"
+              ? "status-pending"
+              : "status-waitlisted"
       }`;
     }
   },
 
   // Live countdown to next class session
-  startLiveCountdown: function() {
+  startLiveCountdown: function () {
     if (this.countdownInterval) clearInterval(this.countdownInterval);
 
     // Target: Upcoming Sunday at 9:00 AM EST (or 2 days from now)
@@ -123,10 +127,10 @@ const StudentHub = {
       const difference = targetDate.getTime() - now;
 
       if (difference <= 0) {
-        document.getElementById('cdDays').textContent = '00';
-        document.getElementById('cdHours').textContent = '00';
-        document.getElementById('cdMinutes').textContent = '00';
-        document.getElementById('cdSeconds').textContent = '00';
+        document.getElementById("cdDays").textContent = "00";
+        document.getElementById("cdHours").textContent = "00";
+        document.getElementById("cdMinutes").textContent = "00";
+        document.getElementById("cdSeconds").textContent = "00";
         return;
       }
 
@@ -135,15 +139,15 @@ const StudentHub = {
       const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((difference % (1000 * 60)) / 1000);
 
-      const dEl = document.getElementById('cdDays');
-      const hEl = document.getElementById('cdHours');
-      const mEl = document.getElementById('cdMinutes');
-      const sEl = document.getElementById('cdSeconds');
+      const dEl = document.getElementById("cdDays");
+      const hEl = document.getElementById("cdHours");
+      const mEl = document.getElementById("cdMinutes");
+      const sEl = document.getElementById("cdSeconds");
 
-      if (dEl) dEl.textContent = String(days).padStart(2, '0');
-      if (hEl) hEl.textContent = String(hours).padStart(2, '0');
-      if (mEl) mEl.textContent = String(minutes).padStart(2, '0');
-      if (sEl) sEl.textContent = String(seconds).padStart(2, '0');
+      if (dEl) dEl.textContent = String(days).padStart(2, "0");
+      if (hEl) hEl.textContent = String(hours).padStart(2, "0");
+      if (mEl) mEl.textContent = String(minutes).padStart(2, "0");
+      if (sEl) sEl.textContent = String(seconds).padStart(2, "0");
     };
 
     updateTimer();
@@ -151,10 +155,10 @@ const StudentHub = {
   },
 
   // Launch mock live classroom
-  joinLiveSession: function() {
+  joinLiveSession: function () {
     const student = StorageService.getCurrentStudent();
     if (!student) return;
-    
+
     App.showToast(
       "Connecting to Live Class...",
       `Authenticating Student ID: ${student.id}. Launching Zoom / Meet secure room...`,
@@ -162,19 +166,19 @@ const StudentHub = {
     );
 
     setTimeout(() => {
-      window.open('https://meet.google.com', '_blank');
+      window.open("https://meet.google.com", "_blank");
     }, 1200);
   },
 
   // Download Starter Resources
-  downloadResource: function(type) {
+  downloadResource: function (type) {
     let title = "";
     let content = "";
 
-    if (type === 'syllabus') {
-      title = "AI_Nexus_Complete_Curriculum_Syllabus.txt";
+    if (type === "syllabus") {
+      title = "Nexvion_AI_Complete_Curriculum_Syllabus.txt";
       content = `=====================================================
-AI NEXUS ACADEMY - OFFICIAL MASTER CURRICULUM
+NEXVION AI ACADEMY - OFFICIAL MASTER CURRICULUM
 =====================================================
 Track 1: Vibe Coding Softwares & AI-Assisted App Development (AI-101) - Low Tier (₹1,500)
 - Week 1: Vibe Coding Setup: Cursor AI, Windsurf & Natural Language Development
@@ -200,10 +204,10 @@ Track 4: Advanced AI Architecture, Autonomous Agents & MLOps (AI-401) - Highest 
 - Week 9-11: Autonomous Multi-Agent Swarms (CrewAI & LangGraph) in Production
 - Week 12-14: Grand Capstone: Full-Scale Autonomous AI Enterprise System & Placement
 `;
-    } else if (type === 'python-guide') {
+    } else if (type === "python-guide") {
       title = "Python_and_GPU_Setup_Guide.txt";
       content = `=====================================================
-AI NEXUS ACADEMY - PYTHON & GPU SETUP GUIDE
+NEXVION AI ACADEMY - PYTHON & GPU SETUP GUIDE
 =====================================================
 Step 1: Install Python 3.11+
 Download from python.org and ensure "Add Python to PATH" is checked.
@@ -233,9 +237,9 @@ TOP AI TOOLS & CHEATSHEET 2026
 `;
     }
 
-    const blob = new Blob([content], { type: 'text/plain' });
+    const blob = new Blob([content], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
     a.download = title;
     document.body.appendChild(a);
@@ -244,5 +248,5 @@ TOP AI TOOLS & CHEATSHEET 2026
     URL.revokeObjectURL(url);
 
     App.showToast("Resource Downloaded", `Saved ${title}`, "success");
-  }
+  },
 };

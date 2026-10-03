@@ -1,0 +1,10 @@
+node_modules/
+.git/
+.agent/
+.agents/
+.archify/
+.gemini/
+.gsd/
+images/
+scripts/
+VERSION

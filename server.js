@@ -1,4 +1,4 @@
-// AI Nexus Academy - Full-Stack Local Server & REST API Engine
+// NEXVION AI ACADEMY - Full-Stack Local Server & REST API Engine
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
@@ -13,7 +13,8 @@ const MIME_TYPES = {
   '.jpg': 'image/jpeg',
   '.svg': 'image/svg+xml',
   '.ico': 'image/x-icon',
-  '.txt': 'text/plain'
+  '.txt': 'text/plain',
+  '.webmanifest': 'application/manifest+json'
 };
 
 // Helper: parse JSON request body
@@ -94,7 +95,7 @@ const server = http.createServer(async (req, res) => {
       if (pathname === '/api/v1/health' && method === 'GET') {
         return sendJsonResponse(res, 200, {
           status: 'ONLINE',
-          service: 'AI Nexus Academy Engine API',
+          service: 'NEXVION AI ACADEMY Engine API',
           version: 'v4.2.0',
           gpuNodes: '8x NVIDIA H100 SXM5 Online',
           uptime: process.uptime(),
@@ -194,7 +195,7 @@ ${rawPrompt}
       // 5. Tokenizer API
       if (pathname === '/api/v1/tokens/tokenize' && method === 'POST') {
         const body = await parseRequestBody(req);
-        const text = body.text || 'AI Nexus Academy';
+        const text = body.text || 'NEXVION AI ACADEMY';
         const words = text.match(/[\w]+|[^\w\s]|\s+/g) || [];
         const tokens = [];
 
@@ -640,7 +641,7 @@ func main() {
           certificateId: certId,
           studentName,
           credentialTitle: 'Master of Generative AI Architecture, Vibe Coding & LLM Engineering',
-          issuingInstitution: 'AI Nexus Academy & Research Labs',
+          issuingInstitution: 'NEXVION AI ACADEMY & Research Labs',
           issuanceDate: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
           verificationHash,
           curriculumCompleted: '17 Core Modules, 50+ Vibe Prompts, OWASP LLM Defense, REST Engine Deployment',
@@ -841,9 +842,117 @@ func main() {
         });
       }
 
+      // 18. Frontier LLM Benchmarks API
+      if (pathname === '/api/v1/benchmarks/models' && method === 'GET') {
+        const models = [
+          { id: 'claude-37-sonnet', name: 'Claude 3.7 Sonnet', provider: 'Anthropic', inPerM: 3.0, outPerM: 15.0, cachePerM: 0.30, context: '200k', speed: 85, sweBench: '70.3%', mmlu: '88.2%' },
+          { id: 'gpt-4o', name: 'GPT-4o (Omni)', provider: 'OpenAI', inPerM: 2.5, outPerM: 10.0, cachePerM: 1.25, context: '128k', speed: 108, sweBench: '38.8%', mmlu: '88.7%' },
+          { id: 'deepseek-r1', name: 'DeepSeek R1', provider: 'DeepSeek', inPerM: 0.55, outPerM: 2.19, cachePerM: 0.14, context: '64k', speed: 42, sweBench: '49.2%', mmlu: '90.8%' },
+          { id: 'gemini-25-pro', name: 'Gemini 2.5 Pro', provider: 'Google', inPerM: 1.25, outPerM: 5.0, cachePerM: 0.31, context: '2M', speed: 115, sweBench: '63.8%', mmlu: '89.6%' },
+          { id: 'llama-33-70b', name: 'Llama 3.3 70B', provider: 'Meta (Groq)', inPerM: 0.20, outPerM: 0.70, cachePerM: 0.05, context: '128k', speed: 280, sweBench: '42.5%', mmlu: '86.0%' }
+        ];
+        return sendJsonResponse(res, 200, {
+          success: true,
+          count: models.length,
+          data: models,
+          latencyMs: Date.now() - startTime
+        });
+      }
+
+      // 19. AI Resume & ATS Evaluation API
+      if (pathname === '/api/v1/resume/evaluate' && method === 'POST') {
+        const body = await parseRequestBody(req);
+        const resumeText = String(body.text ?? '').toLowerCase();
+        const role = body.role || 'agent_architect';
+
+        const roleKeywords = {
+          agent_architect: ['crewai', 'langgraph', 'multi-agent', 'tool calling', 'stategraph', 'fastapi', 'docker', 'vector db', 'guardrails', 'vllm'],
+          rag_specialist: ['pinecone', 'hybrid search', 'reciprocal rank fusion', 'chunking', 'embeddings', 'chromadb', 'reranker', 'fastapi'],
+          prompt_engineer: ['few-shot', 'chain-of-thought', 'xml tags', 'context window', 'guardrails', 'evaluations', 'benchmarking']
+        };
+
+        const targetKeywords = roleKeywords[role] || roleKeywords.agent_architect;
+        let matched = 0;
+        const missing = [];
+        targetKeywords.forEach(k => {
+          if (resumeText.includes(k)) matched++;
+          else missing.push(k);
+        });
+
+        const matchPct = Math.min(100, Math.round((matched / targetKeywords.length) * 100));
+        const score = Math.min(100, Math.max(20, matchPct + 15));
+
+        return sendJsonResponse(res, 200, {
+          success: true,
+          role,
+          atsScore: `${score}/100`,
+          matchedCount: matched,
+          totalKeywords: targetKeywords.length,
+          missingKeywords: missing,
+          verdict: score >= 80 ? 'EXCELLENT: High ATS Match' : score >= 50 ? 'GOOD: Solid Base, Add Quantified AI Metrics' : 'REVISE: Key AI Stack Missing',
+          latencyMs: Date.now() - startTime
+        });
+      }
+
+      // 20. Capstone Architecture Blueprint Generator API
+      if (pathname === '/api/v1/blueprint/generate' && method === 'POST') {
+        const body = await parseRequestBody(req);
+        const domain = body.domain || 'healthcare';
+
+        const templates = {
+          healthcare: {
+            title: 'HIPAA-Compliant Clinical Diagnostic & Trial Intelligence Agent',
+            stack: ['LangGraph StateGraph', 'FastAPI Async Engine', 'Pinecone Vector DB', 'Presidio PII Anonymizer']
+          },
+          fintech: {
+            title: 'High-Frequency Algorithmic Market Sentiment & Risk Copilot',
+            stack: ['CrewAI Swarm Engine', 'Python FastAPI', 'Redis Cache', 'DeepSeek R1 / Claude 3.7']
+          },
+          legal: {
+            title: 'Autonomous Enterprise Contract Redlining & Precedent Engine',
+            stack: ['LangChain / LangGraph', 'ChromaDB Local Vector DB', 'Claude 3.7 Sonnet (200k context)']
+          },
+          ecommerce: {
+            title: 'Autonomous Omni-Channel Customer Resolution & Inventory Swarm',
+            stack: ['CrewAI Multi-Agent', 'Supabase PostgreSQL', 'Shopify / Stripe Webhooks', 'OpenAI GPT-4o']
+          }
+        };
+
+        const bp = templates[domain] || templates.healthcare;
+        return sendJsonResponse(res, 200, {
+          success: true,
+          domain,
+          blueprint: bp,
+          status: 'BLUEPRINT_SYNTHESIZED',
+          latencyMs: Date.now() - startTime
+        });
+      }
+
+      // 21. Merit Scholarship & Financial Aid Evaluation API
+      if (pathname === '/api/v1/scholarship/evaluate' && method === 'POST') {
+        const body = await parseRequestBody(req);
+        const exp = body.experience || 'student';
+        const hours = body.hours || '10-20';
+        const goal = body.goal || 'saas';
+
+        let discountPct = 25;
+        if (exp === 'student' || hours === '20+') discountPct = 30;
+        if (goal === 'saas' && hours === '20+') discountPct = 35;
+
+        const voucher = `NEXVION-SCHOLAR-${discountPct}`;
+        return sendJsonResponse(res, 200, {
+          success: true,
+          status: 'TUITION_GRANT_APPROVED',
+          discountPercent: discountPct,
+          voucherCode: voucher,
+          grantTitle: `${discountPct}% Academic Fellowship Tuition Credit`,
+          latencyMs: Date.now() - startTime
+        });
+      }
+
       // 404 for unknown API routes
       return sendJsonResponse(res, 404, {
-        error: `Endpoint '${pathname}' not found. Available endpoints: /api/v1/health, /api/v1/courses, /api/v1/vibe/generate, /api/v1/prompt/optimize, /api/v1/tokens/tokenize, /api/v1/rag/simulate, /api/v1/tutor/explain, /api/v1/security/audit, /api/v1/frontend/component, /api/v1/backend/microservice, /api/v1/uiux/wireframe, /api/v1/arena/compare, /api/v1/certificate/verify, /api/v1/golf/evaluate, /api/v1/flow/execute, /api/v1/swarm/run, /api/v1/interview/evaluate`
+        error: `Endpoint '${pathname}' not found. Available endpoints: /api/v1/health, /api/v1/courses, /api/v1/vibe/generate, /api/v1/prompt/optimize, /api/v1/tokens/tokenize, /api/v1/rag/simulate, /api/v1/tutor/explain, /api/v1/security/audit, /api/v1/frontend/component, /api/v1/backend/microservice, /api/v1/uiux/wireframe, /api/v1/arena/compare, /api/v1/certificate/verify, /api/v1/golf/evaluate, /api/v1/flow/execute, /api/v1/swarm/run, /api/v1/interview/evaluate, /api/v1/benchmarks/models, /api/v1/resume/evaluate, /api/v1/blueprint/generate, /api/v1/scholarship/evaluate`
       });
 
     } catch (err) {
@@ -887,6 +996,8 @@ func main() {
 });
 
 server.listen(PORT, () => {
-  console.log(`🚀 AI Nexus Academy Full-Stack Server & REST API is running at http://localhost:${PORT}`);
+  console.log(`🚀 NEXVION AI ACADEMY Full-Stack Server & REST API is running at http://localhost:${PORT}`);
   console.log(`📡 API Endpoints available under http://localhost:${PORT}/api/v1/...`);
 });
+
+

@@ -1,20 +1,19 @@
-// AI Nexus Academy - Digital Student ID Card Generator (Feature 3B)
+﻿// NEXVION AI ACADEMY - Digital Student ID Card Generator (Feature 3B)
 
 const IDCardGenerator = {
   // Generate SVG QR Code representation
-  generateQRCodeSVG: function(text) {
+  generateQRCodeSVG: function (text) {
     let hash = 0;
     for (let i = 0; i < text.length; i++) {
-      hash = ((hash << 5) - hash) + text.charCodeAt(i);
+      hash = (hash << 5) - hash + text.charCodeAt(i);
       hash |= 0;
     }
-    
-    let rects = '';
+
+    let rects = "";
     for (let r = 0; r < 7; r++) {
       for (let c = 0; c < 7; c++) {
-        const isCornerMarker = 
-          (r < 2 && c < 2) || (r < 2 && c > 4) || (r > 4 && c < 2);
-        
+        const isCornerMarker = (r < 2 && c < 2) || (r < 2 && c > 4) || (r > 4 && c < 2);
+
         const bit = ((hash >> ((r * 7 + c) % 31)) & 1) === 1;
         if (isCornerMarker || bit) {
           rects += `<rect x="${c * 8 + 2}" y="${r * 8 + 2}" width="6" height="6" fill="#000" rx="1"/>`;
@@ -31,9 +30,9 @@ const IDCardGenerator = {
   },
 
   // Ultra High-Clarity, Scalable QR Code Generator for Payment Checkout
-  generatePaymentQRCodeSVG: function(amount, studentId) {
+  generatePaymentQRCodeSVG: function (amount, studentId) {
     const payload = `upi://pay?pa=admissions.nexus@okaxis&pn=AI%20Nexus%20Academy&am=${amount}&tr=${studentId}&cu=INR`;
-    
+
     // Exact 25x25 QR Matrix Generation
     const N = 25;
     const matrix = Array.from({ length: N }, () => Array(N).fill(0));
@@ -52,9 +51,9 @@ const IDCardGenerator = {
     };
 
     // Place 3 finders
-    placeFinder(0, 0);       // Top-Left
-    placeFinder(0, N - 7);   // Top-Right
-    placeFinder(N - 7, 0);   // Bottom-Left
+    placeFinder(0, 0); // Top-Left
+    placeFinder(0, N - 7); // Top-Right
+    placeFinder(N - 7, 0); // Bottom-Left
 
     // 2. Alignment pattern at bottom-right (5x5 at row 16-20, col 16-20)
     for (let r = 0; r < 5; r++) {
@@ -69,8 +68,8 @@ const IDCardGenerator = {
 
     // 3. Timing patterns (alternating black/white)
     for (let i = 8; i < N - 8; i++) {
-      matrix[6][i] = (i % 2 === 0) ? 1 : 2;
-      matrix[i][6] = (i % 2 === 0) ? 1 : 2;
+      matrix[6][i] = i % 2 === 0 ? 1 : 2;
+      matrix[i][6] = i % 2 === 0 ? 1 : 2;
     }
 
     // 4. Reserve Center Brand Area (rows 10-14, cols 10-14)
@@ -83,15 +82,15 @@ const IDCardGenerator = {
     // 5. Fill remaining data modules with deterministic hash from payload
     let hash = 5381;
     for (let i = 0; i < payload.length; i++) {
-      hash = ((hash << 5) + hash) + payload.charCodeAt(i);
+      hash = (hash << 5) + hash + payload.charCodeAt(i);
       hash |= 0;
     }
 
     for (let r = 0; r < N; r++) {
       for (let c = 0; c < N; c++) {
         if (matrix[r][c] === 0) {
-          const bitIndex = (r * N + c * 7 + (hash & 0xFF)) % 31;
-          const isDark = ((hash >> bitIndex) & 1) ^ (((r + c) % 3 === 0) ? 1 : 0);
+          const bitIndex = (r * N + c * 7 + (hash & 0xff)) % 31;
+          const isDark = ((hash >> bitIndex) & 1) ^ ((r + c) % 3 === 0 ? 1 : 0);
           matrix[r][c] = isDark ? 1 : 2;
         }
       }
@@ -102,7 +101,7 @@ const IDCardGenerator = {
     const quietZone = 16;
     const svgSize = quietZone * 2 + N * cellSize; // 16*2 + 25*8 = 232px
 
-    let rects = '';
+    let rects = "";
     for (let r = 0; r < N; r++) {
       for (let c = 0; c < N; c++) {
         if (matrix[r][c] === 1) {
@@ -128,16 +127,17 @@ const IDCardGenerator = {
   },
 
   // Render the student ID card into a target DOM container
-  renderCard: function(student, containerId) {
+  renderCard: function (student, containerId) {
     const container = document.getElementById(containerId);
     if (!container || !student) return;
 
-    const initials = student.fullName
-      .split(' ')
-      .map(n => n[0])
-      .slice(0, 2)
-      .join('')
-      .toUpperCase() || 'AI';
+    const initials =
+      student.fullName
+        .split(" ")
+        .map((n) => n[0])
+        .slice(0, 2)
+        .join("")
+        .toUpperCase() || "AI";
 
     const qrSvg = this.generatePaymentQRCodeSVG(student.totalPaid || 1500, student.id || "AI-2026");
 
@@ -147,7 +147,7 @@ const IDCardGenerator = {
           <div class="id-card-header">
             <div class="id-card-brand">
               <i class="fas fa-atom" style="color: var(--neon-cyan); font-size: 1.1rem;"></i>
-              <span>AI NEXUS ACADEMY</span>
+              <span>NEXVION AI ACADEMY</span>
             </div>
             <div class="id-card-hologram">
               <i class="fas fa-shield-alt" style="color:#059669;"></i>
@@ -203,17 +203,17 @@ const IDCardGenerator = {
   },
 
   // Print the admission card
-  printCard: function() {
+  printCard: function () {
     window.print();
   },
 
   // Download pass details as a formatted certificate / text record
-  downloadPass: function(name, studentId) {
+  downloadPass: function (name, studentId) {
     const student = StorageService.getCurrentStudent();
     if (!student) return;
 
     const content = `======================================================
-AI NEXUS ACADEMY - OFFICIAL DIGITAL ADMISSION PASS
+NEXVION AI ACADEMY - OFFICIAL DIGITAL ADMISSION PASS
 ======================================================
 Student ID:        ${student.id}
 Student Name:      ${student.fullName}
@@ -235,9 +235,9 @@ Official Verification URL: https://ainexus.edu/verify/${student.id}
 Support Desk: abddeveloper@gmail.com | Helpline: +91 9844691633, +91 9061106019, +91 9061106009
 ======================================================`;
 
-    const blob = new Blob([content], { type: 'text/plain' });
+    const blob = new Blob([content], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
     a.download = `AI_Nexus_Admission_Pass_${studentId}.txt`;
     document.body.appendChild(a);
@@ -246,5 +246,5 @@ Support Desk: abddeveloper@gmail.com | Helpline: +91 9844691633, +91 9061106019,
     URL.revokeObjectURL(url);
 
     App.showToast("Admission Pass Downloaded!", "Your official student credentials have been saved.", "success");
-  }
+  },
 };

@@ -1,5 +1,5 @@
-/* ==========================================================================
-   AI NEXUS ACADEMY - LEARNING HUB & STUDY SYSTEM STYLES
+﻿/* ==========================================================================
+   NEXVION AI ACADEMY - LEARNING HUB & STUDY SYSTEM STYLES
    Theme: Luxury Modern Glassmorphism & High Contrast Light Theme
    ========================================================================== */
 
@@ -18,7 +18,7 @@
 }
 
 .learn-hero-card::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -43,13 +43,13 @@
   align-items: center;
   gap: 14px;
   transition: all var(--trans-base);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
   position: relative;
   overflow: hidden;
 }
 
 .learn-stat-box::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 0;
   left: 0;
@@ -138,9 +138,15 @@
 }
 
 @keyframes masteryGlow {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 /* Category Filter & Search Bar */
@@ -229,7 +235,7 @@
 }
 
 .learn-main-tabs-wrap::after {
-  content: '';
+  content: "";
   position: absolute;
   right: 0;
   top: 0;
@@ -511,8 +517,8 @@
 }
 
 .copy-code-btn {
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   color: #cbd5e1;
   padding: 4px 10px;
   border-radius: 6px;
@@ -522,7 +528,7 @@
 }
 
 .copy-code-btn:hover {
-  background: rgba(255,255,255,0.18);
+  background: rgba(255, 255, 255, 0.18);
   color: #ffffff;
 }
 
@@ -596,7 +602,8 @@
   }
 }
 
-.optimizer-input-box, .optimizer-output-box {
+.optimizer-input-box,
+.optimizer-output-box {
   background: #f8fafc;
   border: 1px solid #e2e8f0;
   border-radius: var(--border-radius-md);
@@ -647,12 +654,36 @@
 }
 
 /* Token colors */
-.token-color-0 { background: #e0f2fe; color: #0369a1; border-color: #bae6fd; }
-.token-color-1 { background: #f3e8ff; color: #7e22ce; border-color: #e9d5ff; }
-.token-color-2 { background: #dcfce7; color: #15803d; border-color: #bbf7d0; }
-.token-color-3 { background: #ffedd5; color: #c2410c; border-color: #fed7aa; }
-.token-color-4 { background: #fce7f3; color: #be185d; border-color: #fbcfe8; }
-.token-color-5 { background: #f1f5f9; color: #334155; border-color: #e2e8f0; }
+.token-color-0 {
+  background: #e0f2fe;
+  color: #0369a1;
+  border-color: #bae6fd;
+}
+.token-color-1 {
+  background: #f3e8ff;
+  color: #7e22ce;
+  border-color: #e9d5ff;
+}
+.token-color-2 {
+  background: #dcfce7;
+  color: #15803d;
+  border-color: #bbf7d0;
+}
+.token-color-3 {
+  background: #ffedd5;
+  color: #c2410c;
+  border-color: #fed7aa;
+}
+.token-color-4 {
+  background: #fce7f3;
+  color: #be185d;
+  border-color: #fbcfe8;
+}
+.token-color-5 {
+  background: #f1f5f9;
+  color: #334155;
+  border-color: #e2e8f0;
+}
 
 /* 3. Step-by-Step RAG Simulator */
 .rag-pipeline-steps {
@@ -846,7 +877,7 @@
 .tutor-mode-btn.active {
   background: #ffffff;
   color: #0f172a;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
 .tutor-output-bubble {
@@ -1041,9 +1072,15 @@
   height: 10px;
   border-radius: 50%;
 }
-.vibe-light.red { background: #ef4444; }
-.vibe-light.yellow { background: #f59e0b; }
-.vibe-light.green { background: #10b981; }
+.vibe-light.red {
+  background: #ef4444;
+}
+.vibe-light.yellow {
+  background: #f59e0b;
+}
+.vibe-light.green {
+  background: #10b981;
+}
 
 .vibe-ide-tab {
   color: #94a3b8;
@@ -1321,13 +1358,24 @@
 
 /* Animations */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes pulseGlow {
-  0%, 100% { box-shadow: 0 0 15px rgba(2, 132, 199, 0.2); }
-  50% { box-shadow: 0 0 25px rgba(2, 132, 199, 0.4); }
+  0%,
+  100% {
+    box-shadow: 0 0 15px rgba(2, 132, 199, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(2, 132, 199, 0.4);
+  }
 }
 
 /* ==========================================================================
@@ -1379,5 +1427,3 @@
   border: 2px solid #38bdf8;
   transform: rotateY(180deg);
 }
-
-
