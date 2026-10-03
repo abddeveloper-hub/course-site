@@ -532,6 +532,20 @@
           </button>
 
           <a
+            href="courses.html"
+            class="btn btn-secondary btn-sm nav-btn-courses"
+            style="
+              background: rgba(124, 58, 237, 0.08);
+              color: var(--secondary);
+              border-color: rgba(124, 58, 237, 0.3);
+              text-decoration: none;
+              font-weight: 700;
+            "
+            title="Browse All AI Learning Tracks & Syllabi"
+          >
+            <i class="fas fa-graduation-cap"></i> <span class="nav-btn-text">Courses</span>
+          </a>
+          <a
             href="learn.html"
             class="btn btn-secondary btn-sm nav-btn-learn"
             style="
@@ -978,35 +992,88 @@
         </div>
       </section>
 
-      <!-- Course Showcase Section (Features 1C & 2A) -->
-      <section class="section" id="coursesSection">
+      <!-- Specialized AI Curriculum Gateway (Detailed Course Catalog Moved to Dedicated courses.html Page) -->
+      <section class="section" id="curriculumOverviewSection" style="padding: 40px 0 30px 0;">
         <div class="container">
-          <div class="section-header">
-            <span class="section-tag"><i class="fas fa-cubes"></i> Industry-Grade Curriculum</span>
-            <h2 class="section-title">Specialized <span class="gradient-text">AI Learning Tracks</span></h2>
-            <p class="section-desc">
-              Choose the learning track engineered for your current skill level and future career ambitions.
+          <div style="background: linear-gradient(135deg, rgba(0, 81, 213, 0.04) 0%, rgba(124, 58, 237, 0.05) 100%); border: 1px solid var(--border-subtle); border-radius: 20px; padding: 40px 32px; text-align: center; box-shadow: var(--shadow-sm);">
+            <span class="corp-tier-pill" style="margin-bottom: 12px;"><i class="fas fa-graduation-cap"></i> Specialized AI Pathways</span>
+            <h2 class="headline-md" style="margin: 0 0 12px 0;">
+              Industry-Grade <span class="gradient-text">Specialization Programs</span>
+            </h2>
+            <p style="color: var(--ink-secondary); max-width: 680px; margin: 0 auto 28px auto; font-size: 1rem; line-height: 1.6;">
+              From zero-code AI vibe prototyping to production MLOps, autonomous agent swarms, and full-stack solutions architecture. Every program is powered by dedicated cloud A100 GPU compute.
             </p>
-          </div>
 
-          <!-- Filter Buttons -->
-          <div class="course-filters">
-            <button class="filter-btn active" onclick="App.filterCourses('ALL', this)">All Programs</button>
-            <button class="filter-btn" onclick="App.filterCourses('Free', this)">
-              <i class="fas fa-gift" style="color: var(--success); margin-right: 4px"></i> 100% Free Tier
-            </button>
-            <button class="filter-btn" onclick="App.filterCourses('Beginner', this)">Low Tier: Vibe Coding</button>
-            <button class="filter-btn" onclick="App.filterCourses('Intermediate', this)">
-              Mid Tier: Cloud Hosting
-            </button>
-            <button class="filter-btn" onclick="App.filterCourses('Advanced', this)">
-              High Tier: Agents &amp; MLOps
-            </button>
-          </div>
+            <!-- 5 Track Quick Highlight Cards -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin-bottom: 30px; text-align: left;">
+              <a href="courses.html" style="text-decoration:none; color:inherit;">
+                <div class="card card-body" style="padding: 18px; border: 1px solid var(--border-subtle); background:#ffffff; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                  <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                    <span class="badge badge-positive" style="font-size:10px;">100% Free</span>
+                    <span style="font-size:0.75rem; color:#64748b;">2 Wks</span>
+                  </div>
+                  <strong style="font-size:0.9rem; color:#0f172a; display:block; margin-bottom:4px;">AI Foundations</strong>
+                  <div style="font-size:0.75rem; color:#64748b;">Prompting &amp; LangChain</div>
+                </div>
+              </a>
 
-          <!-- Course Cards Grid -->
-          <div class="course-grid" id="courseShowcaseGrid">
-            <!-- Populated dynamically by app.js -->
+              <a href="courses.html" style="text-decoration:none; color:inherit;">
+                <div class="card card-body" style="padding: 18px; border: 1px solid var(--border-subtle); background:#ffffff; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                  <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                    <span class="badge" style="background:#e0e7ff; color:#3730a3; font-size:10px;">Beginner</span>
+                    <span style="font-size:0.75rem; color:#64748b;">6 Wks</span>
+                  </div>
+                  <strong style="font-size:0.9rem; color:#0f172a; display:block; margin-bottom:4px;">Vibe Coding &amp; Prototyping</strong>
+                  <div style="font-size:0.75rem; color:#64748b;">Cursor &amp; Micro-SaaS</div>
+                </div>
+              </a>
+
+              <a href="courses.html" style="text-decoration:none; color:inherit;">
+                <div class="card card-body" style="padding: 18px; border: 1px solid var(--border-subtle); background:#ffffff; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                  <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                    <span class="badge" style="background:#dbeafe; color:#1e40af; font-size:10px;">Mid Tier</span>
+                    <span style="font-size:0.75rem; color:#64748b;">10 Wks</span>
+                  </div>
+                  <strong style="font-size:0.9rem; color:#0f172a; display:block; margin-bottom:4px;">Applied ML &amp; MLOps</strong>
+                  <div style="font-size:0.75rem; color:#64748b;">PyTorch &amp; SageMaker</div>
+                </div>
+              </a>
+
+              <a href="courses.html" style="text-decoration:none; color:inherit;">
+                <div class="card card-body" style="padding: 18px; border: 1px solid var(--border-subtle); background:#ffffff; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                  <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                    <span class="badge" style="background:#f3e8ff; color:#6b21a8; font-size:10px;">Advanced</span>
+                    <span style="font-size:0.75rem; color:#64748b;">12 Wks</span>
+                  </div>
+                  <strong style="font-size:0.9rem; color:#0f172a; display:block; margin-bottom:4px;">Multi-Agent Swarms</strong>
+                  <div style="font-size:0.75rem; color:#64748b;">Enterprise RAG &amp; Milvus</div>
+                </div>
+              </a>
+
+              <a href="courses.html" style="text-decoration:none; color:inherit;">
+                <div class="card card-body" style="padding: 18px; border: 1px solid var(--border-subtle); background:#ffffff; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                  <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                    <span class="badge" style="background:#fef3c7; color:#92400e; font-size:10px;">Executive</span>
+                    <span style="font-size:0.75rem; color:#64748b;">16 Wks</span>
+                  </div>
+                  <strong style="font-size:0.9rem; color:#0f172a; display:block; margin-bottom:4px;">Full-Stack AI Architect</strong>
+                  <div style="font-size:0.75rem; color:#64748b;">A100 Infra &amp; Systems</div>
+                </div>
+              </a>
+            </div>
+
+            <!-- Call to Actions -->
+            <div style="display:flex; justify-content:center; gap:14px; flex-wrap:wrap;">
+              <a href="courses.html" class="btn btn-primary btn-lg" style="text-decoration:none;">
+                <i class="fas fa-graduation-cap"></i> View All Courses &amp; Syllabi <i class="fas fa-arrow-right"></i>
+              </a>
+              <button class="btn btn-secondary btn-lg" onclick="ExecutiveInnovations.curriculumDrawer.open()">
+                <i class="fas fa-layer-group"></i> Quick Syllabus Drawer
+              </button>
+              <button class="btn btn-secondary btn-lg" onclick="ExecutiveInnovations.trackDiagnostic.openModal()">
+                <i class="fas fa-compass"></i> 60s Track Diagnostic
+              </button>
+            </div>
           </div>
         </div>
       </section>

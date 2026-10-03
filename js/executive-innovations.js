@@ -129,6 +129,13 @@ const ExecutiveInnovations = {
     // Campus Navigation
     {
       category: "Campus Navigation",
+      title: "All Courses & Specialization Catalog",
+      icon: "fa-graduation-cap",
+      badge: "Curriculum",
+      action: () => (window.location.href = "courses.html"),
+    },
+    {
+      category: "Campus Navigation",
       title: "Overview & Cohort Highlights",
       icon: "fa-home",
       badge: "Home",
