@@ -633,32 +633,6 @@
             Learning neural networks, Enterprise RAG, and autonomous Multi-Agent AI Swarms.
           </p>
 
-          <!-- Interactive AI Prompt Explorer Pill Selector -->
-          <div class="specialization-explorer-wrap">
-            <div class="specialization-title-tag">Explore Specializations:</div>
-            <div class="specialization-chips-row">
-              <button
-                class="filter-chip"
-                onclick="App.startEnrollment('ai-foundations-free')"
-                style="border-color: var(--success); background: rgba(16, 185, 129, 0.06)"
-              >
-                <i class="fas fa-gift" style="color: var(--success)"></i> Free Tier: Generative AI Foundations
-              </button>
-              <button class="filter-chip active" onclick="App.startEnrollment('ai-beginners')">
-                <i class="fas fa-magic" style="color: #0284c7"></i> Low Tier: Vibe Coding Software
-              </button>
-              <button class="filter-chip" onclick="App.startEnrollment('applied-ml-ds')">
-                <i class="fas fa-cloud-upload-alt" style="color: #7c3aed"></i> Mid Tier: Hosting & Deploy
-              </button>
-              <button class="filter-chip" onclick="App.startEnrollment('genai-agents')">
-                <i class="fas fa-network-wired" style="color: #e11d48"></i> High Tier: APIs & Backend
-              </button>
-              <button class="filter-chip" onclick="App.startEnrollment('fullstack-ai-engineer')">
-                <i class="fas fa-microchip" style="color: #059669"></i> Highest: Advanced AI & Agents
-              </button>
-            </div>
-          </div>
-
           <div
             class="hero-actions"
             style="margin-bottom: 24px; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap"
@@ -670,6 +644,22 @@
             >
               <i class="fas fa-rocket"></i> Initialize 5-Step Enrollment
             </button>
+            <a
+              href="courses.html"
+              class="btn btn-secondary btn-lg"
+              style="
+                background: rgba(124, 58, 237, 0.08);
+                border-color: rgba(124, 58, 237, 0.3);
+                color: var(--secondary);
+                text-decoration: none;
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                font-weight: 700;
+              "
+            >
+              <i class="fas fa-graduation-cap"></i> Explore All Courses
+            </a>
             <a
               href="learn.html"
               class="btn btn-secondary btn-lg"
@@ -700,9 +690,6 @@
             >
               <i class="fas fa-flask"></i> 🧪 Try Nexus AI Lab
             </a>
-            <button class="btn btn-secondary btn-lg" data-route="courses">
-              <i class="fas fa-cubes" style="color: var(--neon-violet)"></i> View AI Tracks
-            </button>
           </div>
 
           <!-- Merit Scholarship Callout Pill -->
@@ -987,160 +974,6 @@
               <h4 style="margin: 0 0 6px 0; font-size: 1.05rem;"><i class="fas fa-file-invoice-dollar" style="color: #0284c7; margin-right: 6px;"></i> Corporate Cohort Estimator</h4>
               <p style="font-size: 0.82rem; color: var(--ink-secondary); margin: 0 0 12px 0;">Calculate volume team pricing (1-100+ seats) and instantly print formal pro-forma invoices.</p>
               <div style="font-size: 0.8rem; font-weight: 700; color: #0284c7;">Calculate Seats &amp; Invoice <i class="fas fa-arrow-right" style="font-size: 0.72rem;"></i></div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Specialized AI Curriculum Gateway (Detailed Course Catalog Moved to Dedicated courses.html Page) -->
-      <section class="section" id="curriculumOverviewSection" style="padding: 40px 0 30px 0;">
-        <div class="container">
-          <div style="background: linear-gradient(135deg, rgba(0, 81, 213, 0.04) 0%, rgba(124, 58, 237, 0.05) 100%); border: 1px solid var(--border-subtle); border-radius: 20px; padding: 40px 32px; text-align: center; box-shadow: var(--shadow-sm);">
-            <span class="corp-tier-pill" style="margin-bottom: 12px;"><i class="fas fa-graduation-cap"></i> Specialized AI Pathways</span>
-            <h2 class="headline-md" style="margin: 0 0 12px 0;">
-              Industry-Grade <span class="gradient-text">Specialization Programs</span>
-            </h2>
-            <p style="color: var(--ink-secondary); max-width: 680px; margin: 0 auto 28px auto; font-size: 1rem; line-height: 1.6;">
-              From zero-code AI vibe prototyping to production MLOps, autonomous agent swarms, and full-stack solutions architecture. Every program is powered by dedicated cloud A100 GPU compute.
-            </p>
-
-            <!-- 5 Track Quick Highlight Cards -->
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin-bottom: 30px; text-align: left;">
-              <a href="courses.html" style="text-decoration:none; color:inherit;">
-                <div class="card card-body" style="padding: 18px; border: 1px solid var(--border-subtle); background:#ffffff; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-                  <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                    <span class="badge badge-positive" style="font-size:10px;">100% Free</span>
-                    <span style="font-size:0.75rem; color:#64748b;">2 Wks</span>
-                  </div>
-                  <strong style="font-size:0.9rem; color:#0f172a; display:block; margin-bottom:4px;">AI Foundations</strong>
-                  <div style="font-size:0.75rem; color:#64748b;">Prompting &amp; LangChain</div>
-                </div>
-              </a>
-
-              <a href="courses.html" style="text-decoration:none; color:inherit;">
-                <div class="card card-body" style="padding: 18px; border: 1px solid var(--border-subtle); background:#ffffff; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-                  <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                    <span class="badge" style="background:#e0e7ff; color:#3730a3; font-size:10px;">Beginner</span>
-                    <span style="font-size:0.75rem; color:#64748b;">6 Wks</span>
-                  </div>
-                  <strong style="font-size:0.9rem; color:#0f172a; display:block; margin-bottom:4px;">Vibe Coding &amp; Prototyping</strong>
-                  <div style="font-size:0.75rem; color:#64748b;">Cursor &amp; Micro-SaaS</div>
-                </div>
-              </a>
-
-              <a href="courses.html" style="text-decoration:none; color:inherit;">
-                <div class="card card-body" style="padding: 18px; border: 1px solid var(--border-subtle); background:#ffffff; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-                  <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                    <span class="badge" style="background:#dbeafe; color:#1e40af; font-size:10px;">Mid Tier</span>
-                    <span style="font-size:0.75rem; color:#64748b;">10 Wks</span>
-                  </div>
-                  <strong style="font-size:0.9rem; color:#0f172a; display:block; margin-bottom:4px;">Applied ML &amp; MLOps</strong>
-                  <div style="font-size:0.75rem; color:#64748b;">PyTorch &amp; SageMaker</div>
-                </div>
-              </a>
-
-              <a href="courses.html" style="text-decoration:none; color:inherit;">
-                <div class="card card-body" style="padding: 18px; border: 1px solid var(--border-subtle); background:#ffffff; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-                  <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                    <span class="badge" style="background:#f3e8ff; color:#6b21a8; font-size:10px;">Advanced</span>
-                    <span style="font-size:0.75rem; color:#64748b;">12 Wks</span>
-                  </div>
-                  <strong style="font-size:0.9rem; color:#0f172a; display:block; margin-bottom:4px;">Multi-Agent Swarms</strong>
-                  <div style="font-size:0.75rem; color:#64748b;">Enterprise RAG &amp; Milvus</div>
-                </div>
-              </a>
-
-              <a href="courses.html" style="text-decoration:none; color:inherit;">
-                <div class="card card-body" style="padding: 18px; border: 1px solid var(--border-subtle); background:#ffffff; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-                  <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                    <span class="badge" style="background:#fef3c7; color:#92400e; font-size:10px;">Executive</span>
-                    <span style="font-size:0.75rem; color:#64748b;">16 Wks</span>
-                  </div>
-                  <strong style="font-size:0.9rem; color:#0f172a; display:block; margin-bottom:4px;">Full-Stack AI Architect</strong>
-                  <div style="font-size:0.75rem; color:#64748b;">A100 Infra &amp; Systems</div>
-                </div>
-              </a>
-            </div>
-
-            <!-- Call to Actions -->
-            <div style="display:flex; justify-content:center; gap:14px; flex-wrap:wrap;">
-              <a href="courses.html" class="btn btn-primary btn-lg" style="text-decoration:none;">
-                <i class="fas fa-graduation-cap"></i> View All Courses &amp; Syllabi <i class="fas fa-arrow-right"></i>
-              </a>
-              <button class="btn btn-secondary btn-lg" onclick="ExecutiveInnovations.curriculumDrawer.open()">
-                <i class="fas fa-layer-group"></i> Quick Syllabus Drawer
-              </button>
-              <button class="btn btn-secondary btn-lg" onclick="ExecutiveInnovations.trackDiagnostic.openModal()">
-                <i class="fas fa-compass"></i> 60s Track Diagnostic
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Interactive Learning Roadmap / Timeline (3D) -->
-      <section class="section" style="background: transparent">
-        <div class="container">
-          <div class="section-header">
-            <span class="section-tag"><i class="fas fa-route"></i> Structured Progression</span>
-            <h2 class="section-title">The <span class="gradient-violet-text">AI Mastery Roadmap</span></h2>
-            <p class="section-desc">
-              A structured week-by-week transformation from foundational concepts to deploying production-ready AI
-              models.
-            </p>
-          </div>
-
-          <div class="roadmap-grid">
-            <div class="glass-panel" style="padding: 28px; position: relative">
-              <span class="course-code" style="color: var(--neon-cyan); margin-bottom: 12px; display: inline-block"
-                >STAGE 01 &bull; LOW TIER</span
-              >
-              <h4 style="font-size: 1.2rem; margin-bottom: 8px; color: #f8fafc">Vibe Coding & AI Softwares</h4>
-              <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px">
-                Cursor AI, Windsurf, Lovable, Bolt.new, v0.dev, Replit Agent, natural language prompt-to-app coding.
-              </p>
-              <div style="font-size: 0.75rem; color: var(--neon-cyan); font-weight: 600">
-                <i class="fas fa-check"></i> Zero Code App Building
-              </div>
-            </div>
-
-            <div class="glass-panel" style="padding: 28px; position: relative">
-              <span class="course-code" style="color: var(--neon-violet); margin-bottom: 12px; display: inline-block"
-                >STAGE 02 &bull; MID TIER</span
-              >
-              <h4 style="font-size: 1.2rem; margin-bottom: 8px; color: #f8fafc">Cloud Hosting & Deployment</h4>
-              <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px">
-                Deploying live on Vercel, Netlify, Render, Supabase database setups, custom domains, SSL & Docker.
-              </p>
-              <div style="font-size: 0.75rem; color: var(--neon-violet); font-weight: 600">
-                <i class="fas fa-check"></i> Live Production Deployment
-              </div>
-            </div>
-
-            <div class="glass-panel" style="padding: 28px; position: relative">
-              <span class="course-code" style="color: var(--neon-magenta); margin-bottom: 12px; display: inline-block"
-                >STAGE 03 &bull; HIGH TIER</span
-              >
-              <h4 style="font-size: 1.2rem; margin-bottom: 8px; color: #f8fafc">APIs & Backend Services</h4>
-              <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px">
-                RESTful APIs with FastAPI, OpenAI & Claude APIs, Google Gemini, Webhooks & Pinecone Vector DB APIs.
-              </p>
-              <div style="font-size: 0.75rem; color: var(--neon-magenta); font-weight: 600">
-                <i class="fas fa-check"></i> AI Engine API Integration
-              </div>
-            </div>
-
-            <div class="glass-panel" style="padding: 28px; position: relative">
-              <span class="course-code" style="color: var(--neon-emerald); margin-bottom: 12px; display: inline-block"
-                >STAGE 04 &bull; HIGHEST TIER</span
-              >
-              <h4 style="font-size: 1.2rem; margin-bottom: 8px; color: #f8fafc">Autonomous Agents & MLOps</h4>
-              <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px">
-                Autonomous swarms with CrewAI & LangGraph, Enterprise RAG, local models (Ollama/vLLM) & Cloud GPUs.
-              </p>
-              <div style="font-size: 0.75rem; color: var(--neon-emerald); font-weight: 600">
-                <i class="fas fa-check"></i> Multi-Agent AI Masterclass
-              </div>
             </div>
           </div>
         </div>
