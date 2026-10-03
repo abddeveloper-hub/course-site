@@ -563,7 +563,7 @@ p {
   /* === HERO SECTION === */
   .cyber-welcome-hero,
   .hero {
-    padding: 75px 0 32px !important;
+    padding: 125px 0 40px !important;
     min-height: auto !important;
     overflow: hidden !important;
   }
