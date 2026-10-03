@@ -56,6 +56,41 @@ const ExecutiveInnovations = {
 
     // Executive Innovations
     {
+      category: "Flagship Innovations",
+      title: "Launch Neural Network Backprop Visualizer",
+      icon: "fa-brain",
+      badge: "Interactive",
+      action: () => NexusFlagshipSuite.neuralPlayground.openModal(),
+    },
+    {
+      category: "Flagship Innovations",
+      title: "Launch Autonomous Multi-Agent War Room",
+      icon: "fa-network-wired",
+      badge: "Swarm",
+      action: () => NexusFlagshipSuite.agentWarRoom.openModal(),
+    },
+    {
+      category: "Flagship Innovations",
+      title: "Speak with Aria — Real-Time Conversational AI Mentor",
+      icon: "fa-microphone-lines",
+      badge: "Voice AI",
+      action: () => NexusFlagshipSuite.voiceMentor.openModal(),
+    },
+    {
+      category: "Flagship Innovations",
+      title: "Open Verifiable 3D Holographic Student Pass",
+      icon: "fa-id-badge",
+      badge: "Apple/Google Wallet",
+      action: () => NexusFlagshipSuite.studentPass.openModal(),
+    },
+    {
+      category: "Flagship Innovations",
+      title: "Corporate Cohort Multi-Seat Estimator & Invoicing",
+      icon: "fa-building-columns",
+      badge: "Enterprise",
+      action: () => NexusFlagshipSuite.corporatePortal.openModal(),
+    },
+    {
       category: "Executive Tools",
       title: "Open Career & Corporate ROI Model",
       icon: "fa-calculator",
