@@ -1006,19 +1006,15 @@ input[type="radio"] {
   color: #cbd5e1;
 }
 
-/* Settings Popover Dropdown */
-.exec-settings-wrap {
-  position: relative;
-}
-
-.exec-settings-btn {
+/* Theme Quick Toggle (Desktop) */
+.exec-theme-toggle-btn {
   width: 36px;
   height: 36px;
   border-radius: 50%;
   background: #ffffff;
   border: 1px solid rgba(226, 232, 240, 0.9);
   color: #475569;
-  font-size: 13px;
+  font-size: 14px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1027,181 +1023,29 @@ input[type="radio"] {
   transition: all 0.2s;
 }
 
-[data-theme="obsidian-luxe"] .exec-settings-btn,
-[data-theme="dark"] .exec-settings-btn {
+[data-theme="obsidian-luxe"] .exec-theme-toggle-btn,
+[data-theme="dark"] .exec-theme-toggle-btn {
   background: rgba(255, 255, 255, 0.05);
   border-color: rgba(255, 255, 255, 0.1);
-  color: #cbd5e1;
+  color: #fbbf24;
 }
 
-.exec-settings-btn:hover {
+.exec-theme-toggle-btn:hover {
   color: #09090b;
   border-color: #cbd5e1;
-  transform: rotate(20deg);
+  transform: rotate(15deg);
 }
 
-[data-theme="obsidian-luxe"] .exec-settings-btn:hover,
-[data-theme="dark"] .exec-settings-btn:hover {
+[data-theme="obsidian-luxe"] .exec-theme-toggle-btn:hover,
+[data-theme="dark"] .exec-theme-toggle-btn:hover {
   color: #ffffff;
   border-color: rgba(255, 255, 255, 0.25);
 }
 
-/* Stripe / Vercel Floating Popover Card */
-.exec-settings-popover {
-  position: absolute;
-  top: calc(100% + 10px);
-  right: 0;
-  width: 290px;
-  background: #ffffff;
-  border: 1px solid rgba(226, 232, 240, 0.95);
-  border-radius: 16px;
-  padding: 16px;
-  box-shadow: 0 14px 40px rgba(15, 23, 42, 0.12), 0 2px 6px rgba(0, 0, 0, 0.04);
-  z-index: 1100;
-  display: none;
-}
-
-[data-theme="obsidian-luxe"] .exec-settings-popover,
-[data-theme="dark"] .exec-settings-popover {
-  background: #111317;
-  border-color: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
-}
-
-.exec-settings-popover.open {
-  display: block;
-  animation: popoverFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@keyframes popoverFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-8px) scale(0.97);
+@media (max-width: 992px) {
+  .exec-theme-toggle-btn {
+    display: none !important;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-.exec-popover-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-bottom: 12px;
-  margin-bottom: 12px;
-  border-bottom: 1px solid #f1f5f9;
-}
-
-[data-theme="obsidian-luxe"] .exec-popover-header,
-[data-theme="dark"] .exec-popover-header {
-  border-bottom-color: rgba(255, 255, 255, 0.08);
-}
-
-.exec-popover-title {
-  font-size: 13px;
-  font-weight: 700;
-  color: #09090b;
-  display: flex;
-  align-items: center;
-  gap: 7px;
-}
-
-[data-theme="obsidian-luxe"] .exec-popover-title,
-[data-theme="dark"] .exec-popover-title {
-  color: #ffffff;
-}
-
-.exec-popover-badge {
-  font-size: 10px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  background: rgba(0, 81, 213, 0.08);
-  color: #0051d5;
-  padding: 2px 7px;
-  border-radius: 6px;
-}
-
-.exec-popover-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 0;
-  border-bottom: 1px solid #f8fafc;
-}
-
-[data-theme="obsidian-luxe"] .exec-popover-row,
-[data-theme="dark"] .exec-popover-row {
-  border-bottom-color: rgba(255, 255, 255, 0.04);
-}
-
-.exec-popover-row-label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12.5px;
-  font-weight: 600;
-  color: #475569;
-}
-
-[data-theme="obsidian-luxe"] .exec-popover-row-label,
-[data-theme="dark"] .exec-popover-row-label {
-  color: #cbd5e1;
-}
-
-.exec-popover-row-label i {
-  font-size: 13px;
-  color: #64748b;
-  width: 16px;
-  text-align: center;
-}
-
-.exec-popover-btn {
-  padding: 4px 10px;
-  font-size: 11.5px;
-  font-weight: 700;
-  border-radius: 8px;
-  background: #f1f5f9;
-  color: #09090b;
-  border: 1px solid transparent;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-
-[data-theme="obsidian-luxe"] .exec-popover-btn,
-[data-theme="dark"] .exec-popover-btn {
-  background: rgba(255, 255, 255, 0.08);
-  color: #ffffff;
-}
-
-.exec-popover-btn:hover {
-  background: #e2e8f0;
-  border-color: #cbd5e1;
-}
-
-[data-theme="obsidian-luxe"] .exec-popover-btn:hover,
-[data-theme="dark"] .exec-popover-btn:hover {
-  background: rgba(255, 255, 255, 0.15);
-}
-
-.exec-popover-select {
-  padding: 4px 8px;
-  font-size: 11.5px;
-  font-weight: 600;
-  border-radius: 8px;
-  background: #f1f5f9;
-  color: #09090b;
-  border: 1px solid #e2e8f0;
-  cursor: pointer;
-  outline: none;
-}
-
-[data-theme="obsidian-luxe"] .exec-popover-select,
-[data-theme="dark"] .exec-popover-select {
-  background: #1e2229;
-  color: #ffffff;
-  border-color: rgba(255, 255, 255, 0.12);
 }
 
 /* Ghost Sign In Button */
@@ -1288,6 +1132,10 @@ input[type="radio"] {
   color: #ffffff;
 }
 
+.btn-text-mobile {
+  display: none;
+}
+
 @media (max-width: 992px) {
   .exec-center-links,
   .exec-cmd-pill {
@@ -1302,11 +1150,15 @@ input[type="radio"] {
   .exec-btn-signin {
     display: none !important;
   }
-  .exec-btn-register span {
+  .btn-text-desktop {
     display: none !important;
   }
+  .btn-text-mobile {
+    display: inline !important;
+  }
   .exec-btn-register {
-    padding: 8px 12px !important;
+    padding: 7px 14px !important;
+    font-size: 12.5px !important;
   }
 }
 

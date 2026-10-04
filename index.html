@@ -33,10 +33,10 @@
     <link rel="apple-touch-icon" href="images/icon-512.svg" />
 
     <!-- Stylesheets -->
-    <link rel="stylesheet" href="css/style.css?v=8.2" />
-    <link rel="stylesheet" href="css/components.css?v=8.2" />
-    <link rel="stylesheet" href="css/mobile.css?v=8.2" />
-    <link rel="stylesheet" href="css/flagship-suite.css?v=8.2" />
+    <link rel="stylesheet" href="css/style.css?v=8.3" />
+    <link rel="stylesheet" href="css/components.css?v=8.3" />
+    <link rel="stylesheet" href="css/mobile.css?v=8.3" />
+    <link rel="stylesheet" href="css/flagship-suite.css?v=8.3" />
   </head>
   <body>
     <!-- 3D Holographic AI Neural Core Background Canvas -->
@@ -474,92 +474,18 @@
             <kbd>⌘K</kbd>
           </button>
 
-          <!-- Single Consolidated Settings Popover -->
-          <div class="exec-settings-wrap">
-            <button
-              class="exec-settings-btn"
-              id="navSettingsBtn"
-              onclick="ExecutiveNavbar.toggleSettingsPopover(event)"
-              title="Preferences (Theme, Currency, Audio, Zen)"
-              aria-label="Preferences"
-            >
-              <i class="fas fa-sliders-h"></i>
-            </button>
-
-            <!-- Stripe-Style Preferences Popover -->
-            <div class="exec-settings-popover" id="execSettingsPopover">
-              <div class="exec-popover-header">
-                <span class="exec-popover-title"><i class="fas fa-sliders-h"></i> Preferences</span>
-                <span class="exec-popover-badge">Executive</span>
-              </div>
-
-              <!-- Theme Toggle -->
-              <div class="exec-popover-row">
-                <div class="exec-popover-row-label">
-                  <i class="fas fa-moon" id="popoverThemeIcon"></i>
-                  <span>Appearance</span>
-                </div>
-                <button class="exec-popover-btn" onclick="ExecutiveInnovations.toggleObsidianLuxe(); ExecutiveNavbar.syncSettingsUI();">
-                  <span id="popoverThemeText">Luxe Dark</span>
-                </button>
-              </div>
-
-              <!-- Currency Selector -->
-              <div class="exec-popover-row">
-                <div class="exec-popover-row-label">
-                  <i class="fas fa-coins"></i>
-                  <span>Tuition Currency</span>
-                </div>
-                <select
-                  class="exec-popover-select"
-                  id="popoverCurrencySelect"
-                  onchange="CurrencyManager.setCurrency(this.value)"
-                >
-                  <option value="INR">🇮🇳 INR (₹)</option>
-                  <option value="USD">🇺🇸 USD ($)</option>
-                  <option value="EUR">🇪🇺 EUR (€)</option>
-                  <option value="GBP">🇬🇧 GBP (£)</option>
-                  <option value="AED">🇦🇪 AED (د.إ)</option>
-                  <option value="CAD">🇨🇦 CAD (CA$)</option>
-                </select>
-              </div>
-
-              <!-- Sound FX Toggle -->
-              <div class="exec-popover-row">
-                <div class="exec-popover-row-label">
-                  <i class="fas fa-volume-up" id="popoverAudioIcon"></i>
-                  <span>Interface Audio</span>
-                </div>
-                <button class="exec-popover-btn" id="popoverAudioBtn" onclick="SoundFX.toggle(); ExecutiveNavbar.syncSettingsUI();">
-                  <span id="popoverAudioText">Sound: Off</span>
-                </button>
-              </div>
-
-              <!-- Zen Focus Mode -->
-              <div class="exec-popover-row">
-                <div class="exec-popover-row-label">
-                  <i class="fas fa-eye"></i>
-                  <span>Zen Focus Mode</span>
-                </div>
-                <button class="exec-popover-btn" onclick="FrontierTools.zen.toggle()">
-                  <span>Toggle (Z)</span>
-                </button>
-              </div>
-
-              <!-- Color Palette -->
-              <div class="exec-popover-row" style="border-bottom: none; padding-bottom: 0;">
-                <div class="exec-popover-row-label">
-                  <i class="fas fa-palette"></i>
-                  <span>Accent Engine</span>
-                </div>
-                <button class="exec-popover-btn" onclick="ThemeManager.toggleMenu(event); ExecutiveNavbar.closeSettingsPopover();">
-                  <span>Palettes &rarr;</span>
-                </button>
-              </div>
-            </div>
-            <!-- Hidden dropdown menu container for ThemeManager compatibility -->
-            <div class="theme-dropdown-menu" id="themeDropdownMenu"></div>
-          </div>
+          <!-- Theme Quick Toggle (Desktop) -->
+          <button
+            class="exec-theme-toggle-btn"
+            id="navThemeToggleBtn"
+            onclick="ExecutiveInnovations.toggleObsidianLuxe()"
+            title="Toggle Light / Obsidian Luxe Dark Mode"
+            aria-label="Toggle Theme"
+          >
+            <i class="fas fa-moon"></i>
+          </button>
+          <!-- Hidden dropdown menu container for ThemeManager compatibility -->
+          <div class="theme-dropdown-menu" id="themeDropdownMenu" style="display: none;"></div>
 
           <!-- Sign In -->
           <button class="exec-btn-signin" onclick="App.showView('auth')">
@@ -572,7 +498,8 @@
             data-route="register"
             onclick="App.showView('register')"
           >
-            <span>Register Now</span>
+            <span class="btn-text-desktop">Register Now</span>
+            <span class="btn-text-mobile">Enroll</span>
             <i class="fas fa-arrow-right" style="font-size: 11px;"></i>
           </button>
 
@@ -3255,7 +3182,7 @@
     <script src="js/welcome-ai.js?v=7.0"></script>
     <script src="js/app.js"></script>
     <script src="js/executive-innovations.js"></script>
-    <script src="js/executive-navbar.js"></script>
-    <script src="js/nexus-flagship-suite.js?v=8.2"></script>
+    <script src="js/executive-navbar.js?v=8.3"></script>
+    <script src="js/nexus-flagship-suite.js?v=8.3"></script>
   </body>
 </html>
