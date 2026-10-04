@@ -2058,3 +2058,201 @@ input[type="radio"] {
   background: rgba(0, 81, 213, 0.05);
   box-shadow: inset 0 0 10px rgba(0, 81, 213, 0.1);
 }
+
+/* ==========================================================================
+   STUDENT HUB: ON-DEMAND COURSE VIDEO LECTURES & CINEMA PLAYER (Feature 5B)
+   ========================================================================== */
+.hub-video-cinema-wrap {
+  border-radius: var(--rounded-lg, 16px);
+  overflow: hidden;
+  background: #000000;
+  border: 1px solid var(--border-subtle);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  margin-bottom: 24px;
+}
+
+[data-theme="obsidian-luxe"] .hub-video-cinema-wrap,
+[data-theme="dark"] .hub-video-cinema-wrap {
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.7);
+}
+
+.hub-video-player-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #090d16;
+  overflow: hidden;
+}
+
+.hub-video-iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.hub-video-element {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000000;
+}
+
+.hub-video-meta-bar {
+  padding: 18px 22px;
+  background: var(--surface-container-low, #f8fafc);
+  border-top: 1px solid var(--border-hairline, #e2e8f0);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+[data-theme="obsidian-luxe"] .hub-video-meta-bar,
+[data-theme="dark"] .hub-video-meta-bar {
+  background: #141417;
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+.hub-video-playlist-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 14px;
+}
+
+.hub-video-card {
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--surface-container-lowest, #ffffff);
+  border: 1.5px solid var(--border-subtle, #e2e8f0);
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+}
+
+.hub-video-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--secondary, #0284c7);
+  box-shadow: 0 6px 16px rgba(2, 132, 199, 0.12);
+}
+
+.hub-video-card.active {
+  border-color: #0284c7;
+  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.25), 0 8px 20px rgba(0, 0, 0, 0.08);
+  background: var(--surface-container, #f0f9ff);
+}
+
+[data-theme="obsidian-luxe"] .hub-video-card,
+[data-theme="dark"] .hub-video-card {
+  background: #141417;
+  border-color: #27272a;
+}
+
+[data-theme="obsidian-luxe"] .hub-video-card:hover,
+[data-theme="dark"] .hub-video-card:hover {
+  border-color: #38bdf8;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="obsidian-luxe"] .hub-video-card.active,
+[data-theme="dark"] .hub-video-card.active {
+  border-color: #38bdf8;
+  background: #18181b;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.3), 0 8px 24px rgba(0, 0, 0, 0.6);
+}
+
+.hub-video-card-thumb {
+  position: relative;
+  width: 100%;
+  height: 120px;
+  background: linear-gradient(135deg, #090d16, #1e293b);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.hub-video-card-thumb-overlay {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(2, 132, 199, 0.85);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.hub-video-card:hover .hub-video-card-thumb-overlay {
+  transform: scale(1.1);
+  background: #0284c7;
+}
+
+.hub-video-card.active .hub-video-card-thumb-overlay {
+  background: #10b981;
+}
+
+.hub-video-card-mod-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: rgba(15, 23, 42, 0.85);
+  color: #f8fafc;
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.04em;
+  backdrop-filter: blur(4px);
+}
+
+.hub-video-card-done-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #10b981;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.hub-video-card-info {
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hub-video-card-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--ink-primary);
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.hub-video-card-sub {
+  font-size: 0.75rem;
+  color: var(--ink-secondary);
+}

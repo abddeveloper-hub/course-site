@@ -1,4 +1,4 @@
-﻿// NEXVION AI ACADEMY - Student Hub Portal (Feature 5A)
+// NEXVION AI ACADEMY - Student Hub Portal (Feature 5A)
 
 const StudentHub = {
   countdownInterval: null,
@@ -29,6 +29,9 @@ const StudentHub = {
 
     // Render Digital ID Card inside the student hub sidebar
     IDCardGenerator.renderCard(student, "hubStudentIdCardSlot");
+
+    // Render Course Video Lectures & Lab Recordings (Feature 5B)
+    this.renderCourseVideos(student);
 
     // Render Milestone Progress Tracker & Certificate Status
     const certProgressCard = document.getElementById("hubCertProgressCard");
@@ -248,5 +251,224 @@ TOP AI TOOLS & CHEATSHEET 2026
     URL.revokeObjectURL(url);
 
     App.showToast("Resource Downloaded", `Saved ${title}`, "success");
+  },
+
+  activeVideoId: null,
+
+  // Render on-demand course videos & lab recordings
+  renderCourseVideos: function (student) {
+    const container = document.getElementById("hubCourseVideosSection");
+    if (!container) return;
+
+    let allMedia = [];
+    if (typeof StorageService !== "undefined" && StorageService.getMedia) {
+      allMedia = StorageService.getMedia();
+    } else {
+      try {
+        const raw = localStorage.getItem("nexus_admin_media");
+        if (raw) allMedia = JSON.parse(raw);
+      } catch (e) {}
+    }
+
+    let allVideos = (allMedia || []).filter((m) => m.type === "video");
+
+    if (allVideos.length === 0) {
+      allVideos = [
+        {
+          id: "med-2",
+          title: "Foundations of Large Language Models & Deep Transformers",
+          type: "video",
+          url: "https://www.youtube.com/embed/kCc8FmEb1nY",
+          category: "Lecture Preview",
+          track: "Vibe Coding & AI Prototyping",
+          caption: "Comprehensive lecture walkthrough on self-attention mechanisms, latent embedding spaces, and zero-shot prompting.",
+          date: "2026-10-02",
+          size: "Stream HD",
+        },
+        {
+          id: "med-4",
+          title: "Autonomous Multi-Agent Swarm Live Orchestration Screencast",
+          type: "video",
+          url: "https://www.youtube.com/embed/bZQun8Y4L2A",
+          category: "Lab Demo",
+          track: "Multi-Agent Swarms & Enterprise RAG",
+          caption: "Live demonstration of 4 autonomous agents compiling distributed vector pipelines and auto-debugging code.",
+          date: "2026-10-03",
+          size: "Stream 4K",
+        },
+      ];
+    }
+
+    const studentTrack = (student.trackTitle || "").toLowerCase();
+    let trackVideos = allVideos.filter((v) => {
+      if (!v.track || v.track === "All Tracks") return true;
+      const vt = v.track.toLowerCase();
+      if (studentTrack.includes("vibe") && vt.includes("vibe")) return true;
+      if (studentTrack.includes("cloud") && vt.includes("cloud")) return true;
+      if (studentTrack.includes("api") && vt.includes("api")) return true;
+      if ((studentTrack.includes("agent") || studentTrack.includes("swarm")) && (vt.includes("agent") || vt.includes("swarm"))) return true;
+      if (studentTrack.includes("literacy") && vt.includes("vibe")) return true;
+      return false;
+    });
+
+    const isFiltered = trackVideos.length > 0;
+    const displayVideos = isFiltered ? trackVideos : allVideos;
+
+    let completedVideos = [];
+    try {
+      const stored = localStorage.getItem(`nexus_completed_videos_${student.id}`);
+      if (stored) completedVideos = JSON.parse(stored);
+    } catch (e) {}
+
+    if (!this.activeVideoId || !displayVideos.some((v) => v.id === this.activeVideoId)) {
+      this.activeVideoId = displayVideos[0].id;
+    }
+
+    const activeVideo = displayVideos.find((v) => v.id === this.activeVideoId) || displayVideos[0];
+    const completedCount = displayVideos.filter((v) => completedVideos.includes(v.id)).length;
+    const progressPercent = Math.round((completedCount / displayVideos.length) * 100);
+    const isCurrentCompleted = completedVideos.includes(activeVideo.id);
+
+    let embedHtml = "";
+    if (activeVideo.url.includes("youtube.com/embed/")) {
+      embedHtml = `<iframe src="${activeVideo.url}?rel=0" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" class="hub-video-iframe"></iframe>`;
+    } else if (activeVideo.url.includes("youtube.com/watch?v=")) {
+      const vidId = activeVideo.url.split("v=")[1].split("&")[0];
+      embedHtml = `<iframe src="https://www.youtube.com/embed/${vidId}?rel=0" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" class="hub-video-iframe"></iframe>`;
+    } else if (activeVideo.url.includes("youtu.be/")) {
+      const vidId = activeVideo.url.split("youtu.be/")[1].split("?")[0];
+      embedHtml = `<iframe src="https://www.youtube.com/embed/${vidId}?rel=0" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" class="hub-video-iframe"></iframe>`;
+    } else {
+      embedHtml = `
+        <video controls class="hub-video-element" poster="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1200&q=80">
+          <source src="${activeVideo.url}">
+          Your browser does not support HTML5 video streaming.
+        </video>
+      `;
+    }
+
+    container.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:12px;">
+        <div>
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+            <span class="section-tag" style="margin-bottom:0; font-size:0.75rem; background:rgba(2, 132, 199, 0.1); color:#0284c7; border-color:rgba(2, 132, 199, 0.3);">
+              <i class="fas fa-play-circle"></i> On-Demand Curriculum Video Vault
+            </span>
+            <span class="badge" style="background:#059669; color:#fff; font-size:0.7rem; font-weight:800;">
+              ${displayVideos.length} Modules Available
+            </span>
+          </div>
+          <h3 style="font-size:1.35rem; font-weight:800; color:var(--ink-primary); margin:0;">
+            Course Lectures & Lab Screencasts
+          </h3>
+          <div style="font-size:0.85rem; color:var(--ink-secondary); margin-top:2px;">
+            Enrolled Track: <strong style="color:var(--secondary);">${student.trackTitle || "AI Specialization"}</strong>
+          </div>
+        </div>
+
+        <div style="text-align:right;">
+          <div style="font-size:0.85rem; font-weight:700; color:var(--ink-primary); margin-bottom:4px;">
+            Progress: <span style="color:#0284c7;">${completedCount}/${displayVideos.length} Modules</span> (${progressPercent}%)
+          </div>
+          <div class="batch-capacity-bar" style="width:160px; height:8px; margin:0 0 0 auto;">
+            <div class="batch-capacity-fill" style="width:${progressPercent}%; background:linear-gradient(90deg, #0284c7, #10b981);"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Cinema Screen -->
+      <div class="hub-video-cinema-wrap" id="hubVideoCinemaWrap">
+        <div class="hub-video-player-frame">
+          ${embedHtml}
+        </div>
+        <div class="hub-video-meta-bar">
+          <div style="flex:1;">
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px; flex-wrap:wrap;">
+              <span class="badge" style="background:rgba(2, 132, 199, 0.15); color:#0284c7; font-size:0.72rem; font-weight:700;">
+                <i class="fas fa-bookmark"></i> ${activeVideo.category || "Lecture Module"}
+              </span>
+              <span class="badge" style="background:rgba(15, 23, 42, 0.08); color:var(--ink-secondary); font-size:0.72rem;">
+                <i class="fas fa-calendar-alt"></i> ${activeVideo.date || "Cohort 2026"}
+              </span>
+              <span class="badge" style="background:rgba(16, 185, 129, 0.12); color:#059669; font-size:0.72rem; font-weight:700;">
+                <i class="fas fa-tv"></i> ${activeVideo.size || "1080p Stream"}
+              </span>
+            </div>
+            <h4 style="font-size:1.15rem; font-weight:800; color:var(--ink-primary); margin:0 0 6px 0;">
+              ${activeVideo.title}
+            </h4>
+            <p style="font-size:0.88rem; color:var(--ink-secondary); line-height:1.55; margin:0;">
+              ${activeVideo.caption || "Official course curriculum module recorded by Nexvion AI Academy faculty."}
+            </p>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px; flex-shrink:0;">
+            <button class="btn ${isCurrentCompleted ? "btn-secondary" : "btn-primary"} btn-sm" onclick="StudentHub.toggleVideoCompletion('${activeVideo.id}')" style="font-size:0.825rem; font-weight:700; border-radius:999px;">
+              <i class="fas ${isCurrentCompleted ? "fa-check-circle" : "fa-circle"}"></i> ${isCurrentCompleted ? "Completed" : "Mark as Completed"}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Playlist Video Modules -->
+      <div style="margin-top:22px;">
+        <h5 style="font-size:0.95rem; font-weight:800; color:var(--ink-primary); margin-bottom:12px; display:flex; align-items:center; gap:6px;">
+          <i class="fas fa-list-ul" style="color:#0284c7;"></i> Course Video Modules (${displayVideos.length})
+        </h5>
+        <div class="hub-video-playlist-grid">
+          ${displayVideos.map((v, idx) => {
+            const isSelected = v.id === activeVideo.id;
+            const isDone = completedVideos.includes(v.id);
+            return `
+              <div class="hub-video-card ${isSelected ? "active" : ""}" onclick="StudentHub.playVideo('${v.id}')">
+                <div class="hub-video-card-thumb">
+                  <div class="hub-video-card-thumb-overlay">
+                    <i class="fas ${isSelected ? "fa-volume-up" : "fa-play"}"></i>
+                  </div>
+                  <span class="hub-video-card-mod-badge">Module 0${idx + 1}</span>
+                  ${isDone ? `<span class="hub-video-card-done-badge" title="Completed"><i class="fas fa-check"></i></span>` : ""}
+                </div>
+                <div class="hub-video-card-info">
+                  <div class="hub-video-card-title">${v.title}</div>
+                  <div class="hub-video-card-sub">${v.track} &bull; ${v.size || "HD Video"}</div>
+                </div>
+              </div>
+            `;
+          }).join("")}
+        </div>
+      </div>
+    `;
+  },
+
+  playVideo: function (videoId) {
+    this.activeVideoId = videoId;
+    const student = StorageService.getCurrentStudent();
+    if (student) {
+      this.renderCourseVideos(student);
+      const wrap = document.getElementById("hubVideoCinemaWrap");
+      if (wrap) wrap.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  },
+
+  toggleVideoCompletion: function (videoId) {
+    const student = StorageService.getCurrentStudent();
+    if (!student) return;
+
+    let completedVideos = [];
+    try {
+      const stored = localStorage.getItem(`nexus_completed_videos_${student.id}`);
+      if (stored) completedVideos = JSON.parse(stored);
+    } catch (e) {}
+
+    if (completedVideos.includes(videoId)) {
+      completedVideos = completedVideos.filter((id) => id !== videoId);
+      App.showToast("Progress Updated", "Marked module as in-progress.", "info");
+    } else {
+      completedVideos.push(videoId);
+      App.showToast("Module Completed! 🎉", "Great work advancing through your curriculum.", "success");
+      if (typeof SoundFX !== "undefined") SoundFX.playSuccess();
+    }
+
+    localStorage.setItem(`nexus_completed_videos_${student.id}`, JSON.stringify(completedVideos));
+    this.renderCourseVideos(student);
   },
 };
