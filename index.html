@@ -33,10 +33,10 @@
     <link rel="apple-touch-icon" href="images/icon-512.svg" />
 
     <!-- Stylesheets -->
-    <link rel="stylesheet" href="css/style.css?v=8.3" />
-    <link rel="stylesheet" href="css/components.css?v=8.3" />
-    <link rel="stylesheet" href="css/mobile.css?v=8.3" />
-    <link rel="stylesheet" href="css/flagship-suite.css?v=8.3" />
+    <link rel="stylesheet" href="css/style.css?v=8.4" />
+    <link rel="stylesheet" href="css/components.css?v=8.4" />
+    <link rel="stylesheet" href="css/mobile.css?v=8.4" />
+    <link rel="stylesheet" href="css/flagship-suite.css?v=8.4" />
   </head>
   <body>
     <!-- 3D Holographic AI Neural Core Background Canvas -->
@@ -45,324 +45,327 @@
     <!-- Mobile Drawer Overlay -->
     <div class="mobile-drawer-overlay" id="mobileDrawerOverlay" onclick="App.toggleMobileDrawer(false)"></div>
 
-    <!-- Left Navigation Sliding Drawer (Triggered by Left Menu Button) -->
+    <!-- Left Navigation Sliding Drawer (Stripe-Style Rich Grouped List) -->
     <div class="mobile-drawer" id="mobileDrawer">
-      <div>
-        <div
-          style="
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid #f1f5f9;
+      <!-- Drawer Sticky Header -->
+      <div class="exec-drawer-header">
+        <a
+          href="#home"
+          class="exec-nav-logo"
+          data-route="home"
+          onclick="
+            App.showView('home');
+            App.toggleMobileDrawer(false);
           "
+          style="font-size: 1.05rem;"
         >
-          <div class="nav-logo">
-            <div class="nav-logo-icon"><i class="fas fa-brain"></i></div>
-            <span>NEXVION AI <span class="gradient-text">ACADEMY</span></span>
+          <div class="exec-nav-logo-icon" style="width: 32px; height: 32px; font-size: 0.9rem;">
+            <i class="fas fa-brain"></i>
           </div>
+          <span>NEXVION AI <span class="gradient-text">ACADEMY</span></span>
+        </a>
+        <button
+          class="exec-drawer-close-btn"
+          onclick="App.toggleMobileDrawer(false)"
+          aria-label="Close Menu"
+        >
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <!-- Drawer Scrollable Body -->
+      <div class="exec-drawer-body">
+        <!-- Quick Action Shortcuts -->
+        <div class="exec-drawer-shortcuts">
           <button
-            class="modal-close-btn"
-            style="position: static; width: 36px; height: 36px"
-            onclick="App.toggleMobileDrawer(false)"
-            aria-label="Close Menu"
+            class="exec-drawer-shortcut-btn primary"
+            onclick="
+              App.showView('register');
+              App.toggleMobileDrawer(false);
+            "
           >
-            <i class="fas fa-times"></i>
+            <i class="fas fa-rocket"></i>
+            <span>5-Step Enrollment</span>
+          </button>
+          <button
+            class="exec-drawer-shortcut-btn gold"
+            onclick="
+              FrontierTools.scholarship.openModal();
+              App.toggleMobileDrawer(false);
+            "
+          >
+            <i class="fas fa-graduation-cap"></i>
+            <span>Scholarship 35%</span>
           </button>
         </div>
 
-        <div
-          style="
-            font-size: 0.75rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: #94a3b8;
-            margin-bottom: 10px;
-            padding: 0 8px;
-          "
-        >
-          Curriculum & Enrollment
-        </div>
-        <ul class="mobile-nav-list" style="margin-bottom: 20px">
-          <li class="mobile-nav-item">
-            <a
-              onclick="
-                AIWelcome.replayIntro();
-                App.toggleMobileDrawer(false);
-              "
-              style="color: var(--neon-cyan); font-weight: 700"
-            >
-              <i class="fas fa-robot" style="color: var(--neon-cyan)"></i> ✨ AI Guide Welcome Intro
-            </a>
-          </li>
-          <li class="mobile-nav-item">
-            <a
-              data-route="home"
-              data-view="home"
-              onclick="
-                App.showView('home');
-                App.toggleMobileDrawer(false);
-              "
-            >
-              <i class="fas fa-home" style="color: var(--neon-cyan)"></i> Overview & Highlights
-            </a>
-          </li>
-          <li class="mobile-nav-item">
-            <a
-              data-route="courses"
-              data-view="courses"
-              onclick="
-                App.showView('courses');
-                App.toggleMobileDrawer(false);
-              "
-            >
-              <i class="fas fa-cubes" style="color: var(--neon-violet)"></i> AI Specialization Tracks
-            </a>
-          </li>
-          <li class="mobile-nav-item">
-            <a
-              href="learn.html"
-              target="_blank"
-              onclick="App.toggleMobileDrawer(false)"
-              style="color: var(--neon-cyan); font-weight: 700"
-            >
-              <i class="fas fa-book-open" style="color: var(--neon-cyan)"></i> 📚 AI Study Hub & Playgrounds
-            </a>
-          </li>
-          <li class="mobile-nav-item">
-            <a href="ai-lab.html" target="_blank" onclick="App.toggleMobileDrawer(false)">
-              <i class="fas fa-flask" style="color: #7c3aed"></i> 🧪 Nexus AI Sandbox Lab
-            </a>
-          </li>
-          <li class="mobile-nav-item">
-            <a
-              data-route="register"
-              data-view="register"
-              onclick="
-                App.showView('register');
-                App.toggleMobileDrawer(false);
-              "
-            >
-              <i class="fas fa-bolt" style="color: var(--neon-magenta)"></i> Enrollment Wizard (5 Steps)
-            </a>
-          </li>
-          <li class="mobile-nav-item">
-            <a
-              onclick="
-                FrontierTools.scholarship.openModal();
-                App.toggleMobileDrawer(false);
-              "
-              style="color: #ffd700; font-weight: 700"
-            >
-              <i class="fas fa-hand-holding-usd" style="color: #ffd700"></i> 🎓 Merit Scholarship Quiz (Up to 35% Off)
-            </a>
-          </li>
-        </ul>
+        <!-- Group 1: Academics & Curricula -->
+        <div class="exec-drawer-group">
+          <div class="exec-drawer-category-label">
+            <i class="fas fa-layer-group" style="color: var(--secondary)"></i> Academics &amp; Curricula
+          </div>
 
-        <div
-          style="
-            font-size: 0.75rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: #94a3b8;
-            margin-bottom: 10px;
-            padding: 0 8px;
-          "
-        >
-          Student & Portal Access
-        </div>
-        <ul class="mobile-nav-list">
-          <li class="mobile-nav-item">
-            <a
-              data-route="student-hub"
-              data-view="student-hub"
-              onclick="
-                App.showView('student-hub');
-                App.toggleMobileDrawer(false);
-              "
-            >
-              <i class="fas fa-graduation-cap" style="color: var(--neon-cyan)"></i> Student Hub & Digital Pass
-            </a>
-          </li>
-          <li class="mobile-nav-item">
-            <a href="achievements.html" target="_blank" onclick="App.toggleMobileDrawer(false)">
-              <i class="fas fa-award" style="color: #f59e0b"></i> 🏆 Scholar Badges & XP Portal
-            </a>
-          </li>
-          <li class="mobile-nav-item">
-            <a
-              data-route="auth"
-              data-view="auth"
-              onclick="
-                App.showView('auth');
-                App.toggleMobileDrawer(false);
-              "
-            >
-              <i class="fas fa-user-lock" style="color: var(--neon-violet)"></i> Member Login & Auth
-            </a>
-          </li>
+          <a href="courses.html" class="exec-drawer-card" onclick="App.toggleMobileDrawer(false);">
+            <div class="exec-drawer-icon">
+              <i class="fas fa-graduation-cap"></i>
+            </div>
+            <div class="exec-drawer-info">
+              <div class="exec-drawer-title">AI Specialization Tracks</div>
+              <div class="exec-drawer-desc">Beginner to Advanced Agentic AI curricula</div>
+            </div>
+            <div class="exec-drawer-meta">
+              <span class="exec-drawer-badge accent">Catalog</span>
+              <i class="fas fa-chevron-right exec-drawer-chevron"></i>
+            </div>
+          </a>
 
-          <li class="mobile-nav-item">
-            <a
-              href="executive-alabaster.html"
-              onclick="App.toggleMobileDrawer(false)"
-              style="color: var(--obsidian); font-weight: 700"
-            >
-              <i class="fas fa-gem" style="color: var(--secondary)"></i> 🏛️ Executive Alabaster System Spec
-            </a>
-          </li>
-        </ul>
+          <a href="learn.html" class="exec-drawer-card" onclick="App.toggleMobileDrawer(false);">
+            <div class="exec-drawer-icon purple">
+              <i class="fas fa-book-open"></i>
+            </div>
+            <div class="exec-drawer-info">
+              <div class="exec-drawer-title">AI Study Hub &amp; Arena</div>
+              <div class="exec-drawer-desc">Interactive playgrounds, models &amp; code tests</div>
+            </div>
+            <div class="exec-drawer-meta">
+              <span class="exec-drawer-badge">Live Hub</span>
+              <i class="fas fa-chevron-right exec-drawer-chevron"></i>
+            </div>
+          </a>
 
-        <div
-          style="
-            font-size: 0.75rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: var(--ink-muted);
-            margin: 16px 0 10px 0;
-            padding: 0 8px;
-          "
-        >
-          Executive Innovation Suite
+          <a href="ai-lab.html" class="exec-drawer-card" onclick="App.toggleMobileDrawer(false);">
+            <div class="exec-drawer-icon purple">
+              <i class="fas fa-flask"></i>
+            </div>
+            <div class="exec-drawer-info">
+              <div class="exec-drawer-title">Nexus AI Sandbox Lab</div>
+              <div class="exec-drawer-desc">Hands-on model testing &amp; multi-agent swarms</div>
+            </div>
+            <div class="exec-drawer-meta">
+              <span class="exec-drawer-badge">Free Lab</span>
+              <i class="fas fa-chevron-right exec-drawer-chevron"></i>
+            </div>
+          </a>
         </div>
-        <ul class="mobile-nav-list" style="margin-bottom: 16px">
-          <li class="mobile-nav-item">
-            <a
-              onclick="
-                ExecutiveInnovations.cmdPalette.open();
-                App.toggleMobileDrawer(false);
-              "
-              style="color: var(--ink-primary); font-weight: 700"
-            >
-              <i class="fas fa-terminal" style="color: var(--secondary)"></i> ⌘K Executive Command Palette
-            </a>
-          </li>
-          <li class="mobile-nav-item">
-            <a
-              onclick="
-                ExecutiveInnovations.trackDiagnostic.openModal();
-                App.toggleMobileDrawer(false);
-              "
-            >
-              <i class="fas fa-compass" style="color: var(--secondary)"></i> 60s AI Track Diagnostic
-            </a>
-          </li>
-          <li class="mobile-nav-item">
-            <a
-              onclick="
-                ExecutiveInnovations.roiCalculator.openModal();
-                App.toggleMobileDrawer(false);
-              "
-            >
-              <i class="fas fa-calculator" style="color: var(--secondary)"></i> Corporate &amp; Career ROI Model
-            </a>
-          </li>
-          <li class="mobile-nav-item">
-            <a
-              onclick="
-                ExecutiveInnovations.curriculumDrawer.open();
-                App.toggleMobileDrawer(false);
-              "
-            >
-              <i class="fas fa-layer-group" style="color: var(--secondary)"></i> Technical Curriculum &amp; A100 Nodes
-            </a>
-          </li>
-          <li class="mobile-nav-item">
-            <a
-              onclick="
-                ExecutiveInnovations.certVerifier.openModal();
-                App.toggleMobileDrawer(false);
-              "
-            >
-              <i class="fas fa-certificate" style="color: var(--secondary)"></i> Cryptographic Credential &amp; LinkedIn
-            </a>
-          </li>
-          <li class="mobile-nav-item">
-            <a
-              onclick="
-                ExecutiveInnovations.toggleObsidianLuxe();
-                App.toggleMobileDrawer(false);
-              "
-            >
-              <i class="fas fa-circle-half-stroke" style="color: var(--ink-primary)"></i> Toggle Obsidian Luxe Dark Mode
-            </a>
-          </li>
-        </ul>
 
-        <div
-          style="
-            font-size: 0.75rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: #94a3b8;
-            margin: 16px 0 10px 0;
-            padding: 0 8px;
-          "
-        >
-          Executive Preferences
-        </div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; padding: 0 6px">
-          <button
-            class="sound-toggle-btn"
-            id="mobileSoundToggleBtn"
-            onclick="SoundFX.toggle()"
-            style="justify-content: center"
+        <!-- Group 2: Executive Intelligence Suite -->
+        <div class="exec-drawer-group">
+          <div class="exec-drawer-category-label">
+            <i class="fas fa-microchip" style="color: var(--secondary)"></i> Executive Intelligence
+          </div>
+
+          <div
+            class="exec-drawer-card"
+            onclick="
+              ExecutiveInnovations.trackDiagnostic.openModal();
+              App.toggleMobileDrawer(false);
+            "
           >
-            <i class="fas fa-volume-mute"></i> <span class="nav-btn-text">Audio</span>
-          </button>
-          <button
-            class="btn btn-secondary btn-sm"
-            onclick="ThemeManager.toggleMenu(event)"
-            style="justify-content: center; font-size: 0.8rem"
+            <div class="exec-drawer-icon amber">
+              <i class="fas fa-compass"></i>
+            </div>
+            <div class="exec-drawer-info">
+              <div class="exec-drawer-title">60s Track Diagnostic</div>
+              <div class="exec-drawer-desc">3-question advisory match for your profile</div>
+            </div>
+            <div class="exec-drawer-meta">
+              <span class="exec-drawer-badge gold">30% Grant</span>
+              <i class="fas fa-chevron-right exec-drawer-chevron"></i>
+            </div>
+          </div>
+
+          <div
+            class="exec-drawer-card"
+            onclick="
+              ExecutiveInnovations.roiCalculator.openModal();
+              App.toggleMobileDrawer(false);
+            "
           >
-            <i class="fas fa-palette" style="color: var(--secondary)"></i> Palette
-          </button>
+            <div class="exec-drawer-icon emerald">
+              <i class="fas fa-calculator"></i>
+            </div>
+            <div class="exec-drawer-info">
+              <div class="exec-drawer-title">Corporate &amp; Career ROI</div>
+              <div class="exec-drawer-desc">Calculate wage premiums &amp; payback horizon</div>
+            </div>
+            <div class="exec-drawer-meta">
+              <span class="exec-drawer-badge">Financial</span>
+              <i class="fas fa-chevron-right exec-drawer-chevron"></i>
+            </div>
+          </div>
+
+          <div
+            class="exec-drawer-card"
+            onclick="
+              ExecutiveInnovations.curriculumDrawer.open();
+              App.toggleMobileDrawer(false);
+            "
+          >
+            <div class="exec-drawer-icon slate">
+              <i class="fas fa-server"></i>
+            </div>
+            <div class="exec-drawer-info">
+              <div class="exec-drawer-title">Curriculum &amp; A100 Spec</div>
+              <div class="exec-drawer-desc">80GB VRAM quotas &amp; starter repositories</div>
+            </div>
+            <div class="exec-drawer-meta">
+              <span class="exec-drawer-badge">NVIDIA</span>
+              <i class="fas fa-chevron-right exec-drawer-chevron"></i>
+            </div>
+          </div>
+
+          <div
+            class="exec-drawer-card"
+            onclick="
+              ExecutiveInnovations.certVerifier.openModal();
+              App.toggleMobileDrawer(false);
+            "
+          >
+            <div class="exec-drawer-icon">
+              <i class="fas fa-certificate"></i>
+            </div>
+            <div class="exec-drawer-info">
+              <div class="exec-drawer-title">Certificate &amp; Accreditation</div>
+              <div class="exec-drawer-desc">Verify SHA-256 digital seals &amp; LinkedIn</div>
+            </div>
+            <div class="exec-drawer-meta">
+              <span class="exec-drawer-badge accent">SHA-256</span>
+              <i class="fas fa-chevron-right exec-drawer-chevron"></i>
+            </div>
+          </div>
         </div>
 
-        <div style="padding: 0 6px; margin-bottom: 12px">
-          <label style="font-size: 0.75rem; color: #94a3b8; font-weight: 700; display: block; margin-bottom: 4px"
-            >Tuition Currency</label
+        <!-- Group 3: Student & Member Access -->
+        <div class="exec-drawer-group">
+          <div class="exec-drawer-category-label">
+            <i class="fas fa-user-shield" style="color: var(--secondary)"></i> Student &amp; Member Access
+          </div>
+
+          <div
+            class="exec-drawer-card"
+            onclick="
+              App.showView('student-hub');
+              App.toggleMobileDrawer(false);
+            "
           >
-          <select
-            class="currency-selector-dropdown"
-            style="width: 100%"
-            onchange="CurrencyManager.setCurrency(this.value)"
+            <div class="exec-drawer-icon">
+              <i class="fas fa-id-badge"></i>
+            </div>
+            <div class="exec-drawer-info">
+              <div class="exec-drawer-title">Student Hub &amp; Digital Pass</div>
+              <div class="exec-drawer-desc">Live classes, scholar badges &amp; XP portal</div>
+            </div>
+            <div class="exec-drawer-meta">
+              <span class="exec-drawer-badge">Pass</span>
+              <i class="fas fa-chevron-right exec-drawer-chevron"></i>
+            </div>
+          </div>
+
+          <div
+            class="exec-drawer-card"
+            onclick="
+              ExecutiveInnovations.cmdPalette.open();
+              App.toggleMobileDrawer(false);
+            "
           >
-            <option value="INR">🇮🇳 INR (₹)</option>
-            <option value="USD">🇺🇸 USD ($)</option>
-            <option value="EUR">🇪🇺 EUR (€)</option>
-            <option value="GBP">🇬🇧 GBP (£)</option>
-            <option value="AED">🇦🇪 AED (د.إ)</option>
-            <option value="CAD">🇨🇦 CAD ($)</option>
-          </select>
+            <div class="exec-drawer-icon slate">
+              <i class="fas fa-terminal"></i>
+            </div>
+            <div class="exec-drawer-info">
+              <div class="exec-drawer-title">Executive Command Palette</div>
+              <div class="exec-drawer-desc">Universal keyboard search &amp; switcher</div>
+            </div>
+            <div class="exec-drawer-meta">
+              <span class="exec-drawer-badge">⌘K</span>
+              <i class="fas fa-chevron-right exec-drawer-chevron"></i>
+            </div>
+          </div>
+
+          <div
+            class="exec-drawer-card"
+            onclick="
+              AIWelcome.replayIntro();
+              App.toggleMobileDrawer(false);
+            "
+          >
+            <div class="exec-drawer-icon purple">
+              <i class="fas fa-robot"></i>
+            </div>
+            <div class="exec-drawer-info">
+              <div class="exec-drawer-title">AI Guide Welcome Tour</div>
+              <div class="exec-drawer-desc">Replay introductory holographic guide</div>
+            </div>
+            <div class="exec-drawer-meta">
+              <i class="fas fa-play" style="font-size: 10px; color: #94a3b8;"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Group 4: Preferences & Environment -->
+        <div class="exec-drawer-group" style="margin-bottom: 8px;">
+          <div class="exec-drawer-category-label">
+            <i class="fas fa-sliders-h" style="color: var(--secondary)"></i> Environment &amp; Preferences
+          </div>
+
+          <div class="exec-drawer-prefs">
+            <div class="exec-drawer-prefs-row">
+              <button
+                class="exec-drawer-pref-btn"
+                onclick="ExecutiveInnovations.toggleObsidianLuxe();"
+                title="Toggle Appearance"
+              >
+                <i class="fas fa-circle-half-stroke" style="color: var(--secondary)"></i>
+                <span>Appearance</span>
+              </button>
+
+              <button
+                class="exec-drawer-pref-btn"
+                onclick="SoundFX.toggle();"
+                id="drawerSoundBtn"
+                title="Toggle Sound"
+              >
+                <i class="fas fa-volume-up" style="color: var(--secondary)"></i>
+                <span>Audio FX</span>
+              </button>
+            </div>
+
+            <div>
+              <select
+                class="exec-drawer-currency-select"
+                onchange="CurrencyManager.setCurrency(this.value)"
+                title="Select Tuition Currency"
+              >
+                <option value="INR">🇮🇳 INR (₹)</option>
+                <option value="USD">🇺🇸 USD ($)</option>
+                <option value="EUR">🇪🇺 EUR (€)</option>
+                <option value="GBP">🇬🇧 GBP (£)</option>
+                <option value="AED">🇦🇪 AED (د.إ)</option>
+                <option value="CAD">🇨🇦 CAD (CA$)</option>
+              </select>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div id="mobileDrawerAuthSlot" style="margin-top: 14px; border-top: 1px solid #1e293b; padding-top: 16px">
+      <!-- Drawer Sticky Footer -->
+      <div class="exec-drawer-footer">
         <button
           class="btn btn-secondary"
-          style="width: 100%; margin-bottom: 8px; justify-content: center"
           onclick="
             App.showView('auth');
             App.toggleMobileDrawer(false);
           "
         >
-          <i class="fas fa-sign-in-alt"></i> Sign In / Login
+          <i class="fas fa-sign-in-alt"></i> Sign In
         </button>
         <button
           class="btn btn-primary"
-          style="width: 100%; justify-content: center"
           onclick="
             App.showView('register');
             App.toggleMobileDrawer(false);
           "
         >
-          <i class="fas fa-user-plus"></i> Register Now
+          <i class="fas fa-rocket"></i> Register Now
         </button>
       </div>
     </div>
@@ -3182,7 +3185,7 @@
     <script src="js/welcome-ai.js?v=7.0"></script>
     <script src="js/app.js"></script>
     <script src="js/executive-innovations.js"></script>
-    <script src="js/executive-navbar.js?v=8.3"></script>
-    <script src="js/nexus-flagship-suite.js?v=8.3"></script>
+    <script src="js/executive-navbar.js?v=8.4"></script>
+    <script src="js/nexus-flagship-suite.js?v=8.4"></script>
   </body>
 </html>
