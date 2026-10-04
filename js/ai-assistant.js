@@ -332,6 +332,16 @@ const AIAssistant = {
         this.toggle();
       }
     });
+
+    document.addEventListener("click", (e) => {
+      if (this.isOpen) {
+        const panel = document.getElementById("aiChatPanel");
+        const btn = document.getElementById("aiChatLauncherBtn");
+        if (panel && !panel.contains(e.target) && btn && !btn.contains(e.target)) {
+          this.toggle();
+        }
+      }
+    });
   },
 };
 

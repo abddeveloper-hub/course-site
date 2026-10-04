@@ -1957,10 +1957,15 @@ p {
   }
 
   .ai-chat-panel {
-    width: calc(100vw - 28px) !important;
-    height: calc(100vh - 90px) !important;
-    right: -4px !important;
-    bottom: calc(100% + 10px) !important;
+    position: fixed !important;
+    bottom: 74px !important;
+    right: 12px !important;
+    left: 12px !important;
+    width: auto !important;
+    max-width: none !important;
+    height: calc(100dvh - 90px) !important;
+    border-radius: 20px !important;
+    z-index: 100000 !important;
   }
 
   .theme-dropdown-menu {
