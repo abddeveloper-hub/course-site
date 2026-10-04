@@ -74,7 +74,10 @@ p {
 .mobile-drawer {
   position: fixed;
   top: 0;
-  left: -100%;
+  left: 0;
+  transform: translateX(-105%);
+  visibility: hidden;
+  pointer-events: none;
   width: 90%;
   max-width: 410px;
   height: 100vh;
@@ -86,7 +89,7 @@ p {
   flex-direction: column;
   justify-content: space-between;
   padding: 0;
-  transition: left 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.32s ease;
   box-shadow: 14px 0 45px rgba(15, 23, 42, 0.12);
   overflow: hidden;
 }
@@ -99,7 +102,9 @@ p {
 }
 
 .mobile-drawer.open {
-  left: 0;
+  transform: translateX(0);
+  visibility: visible;
+  pointer-events: auto;
 }
 
 .mobile-drawer-overlay {
@@ -968,7 +973,9 @@ p {
   }
 
   [data-theme="obsidian-luxe"] .hero-title,
-  [data-theme="dark"] .hero-title {
+  [data-theme="obsidian-luxe"] .hero-title-main,
+  [data-theme="dark"] .hero-title,
+  [data-theme="dark"] .hero-title-main {
     color: #f8fafc !important;
   }
 
@@ -980,6 +987,22 @@ p {
     margin-bottom: 20px !important;
     text-align: center !important;
     padding: 0 !important;
+  }
+
+  [data-theme="obsidian-luxe"] .hero-description,
+  [data-theme="dark"] .hero-description {
+    color: #cbd5e1 !important;
+  }
+
+  .exec-scholarship-pill {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 10px 14px !important;
+    border-radius: 16px !important;
+    justify-content: center !important;
+    text-align: center !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
   }
 
   /* Specialization Chips: Vertical Stack */
@@ -1776,6 +1799,57 @@ p {
     flex-direction: column !important;
     text-align: center !important;
     gap: 10px !important;
+  }
+
+  /* Mobile Dark Mode (Obsidian Luxe) Inversion Fixes */
+  [data-theme="obsidian-luxe"] .ai-speech-bubble,
+  [data-theme="dark"] .ai-speech-bubble,
+  [data-theme="obsidian-luxe"] .ai-quick-chip,
+  [data-theme="dark"] .ai-quick-chip,
+  [data-theme="obsidian-luxe"] .hero-badge,
+  [data-theme="dark"] .hero-badge,
+  [data-theme="obsidian-luxe"] .specialization-chip,
+  [data-theme="dark"] .specialization-chip,
+  [data-theme="obsidian-luxe"] .cyber-holo-card,
+  [data-theme="dark"] .cyber-holo-card,
+  [data-theme="obsidian-luxe"] .roadmap-step-card,
+  [data-theme="obsidian-luxe"] .roadmap-grid > div,
+  [data-theme="dark"] .roadmap-step-card,
+  [data-theme="dark"] .roadmap-grid > div,
+  [data-theme="obsidian-luxe"] .testimonial-card,
+  [data-theme="dark"] .testimonial-card,
+  [data-theme="obsidian-luxe"] .cyber-pass-generator-panel,
+  [data-theme="dark"] .cyber-pass-generator-panel,
+  [data-theme="obsidian-luxe"] .auth-wrapper,
+  [data-theme="dark"] .auth-wrapper {
+    background: #141417 !important;
+    border-color: #27272a !important;
+    color: #f4f4f5 !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+  }
+
+  [data-theme="obsidian-luxe"] .ai-typed-heading,
+  [data-theme="dark"] .ai-typed-heading,
+  [data-theme="obsidian-luxe"] .stage-title,
+  [data-theme="dark"] .stage-title,
+  [data-theme="obsidian-luxe"] .testimonial-quote,
+  [data-theme="dark"] .testimonial-quote,
+  [data-theme="obsidian-luxe"] .testimonial-author h4,
+  [data-theme="dark"] .testimonial-author h4,
+  [data-theme="obsidian-luxe"] .faq-question,
+  [data-theme="dark"] .faq-question {
+    color: #f8fafc !important;
+  }
+
+  [data-theme="obsidian-luxe"] .ai-typed-subtext,
+  [data-theme="dark"] .ai-typed-subtext,
+  [data-theme="obsidian-luxe"] .stage-desc,
+  [data-theme="dark"] .stage-desc,
+  [data-theme="obsidian-luxe"] .testimonial-card p,
+  [data-theme="dark"] .testimonial-card p,
+  [data-theme="obsidian-luxe"] .faq-answer,
+  [data-theme="dark"] .faq-answer {
+    color: #cbd5e1 !important;
   }
 }
 

@@ -563,6 +563,99 @@ button {
   box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05);
 }
 
+/* Hero Secondary Button */
+.hero-btn-secondary {
+  border-radius: 9999px;
+  padding: 14px 28px;
+  font-weight: 700;
+  font-size: 1.02rem;
+  background: #ffffff;
+  border: 1px solid var(--border-subtle);
+  color: var(--ink-primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.hero-btn-secondary:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  color: #09090b;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.hero-btn-icon {
+  color: var(--secondary);
+  transition: transform 0.2s ease;
+}
+
+.hero-btn-secondary:hover .hero-btn-icon {
+  transform: scale(1.1);
+}
+
+/* Hero Title Main & Scholarship Pill */
+.hero-title-main {
+  color: #09090b;
+  transition: color 0.2s ease;
+}
+
+.exec-scholarship-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: #ffffff;
+  border: 1px solid rgba(217, 119, 6, 0.35);
+  border-radius: 9999px;
+  padding: 6px 18px 6px 8px;
+  cursor: pointer;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 10px rgba(217, 119, 6, 0.08);
+  transition: all 0.2s ease;
+  max-width: 100%;
+}
+
+.exec-scholarship-pill:hover {
+  transform: translateY(-2px);
+  border-color: rgba(217, 119, 6, 0.6);
+  box-shadow: 0 6px 16px rgba(217, 119, 6, 0.15);
+}
+
+.exec-scholarship-pill-badge {
+  background: linear-gradient(135deg, #d97706, #f59e0b);
+  color: #ffffff;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  letter-spacing: 0.05em;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.exec-scholarship-pill-text {
+  font-size: 0.85rem;
+  color: var(--ink-secondary);
+  font-weight: 600;
+}
+
+.exec-scholarship-pill-arrow {
+  color: #d97706;
+  font-size: 0.8rem;
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.exec-scholarship-pill:hover .exec-scholarship-pill-arrow {
+  transform: translateX(3px);
+}
+
 /* Tertiary / Ghost Button */
 .btn-tertiary,
 .btn-ghost {
@@ -1610,6 +1703,54 @@ input[type="radio"] {
   border-top-color: #27272a;
 }
 
+[data-theme="obsidian-luxe"] .hero-title-main,
+[data-theme="dark"] .hero-title-main {
+  color: #ffffff !important;
+}
+
+[data-theme="obsidian-luxe"] .hero-description,
+[data-theme="dark"] .hero-description {
+  color: #cbd5e1 !important;
+}
+
+[data-theme="obsidian-luxe"] .hero-btn-secondary,
+[data-theme="dark"] .hero-btn-secondary {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.16) !important;
+  color: #f8fafc !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+}
+
+[data-theme="obsidian-luxe"] .hero-btn-secondary:hover,
+[data-theme="dark"] .hero-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.14) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  color: #ffffff !important;
+}
+
+[data-theme="obsidian-luxe"] .hero-btn-icon,
+[data-theme="dark"] .hero-btn-icon {
+  color: #38bdf8 !important;
+}
+
+[data-theme="obsidian-luxe"] .exec-scholarship-pill,
+[data-theme="dark"] .exec-scholarship-pill {
+  background: rgba(217, 119, 6, 0.12) !important;
+  border-color: rgba(245, 158, 11, 0.35) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+}
+
+[data-theme="obsidian-luxe"] .exec-scholarship-pill:hover,
+[data-theme="dark"] .exec-scholarship-pill:hover {
+  background: rgba(217, 119, 6, 0.2) !important;
+  border-color: rgba(245, 158, 11, 0.6) !important;
+}
+
+[data-theme="obsidian-luxe"] .exec-scholarship-pill-text,
+[data-theme="dark"] .exec-scholarship-pill-text {
+  color: #f1f5f9 !important;
+}
+
 /* ==========================================================================
    1. COMMAND PALETTE (⌘K / Ctrl+K)
    ========================================================================== */
@@ -1787,7 +1928,10 @@ input[type="radio"] {
 .curriculum-drawer {
   position: fixed;
   top: 0;
-  right: -100%;
+  right: 0;
+  transform: translateX(105%);
+  visibility: hidden;
+  pointer-events: none;
   width: 90%;
   max-width: 600px;
   height: 100vh;
@@ -1797,12 +1941,14 @@ input[type="radio"] {
   z-index: 2600;
   display: flex;
   flex-direction: column;
-  transition: right 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.35s ease;
   overflow: hidden;
 }
 
 .curriculum-drawer.open {
-  right: 0;
+  transform: translateX(0);
+  visibility: visible;
+  pointer-events: auto;
 }
 
 .curriculum-drawer-header {
