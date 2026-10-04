@@ -55,15 +55,17 @@ const App = {
 
   // View Switching Router
   showView: function (viewId) {
-    // Handling for AI Tracks (Courses section on Home page)
+    // Handling for AI Tracks (Courses section or dedicated courses.html)
     if (viewId === "courses") {
-      this.showView("home");
-      setTimeout(() => {
-        const sec = document.getElementById("coursesSection");
-        if (sec) {
+      const sec = document.getElementById("coursesSection");
+      if (sec) {
+        this.showView("home");
+        setTimeout(() => {
           sec.scrollIntoView({ behavior: "smooth" });
-        }
-      }, 80);
+        }, 80);
+      } else {
+        window.location.href = "courses.html";
+      }
       return;
     }
 

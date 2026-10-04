@@ -27,44 +27,9 @@ const NexusFlagshipSuite = {
   // =========================================================================
   dock: {
     init: function () {
-      if (document.getElementById("flagshipFloatingDock")) return;
-
-      const dockHtml = `
-        <nav class="flagship-dock-container" id="flagshipFloatingDock" aria-label="Executive Flagship Tools">
-          <button class="flagship-dock-item highlight-pulse" onclick="NexusFlagshipSuite.neuralPlayground.openModal()" title="Neural Network Visualizer">
-            <i class="fas fa-brain"></i>
-            <span class="dock-tooltip">Neural Playground</span>
-          </button>
-          <button class="flagship-dock-item" onclick="NexusFlagshipSuite.agentWarRoom.openModal()" title="Autonomous Multi-Agent War Room">
-            <i class="fas fa-network-wired"></i>
-            <span class="dock-tooltip">Multi-Agent War Room</span>
-          </button>
-          <button class="flagship-dock-item" onclick="NexusFlagshipSuite.voiceMentor.openModal()" title="Voice AI Mentor Aria">
-            <i class="fas fa-microphone-lines"></i>
-            <span class="dock-tooltip">Voice Mentor Aria</span>
-          </button>
-          <div class="dock-separator"></div>
-          <button class="flagship-dock-item" onclick="NexusFlagshipSuite.studentPass.openModal()" title="Verifiable 3D Student Pass">
-            <i class="fas fa-id-badge"></i>
-            <span class="dock-tooltip">Holographic Pass</span>
-          </button>
-          <button class="flagship-dock-item" onclick="NexusFlagshipSuite.corporatePortal.openModal()" title="Corporate Cohort & Invoice Portal">
-            <i class="fas fa-building-columns"></i>
-            <span class="dock-tooltip">Corporate Portal</span>
-          </button>
-          <div class="dock-separator"></div>
-          <button class="flagship-dock-item" onclick="if (typeof ExecutiveInnovations !== 'undefined') ExecutiveInnovations.cmdPalette.openModal();" title="Universal Command Palette (Ctrl+K)">
-            <i class="fas fa-terminal"></i>
-            <span class="dock-tooltip">Command Palette</span>
-          </button>
-          <button class="flagship-dock-item" onclick="if (typeof ThemeManager !== 'undefined') ThemeManager.toggleMenu(event);" title="Executive Palettes">
-            <i class="fas fa-palette"></i>
-            <span class="dock-tooltip">Executive Themes</span>
-          </button>
-        </nav>
-      `;
-
-      document.body.insertAdjacentHTML("beforeend", dockHtml);
+      // Bottom dock permanently removed per user request
+      const existing = document.getElementById("flagshipFloatingDock");
+      if (existing) existing.remove();
 
       // Global hotkeys
       document.addEventListener("keydown", (e) => {

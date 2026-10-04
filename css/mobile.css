@@ -65,21 +65,7 @@ p {
    1. NAVIGATION & DRAWER
    -------------------------------------------------------------------------- */
 .public-left-menu-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 42px;
-  height: 42px;
-  min-width: 42px;
-  border-radius: 10px;
-  background: #ffffff;
-  border: 1.5px solid #cbd5e1;
-  color: #090d16;
-  font-size: 1.2rem;
-  cursor: pointer;
-  margin-right: 10px;
-  flex-shrink: 0;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  display: none !important;
 }
 
 .mobile-drawer {
@@ -594,7 +580,12 @@ p {
     margin-bottom: 14px !important;
     text-align: center !important;
     letter-spacing: -0.03em !important;
-    color: var(--text-main, #f8fafc) !important;
+    color: #09090b !important;
+  }
+
+  [data-theme="obsidian-luxe"] .hero-title,
+  [data-theme="dark"] .hero-title {
+    color: #f8fafc !important;
   }
 
   .hero-description {

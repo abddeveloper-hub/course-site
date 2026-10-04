@@ -33,10 +33,10 @@
     <link rel="apple-touch-icon" href="images/icon-512.svg" />
 
     <!-- Stylesheets -->
-    <link rel="stylesheet" href="css/style.css?v=8.0" />
-    <link rel="stylesheet" href="css/components.css?v=8.0" />
-    <link rel="stylesheet" href="css/mobile.css?v=8.0" />
-    <link rel="stylesheet" href="css/flagship-suite.css?v=8.0" />
+    <link rel="stylesheet" href="css/style.css?v=8.2" />
+    <link rel="stylesheet" href="css/components.css?v=8.2" />
+    <link rel="stylesheet" href="css/mobile.css?v=8.2" />
+    <link rel="stylesheet" href="css/flagship-suite.css?v=8.2" />
   </head>
   <body>
     <!-- 3D Holographic AI Neural Core Background Canvas -->
@@ -433,152 +433,158 @@
     </div>
 
     <!-- ========================================================================
-       TOP STREAMLINED NAVIGATION BAR (Public Facing)
+       MINIMALIST EXECUTIVE NAVIGATION BAR (Stripe / Vercel Architecture)
        ======================================================================== -->
-    <nav class="navbar">
-      <div class="container nav-container" style="display: flex; justify-content: space-between; align-items: center">
-        <div style="display: flex; align-items: center">
-          <!-- Single Left Menu Button to Slide Navigation Drawer -->
-          <button
-            class="public-left-menu-btn"
-            onclick="App.toggleMobileDrawer(true)"
-            title="Open Navigation Menu"
-            aria-label="Open Navigation Menu"
-          >
-            <i class="fas fa-ellipsis-v"></i>
-          </button>
+    <nav class="navbar exec-navbar">
+      <div class="exec-nav-container">
+        <!-- Far Left: Clean Brand Logo -->
+        <a href="#home" class="exec-nav-logo" data-route="home" onclick="App.showView('home')">
+          <div class="exec-nav-logo-icon">
+            <i class="fas fa-brain"></i>
+          </div>
+          <span>NEXVION AI <span class="gradient-text">ACADEMY</span></span>
+        </a>
 
-          <a href="#home" class="nav-logo" data-route="home" onclick="App.showView('home')">
-            <div class="nav-logo-icon">
-              <i class="fas fa-brain"></i>
-            </div>
-            <span>NEXVION AI <span class="gradient-text">ACADEMY</span></span>
+        <!-- Center: Primary Nav Links (Stripe / Vercel Style) -->
+        <nav class="exec-center-links" aria-label="Main Navigation">
+          <a href="courses.html" class="exec-nav-link">
+            <i class="fas fa-graduation-cap"></i> <span>Courses</span>
           </a>
-        </div>
+          <a href="learn.html" class="exec-nav-link">
+            <i class="fas fa-book-open"></i> <span>Study Hub</span>
+          </a>
+          <a href="ai-lab.html" class="exec-nav-link">
+            <i class="fas fa-flask"></i> <span>AI Lab</span>
+          </a>
+          <a href="#certShowcaseSection" class="exec-nav-link" onclick="document.getElementById('certShowcaseSection')?.scrollIntoView({behavior:'smooth'})">
+            <i class="fas fa-award"></i> <span>Accreditation</span>
+          </a>
+        </nav>
 
-        <!-- Action Buttons on Right (Public Facing Only) -->
-        <div class="nav-actions">
-          <!-- Executive Command Palette Quick Trigger -->
+        <!-- Far Right: Streamlined Actions & Consolidated Preferences -->
+        <div class="exec-nav-actions">
+          <!-- Command Trigger (⌘K) -->
           <button
-            class="btn btn-secondary btn-sm"
+            class="exec-cmd-pill"
             onclick="ExecutiveInnovations.cmdPalette.open()"
             title="Open Executive Command Palette (⌘K / Ctrl+K)"
-            style="display: inline-flex; align-items: center; gap: 6px"
           >
             <i class="fas fa-search" style="font-size: 11px; color: var(--secondary)"></i>
-            <span class="nav-btn-text">Command</span>
-            <kbd class="cmd-key-hint" style="padding: 1px 5px; font-size: 10px">⌘K</kbd>
+            <span>Command</span>
+            <kbd>⌘K</kbd>
           </button>
 
-          <!-- Obsidian Luxe Architectural Dark Mode Toggle -->
-          <button
-            class="btn btn-secondary btn-sm"
-            onclick="ExecutiveInnovations.toggleObsidianLuxe()"
-            title="Toggle Obsidian Luxe Architectural Dark Mode"
-          >
-            <i class="fas fa-circle-half-stroke" style="color: var(--ink-primary)"></i>
-            <span class="nav-btn-text">Luxe Dark</span>
-          </button>
-
-          <!-- Sci-Fi Audio FX Ambience Toggle -->
-          <button
-            class="sound-toggle-btn nav-btn-sound"
-            id="navSoundToggleBtn"
-            onclick="SoundFX.toggle()"
-            title="Toggle Audio FX"
-          >
-            <i class="fas fa-volume-mute"></i> <span class="nav-btn-text">Audio</span>
-          </button>
-
-          <!-- Executive Palette Selector -->
-          <div class="theme-dropdown-wrap">
+          <!-- Single Consolidated Settings Popover -->
+          <div class="exec-settings-wrap">
             <button
-              class="btn btn-secondary btn-sm nav-btn-theme"
-              id="navThemeToggleBtn"
-              onclick="ThemeManager.toggleMenu(event)"
-              title="Executive Alabaster Palette Engine"
+              class="exec-settings-btn"
+              id="navSettingsBtn"
+              onclick="ExecutiveNavbar.toggleSettingsPopover(event)"
+              title="Preferences (Theme, Currency, Audio, Zen)"
+              aria-label="Preferences"
             >
-              <i class="fas fa-palette" style="color: var(--secondary)"></i> <span class="nav-btn-text">Palette</span>
-              <span class="theme-active-dot" id="navThemeActiveDot"></span>
+              <i class="fas fa-sliders-h"></i>
             </button>
+
+            <!-- Stripe-Style Preferences Popover -->
+            <div class="exec-settings-popover" id="execSettingsPopover">
+              <div class="exec-popover-header">
+                <span class="exec-popover-title"><i class="fas fa-sliders-h"></i> Preferences</span>
+                <span class="exec-popover-badge">Executive</span>
+              </div>
+
+              <!-- Theme Toggle -->
+              <div class="exec-popover-row">
+                <div class="exec-popover-row-label">
+                  <i class="fas fa-moon" id="popoverThemeIcon"></i>
+                  <span>Appearance</span>
+                </div>
+                <button class="exec-popover-btn" onclick="ExecutiveInnovations.toggleObsidianLuxe(); ExecutiveNavbar.syncSettingsUI();">
+                  <span id="popoverThemeText">Luxe Dark</span>
+                </button>
+              </div>
+
+              <!-- Currency Selector -->
+              <div class="exec-popover-row">
+                <div class="exec-popover-row-label">
+                  <i class="fas fa-coins"></i>
+                  <span>Tuition Currency</span>
+                </div>
+                <select
+                  class="exec-popover-select"
+                  id="popoverCurrencySelect"
+                  onchange="CurrencyManager.setCurrency(this.value)"
+                >
+                  <option value="INR">🇮🇳 INR (₹)</option>
+                  <option value="USD">🇺🇸 USD ($)</option>
+                  <option value="EUR">🇪🇺 EUR (€)</option>
+                  <option value="GBP">🇬🇧 GBP (£)</option>
+                  <option value="AED">🇦🇪 AED (د.إ)</option>
+                  <option value="CAD">🇨🇦 CAD (CA$)</option>
+                </select>
+              </div>
+
+              <!-- Sound FX Toggle -->
+              <div class="exec-popover-row">
+                <div class="exec-popover-row-label">
+                  <i class="fas fa-volume-up" id="popoverAudioIcon"></i>
+                  <span>Interface Audio</span>
+                </div>
+                <button class="exec-popover-btn" id="popoverAudioBtn" onclick="SoundFX.toggle(); ExecutiveNavbar.syncSettingsUI();">
+                  <span id="popoverAudioText">Sound: Off</span>
+                </button>
+              </div>
+
+              <!-- Zen Focus Mode -->
+              <div class="exec-popover-row">
+                <div class="exec-popover-row-label">
+                  <i class="fas fa-eye"></i>
+                  <span>Zen Focus Mode</span>
+                </div>
+                <button class="exec-popover-btn" onclick="FrontierTools.zen.toggle()">
+                  <span>Toggle (Z)</span>
+                </button>
+              </div>
+
+              <!-- Color Palette -->
+              <div class="exec-popover-row" style="border-bottom: none; padding-bottom: 0;">
+                <div class="exec-popover-row-label">
+                  <i class="fas fa-palette"></i>
+                  <span>Accent Engine</span>
+                </div>
+                <button class="exec-popover-btn" onclick="ThemeManager.toggleMenu(event); ExecutiveNavbar.closeSettingsPopover();">
+                  <span>Palettes &rarr;</span>
+                </button>
+              </div>
+            </div>
+            <!-- Hidden dropdown menu container for ThemeManager compatibility -->
             <div class="theme-dropdown-menu" id="themeDropdownMenu"></div>
           </div>
 
-          <!-- Global Currency Selector -->
-          <div class="currency-selector-wrap">
-            <select
-              class="currency-selector-dropdown"
-              id="navCurrencySelect"
-              onchange="CurrencyManager.setCurrency(this.value)"
-              title="Change Tuition Currency"
-            >
-              <option value="INR">🇮🇳 ₹</option>
-              <option value="USD">🇺🇸 $</option>
-              <option value="EUR">🇪🇺 €</option>
-              <option value="GBP">🇬🇧 £</option>
-              <option value="AED">🇦🇪 AED</option>
-              <option value="CAD">🇨🇦 CA$</option>
-            </select>
-          </div>
-
-          <!-- Zen Focus Mode Hotkey Toggle -->
-          <button
-            class="btn btn-secondary btn-sm"
-            onclick="FrontierTools.zen.toggle()"
-            title="Toggle Distraction-Free Zen Focus Mode (Hotkey: Z)"
-            style="background: rgba(0, 240, 255, 0.06); border-color: rgba(0, 240, 255, 0.25)"
-          >
-            <i class="fas fa-eye" style="color: var(--neon-cyan)"></i> <span class="nav-btn-text">Zen</span>
+          <!-- Sign In -->
+          <button class="exec-btn-signin" onclick="App.showView('auth')">
+            Sign In
           </button>
 
-          <a
-            href="courses.html"
-            class="btn btn-secondary btn-sm nav-btn-courses"
-            style="
-              background: rgba(124, 58, 237, 0.08);
-              color: var(--secondary);
-              border-color: rgba(124, 58, 237, 0.3);
-              text-decoration: none;
-              font-weight: 700;
-            "
-            title="Browse All AI Learning Tracks & Syllabi"
-          >
-            <i class="fas fa-graduation-cap"></i> <span class="nav-btn-text">Courses</span>
-          </a>
-          <a
-            href="learn.html"
-            class="btn btn-secondary btn-sm nav-btn-learn"
-            style="
-              background: rgba(2, 132, 199, 0.08);
-              color: var(--neon-cyan);
-              border-color: rgba(2, 132, 199, 0.3);
-              text-decoration: none;
-            "
-            title="Open AI Study Hub & Learning Center"
-          >
-            <i class="fas fa-book-open"></i> <span class="nav-btn-text">Study Hub</span>
-          </a>
+          <!-- Register Now CTA -->
           <button
-            class="btn btn-secondary btn-sm nav-btn-guide"
-            onclick="AIWelcome.replayIntro()"
-            style="
-              background: rgba(124, 58, 237, 0.08);
-              color: var(--neon-violet);
-              border-color: rgba(124, 58, 237, 0.3);
-            "
-            title="Replay AI Welcome Greeting"
-          >
-            <i class="fas fa-robot"></i> <span class="nav-btn-text">AI Guide</span>
-          </button>
-          <button class="btn btn-secondary btn-sm nav-btn-signin" onclick="App.showView('auth')">
-            <i class="fas fa-sign-in-alt"></i> <span class="nav-btn-text">Sign In</span>
-          </button>
-          <button
-            class="btn btn-primary btn-sm nav-btn-register"
+            class="exec-btn-register"
             data-route="register"
             onclick="App.showView('register')"
           >
-            <i class="fas fa-bolt"></i> <span class="nav-btn-text">Register Now</span>
+            <span>Register Now</span>
+            <i class="fas fa-arrow-right" style="font-size: 11px;"></i>
+          </button>
+
+          <!-- Mobile Hamburger (Only visible on screens <= 992px) -->
+          <button
+            class="exec-hamburger-btn"
+            id="mobileMenuHamburger"
+            onclick="App.toggleMobileDrawer(true)"
+            title="Open Menu"
+            aria-label="Open Navigation Menu"
+          >
+            <i class="fas fa-bars"></i>
           </button>
         </div>
       </div>
@@ -598,7 +604,7 @@
         <div class="hero-glow-2"></div>
 
         <div class="container" style="position: relative; z-index: 1; text-align: center">
-          <h1 class="hero-title">NEXVION AI <span class="gradient-text">ACADEMY</span></h1>
+          <h1 class="hero-title" style="color: #09090b !important;"><span style="color: #09090b !important;">NEXVION AI</span> <span class="gradient-text">ACADEMY</span></h1>
 
           <p class="hero-description">
             Your gateway to master cutting-edge Artificial Intelligence: From zero-code business automations to Deep
@@ -607,12 +613,13 @@
 
           <div
             class="hero-actions"
-            style="margin-bottom: 24px; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap"
+            style="margin-bottom: 24px; display: flex; justify-content: center; gap: 14px; flex-wrap: wrap"
           >
             <button
               class="btn btn-primary btn-lg"
               data-route="register"
-              style="box-shadow: 0 8px 25px rgba(2, 132, 199, 0.35)"
+              onclick="App.showView('register')"
+              style="box-shadow: 0 10px 25px -5px rgba(0, 81, 213, 0.35); border-radius: 9999px; padding: 14px 28px; font-weight: 700; font-size: 1.02rem;"
             >
               <i class="fas fa-rocket"></i> Initialize 5-Step Enrollment
             </button>
@@ -620,84 +627,64 @@
               href="courses.html"
               class="btn btn-secondary btn-lg"
               style="
-                background: rgba(124, 58, 237, 0.08);
-                border-color: rgba(124, 58, 237, 0.3);
-                color: var(--secondary);
-                text-decoration: none;
-                display: inline-flex;
-                align-items: center;
-                gap: 8px;
+                border-radius: 9999px;
+                padding: 14px 28px;
                 font-weight: 700;
-              "
-            >
-              <i class="fas fa-graduation-cap"></i> Explore All Courses
-            </a>
-            <a
-              href="learn.html"
-              class="btn btn-secondary btn-lg"
-              style="
-                background: rgba(2, 132, 199, 0.08);
-                border-color: rgba(2, 132, 199, 0.3);
-                color: var(--neon-cyan);
-                text-decoration: none;
+                font-size: 1.02rem;
+                background: #ffffff;
+                border: 1px solid var(--border-subtle);
+                color: var(--ink-primary);
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
                 display: inline-flex;
                 align-items: center;
                 gap: 8px;
-              "
-            >
-              <i class="fas fa-book-open"></i> 📚 AI Study & Practice Hub
-            </a>
-            <a
-              href="ai-lab.html"
-              class="btn btn-secondary btn-lg"
-              style="
-                background: rgba(124, 58, 237, 0.08);
-                border-color: rgba(124, 58, 237, 0.3);
-                color: #7c3aed;
                 text-decoration: none;
-                display: inline-flex;
-                align-items: center;
-                gap: 8px;
               "
             >
-              <i class="fas fa-flask"></i> 🧪 Try Nexus AI Lab
+              <i class="fas fa-graduation-cap" style="color: var(--secondary)"></i> Explore All Courses
             </a>
           </div>
 
           <!-- Merit Scholarship Callout Pill -->
           <div
+            class="exec-scholarship-pill"
+            onclick="FrontierTools.scholarship.openModal()"
+            title="Take the AI Aptitude Quiz"
             style="
               display: inline-flex;
               align-items: center;
               gap: 12px;
-              background: rgba(255, 215, 0, 0.08);
-              border: 1px solid rgba(255, 215, 0, 0.3);
-              border-radius: 999px;
-              padding: 8px 22px;
+              background: #ffffff;
+              border: 1px solid rgba(217, 119, 6, 0.35);
+              border-radius: 9999px;
+              padding: 6px 18px 6px 8px;
               cursor: pointer;
-              margin-bottom: 20px;
-              transition: transform 0.2s;
+              margin-bottom: 24px;
+              box-shadow: 0 2px 10px rgba(217, 119, 6, 0.08);
+              transition: all 0.2s ease;
             "
-            onclick="FrontierTools.scholarship.openModal()"
-            onmouseover="this.style.transform = 'translateY(-2px)'"
-            onmouseout="this.style.transform = 'translateY(0)'"
+            onmouseover="this.style.transform='translateY(-2px)'; this.style.borderColor='rgba(217, 119, 6, 0.6)';"
+            onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='rgba(217, 119, 6, 0.35)';"
           >
             <span
               style="
-                background: #ffd700;
-                color: #0f172a;
-                font-size: 0.75rem;
-                font-weight: 900;
-                padding: 3px 10px;
-                border-radius: 12px;
-                letter-spacing: 0.04em;
+                background: linear-gradient(135deg, #d97706, #f59e0b);
+                color: #ffffff;
+                font-size: 0.72rem;
+                font-weight: 800;
+                padding: 4px 10px;
+                border-radius: 9999px;
+                letter-spacing: 0.05em;
+                display: inline-flex;
+                align-items: center;
+                gap: 5px;
               "
-              >🎓 SCHOLARSHIP AID</span
+              ><i class="fas fa-graduation-cap"></i> SCHOLARSHIP AID</span
             >
-            <span style="font-size: 0.85rem; color: #f8fafc; font-weight: 600"
+            <span style="font-size: 0.85rem; color: var(--ink-secondary); font-weight: 600"
               >Take the 3-minute AI Aptitude Assessment &bull; Instant 20% to 35% Tuition Grants</span
             >
-            <i class="fas fa-arrow-right" style="color: #ffd700; font-size: 0.8rem"></i>
+            <i class="fas fa-arrow-right" style="color: #d97706; font-size: 0.8rem"></i>
           </div>
 
           <!-- Executive Alabaster Innovations Bar -->
@@ -879,214 +866,13 @@
         </div>
       </section>
 
-      <!-- Frontier LLM Benchmarks & Inference Cost Matrix -->
-      <section
-        class="section"
-        id="benchmarksSection"
-        style="
-          background: rgba(15, 23, 42, 0.6);
-          border-top: 1px solid rgba(255, 255, 255, 0.06);
-          border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-        "
-      >
-        <div class="container">
-          <div class="section-header">
-            <span
-              class="section-tag"
-              style="color: var(--neon-cyan); border-color: rgba(0, 240, 255, 0.3); background: rgba(0, 240, 255, 0.08)"
-            >
-              <i class="fas fa-microchip"></i> Frontier Intelligence Matrix
-            </span>
-            <h2 class="section-title">
-              2026 Model Benchmarks &amp; <span class="gradient-text">Inference Cost Estimator</span>
-            </h2>
-            <p class="section-desc">
-              Interactive live comparison across Claude 3.7 Sonnet, GPT-4o, DeepSeek R1, Gemini 2.5 Pro &amp; Llama 3.3.
-              Calculate production token budgets in real-time.
-            </p>
-          </div>
-
-          <div
-            class="bench-container"
-            style="background: rgba(13, 18, 30, 0.95); border: 1px solid rgba(255, 255, 255, 0.12); color: #f8fafc"
-          >
-            <!-- Presets -->
-            <div
-              style="
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                flex-wrap: wrap;
-                gap: 12px;
-                margin-bottom: 16px;
-              "
-            >
-              <div
-                style="
-                  font-size: 0.85rem;
-                  font-weight: 800;
-                  color: var(--neon-cyan);
-                  text-transform: uppercase;
-                  letter-spacing: 0.05em;
-                "
-              >
-                <i class="fas fa-sliders-h"></i> Production Workload Presets:
-              </div>
-              <div class="bench-presets-row" style="margin-bottom: 0">
-                <button
-                  class="bench-preset-btn active"
-                  id="btnPreset_support_bot"
-                  onclick="FrontierTools.benchmark.setPreset('support_bot')"
-                >
-                  🤖 Customer Support Agent
-                </button>
-                <button
-                  class="bench-preset-btn"
-                  id="btnPreset_rag_search"
-                  onclick="FrontierTools.benchmark.setPreset('rag_search')"
-                >
-                  🔍 Enterprise RAG Search
-                </button>
-                <button
-                  class="bench-preset-btn"
-                  id="btnPreset_copilot"
-                  onclick="FrontierTools.benchmark.setPreset('copilot')"
-                >
-                  💻 Coding Copilot
-                </button>
-                <button
-                  class="bench-preset-btn"
-                  id="btnPreset_swarm"
-                  onclick="FrontierTools.benchmark.setPreset('swarm')"
-                >
-                  ⚡ Autonomous Swarm
-                </button>
-              </div>
-            </div>
-
-            <!-- Interactive Sliders -->
-            <div
-              class="bench-slider-group"
-              style="background: rgba(255, 255, 255, 0.03); border-color: rgba(255, 255, 255, 0.08)"
-            >
-              <div class="bench-slider-item">
-                <div class="bench-slider-label" style="color: #cbd5e1">
-                  <span>Monthly API Requests</span>
-                  <span class="bench-slider-val" id="benchReqVal">50,000</span>
-                </div>
-                <input
-                  type="range"
-                  class="bench-range-input"
-                  id="benchReqSlider"
-                  min="5000"
-                  max="500000"
-                  step="5000"
-                  value="50000"
-                  oninput="FrontierTools.benchmark.recalculate()"
-                />
-              </div>
-
-              <div class="bench-slider-item">
-                <div class="bench-slider-label" style="color: #cbd5e1">
-                  <span>Avg Input Tokens / Req</span>
-                  <span class="bench-slider-val" id="benchInVal">800</span>
-                </div>
-                <input
-                  type="range"
-                  class="bench-range-input"
-                  id="benchInSlider"
-                  min="200"
-                  max="15000"
-                  step="100"
-                  value="800"
-                  oninput="FrontierTools.benchmark.recalculate()"
-                />
-              </div>
-
-              <div class="bench-slider-item">
-                <div class="bench-slider-label" style="color: #cbd5e1">
-                  <span>Avg Output Tokens / Req</span>
-                  <span class="bench-slider-val" id="benchOutVal">250</span>
-                </div>
-                <input
-                  type="range"
-                  class="bench-range-input"
-                  id="benchOutSlider"
-                  min="100"
-                  max="4000"
-                  step="50"
-                  value="250"
-                  oninput="FrontierTools.benchmark.recalculate()"
-                />
-              </div>
-
-              <div class="bench-slider-item">
-                <div class="bench-slider-label" style="color: #cbd5e1">
-                  <span>Prompt Caching Hit Ratio</span>
-                  <span class="bench-slider-val" id="benchCacheVal">50%</span>
-                </div>
-                <input
-                  type="range"
-                  class="bench-range-input"
-                  id="benchCacheSlider"
-                  min="0"
-                  max="90"
-                  step="5"
-                  value="50"
-                  oninput="FrontierTools.benchmark.recalculate()"
-                />
-              </div>
-            </div>
-
-            <!-- Benchmark & Cost Comparison Table -->
-            <div class="bench-table-wrap" style="border-color: rgba(255, 255, 255, 0.1)">
-              <table class="bench-table">
-                <thead>
-                  <tr>
-                    <th style="background: rgba(255, 255, 255, 0.06); color: #cbd5e1">Frontier AI Model</th>
-                    <th style="background: rgba(255, 255, 255, 0.06); color: #cbd5e1">Pricing per 1M Tokens</th>
-                    <th style="background: rgba(255, 255, 255, 0.06); color: #cbd5e1">Latency &amp; Context</th>
-                    <th style="background: rgba(255, 255, 255, 0.06); color: #cbd5e1">Reasoning Benchmarks</th>
-                    <th style="background: rgba(255, 255, 255, 0.06); color: #cbd5e1">Estimated Monthly Cost</th>
-                  </tr>
-                </thead>
-                <tbody id="benchTableBody">
-                  <!-- Dynamically calculated by FrontierTools.benchmark.recalculate() -->
-                </tbody>
-              </table>
-            </div>
-
-            <div
-              style="
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                flex-wrap: wrap;
-                gap: 10px;
-                margin-top: 16px;
-                font-size: 0.8rem;
-                color: #94a3b8;
-              "
-            >
-              <div>
-                <i class="fas fa-info-circle" style="color: var(--neon-cyan)"></i> Pricing updated with 2026 prompt
-                caching discounts. All models covered in NEXVION curricula.
-              </div>
-              <a href="learn.html" class="btn btn-secondary btn-sm" style="font-size: 0.8rem">
-                <i class="fas fa-arrow-right"></i> Open Full AI Model Arena &amp; Code Sandbox
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
-
       <!-- Automatic AI Certificate Showcase Section -->
-      <section class="section" id="certShowcaseSection">
+      <section class="section" id="certShowcaseSection" style="padding-top: 40px; padding-bottom: 70px;">
         <div class="container">
           <div class="section-header">
             <span
               class="section-tag"
-              style="color: #ffd700; border-color: rgba(255, 215, 0, 0.4); background: rgba(255, 215, 0, 0.1)"
+              style="color: var(--secondary); border-color: rgba(0, 81, 213, 0.25); background: rgba(0, 81, 213, 0.06); font-weight: 700;"
             >
               <i class="fas fa-award"></i> Verified AI Credentials
             </span>
@@ -1099,51 +885,52 @@
 
           <div
             class="glass-panel"
-            style="padding: 32px 24px; border-color: rgba(2, 132, 199, 0.3); box-shadow: var(--shadow-md)"
+            style="padding: 36px 32px; border: 1px solid var(--border-subtle); background: var(--surface-container-lowest); box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05); border-radius: 20px;"
           >
             <div class="cert-showcase-grid">
               <div>
                 <span
                   class="section-tag"
                   style="
-                    background: rgba(2, 132, 199, 0.08);
-                    border-color: rgba(2, 132, 199, 0.25);
-                    color: var(--neon-cyan);
-                    margin-bottom: 12px;
+                    background: rgba(0, 81, 213, 0.08);
+                    border-color: rgba(0, 81, 213, 0.25);
+                    color: var(--secondary);
+                    margin-bottom: 14px;
+                    font-weight: 700;
                   "
                 >
                   <i class="fas fa-fingerprint"></i> Cryptographically Verifiable
                 </span>
-                <h3 style="font-size: 1.8rem; font-weight: 800; color: #f8fafc; margin-bottom: 14px">
+                <h3 style="font-size: 1.85rem; font-weight: 800; color: var(--ink-primary); margin-bottom: 14px; letter-spacing: -0.02em;">
                   Instant Recognition for Your AI Expertise
                 </h3>
-                <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.7; margin-bottom: 20px">
+                <p style="color: var(--ink-secondary); font-size: 0.98rem; line-height: 1.7; margin-bottom: 22px">
                   Upon completing course milestones and submitting your graduation Capstone, our administration reviews
                   and authorizes your official Google-grade Certificate of Completion. Verified and issued exclusively
                   by NEXVION AI ACADEMY faculty.
                 </p>
 
-                <ul style="list-style: none; display: flex; flex-direction: column; gap: 12px; margin-bottom: 28px">
-                  <li style="display: flex; align-items: center; gap: 10px; font-size: 0.9rem; color: #cbd5e1">
-                    <i class="fas fa-check-circle" style="color: #1a73e8"></i> Unique Serial Hash & Dynamic QR Code
+                <ul style="list-style: none; display: flex; flex-direction: column; gap: 14px; margin-bottom: 30px; padding: 0;">
+                  <li style="display: flex; align-items: center; gap: 12px; font-size: 0.92rem; color: var(--ink-secondary); font-weight: 600;">
+                    <i class="fas fa-check-circle" style="color: #1a73e8; font-size: 1.05rem;"></i> Unique Serial Hash & Dynamic QR Code
                     verification
                   </li>
-                  <li style="display: flex; align-items: center; gap: 10px; font-size: 0.9rem; color: #cbd5e1">
-                    <i class="fas fa-check-circle" style="color: #ea4335"></i> Signed by Dean & Director of AI Research
+                  <li style="display: flex; align-items: center; gap: 12px; font-size: 0.92rem; color: var(--ink-secondary); font-weight: 600;">
+                    <i class="fas fa-check-circle" style="color: #ea4335; font-size: 1.05rem;"></i> Signed by Dean & Director of AI Research
                   </li>
-                  <li style="display: flex; align-items: center; gap: 10px; font-size: 0.9rem; color: #cbd5e1">
-                    <i class="fas fa-check-circle" style="color: #34a853"></i> High-Res PDF Diploma & LinkedIn
+                  <li style="display: flex; align-items: center; gap: 12px; font-size: 0.92rem; color: var(--ink-secondary); font-weight: 600;">
+                    <i class="fas fa-check-circle" style="color: #34a853; font-size: 1.05rem;"></i> High-Res PDF Diploma & LinkedIn
                     credential authorization
                   </li>
                 </ul>
 
                 <div style="display: flex; gap: 14px; flex-wrap: wrap">
-                  <button class="btn btn-primary" data-route="register">
+                  <button class="btn btn-primary" data-route="register" onclick="App.showView('register')" style="border-radius: 9999px; padding: 12px 24px; font-weight: 700;">
                     <i class="fas fa-rocket"></i> Enroll & Earn Accredited Certificate
                   </button>
-                  <button class="btn btn-secondary" data-route="courses">
-                    <i class="fas fa-cubes"></i> Explore Syllabus Tracks
-                  </button>
+                  <a href="courses.html" class="btn btn-secondary" style="border-radius: 9999px; padding: 12px 24px; font-weight: 700; background: #ffffff; border: 1px solid var(--border-subtle); color: var(--ink-primary); text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-cubes" style="color: var(--secondary)"></i> Explore Syllabus Tracks
+                  </a>
                 </div>
               </div>
 
@@ -2701,19 +2488,15 @@
             <h4>Course Tracks</h4>
             <ul>
               <li>
-                <a href="#courses" data-route="courses" onclick="App.filterCourses('Beginner')">1C: AI for Beginners</a>
+                <a href="courses.html?filter=Beginner">1C: AI for Beginners</a>
               </li>
               <li>
-                <a href="#courses" data-route="courses" onclick="App.filterCourses('Intermediate')"
-                  >Applied Machine Learning</a
-                >
+                <a href="courses.html?filter=Intermediate">Applied Machine Learning</a>
               </li>
               <li>
-                <a href="#courses" data-route="courses" onclick="App.filterCourses('Advanced')"
-                  >Generative AI & Agents</a
-                >
+                <a href="courses.html?filter=Advanced">Generative AI &amp; Agents</a>
               </li>
-              <li><a href="#courses" data-route="courses">Full-Stack AI Engineering</a></li>
+              <li><a href="courses.html">Full-Stack AI Engineering</a></li>
             </ul>
           </div>
 
@@ -2721,8 +2504,9 @@
             <h4>Portals</h4>
             <ul>
               <li><a href="#register" data-route="register">Student Registration</a></li>
-              <li><a href="#student-hub" data-route="student-hub">Student Learning Hub</a></li>
-              <li><a href="#courses" data-route="courses">Curriculum & Syllabi</a></li>
+              <li><a href="learn.html">AI Study Hub &amp; Playgrounds</a></li>
+              <li><a href="ai-lab.html">Nexus AI Sandbox Lab</a></li>
+              <li><a href="courses.html">Curriculum &amp; Syllabi</a></li>
               <li><a href="#auth" data-route="auth">Member Login</a></li>
               <li>
                 <a href="executive-alabaster.html" style="font-weight: 700; color: var(--obsidian)"
@@ -3471,6 +3255,7 @@
     <script src="js/welcome-ai.js?v=7.0"></script>
     <script src="js/app.js"></script>
     <script src="js/executive-innovations.js"></script>
-    <script src="js/nexus-flagship-suite.js?v=8.0"></script>
+    <script src="js/executive-navbar.js"></script>
+    <script src="js/nexus-flagship-suite.js?v=8.2"></script>
   </body>
 </html>
