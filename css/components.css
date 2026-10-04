@@ -4886,35 +4886,46 @@ select option {
 
 /* Quick Question Chips */
 .ai-chat-chips {
-  padding: 8px 14px;
+  padding: 10px 14px;
   display: flex;
   gap: 8px;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   border-top: 1px solid rgba(255, 255, 255, 0.06);
   background: rgba(7, 10, 18, 0.85);
   scrollbar-width: none;
+  -ms-overflow-style: none;
+  align-items: center;
+  flex-wrap: nowrap;
 }
 .ai-chat-chips::-webkit-scrollbar {
   display: none;
 }
 
 .ai-chip-btn {
-  padding: 6px 12px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: #94a3b8;
-  font-size: 0.75rem;
-  font-weight: 600;
-  white-space: nowrap;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  flex-shrink: 0 !important;
+  min-width: max-content !important;
+  white-space: nowrap !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 7px 13px !important;
+  border-radius: 999px !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  color: #cbd5e1 !important;
+  font-size: 0.78rem !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2) !important;
 }
 
 .ai-chip-btn:hover {
-  background: rgba(0, 240, 255, 0.12);
-  border-color: var(--neon-cyan);
-  color: #ffffff;
+  background: rgba(0, 240, 255, 0.15) !important;
+  border-color: var(--neon-cyan) !important;
+  color: #ffffff !important;
+  transform: translateY(-1px) !important;
 }
 
 /* Input Bar */
