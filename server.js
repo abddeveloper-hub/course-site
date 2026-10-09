@@ -109,6 +109,137 @@ const DEFAULT_SEED_CERTIFICATES = [
 ];
 DEFAULT_SEED_CERTIFICATES.forEach(c => CERTIFICATES_REGISTRY.set(c.id, JSON.parse(JSON.stringify(c))));
 
+const SUPPORT_TICKETS_REGISTRY = new Map();
+const DEFAULT_SEED_SUPPORT_TICKETS = [
+  {
+    id: 'tic-901',
+    ticketRef: 'SUP-2026-0312',
+    studentId: 'stu-103',
+    studentName: 'Julian Mercer',
+    studentEmail: 'julian.m@matrix-sys.io',
+    subject: 'Inquiry regarding Waitlist Queue Position for Creator Cohort Delta',
+    category: 'Enrollment',
+    priority: 'High',
+    status: 'Open',
+    assignedAdmin: 'Sarah Al-Mansoor',
+    createdAt: '2026-10-08T09:15:00Z',
+    lastUpdated: '2026-10-08T14:30:00Z',
+    messages: [
+      {
+        id: 'msg-901-1',
+        sender: 'Julian Mercer',
+        senderEmail: 'julian.m@matrix-sys.io',
+        isStaff: false,
+        timestamp: '2026-10-08T09:15:00Z',
+        text: 'Hi NEXVION Support team, I submitted enrollment for Creator Cohort Delta and noticed it says waitlisted. Could you clarify when the next batch slot opens up?'
+      },
+      {
+        id: 'msg-901-2',
+        sender: 'Sarah Al-Mansoor (Student Manager)',
+        senderEmail: 'sarah.m@nexvion.ai',
+        isStaff: true,
+        timestamp: '2026-10-08T14:30:00Z',
+        text: 'Hello Julian! The Creator Cohort Delta has reached its maximum strict capacity of 30 students. You are currently in waitlist spot #1. If any registered participant defers, your seat will activate immediately.'
+      }
+    ],
+    internalNotes: [
+      {
+        id: 'not-901-1',
+        text: 'Top candidate for next batch if capacity expands or cancellation occurs.',
+        author: 'Sarah Al-Mansoor',
+        createdAt: '2026-10-08T14:35:00Z'
+      }
+    ],
+    attachments: [],
+    resolutionDetails: null
+  },
+  {
+    id: 'tic-902',
+    ticketRef: 'SUP-2026-0313',
+    studentId: 'stu-105',
+    studentName: 'Soraya Chen',
+    studentEmail: 's.chen@quantum-ai.dev',
+    subject: 'Corporate Purchase Order Processing Status',
+    category: 'Payment',
+    priority: 'Normal',
+    status: 'In progress',
+    assignedAdmin: 'Elena Finance Team',
+    createdAt: '2026-10-08T11:00:00Z',
+    lastUpdated: '2026-10-08T15:20:00Z',
+    messages: [
+      {
+        id: 'msg-902-1',
+        sender: 'Soraya Chen',
+        senderEmail: 's.chen@quantum-ai.dev',
+        isStaff: false,
+        timestamp: '2026-10-08T11:00:00Z',
+        text: 'Please confirm receipt of our company sponsorship authorization documents.'
+      }
+    ],
+    internalNotes: [
+      {
+        id: 'not-902-1',
+        text: 'Awaiting verification from finance accounts team.',
+        author: 'Elena Finance Team',
+        createdAt: '2026-10-08T15:20:00Z'
+      }
+    ],
+    attachments: [
+      {
+        id: 'att-902-1',
+        fileName: 'corporate_po_auth.pdf',
+        fileUrl: 'https://storage.nexvion.ai/support/tic-902/corporate_po_auth.pdf',
+        fileSize: 245800,
+        uploadedAt: '2026-10-08T11:00:00Z'
+      }
+    ],
+    resolutionDetails: null
+  },
+  {
+    id: 'tic-903',
+    ticketRef: 'SUP-2026-0314',
+    studentId: 'stu-101',
+    studentName: 'Zackary Thorne',
+    studentEmail: 'z.thorne@synthetic.nexus',
+    subject: 'Video Player Buffering on Class 03 Stream',
+    category: 'Technical issue',
+    priority: 'Low',
+    status: 'Waiting for student',
+    assignedAdmin: 'DevOps Support',
+    createdAt: '2026-10-07T18:40:00Z',
+    lastUpdated: '2026-10-08T10:12:00Z',
+    messages: [
+      {
+        id: 'msg-903-1',
+        sender: 'Zackary Thorne',
+        senderEmail: 'z.thorne@synthetic.nexus',
+        isStaff: false,
+        timestamp: '2026-10-07T18:40:00Z',
+        text: 'The 4K stream on Class 03 had slight frame drops on Chrome.'
+      },
+      {
+        id: 'msg-903-2',
+        sender: 'DevOps Support',
+        senderEmail: 'devops@nexvion.ai',
+        isStaff: true,
+        timestamp: '2026-10-08T10:12:00Z',
+        text: 'We refreshed the HLS CDN manifest. Please let us know if adaptive 1080p fallback works smoothly on your end.'
+      }
+    ],
+    internalNotes: [
+      {
+        id: 'not-903-1',
+        text: 'CDN cache purged for Class 03.',
+        author: 'DevOps Support',
+        createdAt: '2026-10-08T10:15:00Z'
+      }
+    ],
+    attachments: [],
+    resolutionDetails: null
+  }
+];
+DEFAULT_SEED_SUPPORT_TICKETS.forEach(t => SUPPORT_TICKETS_REGISTRY.set(t.id, JSON.parse(JSON.stringify(t))));
+
 function sendJson(res, statusCode, data) {
   res.writeHead(statusCode, {
     'Content-Type': 'application/json; charset=utf-8',
@@ -1138,6 +1269,431 @@ const server = http.createServer((req, res) => {
       grade: cert.grade,
       issuingOrganization: cert.issuingOrganization || 'NEXVION AI Academy',
       verificationUrl: cert.verificationUrl || `/verify-certificate/${cert.verificationId}`
+    });
+  }
+
+  // =========================================================================
+  // Phase 16 Support Desk Operations Endpoints
+  // =========================================================================
+  if (pathname === '/api/support/tickets' && req.method === 'GET') {
+    const adminRole = req.headers['x-admin-role'] || 'None';
+    const reqStudentId = req.headers['x-student-id'] || parsedUrl.query.studentId;
+    const isStaff = ['Owner', 'Super Admin', 'Student Manager', 'Content Manager', 'Academic Director', 'Analyst'].includes(adminRole);
+
+    let list = Array.from(SUPPORT_TICKETS_REGISTRY.values()).map(t => JSON.parse(JSON.stringify(t)));
+
+    if (!isStaff && reqStudentId) {
+      list = list.filter(t => t.studentId === reqStudentId || t.studentEmail === reqStudentId);
+    } else if (!isStaff && !reqStudentId) {
+      return sendJson(res, 403, { error: 'Access denied: Must be staff or specify student identifier.' });
+    }
+
+    if (parsedUrl.query.category && parsedUrl.query.category !== 'ALL') {
+      list = list.filter(t => (t.category || '').toLowerCase() === parsedUrl.query.category.toLowerCase());
+    }
+    if (parsedUrl.query.status && parsedUrl.query.status !== 'ALL') {
+      list = list.filter(t => (t.status || '').toLowerCase() === parsedUrl.query.status.toLowerCase());
+    }
+    if (parsedUrl.query.priority && parsedUrl.query.priority !== 'ALL') {
+      const pF = parsedUrl.query.priority.toLowerCase() === 'medium' ? 'normal' : parsedUrl.query.priority.toLowerCase();
+      list = list.filter(t => (t.priority || '').toLowerCase() === pF);
+    }
+    if (parsedUrl.query.assignedAdmin && parsedUrl.query.assignedAdmin !== 'ALL') {
+      list = list.filter(t => (t.assignedAdmin || '').toLowerCase().includes(parsedUrl.query.assignedAdmin.toLowerCase()));
+    }
+    if (parsedUrl.query.search) {
+      const q = parsedUrl.query.search.toLowerCase();
+      list = list.filter(t =>
+        (t.subject && t.subject.toLowerCase().includes(q)) ||
+        (t.ticketRef && t.ticketRef.toLowerCase().includes(q)) ||
+        (t.studentName && t.studentName.toLowerCase().includes(q))
+      );
+    }
+
+    // Never leak internal notes to student callers
+    if (!isStaff) {
+      list = list.map(t => {
+        delete t.internalNotes;
+        return t;
+      });
+    }
+
+    return sendJson(res, 200, { tickets: list, count: list.length });
+  }
+
+  if (pathname.startsWith('/api/support/tickets/') && req.method === 'GET') {
+    const ticketId = pathname.replace(/^\/api\/support\/tickets\//, '').trim();
+    const adminRole = req.headers['x-admin-role'] || 'None';
+    const reqStudentId = req.headers['x-student-id'] || parsedUrl.query.studentId;
+    const isStaff = ['Owner', 'Super Admin', 'Student Manager', 'Content Manager', 'Academic Director', 'Analyst'].includes(adminRole);
+
+    const t = SUPPORT_TICKETS_REGISTRY.get(ticketId) || Array.from(SUPPORT_TICKETS_REGISTRY.values()).find(x => x.ticketRef === ticketId);
+    if (!t) {
+      return sendJson(res, 404, { error: 'Support ticket not found.' });
+    }
+
+    if (!isStaff && reqStudentId && t.studentId !== reqStudentId && t.studentEmail !== reqStudentId) {
+      return sendJson(res, 403, { error: 'Access denied: Cannot access other students\' tickets.' });
+    }
+
+    const copy = JSON.parse(JSON.stringify(t));
+    if (!isStaff) {
+      delete copy.internalNotes;
+    }
+    return sendJson(res, 200, { ticket: copy });
+  }
+
+  if (pathname === '/api/support/tickets' && req.method === 'POST') {
+    parseJsonBody(req).then(body => {
+      const { subject, category, priority, studentId, studentName, studentEmail, message, attachments } = body;
+      if (!subject) {
+        return sendJson(res, 400, { error: 'Ticket subject is required.' });
+      }
+
+      const nowIso = new Date().toISOString();
+      const seq = Math.floor(1000 + Math.random() * 9000);
+      const ticketRef = `SUP-2026-${seq}`;
+      const id = `tic-${Date.now().toString().slice(-4)}`;
+
+      const messages = [];
+      if (message) {
+        messages.push({
+          id: `msg-${Date.now()}-1`,
+          sender: studentName || 'Student',
+          senderEmail: studentEmail || '',
+          isStaff: false,
+          timestamp: nowIso,
+          text: message
+        });
+      }
+
+      const ticket = {
+        id,
+        ticketRef,
+        studentId: studentId || null,
+        studentName: studentName || 'Student',
+        studentEmail: studentEmail || '',
+        subject,
+        category: category || 'General question',
+        priority: priority === 'Medium' ? 'Normal' : (priority || 'Normal'),
+        status: 'Open',
+        assignedAdmin: 'Unassigned',
+        createdAt: nowIso,
+        lastUpdated: nowIso,
+        createdDate: nowIso.split('T')[0],
+        updatedDate: nowIso.split('T')[0],
+        messages,
+        internalNotes: [],
+        attachments: Array.isArray(attachments) ? attachments : [],
+        resolutionDetails: null
+      };
+
+      SUPPORT_TICKETS_REGISTRY.set(ticket.id, ticket);
+      return sendJson(res, 201, { success: true, ticket });
+    }).catch(err => {
+      sendJson(res, 400, { error: err.message });
+    });
+    return;
+  }
+
+  if (pathname === '/api/support/tickets/assign' && req.method === 'POST') {
+    parseJsonBody(req).then(body => {
+      const adminRole = req.headers['x-admin-role'] || 'None';
+      if (!['Owner', 'Super Admin', 'Student Manager'].includes(adminRole)) {
+        return sendJson(res, 403, { error: 'Forbidden: Insufficient privileges to assign tickets.' });
+      }
+      const { ticketId, adminName } = body;
+      const t = SUPPORT_TICKETS_REGISTRY.get(ticketId) || Array.from(SUPPORT_TICKETS_REGISTRY.values()).find(x => x.ticketRef === ticketId);
+      if (!t) return sendJson(res, 404, { error: 'Ticket not found.' });
+
+      t.assignedAdmin = adminName || adminRole;
+      if (t.status === 'Open') t.status = 'In progress';
+      t.lastUpdated = new Date().toISOString();
+      t.updatedDate = t.lastUpdated.split('T')[0];
+
+      return sendJson(res, 200, { success: true, ticket: t });
+    }).catch(err => {
+      sendJson(res, 400, { error: err.message });
+    });
+    return;
+  }
+
+  if (pathname === '/api/support/tickets/reply' && req.method === 'POST') {
+    parseJsonBody(req).then(body => {
+      const { ticketId, text, sender, isStaff } = body;
+      if (!text || !text.trim()) return sendJson(res, 400, { error: 'Message text is required.' });
+      const t = SUPPORT_TICKETS_REGISTRY.get(ticketId) || Array.from(SUPPORT_TICKETS_REGISTRY.values()).find(x => x.ticketRef === ticketId);
+      if (!t) return sendJson(res, 404, { error: 'Ticket not found.' });
+
+      const nowIso = new Date().toISOString();
+      t.messages = t.messages || [];
+      t.messages.push({
+        id: `msg-${Date.now()}`,
+        sender: sender || (isStaff ? 'Support Desk' : t.studentName),
+        isStaff: !!isStaff,
+        timestamp: nowIso,
+        text: text.trim()
+      });
+
+      if (isStaff && (t.status === 'Open' || t.status === 'In progress')) {
+        t.status = 'Waiting for student';
+      } else if (!isStaff && t.status === 'Waiting for student') {
+        t.status = 'In progress';
+      }
+      t.lastUpdated = nowIso;
+      t.updatedDate = nowIso.split('T')[0];
+
+      return sendJson(res, 200, { success: true, ticket: t });
+    }).catch(err => {
+      sendJson(res, 400, { error: err.message });
+    });
+    return;
+  }
+
+  if (pathname === '/api/support/tickets/note' && req.method === 'POST') {
+    parseJsonBody(req).then(body => {
+      const adminRole = req.headers['x-admin-role'] || 'None';
+      if (!['Owner', 'Super Admin', 'Student Manager', 'Content Manager', 'Academic Director'].includes(adminRole)) {
+        return sendJson(res, 403, { error: 'Forbidden: Students cannot add internal staff notes.' });
+      }
+      const { ticketId, text, author } = body;
+      if (!text || !text.trim()) return sendJson(res, 400, { error: 'Note text is required.' });
+      const t = SUPPORT_TICKETS_REGISTRY.get(ticketId) || Array.from(SUPPORT_TICKETS_REGISTRY.values()).find(x => x.ticketRef === ticketId);
+      if (!t) return sendJson(res, 404, { error: 'Ticket not found.' });
+
+      const nowIso = new Date().toISOString();
+      t.internalNotes = t.internalNotes || [];
+      t.internalNotes.push({
+        id: `not-${Date.now()}`,
+        text: text.trim(),
+        author: author || adminRole,
+        createdAt: nowIso
+      });
+      t.lastUpdated = nowIso;
+      t.updatedDate = nowIso.split('T')[0];
+
+      return sendJson(res, 200, { success: true, ticket: t });
+    }).catch(err => {
+      sendJson(res, 400, { error: err.message });
+    });
+    return;
+  }
+
+  if (pathname === '/api/support/tickets/priority' && req.method === 'POST') {
+    parseJsonBody(req).then(body => {
+      const adminRole = req.headers['x-admin-role'] || 'None';
+      if (!['Owner', 'Super Admin', 'Student Manager'].includes(adminRole)) {
+        return sendJson(res, 403, { error: 'Forbidden: Insufficient privileges.' });
+      }
+      const { ticketId, priority } = body;
+      const valid = ['Low', 'Normal', 'High', 'Urgent'];
+      const normP = priority === 'Medium' ? 'Normal' : priority;
+      if (!valid.includes(normP)) return sendJson(res, 400, { error: 'Invalid priority.' });
+
+      const t = SUPPORT_TICKETS_REGISTRY.get(ticketId) || Array.from(SUPPORT_TICKETS_REGISTRY.values()).find(x => x.ticketRef === ticketId);
+      if (!t) return sendJson(res, 404, { error: 'Ticket not found.' });
+
+      t.priority = normP;
+      t.lastUpdated = new Date().toISOString();
+      t.updatedDate = t.lastUpdated.split('T')[0];
+
+      return sendJson(res, 200, { success: true, ticket: t });
+    }).catch(err => {
+      sendJson(res, 400, { error: err.message });
+    });
+    return;
+  }
+
+  if (pathname === '/api/support/tickets/status' && req.method === 'POST') {
+    parseJsonBody(req).then(body => {
+      const adminRole = req.headers['x-admin-role'] || 'None';
+      if (!['Owner', 'Super Admin', 'Student Manager'].includes(adminRole)) {
+        return sendJson(res, 403, { error: 'Forbidden: Insufficient privileges.' });
+      }
+      const { ticketId, status } = body;
+      const valid = ['Open', 'In progress', 'Waiting for student', 'Resolved', 'Closed'];
+      if (!valid.includes(status)) return sendJson(res, 400, { error: 'Invalid status.' });
+
+      const t = SUPPORT_TICKETS_REGISTRY.get(ticketId) || Array.from(SUPPORT_TICKETS_REGISTRY.values()).find(x => x.ticketRef === ticketId);
+      if (!t) return sendJson(res, 404, { error: 'Ticket not found.' });
+
+      t.status = status;
+      t.lastUpdated = new Date().toISOString();
+      t.updatedDate = t.lastUpdated.split('T')[0];
+
+      return sendJson(res, 200, { success: true, ticket: t });
+    }).catch(err => {
+      sendJson(res, 400, { error: err.message });
+    });
+    return;
+  }
+
+  if (pathname === '/api/support/tickets/resolve' && req.method === 'POST') {
+    parseJsonBody(req).then(body => {
+      const adminRole = req.headers['x-admin-role'] || 'None';
+      if (!['Owner', 'Super Admin', 'Student Manager'].includes(adminRole)) {
+        return sendJson(res, 403, { error: 'Forbidden: Insufficient privileges.' });
+      }
+      const { ticketId, resolutionNotes, resolver } = body;
+      const t = SUPPORT_TICKETS_REGISTRY.get(ticketId) || Array.from(SUPPORT_TICKETS_REGISTRY.values()).find(x => x.ticketRef === ticketId);
+      if (!t) return sendJson(res, 404, { error: 'Ticket not found.' });
+
+      const nowIso = new Date().toISOString();
+      t.status = 'Resolved';
+      t.resolutionDetails = {
+        resolvedAt: nowIso,
+        resolvedBy: resolver || adminRole,
+        resolutionNotes: resolutionNotes || 'Resolved'
+      };
+      t.lastUpdated = nowIso;
+      t.updatedDate = nowIso.split('T')[0];
+
+      return sendJson(res, 200, { success: true, ticket: t });
+    }).catch(err => {
+      sendJson(res, 400, { error: err.message });
+    });
+    return;
+  }
+
+  if (pathname === '/api/support/tickets/reopen' && req.method === 'POST') {
+    parseJsonBody(req).then(body => {
+      const { ticketId, reason, user } = body;
+      const t = SUPPORT_TICKETS_REGISTRY.get(ticketId) || Array.from(SUPPORT_TICKETS_REGISTRY.values()).find(x => x.ticketRef === ticketId);
+      if (!t) return sendJson(res, 404, { error: 'Ticket not found.' });
+
+      const nowIso = new Date().toISOString();
+      t.status = 'In progress';
+      t.messages = t.messages || [];
+      t.messages.push({
+        id: `msg-${Date.now()}`,
+        sender: 'System Notice',
+        isStaff: true,
+        timestamp: nowIso,
+        text: `Ticket reopened: ${reason || 'Investigation resumed'}`
+      });
+      t.lastUpdated = nowIso;
+      t.updatedDate = nowIso.split('T')[0];
+
+      return sendJson(res, 200, { success: true, ticket: t });
+    }).catch(err => {
+      sendJson(res, 400, { error: err.message });
+    });
+    return;
+  }
+
+  if (pathname === '/api/support/tickets/close' && req.method === 'POST') {
+    parseJsonBody(req).then(body => {
+      const adminRole = req.headers['x-admin-role'] || 'None';
+      if (!['Owner', 'Super Admin', 'Student Manager'].includes(adminRole)) {
+        return sendJson(res, 403, { error: 'Forbidden: Insufficient privileges.' });
+      }
+      const { ticketId } = body;
+      const t = SUPPORT_TICKETS_REGISTRY.get(ticketId) || Array.from(SUPPORT_TICKETS_REGISTRY.values()).find(x => x.ticketRef === ticketId);
+      if (!t) return sendJson(res, 404, { error: 'Ticket not found.' });
+
+      t.status = 'Closed';
+      t.lastUpdated = new Date().toISOString();
+      t.updatedDate = t.lastUpdated.split('T')[0];
+
+      return sendJson(res, 200, { success: true, ticket: t });
+    }).catch(err => {
+      sendJson(res, 400, { error: err.message });
+    });
+    return;
+  }
+
+  // =========================================================================
+  // Phase 16 Analytics Aggregations Endpoint
+  // =========================================================================
+  if (pathname === '/api/analytics' && req.method === 'GET') {
+    const adminRole = req.headers['x-admin-role'] || 'Analyst';
+    const canAccessFinancials = ['Owner', 'Super Admin', 'Finance Manager'].includes(adminRole);
+
+    const ticketsList = Array.from(SUPPORT_TICKETS_REGISTRY.values());
+    const certsList = Array.from(CERTIFICATES_REGISTRY.values());
+
+    const overview = {
+      totalStudents: 1248,
+      activeStudents: 934,
+      pendingEnrollments: 18,
+      completedEnrollments: 210,
+      activeCourses: 4,
+      openBatches: 7,
+      waitlistedStudents: 42,
+      completionRatePercent: 87.4,
+      avgCourseSatisfaction: 4.92,
+      supportVolume: ticketsList.length
+    };
+
+    const coursePopularity = [
+      { courseId: 'course-ai-foundations', courseTitle: 'AI Foundations: Zero to AI Native', enrollmentsCount: 420, popularityScore: 92 },
+      { courseId: 'course-ai-builder', courseTitle: 'AI Builder: Intelligent Application Engineering', enrollmentsCount: 384, popularityScore: 88 },
+      { courseId: 'course-ai-creator', courseTitle: 'AI Creator: Multimodal Generative Systems', enrollmentsCount: 290, popularityScore: 76 },
+      { courseId: 'course-ai-architect', courseTitle: 'AI Architect: Enterprise AI Systems', enrollmentsCount: 154, popularityScore: 65 }
+    ];
+
+    const tierDistribution = [
+      { tier: 'AI Foundations (Free)', count: 420, percent: 33.6, color: '#7F52FF' },
+      { tier: 'AI Builder (Paid)', count: 384, percent: 30.8, color: '#C757BC' },
+      { tier: 'AI Creator (Paid)', count: 290, percent: 23.2, color: '#00D2B4' },
+      { tier: 'AI Architect (Premium)', count: 154, percent: 12.4, color: '#F59E0B' }
+    ];
+
+    const batchCapacityUtilization = [
+      { batch: 'Foundations Alpha', filled: 18, capacity: 30, percent: 60, status: 'OPEN' },
+      { batch: 'Foundations Beta', filled: 30, capacity: 30, percent: 100, status: 'FULL' },
+      { batch: 'Builder Prime', filled: 26, capacity: 30, percent: 86.6, status: 'OPEN' },
+      { batch: 'Builder Apex', filled: 30, capacity: 30, percent: 100, status: 'FULL' },
+      { batch: 'Creator Delta', filled: 30, capacity: 30, percent: 100, status: 'FULL' },
+      { batch: 'Creator Omega', filled: 12, capacity: 30, percent: 40, status: 'OPEN' },
+      { batch: 'Architect Sovereign', filled: 28, capacity: 30, percent: 93.3, status: 'OPEN' }
+    ];
+
+    const supportVolume = {
+      totalTickets: ticketsList.length,
+      open: ticketsList.filter(t => t.status === 'Open').length,
+      inProgress: ticketsList.filter(t => t.status === 'In progress').length,
+      waitingForStudent: ticketsList.filter(t => t.status === 'Waiting for student').length,
+      resolved: ticketsList.filter(t => t.status === 'Resolved').length,
+      closed: ticketsList.filter(t => t.status === 'Closed').length,
+      byCategory: {
+        enrollment: ticketsList.filter(t => (t.category || '').toLowerCase() === 'enrollment').length,
+        courseAccess: ticketsList.filter(t => (t.category || '').toLowerCase() === 'course access').length,
+        payment: ticketsList.filter(t => (t.category || '').toLowerCase() === 'payment').length,
+        technicalIssue: ticketsList.filter(t => (t.category || '').toLowerCase() === 'technical issue').length,
+        certificate: ticketsList.filter(t => (t.category || '').toLowerCase() === 'certificate').length,
+        generalQuestion: ticketsList.filter(t => (t.category || '').toLowerCase() === 'general question').length
+      }
+    };
+
+    const paymentSummary = canAccessFinancials ? {
+      restricted: false,
+      totalRevenue: 28450,
+      currency: 'USD',
+      totalTransactions: 12,
+      paidCount: 8,
+      pendingCount: 2,
+      refundedCount: 1
+    } : {
+      restricted: true,
+      message: 'Financial ledger restricted. Requires Finance Manager role.',
+      currency: 'USD'
+    };
+
+    return sendJson(res, 200, {
+      overview,
+      coursePopularity,
+      tierDistribution,
+      batchCapacityUtilization,
+      supportVolume,
+      certificateEligibility: {
+        totalRecords: certsList.length,
+        issued: certsList.filter(c => c.status === 'Issued').length,
+        revoked: certsList.filter(c => c.status === 'Revoked').length,
+        pendingApproval: certsList.filter(c => c.status === 'Pending approval').length
+      },
+      paymentSummary,
+      generatedAt: new Date().toISOString()
     });
   }
 

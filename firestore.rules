@@ -302,12 +302,12 @@ service cloud.firestore {
     }
 
     // -----------------------------------------------------------------------
-    // Support Tickets
+    // Support Tickets (Phase 16: Backend Support Operations)
     // -----------------------------------------------------------------------
     match /supportTickets/{ticketId} {
       allow read: if isStudentManager() || (isAuthenticated() && resource.data.studentId == request.auth.uid);
-      allow create: if true;
-      allow update: if isStudentManager();
+      allow create: if isAuthenticated() || isStudentManager();
+      allow update: if isStudentManager() || (isAuthenticated() && resource.data.studentId == request.auth.uid);
       allow delete: if false;
 
       match /replies/{replyId} {
@@ -315,6 +315,19 @@ service cloud.firestore {
         allow create: if isAuthenticated() || isStudentManager();
         allow update, delete: if false;
       }
+
+      match /internalNotes/{noteId} {
+        allow read, write: if isStudentManager();
+      }
+    }
+
+    // -----------------------------------------------------------------------
+    // Analytics (Phase 16: Operations & Educational Telemetry)
+    // -----------------------------------------------------------------------
+    match /analytics/{docId} {
+      allow read: if isAnalyst();
+      allow create, update: if isSuperAdmin();
+      allow delete: if false;
     }
 
   }

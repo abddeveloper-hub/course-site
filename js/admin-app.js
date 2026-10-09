@@ -7697,6 +7697,10 @@
       if (certId) setTimeout(() => NexvionAdminApp.openCertificateDetail(certId), 50);
     } else if (path === '/admin/support') {
       await renderSupportView();
+    } else if (path.startsWith('/admin/support/')) {
+      const ticketId = path.split('/admin/support/')[1];
+      await renderSupportView();
+      if (ticketId) setTimeout(() => NexvionAdminApp.openTicketDrawer(ticketId), 50);
     } else if (path === '/admin/analytics') {
       await renderAnalyticsView();
     } else if (path === '/admin/admins') {
@@ -12707,29 +12711,84 @@
 
     // --- Support Ticket Drawer ---
     openTicketDrawer: async (ticketId) => {
-      const ticket = (await Data.getSupportTickets()).find(t => t.id === ticketId);
+      const ticket = await Data.getSupportTicketById(ticketId, null, true);
       if (!ticket) return;
 
       const bodyHtml = `
         <div style="margin-bottom:14px;">
-          <span class="adm-badge adm-badge-waitlist">${ticket.status}</span>
-          <h3 style="margin:6px 0; color:var(--adm-text-primary);">${ticket.subject}</h3>
-          <span style="font-size:0.75rem; color:var(--adm-text-muted);">${ticket.studentName} (${ticket.studentEmail})</span>
-        </div>
-        <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:20px;">
-          ${ticket.messages.map(m => `
-            <div style="background:var(--adm-surface-elevated); padding:10px 14px; border-radius:8px; border:1px solid var(--adm-border);">
-              <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:var(--adm-tertiary); margin-bottom:4px;">
-                <strong>${m.sender}</strong>
-                <span>${new Date(m.timestamp).toLocaleTimeString()}</span>
-              </div>
-              <p style="margin:0; font-size:0.82rem; color:var(--adm-text-primary); line-height:1.4;">${m.text}</p>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <div style="display:flex; gap:6px;">
+              <span class="adm-badge ${ticket.status === 'Open' ? 'adm-badge-waitlist' : ticket.status === 'Resolved' ? 'adm-badge-approved' : ticket.status === 'Closed' ? 'adm-badge-archived' : 'adm-badge-published'}">${escapeHtml(ticket.status)}</span>
+              <span class="adm-badge ${ticket.priority === 'High' || ticket.priority === 'Urgent' ? 'adm-badge-full' : 'adm-badge-open'}">${escapeHtml(ticket.priority)} Priority</span>
             </div>
-          `).join('')}
+            <span style="font-size:0.75rem; color:var(--adm-text-muted); font-family:var(--adm-font-mono);">${escapeHtml(ticket.category)}</span>
+          </div>
+          <h3 style="margin:6px 0; color:var(--adm-text-primary); font-size:1.1rem;">${escapeHtml(ticket.subject)}</h3>
+          <div style="font-size:0.8rem; color:var(--adm-text-muted);">
+            Student: <strong style="color:var(--adm-text-secondary);">${escapeHtml(ticket.studentName)}</strong> (${escapeHtml(ticket.studentEmail || '')})
+          </div>
+          <div style="font-size:0.8rem; color:var(--adm-text-muted); margin-top:2px;">
+            Assigned: <strong style="color:var(--adm-primary);">${escapeHtml(ticket.assignedAdmin || 'Unassigned')}</strong>
+          </div>
         </div>
+
+        <!-- Quick Lifecycle Controls -->
+        <div style="display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; padding:10px; background:var(--adm-surface-elevated); border-radius:8px; border:1px solid var(--adm-border);">
+          <button class="adm-btn adm-btn-sm adm-btn-secondary" onclick="NexvionAdminApp.promptAssignTicket('${ticket.id}')">Reassign</button>
+          <button class="adm-btn adm-btn-sm adm-btn-secondary" onclick="NexvionAdminApp.promptChangeTicketPriority('${ticket.id}')">Priority</button>
+          ${ticket.status !== 'Resolved' && ticket.status !== 'Closed' ? `
+            <button class="adm-btn adm-btn-sm adm-btn-primary" onclick="NexvionAdminApp.resolveTicketAction('${ticket.id}')">Mark Resolved</button>
+          ` : ''}
+          ${ticket.status === 'Resolved' ? `
+            <button class="adm-btn adm-btn-sm adm-btn-secondary" onclick="NexvionAdminApp.reopenTicketAction('${ticket.id}')">Reopen</button>
+          ` : ''}
+          ${ticket.status !== 'Closed' ? `
+            <button class="adm-btn adm-btn-sm adm-btn-danger" onclick="NexvionAdminApp.closeTicketAction('${ticket.id}')">Close Ticket</button>
+          ` : ''}
+        </div>
+
+        <!-- Conversation History -->
+        <div style="margin-bottom:16px;">
+          <h4 style="font-size:0.85rem; color:var(--adm-text-muted); text-transform:uppercase; letter-spacing:0.05em; margin:0 0 8px 0;">Conversation Thread</h4>
+          <div style="display:flex; flex-direction:column; gap:10px;">
+            ${(ticket.messages || []).map(m => `
+              <div style="background:${m.isStaff ? 'rgba(99,102,241,0.08)' : 'var(--adm-surface-elevated)'}; padding:10px 14px; border-radius:8px; border:1px solid ${m.isStaff ? 'rgba(99,102,241,0.25)' : 'var(--adm-border)'};">
+                <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:${m.isStaff ? 'var(--adm-primary)' : 'var(--adm-tertiary)'}; margin-bottom:4px;">
+                  <strong>${escapeHtml(m.sender)} ${m.isStaff ? '(Staff)' : ''}</strong>
+                  <span>${m.timestamp ? new Date(m.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—'}</span>
+                </div>
+                <p style="margin:0; font-size:0.82rem; color:var(--adm-text-primary); line-height:1.4;">${escapeHtml(m.text)}</p>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <!-- Internal Notes (Staff-Only) -->
+        <div style="background:rgba(245,158,11,0.05); border:1px solid rgba(245,158,11,0.2); border-radius:8px; padding:12px; margin-bottom:16px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <strong style="font-size:0.8rem; color:#F59E0B; text-transform:uppercase; letter-spacing:0.05em;">🔒 Internal Staff Notes (Private)</strong>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:6px; margin-bottom:8px;">
+            ${(ticket.internalNotes && ticket.internalNotes.length > 0) ? ticket.internalNotes.map(n => `
+              <div style="font-size:0.78rem; color:var(--adm-text-secondary); background:var(--adm-surface-elevated); padding:6px 10px; border-radius:4px; border:1px solid var(--adm-border);">
+                <div style="display:flex; justify-content:space-between; font-size:0.68rem; color:var(--adm-text-muted); margin-bottom:2px;">
+                  <span>${escapeHtml(n.author || 'Staff')}</span>
+                  <span>${n.createdAt ? new Date(n.createdAt).toLocaleDateString() : ''}</span>
+                </div>
+                <div>${escapeHtml(n.text)}</div>
+              </div>
+            `).join('') : '<div style="font-size:0.75rem; color:var(--adm-text-muted); font-style:italic;">No internal notes recorded.</div>'}
+          </div>
+          <div style="display:flex; gap:6px;">
+            <input type="text" id="drawerInternalNoteInput" class="adm-input" placeholder="Add confidential memo..." style="font-size:0.78rem; flex:1;">
+            <button class="adm-btn adm-btn-sm adm-btn-secondary" onclick="NexvionAdminApp.submitTicketInternalNote('${ticket.id}')">+Note</button>
+          </div>
+        </div>
+
+        <!-- Reply composer -->
         <div class="adm-form-group">
-          <label class="adm-form-label">Send Support Response</label>
-          <textarea class="adm-textarea" id="ticketReplyText" placeholder="Type response to student..."></textarea>
+          <label class="adm-form-label">Send Support Response to Student</label>
+          <textarea class="adm-textarea" id="ticketReplyText" placeholder="Type response to student..." rows="3"></textarea>
           <button class="adm-btn adm-btn-primary" style="margin-top:8px;" onclick="NexvionAdminApp.submitTicketReply('${ticket.id}')">Send Reply</button>
         </div>
       `;
@@ -12738,11 +12797,66 @@
 
     submitTicketReply: async (ticketId) => {
       const reply = document.getElementById('ticketReplyText')?.value;
-      if (!reply) return;
-      await Data.addTicketReply(ticketId, reply, 'Support Admin Desk');
-      closeDrawer();
+      if (!reply || !reply.trim()) {
+        showToast('Validation Error', 'Reply message cannot be empty.', 'error');
+        return;
+      }
+      await Data.addTicketReply(ticketId, reply.trim(), AppState.activeRole || 'Support Desk', true);
       showToast('Reply Sent', 'Student message thread updated.', 'success');
+      NexvionAdminApp.openTicketDrawer(ticketId);
+    },
+
+    submitTicketInternalNote: async (ticketId) => {
+      const input = document.getElementById('drawerInternalNoteInput');
+      const text = input ? input.value.trim() : '';
+      if (!text) return;
+      await Data.addSupportTicketInternalNote(ticketId, text, AppState.activeRole || 'Support Staff');
+      showToast('Note Added', 'Confidential memo recorded.', 'info');
+      NexvionAdminApp.openTicketDrawer(ticketId);
+    },
+
+    promptAssignTicket: async (ticketId) => {
+      const name = prompt('Assign ticket to administrator / support agent:', 'Sarah Al-Mansoor');
+      if (name && name.trim()) {
+        await Data.assignSupportTicket(ticketId, name.trim());
+        showToast('Ticket Reassigned', `Ticket assigned to ${name.trim()}`, 'success');
+        NexvionAdminApp.openTicketDrawer(ticketId);
+        renderRoute(AppState.currentRoute);
+      }
+    },
+
+    promptChangeTicketPriority: async (ticketId) => {
+      const priority = prompt('Set priority (Low, Normal, High, Urgent):', 'High');
+      if (priority && ['Low', 'Normal', 'High', 'Urgent'].includes(priority.trim())) {
+        await Data.changeSupportTicketPriority(ticketId, priority.trim());
+        showToast('Priority Updated', `Priority set to ${priority.trim()}`, 'success');
+        NexvionAdminApp.openTicketDrawer(ticketId);
+        renderRoute(AppState.currentRoute);
+      }
+    },
+
+    resolveTicketAction: async (ticketId) => {
+      const notes = prompt('Resolution notes (optional):', 'Inquiry addressed and resolved by support desk.');
+      await Data.resolveSupportTicket(ticketId, notes || 'Resolved', AppState.activeRole || 'Support Staff');
+      showToast('Ticket Resolved', 'Ticket status marked as Resolved.', 'success');
+      NexvionAdminApp.openTicketDrawer(ticketId);
       renderRoute(AppState.currentRoute);
+    },
+
+    reopenTicketAction: async (ticketId) => {
+      await Data.reopenSupportTicket(ticketId, 'Reopened for additional investigation', AppState.activeRole || 'Support Staff');
+      showToast('Ticket Reopened', 'Ticket status returned to In progress.', 'info');
+      NexvionAdminApp.openTicketDrawer(ticketId);
+      renderRoute(AppState.currentRoute);
+    },
+
+    closeTicketAction: async (ticketId) => {
+      if (confirm('Are you sure you want to close this support ticket?')) {
+        await Data.closeSupportTicket(ticketId, AppState.activeRole || 'Support Staff');
+        showToast('Ticket Closed', 'Ticket marked as Closed.', 'info');
+        closeDrawer();
+        renderRoute(AppState.currentRoute);
+      }
     },
 
     // --- Filter helpers ---
