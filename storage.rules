@@ -1,0 +1,118 @@
+rules_version = '2';
+
+// ============================================================================
+// NEXVION AI — Production Cloud Storage Security Rules (Phase 12 Hardened)
+// ============================================================================
+// Enforces strict tenant isolation, role-based content administration,
+// size limits, allowed MIME types, and private student submission compartments.
+// ============================================================================
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // -----------------------------------------------------------------------
+    // Helper Functions
+    // -----------------------------------------------------------------------
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function hasAdminRole() {
+      return isAuthenticated() && (
+        request.auth.token.role in ['Owner', 'Super Admin', 'Content Manager', 'Student Manager'] ||
+        firestore.exists(/databases/(default)/documents/adminUsers/$(request.auth.uid))
+      );
+    }
+
+    function isContentAdmin() {
+      return isAuthenticated() && (
+        request.auth.token.role in ['Owner', 'Super Admin', 'Content Manager'] ||
+        (firestore.exists(/databases/(default)/documents/adminUsers/$(request.auth.uid)) &&
+         firestore.get(/databases/(default)/documents/adminUsers/$(request.auth.uid)).data.role in ['Owner', 'Super Admin', 'Content Manager'])
+      );
+    }
+
+    function isStudentManager() {
+      return isAuthenticated() && (
+        request.auth.token.role in ['Owner', 'Super Admin', 'Student Manager'] ||
+        (firestore.exists(/databases/(default)/documents/adminUsers/$(request.auth.uid)) &&
+         firestore.get(/databases/(default)/documents/adminUsers/$(request.auth.uid)).data.role in ['Owner', 'Super Admin', 'Student Manager'])
+      );
+    }
+
+    // MIME type validation helpers
+    function isImage() {
+      return request.resource.contentType.matches('image/(jpeg|png|webp|svg\\+xml|gif)');
+    }
+
+    function isDocument() {
+      return request.resource.contentType.matches('(application/pdf|application/msword|application/vnd.openxmlformats-officedocument.wordprocessingml.document|application/zip|text/plain|application/json)');
+    }
+
+    function isVideo() {
+      return request.resource.contentType.matches('video/(mp4|webm|quicktime)');
+    }
+
+    function isAllowedSubmission() {
+      return request.resource.contentType.matches('(application/pdf|application/zip|application/x-zip-compressed|text/.*|application/json|image/.*|application/vnd.openxmlformats-officedocument.wordprocessingml.document)');
+    }
+
+    // -----------------------------------------------------------------------
+    // 1. Course Cover Images & Branding
+    // -----------------------------------------------------------------------
+    // Public read for website catalogue; managed by Content Admins only.
+    match /courses/{courseId}/covers/{fileName} {
+      allow read: if true;
+      allow write: if isContentAdmin()
+                   && isImage()
+                   && request.resource.size <= 5 * 1024 * 1024; // 5 MB max
+    }
+
+    // -----------------------------------------------------------------------
+    // 2. Course & Lesson Resources (PDFs, Handouts, Guides)
+    // -----------------------------------------------------------------------
+    // Authenticated read; write restricted to Content Admins.
+    match /courses/{courseId}/resources/{fileName} {
+      allow read: if isAuthenticated();
+      allow write: if isContentAdmin()
+                   && (isDocument() || isImage())
+                   && request.resource.size <= 50 * 1024 * 1024; // 50 MB max
+    }
+
+    // -----------------------------------------------------------------------
+    // 3. Video Assets & Thumbnails
+    // -----------------------------------------------------------------------
+    match /courses/{courseId}/videos/{videoId}/{fileName} {
+      allow read: if isAuthenticated();
+      allow write: if isContentAdmin()
+                   && (isVideo() || isImage())
+                   && request.resource.size <= 500 * 1024 * 1024; // 500 MB max
+    }
+
+    // -----------------------------------------------------------------------
+    // 4. Student Project & Assignment Submissions
+    // -----------------------------------------------------------------------
+    // Strict isolation: Students can ONLY read and write their OWN folder.
+    // Administrators (Student Managers / Reviewers) have read access to evaluate.
+    match /submissions/{studentId}/{submissionId}/{fileName} {
+      allow read: if isOwner(studentId) || isStudentManager();
+      allow create, update: if isOwner(studentId)
+                            && isAllowedSubmission()
+                            && request.resource.size <= 25 * 1024 * 1024; // 25 MB max
+      allow delete: if false; // Submissions are preserved for audit and evaluation integrity
+    }
+
+    // -----------------------------------------------------------------------
+    // 5. Default Deny Everything Else
+    // -----------------------------------------------------------------------
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+
+  }
+}

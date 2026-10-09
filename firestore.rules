@@ -232,8 +232,14 @@ service cloud.firestore {
     match /submissions/{submissionId} {
       allow read: if isStudentManager() || isContentManager() || (isAuthenticated() && resource.data.studentId == request.auth.uid);
       allow create: if isAuthenticated();
-      allow update: if isStudentManager() || isContentManager();
+      allow update: if isStudentManager() || isContentManager() || (isAuthenticated() && resource.data.studentId == request.auth.uid);
       allow delete: if false;
+    }
+
+    match /fileMetadata/{fileId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated();
+      allow delete: if isContentManager() || isSuperAdmin();
     }
 
     // -----------------------------------------------------------------------

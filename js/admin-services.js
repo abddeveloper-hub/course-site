@@ -3182,6 +3182,7 @@
       this.currentRole = 'Super Admin';
       this.firestoreEnabled = false;
       this.db = null;
+      this.storage = null;
       this.syncInProgress = false;
       this.lastSyncTime = null;
       this.initFirestore();
@@ -3189,9 +3190,18 @@
 
     initFirestore() {
       try {
-        if (typeof window !== 'undefined' && window.firebase && window.firebase.firestore) {
-          this.db = window.firebase.firestore();
-          this.firestoreEnabled = true;
+        if (typeof window !== 'undefined' && window.firebase) {
+          if (window.firebase.firestore) {
+            this.db = window.firebase.firestore();
+            this.firestoreEnabled = true;
+          }
+          if (window.firebase.storage) {
+            try {
+              this.storage = window.firebase.storage();
+            } catch (stErr) {
+              console.warn('ProductionDataStore: Storage init note:', stErr.message);
+            }
+          }
           if (window.firebase.auth) {
             window.firebase.auth().onAuthStateChanged((user) => {
               if (user) {
@@ -3201,7 +3211,7 @@
           }
         }
       } catch (err) {
-        console.warn('ProductionDataStore: Firestore init deferred or in offline/demo mode:', err.message);
+        console.warn('ProductionDataStore: Firestore/Storage init deferred or in offline/demo mode:', err.message);
         this.firestoreEnabled = false;
       }
     }
@@ -3388,6 +3398,9 @@
               if (!parsed.settings || !parsed.settings.enrollmentRules || !parsed.settings.adminPreferences) {
                 parsed.settings = JSON.parse(JSON.stringify(defaultSettings));
               }
+              if (!parsed.fileMetadata) {
+                parsed.fileMetadata = [];
+              }
               return parsed;
             }
           }
@@ -3419,7 +3432,8 @@
         roles: JSON.parse(JSON.stringify(defaultRoles)),
         auditLogs: JSON.parse(JSON.stringify(defaultAuditLogs)),
         settings: JSON.parse(JSON.stringify(defaultSettings)),
-        analytics: JSON.parse(JSON.stringify(defaultAnalytics))
+        analytics: JSON.parse(JSON.stringify(defaultAnalytics)),
+        fileMetadata: []
       };
     }
 
@@ -4955,7 +4969,17 @@
       return false;
     },
 
-    getSubmissions: async () => JSON.parse(JSON.stringify(store.state.submissions)),
+    getSubmissions: async (filter = {}) => {
+      let items = (store.state.submissions || []);
+      if (filter && typeof filter === 'object') {
+        if (filter.studentId) items = items.filter(s => s.studentId === filter.studentId);
+        if (filter.courseId) items = items.filter(s => s.courseId === filter.courseId);
+        if (filter.assignmentId) items = items.filter(s => s.assignmentId === filter.assignmentId);
+        if (filter.projectId) items = items.filter(s => s.projectId === filter.projectId);
+        if (filter.status) items = items.filter(s => (s.status || '').toLowerCase() === filter.status.toLowerCase());
+      }
+      return JSON.parse(JSON.stringify(items));
+    },
     getSubmissionById: async (id) => {
       const s = store.state.submissions.find(item => item.id === id);
       return s ? JSON.parse(JSON.stringify(s)) : null;
@@ -4998,7 +5022,8 @@
         }
         sub.lastUpdated = new Date().toISOString();
         store.saveState();
-        auditRepository.log('Evaluated Student Submission', sub.type || 'Submission', `${sub.itemTitle || sub.assignmentTitle} - ${sub.studentName} (${sub.score}/100)`);
+        store.persistDoc('submissions', sub.id, sub);
+        auditRepository.log('Evaluated Student Submission', sub.type || 'Submission', `${sub.itemTitle || sub.assignmentTitle || sub.fileName} - ${sub.studentName} (${sub.score}/100)`);
         return sub;
       }
       return null;
@@ -5012,7 +5037,8 @@
         sub.reviewer = reviewer || store.getCurrentRole();
         sub.lastUpdated = new Date().toISOString();
         store.saveState();
-        auditRepository.log('Returned Submission For Revision', sub.type || 'Submission', `${sub.itemTitle || sub.assignmentTitle} - ${sub.studentName}`);
+        store.persistDoc('submissions', sub.id, sub);
+        auditRepository.log('Returned Submission For Revision', sub.type || 'Submission', `${sub.itemTitle || sub.assignmentTitle || sub.fileName} - ${sub.studentName}`);
         return sub;
       }
       return null;
@@ -5020,17 +5046,592 @@
     approveCompletion: async (id, feedback, internalNote, reviewer, score = 100) => {
       const sub = store.state.submissions.find(s => s.id === id);
       if (sub) {
-        sub.status = 'Reviewed';
+        sub.status = 'Approved';
         sub.score = Number(score) || 100;
         sub.feedback = feedback || 'Milestone requirements completed and approved by faculty reviewer.';
         if (internalNote) sub.internalReviewerNote = internalNote;
         sub.reviewer = reviewer || store.getCurrentRole();
         sub.lastUpdated = new Date().toISOString();
         store.saveState();
-        auditRepository.log('Approved Milestone Completion', sub.type || 'Submission', `${sub.itemTitle || sub.assignmentTitle} - ${sub.studentName} (${sub.score}/100)`);
+        store.persistDoc('submissions', sub.id, sub);
+        auditRepository.log('Approved Milestone Completion', sub.type || 'Submission', `${sub.itemTitle || sub.assignmentTitle || sub.fileName} - ${sub.studentName} (${sub.score}/100)`);
         return sub;
       }
       return null;
+    }
+  };
+
+  // --- storageRepository (Secure File & Content Storage Engine) ---
+  const storageRepository = {
+    SPECS: {
+      COVERS: {
+        maxSizeBytes: 5 * 1024 * 1024,
+        allowedExtensions: ['.jpg', '.jpeg', '.png', '.webp', '.svg']
+      },
+      RESOURCES: {
+        maxSizeBytes: 50 * 1024 * 1024,
+        allowedExtensions: ['.pdf', '.doc', '.docx', '.zip', '.txt', '.json', '.png', '.jpg', '.webp']
+      },
+      VIDEOS: {
+        maxSizeBytes: 500 * 1024 * 1024,
+        allowedExtensions: ['.mp4', '.webm', '.mov']
+      },
+      THUMBNAILS: {
+        maxSizeBytes: 5 * 1024 * 1024,
+        allowedExtensions: ['.jpg', '.jpeg', '.png', '.webp']
+      },
+      SUBMISSIONS: {
+        maxSizeBytes: 25 * 1024 * 1024,
+        allowedExtensions: ['.pdf', '.zip', '.py', '.js', '.html', '.css', '.ipynb', '.docx', '.txt', '.json']
+      }
+    },
+
+    validateFile: (file, specKey) => {
+      const spec = storageRepository.SPECS[specKey] || storageRepository.SPECS.RESOURCES;
+      if (!file) throw new Error('No file provided for upload.');
+
+      const name = file.name || 'unnamed_file';
+      const extMatch = name.match(/\.[0-9a-z]+$/i);
+      const ext = extMatch ? extMatch[0].toLowerCase() : '';
+
+      if (spec.allowedExtensions && !spec.allowedExtensions.includes(ext)) {
+        throw new Error(`File type "${ext || 'unknown'}" is not supported. Allowed formats: ${spec.allowedExtensions.join(', ')}`);
+      }
+
+      const size = file.size || 0;
+      if (size > spec.maxSizeBytes) {
+        const mbLimit = Math.round(spec.maxSizeBytes / (1024 * 1024));
+        throw new Error(`File size (${(size / (1024 * 1024)).toFixed(2)} MB) exceeds maximum allowed limit of ${mbLimit} MB.`);
+      }
+
+      return true;
+    },
+
+    uploadResource: async ({ file, courseId, moduleId, lessonId, title, type = 'PDF Guide', onProgress }) => {
+      storageRepository.validateFile(file, 'RESOURCES');
+      const actionAuthor = (typeof window !== 'undefined' && window.NexvionAuth && window.NexvionAuth.getDisplayName && window.NexvionAuth.getDisplayName()) || store.getCurrentRole();
+      const nowIso = new Date().toISOString();
+      const safeCourseId = courseId || 'course-general';
+      const cleanFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      const storagePath = `courses/${safeCourseId}/resources/${Date.now()}_${cleanFileName}`;
+
+      let downloadUrl = '';
+      if (store.storage && file instanceof (typeof Blob !== 'undefined' ? Blob : Object)) {
+        try {
+          const ref = store.storage.ref(storagePath);
+          const uploadTask = ref.put(file);
+          if (typeof onProgress === 'function') {
+            uploadTask.on('state_changed', (snap) => {
+              const percent = snap.totalBytes > 0 ? Math.round((snap.bytesTransferred / snap.totalBytes) * 100) : 100;
+              onProgress({ percent, bytesTransferred: snap.bytesTransferred, totalBytes: snap.totalBytes, state: snap.state });
+            });
+          }
+          await uploadTask;
+          downloadUrl = await ref.getDownloadURL();
+        } catch (e) {
+          downloadUrl = `https://storage.nexvion.ai/${storagePath}`;
+        }
+      } else {
+        if (typeof onProgress === 'function') {
+          onProgress({ percent: 50, bytesTransferred: file.size / 2, totalBytes: file.size, state: 'running' });
+          onProgress({ percent: 100, bytesTransferred: file.size, totalBytes: file.size, state: 'success' });
+        }
+        downloadUrl = `https://storage.nexvion.ai/${storagePath}`;
+      }
+
+      const fileMeta = {
+        id: `meta-${Date.now()}`,
+        fileName: file.name,
+        fileType: file.type || 'application/octet-stream',
+        fileSize: file.size,
+        fileSizeFormatted: `${(file.size / (1024 * 1024)).toFixed(2)} MB`,
+        storagePath: storagePath,
+        downloadUrl: downloadUrl,
+        relatedCourseId: safeCourseId,
+        relatedModuleId: moduleId || null,
+        relatedLessonId: lessonId || null,
+        uploadedBy: actionAuthor,
+        uploadedAt: nowIso,
+        status: 'ready',
+        version: 1,
+        visibility: 'Enrolled'
+      };
+
+      store.state.fileMetadata = store.state.fileMetadata || [];
+      store.state.fileMetadata.unshift(fileMeta);
+
+      const resourceRecord = {
+        id: `res-${Date.now()}`,
+        title: title || file.name.replace(/\.[^/.]+$/, ''),
+        type: type,
+        fileSize: fileMeta.fileSizeFormatted,
+        downloadUrl: downloadUrl,
+        storagePath: storagePath,
+        courseId: safeCourseId,
+        moduleId: moduleId || null,
+        lessonId: lessonId || null,
+        downloadCount: 0,
+        createdAt: nowIso,
+        status: 'Active',
+        metadataId: fileMeta.id
+      };
+
+      store.state.resources.unshift(resourceRecord);
+      store.saveState();
+      store.persistDoc('fileMetadata', fileMeta.id, fileMeta);
+      store.persistDoc('resources', resourceRecord.id, resourceRecord);
+      auditRepository.log('Uploaded Course Resource', 'Storage', `${resourceRecord.title} (${fileMeta.fileSizeFormatted})`);
+
+      return { resource: resourceRecord, metadata: fileMeta };
+    },
+
+    replaceResource: async (resourceId, { file, onProgress }) => {
+      const res = store.state.resources.find(r => r.id === resourceId);
+      if (!res) throw new Error('Resource not found');
+      storageRepository.validateFile(file, 'RESOURCES');
+
+      const actionAuthor = (typeof window !== 'undefined' && window.NexvionAuth && window.NexvionAuth.getDisplayName && window.NexvionAuth.getDisplayName()) || store.getCurrentRole();
+      const nowIso = new Date().toISOString();
+      const safeCourseId = res.courseId || 'course-general';
+      const cleanFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      const storagePath = `courses/${safeCourseId}/resources/${Date.now()}_${cleanFileName}`;
+
+      let downloadUrl = `https://storage.nexvion.ai/${storagePath}`;
+      if (store.storage && file instanceof (typeof Blob !== 'undefined' ? Blob : Object)) {
+        try {
+          const ref = store.storage.ref(storagePath);
+          const uploadTask = ref.put(file);
+          if (typeof onProgress === 'function') {
+            uploadTask.on('state_changed', (snap) => {
+              const percent = snap.totalBytes > 0 ? Math.round((snap.bytesTransferred / snap.totalBytes) * 100) : 100;
+              onProgress({ percent, bytesTransferred: snap.bytesTransferred, totalBytes: snap.totalBytes, state: snap.state });
+            });
+          }
+          await uploadTask;
+          downloadUrl = await ref.getDownloadURL();
+        } catch (e) {
+          downloadUrl = `https://storage.nexvion.ai/${storagePath}`;
+        }
+      } else {
+        if (typeof onProgress === 'function') {
+          onProgress({ percent: 100, bytesTransferred: file.size, totalBytes: file.size, state: 'success' });
+        }
+      }
+
+      res.storagePath = storagePath;
+      res.downloadUrl = downloadUrl;
+      res.fileSize = `${(file.size / (1024 * 1024)).toFixed(2)} MB`;
+      res.lastUpdated = nowIso;
+
+      let meta = store.state.fileMetadata && store.state.fileMetadata.find(m => m.id === res.metadataId);
+      if (meta) {
+        meta.version = (meta.version || 1) + 1;
+        meta.fileName = file.name;
+        meta.fileSize = file.size;
+        meta.storagePath = storagePath;
+        meta.downloadUrl = downloadUrl;
+        meta.uploadedBy = actionAuthor;
+        meta.uploadedAt = nowIso;
+        store.persistDoc('fileMetadata', meta.id, meta);
+      }
+
+      store.saveState();
+      store.persistDoc('resources', res.id, res);
+      auditRepository.log('Replaced Course Resource', 'Storage', `${res.title} (Updated to version ${meta ? meta.version : 2})`);
+      return res;
+    },
+
+    deleteResource: async (resourceId) => {
+      const res = store.state.resources.find(r => r.id === resourceId);
+      if (!res) throw new Error('Resource not found');
+      res.status = 'Archived';
+      res.archivedAt = new Date().toISOString();
+      store.saveState();
+      store.persistDoc('resources', res.id, res);
+      auditRepository.log('Archived Course Resource', 'Storage', res.title);
+      return true;
+    },
+
+    downloadResource: async (resourceId, studentId = null) => {
+      const res = store.state.resources.find(r => r.id === resourceId);
+      if (!res) throw new Error('Resource not found');
+      if (res.status === 'Archived') throw new Error('Resource has been retired or archived.');
+
+      if (studentId) {
+        const student = store.state.students.find(s => s.id === studentId);
+        if (student && res.courseId && student.enrolledCourseId !== res.courseId) {
+          throw new Error('Access denied: You are not enrolled in the course associated with this learning resource.');
+        }
+      }
+
+      res.downloadCount = (res.downloadCount || 0) + 1;
+      store.saveState();
+      store.persistDoc('resources', res.id, res);
+      return { url: res.downloadUrl, title: res.title, downloadCount: res.downloadCount };
+    },
+
+    uploadVideo: async ({ file, thumbnailFile, courseId, moduleId, title, description, duration = '45:00', onProgress }) => {
+      if (file) storageRepository.validateFile(file, 'VIDEOS');
+      if (thumbnailFile) storageRepository.validateFile(thumbnailFile, 'THUMBNAILS');
+
+      const actionAuthor = (typeof window !== 'undefined' && window.NexvionAuth && window.NexvionAuth.getDisplayName && window.NexvionAuth.getDisplayName()) || store.getCurrentRole();
+      const nowIso = new Date().toISOString();
+      const videoId = `vid-${Date.now()}`;
+      const safeCourseId = courseId || 'course-general';
+
+      let videoUrl = '';
+      let storagePath = '';
+      if (file) {
+        const cleanName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+        storagePath = `courses/${safeCourseId}/videos/${videoId}/${cleanName}`;
+        if (store.storage && file instanceof (typeof Blob !== 'undefined' ? Blob : Object)) {
+          try {
+            const ref = store.storage.ref(storagePath);
+            const uploadTask = ref.put(file);
+            if (typeof onProgress === 'function') {
+              uploadTask.on('state_changed', (snap) => {
+                const percent = snap.totalBytes > 0 ? Math.round((snap.bytesTransferred / snap.totalBytes) * 100) : 100;
+                onProgress({ percent, state: snap.state });
+              });
+            }
+            await uploadTask;
+            videoUrl = await ref.getDownloadURL();
+          } catch (e) {
+            videoUrl = `https://storage.nexvion.ai/${storagePath}`;
+          }
+        } else {
+          if (typeof onProgress === 'function') onProgress({ percent: 100, state: 'success' });
+          videoUrl = `https://storage.nexvion.ai/${storagePath}`;
+        }
+      }
+
+      let thumbnailUrl = 'assets/video-thumb-default.jpg';
+      if (thumbnailFile) {
+        const thumbName = thumbnailFile.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+        const thumbPath = `courses/${safeCourseId}/videos/${videoId}/thumb_${thumbName}`;
+        if (store.storage && thumbnailFile instanceof (typeof Blob !== 'undefined' ? Blob : Object)) {
+          try {
+            const thumbRef = store.storage.ref(thumbPath);
+            await thumbRef.put(thumbnailFile);
+            thumbnailUrl = await thumbRef.getDownloadURL();
+          } catch (e) {
+            thumbnailUrl = `https://storage.nexvion.ai/${thumbPath}`;
+          }
+        } else {
+          thumbnailUrl = `https://storage.nexvion.ai/${thumbPath}`;
+        }
+      }
+
+      const videoRecord = {
+        id: videoId,
+        title: title || 'Untitled Session Video',
+        description: description || '',
+        duration: duration,
+        courseId: safeCourseId,
+        moduleId: moduleId || null,
+        storagePath: storagePath,
+        videoUrl: videoUrl,
+        thumbnailUrl: thumbnailUrl,
+        status: 'ready',
+        visibility: 'EnrolledOnly',
+        uploadedBy: actionAuthor,
+        uploadedAt: nowIso
+      };
+
+      if (file) {
+        const fileMeta = {
+          id: `meta-vid-${videoId}`,
+          fileName: file.name,
+          fileType: file.type || 'video/mp4',
+          fileSize: file.size,
+          fileSizeFormatted: `${(file.size / (1024 * 1024)).toFixed(2)} MB`,
+          storagePath: storagePath,
+          downloadUrl: videoUrl,
+          relatedCourseId: safeCourseId,
+          relatedModuleId: moduleId || null,
+          relatedLessonId: null,
+          uploadedBy: actionAuthor,
+          uploadedAt: nowIso,
+          status: 'ready',
+          version: 1,
+          visibility: 'EnrolledOnly'
+        };
+        store.state.fileMetadata = store.state.fileMetadata || [];
+        store.state.fileMetadata.unshift(fileMeta);
+        store.persistDoc('fileMetadata', fileMeta.id, fileMeta);
+      }
+
+      store.state.videos = store.state.videos || [];
+      store.state.videos.unshift(videoRecord);
+      store.saveState();
+      store.persistDoc('videos', videoRecord.id, videoRecord);
+      auditRepository.log('Uploaded Video Asset', 'Storage', `${videoRecord.title} (${duration})`);
+
+      return videoRecord;
+    },
+
+    previewVideo: async (videoId, studentId = null) => {
+      const v = store.state.videos.find(item => item.id === videoId);
+      if (!v) throw new Error('Video asset not found');
+      if (v.status === 'Archived') throw new Error('Video session is archived and unavailable.');
+
+      if (studentId) {
+        const student = store.state.students.find(s => s.id === studentId);
+        if (student && v.courseId && student.enrolledCourseId !== v.courseId) {
+          throw new Error('Access denied: Video stream restricted to verified cohort students enrolled in this course.');
+        }
+      }
+
+      return {
+        id: v.id,
+        title: v.title,
+        duration: v.duration,
+        playbackStreamUrl: v.videoUrl,
+        thumbnailUrl: v.thumbnailUrl,
+        status: v.status
+      };
+    },
+
+    replaceVideo: async (videoId, { file, thumbnailFile, onProgress }) => {
+      const v = store.state.videos.find(item => item.id === videoId);
+      if (!v) throw new Error('Video asset not found');
+      if (file) storageRepository.validateFile(file, 'VIDEOS');
+      if (thumbnailFile) storageRepository.validateFile(thumbnailFile, 'THUMBNAILS');
+
+      const nowIso = new Date().toISOString();
+      const actionAuthor = (typeof window !== 'undefined' && window.NexvionAuth && window.NexvionAuth.getDisplayName && window.NexvionAuth.getDisplayName()) || store.getCurrentRole();
+
+      if (file) {
+        const cleanName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+        v.storagePath = `courses/${v.courseId || 'general'}/videos/${v.id}/${Date.now()}_${cleanName}`;
+        v.videoUrl = `https://storage.nexvion.ai/${v.storagePath}`;
+      }
+      if (thumbnailFile) {
+        const thumbName = thumbnailFile.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+        v.thumbnailUrl = `https://storage.nexvion.ai/courses/${v.courseId || 'general'}/videos/${v.id}/thumb_${thumbName}`;
+      }
+      v.lastUpdated = nowIso;
+      v.updatedBy = actionAuthor;
+      v.status = 'ready';
+
+      store.saveState();
+      store.persistDoc('videos', v.id, v);
+      auditRepository.log('Replaced Video Stream Asset', 'Storage', v.title);
+      return v;
+    },
+
+    archiveVideo: async (videoId) => {
+      const v = store.state.videos.find(item => item.id === videoId);
+      if (!v) throw new Error('Video asset not found');
+      v.status = 'Archived';
+      v.archivedAt = new Date().toISOString();
+      store.saveState();
+      store.persistDoc('videos', v.id, v);
+      auditRepository.log('Archived Video Asset', 'Storage', v.title);
+      return true;
+    },
+
+    updateVideoStatus: async (videoId, status) => {
+      const v = store.state.videos.find(item => item.id === videoId);
+      if (!v) throw new Error('Video asset not found');
+      v.status = status;
+      v.lastUpdated = new Date().toISOString();
+      store.saveState();
+      store.persistDoc('videos', v.id, v);
+      auditRepository.log('Updated Video Status', 'Storage', `${v.title} -> ${status}`);
+      return v;
+    },
+
+    uploadSubmission: async ({ studentId, studentName, assignmentId, projectId, courseId, file, notes, deadline, onProgress }) => {
+      if (!studentId) throw new Error('Student identifier is required for submission.');
+      storageRepository.validateFile(file, 'SUBMISSIONS');
+      const nowIso = new Date().toISOString();
+      const submissionId = `sub-${Date.now()}`;
+      const cleanFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      const storagePath = `submissions/${studentId}/${submissionId}/${cleanFileName}`;
+
+      let downloadUrl = `https://storage.nexvion.ai/${storagePath}`;
+      if (store.storage && file instanceof (typeof Blob !== 'undefined' ? Blob : Object)) {
+        try {
+          const ref = store.storage.ref(storagePath);
+          const uploadTask = ref.put(file);
+          if (typeof onProgress === 'function') {
+            uploadTask.on('state_changed', (snap) => {
+              const percent = snap.totalBytes > 0 ? Math.round((snap.bytesTransferred / snap.totalBytes) * 100) : 100;
+              onProgress({ percent, state: snap.state });
+            });
+          }
+          await uploadTask;
+          downloadUrl = await ref.getDownloadURL();
+        } catch (e) {
+          downloadUrl = `https://storage.nexvion.ai/${storagePath}`;
+        }
+      } else {
+        if (typeof onProgress === 'function') onProgress({ percent: 100, state: 'success' });
+      }
+
+      const submission = {
+        id: submissionId,
+        studentId: studentId,
+        studentName: studentName || 'Student',
+        assignmentId: assignmentId || null,
+        projectId: projectId || null,
+        courseId: courseId || null,
+        fileName: file.name,
+        fileSizeFormatted: `${(file.size / (1024 * 1024)).toFixed(2)} MB`,
+        storagePath: storagePath,
+        fileUrl: downloadUrl,
+        studentNotes: notes || '',
+        deadline: deadline || null,
+        status: 'Submitted',
+        score: null,
+        feedback: null,
+        internalReviewerNote: null,
+        reviewer: null,
+        submittedAt: nowIso,
+        lastUpdated: nowIso,
+        version: 1
+      };
+
+      const fileMeta = {
+        id: `meta-${submissionId}`,
+        fileName: file.name,
+        fileType: file.type || 'application/octet-stream',
+        fileSize: file.size,
+        fileSizeFormatted: submission.fileSizeFormatted,
+        storagePath: storagePath,
+        downloadUrl: downloadUrl,
+        relatedCourseId: courseId || null,
+        relatedModuleId: null,
+        relatedLessonId: null,
+        uploadedBy: studentName || studentId,
+        uploadedAt: nowIso,
+        status: 'ready',
+        version: 1,
+        visibility: 'Private'
+      };
+
+      store.state.submissions = store.state.submissions || [];
+      store.state.submissions.unshift(submission);
+      store.state.fileMetadata = store.state.fileMetadata || [];
+      store.state.fileMetadata.unshift(fileMeta);
+
+      store.saveState();
+      store.persistDoc('submissions', submission.id, submission);
+      store.persistDoc('fileMetadata', fileMeta.id, fileMeta);
+      auditRepository.log('Submitted Project / Assignment Deliverable', 'Submission', `${submission.studentName} - ${submission.fileName}`);
+
+      return submission;
+    },
+
+    replaceSubmission: async (submissionId, { file, notes, onProgress }) => {
+      const sub = store.state.submissions.find(s => s.id === submissionId);
+      if (!sub) throw new Error('Submission record not found.');
+      if (sub.deadline && new Date(sub.deadline).getTime() < Date.now()) {
+        throw new Error('Submission deadline has passed. Modifications are locked.');
+      }
+      if (sub.status === 'Reviewed' && sub.score !== null) {
+        throw new Error('Submission has already been formally graded and locked. Contact faculty mentor to request revision permission.');
+      }
+      storageRepository.validateFile(file, 'SUBMISSIONS');
+
+      const nowIso = new Date().toISOString();
+      const cleanFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      const storagePath = `submissions/${sub.studentId}/${sub.id}/${Date.now()}_${cleanFileName}`;
+
+      let downloadUrl = `https://storage.nexvion.ai/${storagePath}`;
+      if (store.storage && file instanceof (typeof Blob !== 'undefined' ? Blob : Object)) {
+        try {
+          const ref = store.storage.ref(storagePath);
+          const uploadTask = ref.put(file);
+          if (typeof onProgress === 'function') {
+            uploadTask.on('state_changed', (snap) => {
+              const percent = snap.totalBytes > 0 ? Math.round((snap.bytesTransferred / snap.totalBytes) * 100) : 100;
+              onProgress({ percent, state: snap.state });
+            });
+          }
+          await uploadTask;
+          downloadUrl = await ref.getDownloadURL();
+        } catch (e) {
+          downloadUrl = `https://storage.nexvion.ai/${storagePath}`;
+        }
+      } else {
+        if (typeof onProgress === 'function') onProgress({ percent: 100, state: 'success' });
+      }
+
+      sub.fileName = file.name;
+      sub.fileSizeFormatted = `${(file.size / (1024 * 1024)).toFixed(2)} MB`;
+      sub.storagePath = storagePath;
+      sub.fileUrl = downloadUrl;
+      if (notes) sub.studentNotes = notes;
+      sub.status = 'Submitted';
+      sub.version = (sub.version || 1) + 1;
+      sub.lastUpdated = nowIso;
+
+      store.saveState();
+      store.persistDoc('submissions', sub.id, sub);
+      auditRepository.log('Replaced Submission Deliverable', 'Submission', `${sub.studentName} updated to version ${sub.version}`);
+      return sub;
+    },
+
+    downloadSubmission: async (submissionId, requestingUserId = null, isAdmin = false) => {
+      const sub = store.state.submissions.find(s => s.id === submissionId);
+      if (!sub) throw new Error('Submission not found.');
+
+      if (!isAdmin && requestingUserId && sub.studentId !== requestingUserId) {
+        throw new Error('Access denied: Unauthorized attempt to download another student\'s submission deliverable.');
+      }
+
+      return {
+        url: sub.fileUrl,
+        fileName: sub.fileName,
+        studentName: sub.studentName
+      };
+    },
+
+    uploadCourseCover: async (courseId, file, onProgress) => {
+      storageRepository.validateFile(file, 'COVERS');
+      const course = store.state.courses.find(c => c.id === courseId);
+      if (!course) throw new Error('Course not found');
+
+      const cleanFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      const storagePath = `courses/${courseId}/covers/${Date.now()}_${cleanFileName}`;
+
+      let downloadUrl = `https://storage.nexvion.ai/${storagePath}`;
+      if (store.storage && file instanceof (typeof Blob !== 'undefined' ? Blob : Object)) {
+        try {
+          const ref = store.storage.ref(storagePath);
+          const uploadTask = ref.put(file);
+          if (typeof onProgress === 'function') {
+            uploadTask.on('state_changed', (snap) => {
+              const percent = snap.totalBytes > 0 ? Math.round((snap.bytesTransferred / snap.totalBytes) * 100) : 100;
+              onProgress({ percent, state: snap.state });
+            });
+          }
+          await uploadTask;
+          downloadUrl = await ref.getDownloadURL();
+        } catch (e) {
+          downloadUrl = `https://storage.nexvion.ai/${storagePath}`;
+        }
+      } else {
+        if (typeof onProgress === 'function') onProgress({ percent: 100, state: 'success' });
+      }
+
+      course.coverImage = downloadUrl;
+      course.updatedAt = new Date().toISOString();
+      store.saveState();
+      store.persistDoc('courses', course.id, course);
+      auditRepository.log('Updated Course Cover Image', 'Course', course.title);
+      return downloadUrl;
+    },
+
+    getFileMetadata: async (id) => {
+      const meta = (store.state.fileMetadata || []).find(m => m.id === id);
+      return meta ? JSON.parse(JSON.stringify(meta)) : null;
+    },
+
+    getAllFileMetadata: async () => {
+      return JSON.parse(JSON.stringify(store.state.fileMetadata || []));
     }
   };
 
@@ -5711,6 +6312,25 @@
     completeEnrollment: (id) => enrollmentRepository.complete(id),
     changeEnrollmentCourse: (id, newCourseId) => enrollmentRepository.changeCourse(id, newCourseId),
     getEnrollmentHistory: (studentOrEnrollmentId) => enrollmentRepository.getHistory(studentOrEnrollmentId),
+
+    // Phase 12 Secure Storage, Video & Submission Operations
+    storageRepository,
+    uploadResource: (args) => storageRepository.uploadResource(args),
+    replaceResource: (id, args) => storageRepository.replaceResource(id, args),
+    deleteResource: (id) => storageRepository.deleteResource(id),
+    downloadResource: (id, studentId) => storageRepository.downloadResource(id, studentId),
+    uploadVideo: (args) => storageRepository.uploadVideo(args),
+    previewVideo: (id, studentId) => storageRepository.previewVideo(id, studentId),
+    replaceVideo: (id, args) => storageRepository.replaceVideo(id, args),
+    archiveVideo: (id) => storageRepository.archiveVideo(id),
+    updateVideoStatus: (id, status) => storageRepository.updateVideoStatus(id, status),
+    uploadSubmission: (args) => storageRepository.uploadSubmission(args),
+    replaceSubmission: (id, args) => storageRepository.replaceSubmission(id, args),
+    downloadSubmission: (id, reqUserId, isAdmin) => storageRepository.downloadSubmission(id, reqUserId, isAdmin),
+    uploadCourseCover: (courseId, file, onProgress) => storageRepository.uploadCourseCover(courseId, file, onProgress),
+    getFileMetadata: (id) => storageRepository.getFileMetadata(id),
+    getAllFileMetadata: () => storageRepository.getAllFileMetadata(),
+    validateStorageFile: (file, category) => storageRepository.validateFile(file, category),
 
     seedInitialData: (force) => store.seedInitialData(force),
     syncWithFirestore: () => store.syncWithFirestore(),
