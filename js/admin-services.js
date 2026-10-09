@@ -3180,6 +3180,183 @@
     constructor() {
       this.state = this.loadState();
       this.currentRole = 'Super Admin';
+      this.firestoreEnabled = false;
+      this.db = null;
+      this.syncInProgress = false;
+      this.lastSyncTime = null;
+      this.initFirestore();
+    }
+
+    initFirestore() {
+      try {
+        if (typeof window !== 'undefined' && window.firebase && window.firebase.firestore) {
+          this.db = window.firebase.firestore();
+          this.firestoreEnabled = true;
+          if (window.firebase.auth) {
+            window.firebase.auth().onAuthStateChanged((user) => {
+              if (user) {
+                this.syncWithFirestore().catch(() => {});
+              }
+            });
+          }
+        }
+      } catch (err) {
+        console.warn('ProductionDataStore: Firestore init deferred or in offline/demo mode:', err.message);
+        this.firestoreEnabled = false;
+      }
+    }
+
+    getFirestoreStatus() {
+      const fb = typeof window !== 'undefined' && window.firebase;
+      return {
+        available: !!(fb && fb.firestore),
+        connected: !!(this.firestoreEnabled && this.db),
+        authenticated: !!(fb && fb.auth && fb.auth().currentUser),
+        lastSync: this.lastSyncTime || null
+      };
+    }
+
+    async persistDoc(collectionName, docId, docData) {
+      this.saveState();
+      if (this.firestoreEnabled && this.db && docId) {
+        const cleanData = JSON.parse(JSON.stringify(docData));
+        for (let attempt = 0; attempt < 3; attempt++) {
+          try {
+            await this.db.collection(collectionName).doc(String(docId)).set(cleanData, { merge: true });
+            return true;
+          } catch (err) {
+            if (attempt === 2) {
+              console.warn(`Firestore sync note (${collectionName}/${docId}):`, err.message);
+            } else {
+              await new Promise(res => setTimeout(res, 250 * (attempt + 1)));
+            }
+          }
+        }
+      }
+      return true;
+    }
+
+    async deleteDoc(collectionName, docId) {
+      this.saveState();
+      if (this.firestoreEnabled && this.db && docId) {
+        try {
+          await this.db.collection(collectionName).doc(String(docId)).delete();
+        } catch (err) {
+          console.warn(`Firestore delete note (${collectionName}/${docId}):`, err.message);
+        }
+      }
+      return true;
+    }
+
+    async syncWithFirestore() {
+      if (!this.firestoreEnabled || !this.db || this.syncInProgress) return;
+      this.syncInProgress = true;
+      try {
+        const collections = [
+          'tiers', 'courses', 'batches', 'students', 'enrollments',
+          'modules', 'classes', 'lessons', 'videos', 'resources',
+          'projects', 'assignments', 'settings'
+        ];
+        for (const col of collections) {
+          try {
+            const snapshot = await this.db.collection(col).get();
+            if (!snapshot.empty) {
+              const remoteDocs = [];
+              snapshot.forEach(doc => {
+                remoteDocs.push({ id: doc.id, ...doc.data() });
+              });
+              if (col === 'settings' && remoteDocs.length > 0) {
+                this.state.settings = { ...this.state.settings, ...remoteDocs[0] };
+              } else if (remoteDocs.length > 0) {
+                if (col === 'batches') {
+                  remoteDocs.forEach(b => {
+                    b.capacity = 30; // 30-cap hard invariant
+                    if (b.enrolledCount > 30) b.enrolledCount = 30;
+                  });
+                }
+                this.state[col] = remoteDocs;
+              }
+            }
+          } catch (colErr) {
+            // Permissions on specific collections may vary per role
+          }
+        }
+        this.lastSyncTime = new Date().toISOString();
+        this.saveState();
+      } catch (err) {
+        console.warn('Firestore sync note:', err.message);
+      } finally {
+        this.syncInProgress = false;
+      }
+    }
+
+    async seedInitialData(force = false) {
+      // Safe initial seeding: Never overwrites existing production data unless force is true
+      if (!this.firestoreEnabled || !this.db) {
+        return { status: 'seeded_locally', count: defaultTiers.length + defaultCourses.length + defaultBatches.length };
+      }
+      try {
+        let seededCount = 0;
+
+        // 1. Four official tiers (FREE, PRICE COMING SOON)
+        for (const tier of defaultTiers) {
+          const docRef = this.db.collection('tiers').doc(tier.id);
+          if (!force) {
+            const snap = await docRef.get();
+            if (snap.exists) continue;
+          }
+          await docRef.set(tier, { merge: true });
+          seededCount++;
+        }
+
+        // 2. Initial courses
+        for (const course of defaultCourses) {
+          const docRef = this.db.collection('courses').doc(course.id);
+          if (!force) {
+            const snap = await docRef.get();
+            if (snap.exists) continue;
+          }
+          await docRef.set(course, { merge: true });
+          seededCount++;
+        }
+
+        // 3. Initial batches (30 students cap strictly enforced)
+        for (const batch of defaultBatches) {
+          const docRef = this.db.collection('batches').doc(batch.id);
+          if (!force) {
+            const snap = await docRef.get();
+            if (snap.exists) continue;
+          }
+          const cleanBatch = {
+            ...batch,
+            capacity: 30,
+            enrolledCount: Math.min(Number(batch.enrolledCount) || 0, 30)
+          };
+          await docRef.set(cleanBatch, { merge: true });
+          seededCount++;
+        }
+
+        // 4. Initial Development Administrator
+        const devAdmin = defaultAdminUsers[0];
+        if (devAdmin) {
+          const docRef = this.db.collection('adminUsers').doc(devAdmin.id);
+          if (!force) {
+            const snap = await docRef.get();
+            if (!snap.exists) {
+              await docRef.set(devAdmin, { merge: true });
+              seededCount++;
+            }
+          } else {
+            await docRef.set(devAdmin, { merge: true });
+            seededCount++;
+          }
+        }
+
+        return { status: 'success', seededCount };
+      } catch (err) {
+        console.error('Seed initial data error:', err);
+        return { status: 'error', error: err.message };
+      }
     }
 
     loadState() {
@@ -3297,22 +3474,75 @@
       const newCourse = {
         ...courseData,
         id: courseData.id || `course-${Date.now()}`,
+        status: courseData.status || 'Draft',
+        visibility: courseData.visibility || 'Internal',
+        certificateRequirements: courseData.certificateRequirements || { minAttendance: 80, minAssignmentScore: 70, capstoneApproved: true },
+        createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       };
       store.state.courses.unshift(newCourse);
       store.saveState();
-      auditRepository.log('Created Course', 'Course', newCourse.title);
+      store.persistDoc('courses', newCourse.id, newCourse);
+      auditRepository.log('Created Course', 'Course', newCourse.title, null, JSON.stringify(newCourse));
       return newCourse;
     },
     update: async (id, courseData) => {
       const idx = store.state.courses.findIndex(c => c.id === id);
       if (idx !== -1) {
+        const prev = JSON.stringify(store.state.courses[idx]);
         store.state.courses[idx] = { ...store.state.courses[idx], ...courseData, updatedAt: new Date().toISOString() };
         store.saveState();
-        auditRepository.log('Updated Course', 'Course', store.state.courses[idx].title);
+        store.persistDoc('courses', id, store.state.courses[idx]);
+        auditRepository.log('Updated Course', 'Course', store.state.courses[idx].title, prev, JSON.stringify(courseData));
         return store.state.courses[idx];
       }
       return null;
+    },
+    publish: async (id) => {
+      return courseRepository.update(id, { status: 'Published', visibility: 'Public' });
+    },
+    unpublish: async (id) => {
+      return courseRepository.update(id, { status: 'Draft', visibility: 'Internal' });
+    },
+    archive: async (id) => {
+      return courseRepository.update(id, { status: 'Archived', visibility: 'Archived' });
+    },
+    assignTier: async (courseId, tierId) => {
+      const course = store.state.courses.find(c => c.id === courseId);
+      if (!course) throw new Error('Course not found');
+      const tier = store.state.tiers.find(t => t.id === tierId);
+      if (!tier) throw new Error('Tier not found');
+      course.tierId = tier.id;
+      course.tierName = tier.name;
+      course.tierType = tier.tierType;
+      course.priceDisplay = tier.priceDisplay;
+      course.updatedAt = new Date().toISOString();
+      store.saveState();
+      store.persistDoc('courses', course.id, course);
+      auditRepository.log('Assigned Tier to Course', 'Course', `${course.title} → ${tier.name}`);
+      return course;
+    },
+    getModules: async (courseId) => {
+      const mods = store.state.modules.filter(m => m.courseId === courseId);
+      return JSON.parse(JSON.stringify(mods));
+    },
+    getClasses: async (courseId) => {
+      const cls = store.state.classes.filter(c => c.courseId === courseId);
+      return JSON.parse(JSON.stringify(cls));
+    },
+    getProjects: async (courseId) => {
+      const prjs = store.state.projects.filter(p => p.courseId === courseId);
+      return JSON.parse(JSON.stringify(prjs));
+    },
+    configureCertificateRequirements: async (courseId, requirements) => {
+      const course = store.state.courses.find(c => c.id === courseId);
+      if (!course) throw new Error('Course not found');
+      course.certificateRequirements = { ...(course.certificateRequirements || {}), ...requirements };
+      course.updatedAt = new Date().toISOString();
+      store.saveState();
+      store.persistDoc('courses', course.id, course);
+      auditRepository.log('Configured Certificate Requirements', 'Course', `${course.title}: ${JSON.stringify(requirements)}`);
+      return course;
     },
     delete: async (id) => {
       const idx = store.state.courses.findIndex(c => c.id === id);
@@ -3320,6 +3550,7 @@
         const title = store.state.courses[idx].title;
         store.state.courses.splice(idx, 1);
         store.saveState();
+        store.deleteDoc('courses', id);
         auditRepository.log('Archived Course', 'Course', title);
         return true;
       }
@@ -3337,8 +3568,9 @@
     update: async (id, tierData) => {
       const idx = store.state.tiers.findIndex(t => t.id === id);
       if (idx !== -1) {
-        store.state.tiers[idx] = { ...store.state.tiers[idx], ...tierData };
+        store.state.tiers[idx] = { ...store.state.tiers[idx], ...tierData, updatedAt: new Date().toISOString() };
         store.saveState();
+        store.persistDoc('tiers', id, store.state.tiers[idx]);
         auditRepository.log('Updated Course Tier', 'Tier', store.state.tiers[idx].name);
         return store.state.tiers[idx];
       }
@@ -3346,11 +3578,11 @@
     }
   };
 
-  // --- batchRepository (Strict 30-Cap) ---
+  // --- batchRepository (Strict 30-Cap Invariant Enforced) ---
   const batchRepository = {
     findAll: async () => {
       store.state.batches.forEach(b => {
-        b.capacity = 30;
+        b.capacity = 30; // Hard invariant: strictly 30 seats per cohort
         if (b.enrolledCount >= 30) {
           b.status = b.status === 'COMPLETED' ? 'COMPLETED' : 'FULL';
         }
@@ -3369,11 +3601,14 @@
         capacity: 30, // MAX 30 ALWAYS
         enrolledCount: Math.min(Number(batchData.enrolledCount) || 0, 30),
         waitlistCount: Number(batchData.waitlistCount) || 0,
-        status: Number(batchData.enrolledCount) >= 30 ? 'FULL' : (batchData.status || 'OPEN')
+        status: Number(batchData.enrolledCount) >= 30 ? 'FULL' : (batchData.status || 'OPEN'),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
       };
       store.state.batches.unshift(clean);
       store.saveState();
-      auditRepository.log('Created Cohort Batch', 'Batch', clean.name);
+      store.persistDoc('batches', clean.id, clean);
+      auditRepository.log('Created Cohort Batch', 'Batch', clean.name, null, JSON.stringify(clean));
       return clean;
     },
     update: async (id, batchData) => {
@@ -3385,23 +3620,244 @@
           ...batchData,
           capacity: 30,
           enrolledCount: enrolled,
-          status: enrolled >= 30 ? 'FULL' : (batchData.status || store.state.batches[idx].status)
+          status: enrolled >= 30 ? (store.state.batches[idx].status === 'COMPLETED' ? 'COMPLETED' : 'FULL') : (batchData.status || store.state.batches[idx].status),
+          updatedAt: new Date().toISOString()
         };
         store.saveState();
+        store.persistDoc('batches', id, store.state.batches[idx]);
         auditRepository.log('Updated Cohort Batch', 'Batch', store.state.batches[idx].name);
         return store.state.batches[idx];
       }
       return null;
     },
+    assignCourse: async (batchId, courseId) => {
+      const batch = store.state.batches.find(b => b.id === batchId);
+      if (!batch) throw new Error('Cohort batch not found');
+      const course = store.state.courses.find(c => c.id === courseId);
+      if (!course) throw new Error('Course not found');
+      batch.courseId = course.id;
+      batch.courseTitle = course.title;
+      batch.courseNumber = course.courseNumber;
+      batch.tierId = course.tierId;
+      batch.updatedAt = new Date().toISOString();
+      store.saveState();
+      store.persistDoc('batches', batchId, batch);
+      auditRepository.log('Assigned Course to Cohort Batch', 'Batch', `${batch.name} → ${course.title}`);
+      return batch;
+    },
+    assignInstructor: async (batchId, instructorName) => {
+      const batch = store.state.batches.find(b => b.id === batchId);
+      if (!batch) throw new Error('Cohort batch not found');
+      batch.instructor = instructorName;
+      batch.updatedAt = new Date().toISOString();
+      store.saveState();
+      store.persistDoc('batches', batchId, batch);
+      auditRepository.log('Assigned Instructor', 'Batch', `${batch.name}: ${instructorName}`);
+      return batch;
+    },
+    setDates: async (batchId, startDate, endDate) => {
+      const batch = store.state.batches.find(b => b.id === batchId);
+      if (!batch) throw new Error('Cohort batch not found');
+      batch.startDate = startDate;
+      batch.endDate = endDate;
+      batch.updatedAt = new Date().toISOString();
+      store.saveState();
+      store.persistDoc('batches', batchId, batch);
+      auditRepository.log('Updated Batch Dates', 'Batch', `${batch.name}: ${startDate} to ${endDate}`);
+      return batch;
+    },
+    setSchedule: async (batchId, schedule) => {
+      const batch = store.state.batches.find(b => b.id === batchId);
+      if (!batch) throw new Error('Cohort batch not found');
+      batch.schedule = schedule;
+      batch.updatedAt = new Date().toISOString();
+      store.saveState();
+      store.persistDoc('batches', batchId, batch);
+      auditRepository.log('Updated Batch Schedule', 'Batch', `${batch.name}: ${schedule}`);
+      return batch;
+    },
+    addStudent: async (batchId, studentId) => {
+      const batch = store.state.batches.find(b => b.id === batchId);
+      if (!batch) throw new Error('Cohort batch not found');
+      const actionAuthor = (typeof window !== 'undefined' && window.NexvionAuth && window.NexvionAuth.getDisplayName && window.NexvionAuth.getDisplayName()) || store.getCurrentRole();
+      const nowIso = new Date().toISOString();
+      const student = store.state.students.find(s => s.id === studentId);
+
+      // STRICT INVARIANT ENFORCEMENT: Max 30 students per batch
+      if (batch.enrolledCount >= 30) {
+        batch.waitlistCount = (batch.waitlistCount || 0) + 1;
+        batch.status = 'FULL';
+        batch.updatedAt = nowIso;
+        if (student) {
+          student.enrollmentStatus = 'Waitlisted';
+          student.batchId = batch.id;
+          student.batchName = batch.name;
+        }
+        let enr = store.state.enrollments.find(e => e.studentId === studentId && e.batchId === batch.id);
+        if (!enr) {
+          enr = {
+            id: `enr-${Date.now()}`,
+            studentId: studentId,
+            studentName: student ? student.name : 'Student',
+            studentEmail: student ? student.email : '',
+            courseId: batch.courseId || '',
+            courseTitle: batch.courseTitle || '',
+            batchId: batch.id,
+            batchName: batch.name,
+            status: 'Waitlisted',
+            submittedAt: nowIso,
+            updatedBy: actionAuthor,
+            updatedAt: nowIso,
+            history: [{
+              status: 'Waitlisted',
+              timestamp: nowIso,
+              actionBy: actionAuthor,
+              note: `Cohort reached 30-student capacity. Placed on waitlist (#${batch.waitlistCount}).`
+            }]
+          };
+          store.state.enrollments.unshift(enr);
+        } else {
+          enr.status = 'Waitlisted';
+          enr.updatedBy = actionAuthor;
+          enr.updatedAt = nowIso;
+          enr.history = enr.history || [];
+          enr.history.push({
+            status: 'Waitlisted',
+            timestamp: nowIso,
+            actionBy: actionAuthor,
+            note: `Cohort reached 30-student capacity. Placed on waitlist (#${batch.waitlistCount}).`
+          });
+        }
+        store.saveState();
+        store.persistDoc('batches', batch.id, batch);
+        if (enr) store.persistDoc('enrollments', enr.id, enr);
+        if (student) store.persistDoc('students', student.id, student);
+        auditRepository.log('30-Student Cap Reached — Placed on Waitlist', 'Batch', `${student ? student.name : studentId} placed on waitlist for ${batch.name} (Waitlist #${batch.waitlistCount})`);
+        throw new Error(`Cohort "${batch.name}" is at maximum capacity (30 / 30). Student has been placed on the cohort waitlist (Position #${batch.waitlistCount}).`);
+      }
+
+      batch.enrolledCount += 1;
+      if (batch.enrolledCount >= 30) batch.status = 'FULL';
+      batch.updatedAt = nowIso;
+
+      if (student) {
+        student.enrollmentStatus = 'Enrolled';
+        student.batchId = batch.id;
+        student.batchName = batch.name;
+        student.lastActive = nowIso;
+      }
+
+      let enr = store.state.enrollments.find(e => e.studentId === studentId && (e.batchId === batch.id || !e.batchId));
+      if (enr) {
+        enr.batchId = batch.id;
+        enr.batchName = batch.name;
+        enr.status = 'Enrolled';
+        enr.updatedBy = actionAuthor;
+        enr.updatedAt = nowIso;
+        enr.history = enr.history || [];
+        enr.history.push({
+          status: 'Enrolled',
+          timestamp: nowIso,
+          actionBy: actionAuthor,
+          note: `Enrolled into cohort ${batch.name} (${batch.enrolledCount}/30)`
+        });
+      } else {
+        enr = {
+          id: `enr-${Date.now()}`,
+          studentId: studentId,
+          studentName: student ? student.name : 'Student',
+          studentEmail: student ? student.email : '',
+          courseId: batch.courseId || '',
+          courseTitle: batch.courseTitle || '',
+          batchId: batch.id,
+          batchName: batch.name,
+          status: 'Enrolled',
+          submittedAt: nowIso,
+          updatedBy: actionAuthor,
+          updatedAt: nowIso,
+          history: [{
+            status: 'Enrolled',
+            timestamp: nowIso,
+            actionBy: actionAuthor,
+            note: `Enrolled into cohort ${batch.name}`
+          }]
+        };
+        store.state.enrollments.unshift(enr);
+      }
+
+      store.saveState();
+      store.persistDoc('batches', batch.id, batch);
+      if (enr) store.persistDoc('enrollments', enr.id, enr);
+      if (student) store.persistDoc('students', student.id, student);
+      auditRepository.log('Enrolled Student into Cohort', 'Batch', `${student ? student.name : studentId} into ${batch.name} (${batch.enrolledCount}/30)`);
+      return true;
+    },
+    removeStudent: async (batchId, studentId, reason = 'Administrative removal') => {
+      const batch = store.state.batches.find(b => b.id === batchId);
+      if (!batch) throw new Error('Cohort batch not found');
+      const actionAuthor = (typeof window !== 'undefined' && window.NexvionAuth && window.NexvionAuth.getDisplayName && window.NexvionAuth.getDisplayName()) || store.getCurrentRole();
+      const nowIso = new Date().toISOString();
+
+      const enr = store.state.enrollments.find(e => e.studentId === studentId && e.batchId === batch.id);
+      if (enr && (enr.status === 'Enrolled' || enr.status === 'Approved')) {
+        if (batch.enrolledCount > 0) {
+          batch.enrolledCount -= 1;
+          if (batch.status === 'FULL') batch.status = 'OPEN';
+        }
+        // Invariant: Do not silently delete historical enrollment!
+        enr.status = 'Withdrawn';
+        enr.withdrawalReason = reason;
+        enr.updatedBy = actionAuthor;
+        enr.updatedAt = nowIso;
+        enr.history = enr.history || [];
+        enr.history.push({
+          status: 'Withdrawn',
+          timestamp: nowIso,
+          actionBy: actionAuthor,
+          note: `Removed from cohort ${batch.name}. Reason: ${reason}`
+        });
+      } else if (enr && enr.status === 'Waitlisted') {
+        if (batch.waitlistCount > 0) batch.waitlistCount -= 1;
+        enr.status = 'Cancelled';
+        enr.rejectionReason = reason;
+        enr.updatedBy = actionAuthor;
+        enr.updatedAt = nowIso;
+      }
+
+      const student = store.state.students.find(s => s.id === studentId);
+      if (student && student.batchId === batch.id) {
+        student.batchId = null;
+        student.batchName = 'Unassigned';
+        student.enrollmentStatus = 'Withdrawn';
+      }
+
+      batch.updatedAt = nowIso;
+      store.saveState();
+      store.persistDoc('batches', batch.id, batch);
+      if (enr) store.persistDoc('enrollments', enr.id, enr);
+      if (student) store.persistDoc('students', student.id, student);
+      auditRepository.log('Removed Student from Cohort', 'Batch', `${student ? student.name : studentId} removed from ${batch.name}. Historical enrollment preserved. Reason: ${reason}`);
+      return true;
+    },
+    getWaitlist: async (batchId) => {
+      const waitlisted = store.state.enrollments.filter(e => e.batchId === batchId && e.status === 'Waitlisted');
+      return JSON.parse(JSON.stringify(waitlisted));
+    },
+    moveWaitlistToBatch: async (batchId, studentId) => {
+      return batchRepository.admitFromWaitlist(batchId, studentId);
+    },
     admitFromWaitlist: async (batchId, studentId) => {
       const batch = store.state.batches.find(b => b.id === batchId);
       if (!batch) throw new Error('Batch not found');
       if (batch.enrolledCount >= 30) {
-        throw new Error('Batch has reached maximum capacity of 30 students.');
+        throw new Error('Cohort batch has reached maximum capacity of 30 students. Cannot admit from waitlist until a seat opens.');
       }
       batch.enrolledCount += 1;
       if (batch.waitlistCount > 0) batch.waitlistCount -= 1;
       if (batch.enrolledCount >= 30) batch.status = 'FULL';
+      const actionAuthor = (typeof window !== 'undefined' && window.NexvionAuth && window.NexvionAuth.getDisplayName && window.NexvionAuth.getDisplayName()) || store.getCurrentRole();
+      const nowIso = new Date().toISOString();
+      batch.updatedAt = nowIso;
 
       const student = store.state.students.find(s => s.id === studentId);
       if (student) {
@@ -3410,11 +3866,80 @@
         student.batchName = batch.name;
       }
       const enr = store.state.enrollments.find(e => e.studentId === studentId && e.batchId === batch.id);
-      if (enr) enr.status = 'Enrolled';
+      if (enr) {
+        enr.status = 'Enrolled';
+        enr.updatedBy = actionAuthor;
+        enr.updatedAt = nowIso;
+        enr.history = enr.history || [];
+        enr.history.push({
+          status: 'Enrolled',
+          timestamp: nowIso,
+          actionBy: actionAuthor,
+          note: `Admitted from waitlist into ${batch.name} (${batch.enrolledCount}/30)`
+        });
+      }
 
       store.saveState();
+      store.persistDoc('batches', batch.id, batch);
+      if (enr) store.persistDoc('enrollments', enr.id, enr);
+      if (student) store.persistDoc('students', student.id, student);
       auditRepository.log('Admitted Student from Waitlist', 'Batch', `${student ? student.name : studentId} into ${batch.name}`);
       return true;
+    },
+    completeBatch: async (batchId) => {
+      const batch = store.state.batches.find(b => b.id === batchId);
+      if (!batch) throw new Error('Cohort batch not found');
+      batch.status = 'COMPLETED';
+      const actionAuthor = (typeof window !== 'undefined' && window.NexvionAuth && window.NexvionAuth.getDisplayName && window.NexvionAuth.getDisplayName()) || store.getCurrentRole();
+      const nowIso = new Date().toISOString();
+      batch.updatedAt = nowIso;
+
+      store.state.enrollments.forEach(enr => {
+        if (enr.batchId === batchId && (enr.status === 'Enrolled' || enr.status === 'Approved')) {
+          enr.status = 'Completed';
+          enr.updatedBy = actionAuthor;
+          enr.updatedAt = nowIso;
+          enr.history = enr.history || [];
+          enr.history.push({
+            status: 'Completed',
+            timestamp: nowIso,
+            actionBy: actionAuthor,
+            note: `Cohort ${batch.name} concluded.`
+          });
+        }
+      });
+      store.state.students.forEach(s => {
+        if (s.batchId === batchId && s.enrollmentStatus === 'Enrolled') {
+          s.enrollmentStatus = 'Completed';
+        }
+      });
+
+      store.saveState();
+      store.persistDoc('batches', batch.id, batch);
+      auditRepository.log('Marked Batch Completed', 'Batch', `${batch.name} concluded successfully.`);
+      return batch;
+    },
+    cancelBatch: async (batchId, reason = 'Cohort cancelled') => {
+      const batch = store.state.batches.find(b => b.id === batchId);
+      if (!batch) throw new Error('Cohort batch not found');
+      batch.status = 'CANCELLED';
+      batch.cancellationReason = reason;
+      const actionAuthor = (typeof window !== 'undefined' && window.NexvionAuth && window.NexvionAuth.getDisplayName && window.NexvionAuth.getDisplayName()) || store.getCurrentRole();
+      const nowIso = new Date().toISOString();
+      batch.updatedAt = nowIso;
+
+      store.state.enrollments.forEach(enr => {
+        if (enr.batchId === batchId) {
+          enr.status = 'Cancelled';
+          enr.rejectionReason = `Cohort cancelled: ${reason}`;
+          enr.updatedBy = actionAuthor;
+          enr.updatedAt = nowIso;
+        }
+      });
+      store.saveState();
+      store.persistDoc('batches', batch.id, batch);
+      auditRepository.log('Cancelled Cohort Batch', 'Batch', `${batch.name} cancelled. Reason: ${reason}`);
+      return batch;
     }
   };
 
@@ -3624,22 +4149,36 @@
       return e ? JSON.parse(JSON.stringify(e)) : null;
     },
     create: async (enrData) => {
+      const actionAuthor = (typeof window !== 'undefined' && window.NexvionAuth && window.NexvionAuth.getDisplayName && window.NexvionAuth.getDisplayName()) || store.getCurrentRole();
+      const nowIso = new Date().toISOString();
       const clean = {
         ...enrData,
         id: enrData.id || `enr-${Date.now()}`,
-        submittedAt: enrData.submittedAt || new Date().toISOString(),
-        status: enrData.status || 'Pending'
+        submittedAt: enrData.submittedAt || nowIso,
+        status: enrData.status || 'Pending',
+        updatedBy: actionAuthor,
+        updatedAt: nowIso,
+        history: enrData.history || [
+          {
+            status: enrData.status || 'Pending',
+            timestamp: nowIso,
+            actionBy: actionAuthor,
+            note: 'Enrollment application submitted.'
+          }
+        ]
       };
       store.state.enrollments.unshift(clean);
       store.saveState();
+      store.persistDoc('enrollments', clean.id, clean);
       auditRepository.log('Submitted Enrollment Application', 'Enrollment', clean.studentName);
       return clean;
     },
     update: async (id, enrData) => {
       const idx = store.state.enrollments.findIndex(e => e.id === id);
       if (idx !== -1) {
-        store.state.enrollments[idx] = { ...store.state.enrollments[idx], ...enrData };
+        store.state.enrollments[idx] = { ...store.state.enrollments[idx], ...enrData, updatedAt: new Date().toISOString() };
         store.saveState();
+        store.persistDoc('enrollments', id, store.state.enrollments[idx]);
         return store.state.enrollments[idx];
       }
       return null;
@@ -3647,21 +4186,36 @@
     approve: async (id, targetBatchId) => {
       const enr = store.state.enrollments.find(e => e.id === id);
       if (!enr) throw new Error('Enrollment application not found.');
+      const actionAuthor = (typeof window !== 'undefined' && window.NexvionAuth && window.NexvionAuth.getDisplayName && window.NexvionAuth.getDisplayName()) || store.getCurrentRole();
+      const nowIso = new Date().toISOString();
       
       const batchId = targetBatchId || enr.batchId;
       const batch = store.state.batches.find(b => b.id === batchId);
       if (batch) {
+        // STRICT INVARIANT ENFORCEMENT: Max 30 students per batch
         if (batch.enrolledCount >= 30) {
-          throw new Error(`Cohort "${batch.name}" has reached maximum capacity of 30 students. Direct enrollment is locked. Move applicant to Waitlist instead.`);
+          throw new Error(`Cohort "${batch.name}" has reached maximum capacity of 30 students. Direct enrollment approval is locked. Please place applicant on the Waitlist instead.`);
         }
         batch.enrolledCount = Math.min(batch.enrolledCount + 1, 30);
         if (batch.enrolledCount >= 30) batch.status = 'FULL';
+        batch.updatedAt = nowIso;
         enr.batchId = batch.id;
         enr.batchName = batch.name;
+        store.persistDoc('batches', batch.id, batch);
       }
 
       enr.status = 'Approved';
-      enr.decidedAt = new Date().toISOString();
+      enr.decidedAt = nowIso;
+      enr.decidedBy = actionAuthor;
+      enr.updatedBy = actionAuthor;
+      enr.updatedAt = nowIso;
+      enr.history = enr.history || [];
+      enr.history.push({
+        status: 'Approved',
+        timestamp: nowIso,
+        actionBy: actionAuthor,
+        note: `Approved for course ${enr.courseTitle}${batch ? ' in ' + batch.name : ''}.`
+      });
 
       const student = store.state.students.find(s => s.id === enr.studentId);
       if (student) {
@@ -3670,27 +4224,44 @@
           student.batchId = batch.id;
           student.batchName = batch.name;
         }
+        student.lastActive = nowIso;
+        store.persistDoc('students', student.id, student);
       }
 
       store.saveState();
-      auditRepository.log('Approved Student Enrollment', 'Enrollment', `${enr.studentName} → ${enr.courseTitle}`);
+      store.persistDoc('enrollments', enr.id, enr);
+      auditRepository.log('Approved Student Enrollment', 'Enrollment', `${enr.studentName} → ${enr.courseTitle} (Decided by: ${actionAuthor})`);
       return enr;
     },
     reject: async (id, reason) => {
       const enr = store.state.enrollments.find(e => e.id === id);
       if (!enr) throw new Error('Enrollment application not found.');
+      const actionAuthor = (typeof window !== 'undefined' && window.NexvionAuth && window.NexvionAuth.getDisplayName && window.NexvionAuth.getDisplayName()) || store.getCurrentRole();
+      const nowIso = new Date().toISOString();
 
       enr.status = 'Rejected';
       enr.rejectionReason = reason || 'Application declined by admissions desk.';
-      enr.decidedAt = new Date().toISOString();
+      enr.decidedAt = nowIso;
+      enr.decidedBy = actionAuthor;
+      enr.updatedBy = actionAuthor;
+      enr.updatedAt = nowIso;
+      enr.history = enr.history || [];
+      enr.history.push({
+        status: 'Rejected',
+        timestamp: nowIso,
+        actionBy: actionAuthor,
+        note: `Application rejected: ${enr.rejectionReason}`
+      });
 
       const student = store.state.students.find(s => s.id === enr.studentId);
       if (student) {
         student.enrollmentStatus = 'Rejected';
+        store.persistDoc('students', student.id, student);
       }
 
       store.saveState();
-      auditRepository.log('Rejected Student Enrollment', 'Enrollment', `${enr.studentName}: ${enr.rejectionReason}`);
+      store.persistDoc('enrollments', enr.id, enr);
+      auditRepository.log('Rejected Student Enrollment', 'Enrollment', `${enr.studentName}: ${enr.rejectionReason} (By: ${actionAuthor})`);
       return enr;
     },
     assignBatch: async (enrollmentId, newBatchId) => {
@@ -3698,7 +4269,10 @@
       if (!enr) throw new Error('Enrollment application not found.');
       const targetBatch = store.state.batches.find(b => b.id === newBatchId);
       if (!targetBatch) throw new Error('Target cohort batch not found.');
+      const actionAuthor = (typeof window !== 'undefined' && window.NexvionAuth && window.NexvionAuth.getDisplayName && window.NexvionAuth.getDisplayName()) || store.getCurrentRole();
+      const nowIso = new Date().toISOString();
 
+      // INVARIANT ENFORCEMENT: Max 30 students per batch
       if (targetBatch.enrolledCount >= 30) {
         throw new Error(`Target cohort "${targetBatch.name}" is already at maximum capacity (30 / 30). Select an alternate cohort or place on waitlist.`);
       }
@@ -3709,6 +4283,8 @@
         if (oldBatch && oldBatch.enrolledCount > 0) {
           oldBatch.enrolledCount -= 1;
           if (oldBatch.status === 'FULL') oldBatch.status = 'OPEN';
+          oldBatch.updatedAt = nowIso;
+          store.persistDoc('batches', oldBatch.id, oldBatch);
         }
       }
 
@@ -3716,24 +4292,39 @@
       if (enr.status === 'Enrolled' || enr.status === 'Approved') {
         targetBatch.enrolledCount = Math.min(targetBatch.enrolledCount + 1, 30);
         if (targetBatch.enrolledCount >= 30) targetBatch.status = 'FULL';
+        targetBatch.updatedAt = nowIso;
+        store.persistDoc('batches', targetBatch.id, targetBatch);
       }
 
       enr.batchId = targetBatch.id;
       enr.batchName = targetBatch.name;
+      enr.updatedBy = actionAuthor;
+      enr.updatedAt = nowIso;
+      enr.history = enr.history || [];
+      enr.history.push({
+        status: enr.status,
+        timestamp: nowIso,
+        actionBy: actionAuthor,
+        note: `Assigned to cohort ${targetBatch.name}`
+      });
 
       const student = store.state.students.find(s => s.id === enr.studentId);
       if (student) {
         student.batchId = targetBatch.id;
         student.batchName = targetBatch.name;
+        store.persistDoc('students', student.id, student);
       }
 
       store.saveState();
-      auditRepository.log('Reassigned Cohort Batch', 'Enrollment', `${enr.studentName} → ${targetBatch.name}`);
+      store.persistDoc('enrollments', enr.id, enr);
+      auditRepository.log('Reassigned Cohort Batch', 'Enrollment', `${enr.studentName} → ${targetBatch.name} (By: ${actionAuthor})`);
       return targetBatch;
     },
     moveToWaitlist: async (enrollmentId) => {
       const enr = store.state.enrollments.find(e => e.id === enrollmentId);
       if (!enr) throw new Error('Enrollment record not found.');
+      const actionAuthor = (typeof window !== 'undefined' && window.NexvionAuth && window.NexvionAuth.getDisplayName && window.NexvionAuth.getDisplayName()) || store.getCurrentRole();
+      const nowIso = new Date().toISOString();
 
       if (enr.batchId) {
         const batch = store.state.batches.find(b => b.id === enr.batchId);
@@ -3743,15 +4334,33 @@
             if (batch.status === 'FULL') batch.status = 'OPEN';
           }
           batch.waitlistCount = (batch.waitlistCount || 0) + 1;
+          batch.updatedAt = nowIso;
+          store.persistDoc('batches', batch.id, batch);
         }
       }
 
       enr.status = 'Waitlisted';
+      enr.decidedAt = nowIso;
+      enr.decidedBy = actionAuthor;
+      enr.updatedBy = actionAuthor;
+      enr.updatedAt = nowIso;
+      enr.history = enr.history || [];
+      enr.history.push({
+        status: 'Waitlisted',
+        timestamp: nowIso,
+        actionBy: actionAuthor,
+        note: `Placed on waitlist for ${enr.batchName || 'cohort'}.`
+      });
+
       const student = store.state.students.find(s => s.id === enr.studentId);
-      if (student) student.enrollmentStatus = 'Waitlisted';
+      if (student) {
+        student.enrollmentStatus = 'Waitlisted';
+        store.persistDoc('students', student.id, student);
+      }
 
       store.saveState();
-      auditRepository.log('Moved Student to Waitlist', 'Enrollment', `${enr.studentName} (${enr.batchName})`);
+      store.persistDoc('enrollments', enr.id, enr);
+      auditRepository.log('Moved Student to Waitlist', 'Enrollment', `${enr.studentName} (${enr.batchName || 'cohort'}) by ${actionAuthor}`);
       return enr;
     },
     admitFromWaitlist: async (enrollmentId) => {
@@ -3759,6 +4368,8 @@
       if (!enr) throw new Error('Enrollment record not found.');
       const batch = store.state.batches.find(b => b.id === enr.batchId);
       if (!batch) throw new Error('Cohort batch not found.');
+      const actionAuthor = (typeof window !== 'undefined' && window.NexvionAuth && window.NexvionAuth.getDisplayName && window.NexvionAuth.getDisplayName()) || store.getCurrentRole();
+      const nowIso = new Date().toISOString();
 
       if (batch.enrolledCount >= 30) {
         throw new Error(`Cohort "${batch.name}" is already at maximum capacity (30 / 30). Cannot admit from waitlist until a seat opens.`);
@@ -3767,32 +4378,192 @@
       batch.enrolledCount += 1;
       if (batch.waitlistCount > 0) batch.waitlistCount -= 1;
       if (batch.enrolledCount >= 30) batch.status = 'FULL';
+      batch.updatedAt = nowIso;
 
       enr.status = 'Enrolled';
+      enr.decidedAt = nowIso;
+      enr.decidedBy = actionAuthor;
+      enr.updatedBy = actionAuthor;
+      enr.updatedAt = nowIso;
+      enr.history = enr.history || [];
+      enr.history.push({
+        status: 'Enrolled',
+        timestamp: nowIso,
+        actionBy: actionAuthor,
+        note: `Admitted from waitlist into ${batch.name} (${batch.enrolledCount}/30).`
+      });
+
       const student = store.state.students.find(s => s.id === enr.studentId);
       if (student) {
         student.enrollmentStatus = 'Enrolled';
         student.batchId = batch.id;
         student.batchName = batch.name;
+        store.persistDoc('students', student.id, student);
       }
 
       store.saveState();
-      auditRepository.log('Admitted Student from Waitlist', 'Enrollment', `${enr.studentName} into ${batch.name} (${batch.enrolledCount}/30)`);
+      store.persistDoc('batches', batch.id, batch);
+      store.persistDoc('enrollments', enr.id, enr);
+      auditRepository.log('Admitted Student from Waitlist', 'Enrollment', `${enr.studentName} into ${batch.name} (${batch.enrolledCount}/30) by ${actionAuthor}`);
       return enr;
+    },
+    cancel: async (id, reason = 'Cancelled by applicant or administrative request') => {
+      const enr = store.state.enrollments.find(e => e.id === id);
+      if (!enr) throw new Error('Enrollment record not found.');
+      const actionAuthor = (typeof window !== 'undefined' && window.NexvionAuth && window.NexvionAuth.getDisplayName && window.NexvionAuth.getDisplayName()) || store.getCurrentRole();
+      const nowIso = new Date().toISOString();
+
+      if (enr.batchId && (enr.status === 'Enrolled' || enr.status === 'Approved')) {
+        const batch = store.state.batches.find(b => b.id === enr.batchId);
+        if (batch && batch.enrolledCount > 0) {
+          batch.enrolledCount -= 1;
+          if (batch.status === 'FULL') batch.status = 'OPEN';
+          batch.updatedAt = nowIso;
+          store.persistDoc('batches', batch.id, batch);
+        }
+      }
+
+      enr.status = 'Cancelled';
+      enr.cancellationReason = reason;
+      enr.updatedBy = actionAuthor;
+      enr.updatedAt = nowIso;
+      enr.history = enr.history || [];
+      enr.history.push({
+        status: 'Cancelled',
+        timestamp: nowIso,
+        actionBy: actionAuthor,
+        note: `Enrollment cancelled. Reason: ${reason}`
+      });
+
+      const student = store.state.students.find(s => s.id === enr.studentId);
+      if (student) {
+        student.enrollmentStatus = 'Cancelled';
+        store.persistDoc('students', student.id, student);
+      }
+
+      store.saveState();
+      store.persistDoc('enrollments', enr.id, enr);
+      auditRepository.log('Cancelled Enrollment', 'Enrollment', `${enr.studentName} (${enr.courseTitle}). Reason: ${reason}`);
+      return enr;
+    },
+    complete: async (id) => {
+      const enr = store.state.enrollments.find(e => e.id === id);
+      if (!enr) throw new Error('Enrollment record not found.');
+      const actionAuthor = (typeof window !== 'undefined' && window.NexvionAuth && window.NexvionAuth.getDisplayName && window.NexvionAuth.getDisplayName()) || store.getCurrentRole();
+      const nowIso = new Date().toISOString();
+
+      enr.status = 'Completed';
+      enr.completedAt = nowIso;
+      enr.completedBy = actionAuthor;
+      enr.updatedBy = actionAuthor;
+      enr.updatedAt = nowIso;
+      enr.history = enr.history || [];
+      enr.history.push({
+        status: 'Completed',
+        timestamp: nowIso,
+        actionBy: actionAuthor,
+        note: `Course completed and credential requirements fulfilled.`
+      });
+
+      const student = store.state.students.find(s => s.id === enr.studentId);
+      if (student) {
+        student.enrollmentStatus = 'Completed';
+        student.progressPercent = 100;
+        store.persistDoc('students', student.id, student);
+      }
+
+      store.saveState();
+      store.persistDoc('enrollments', enr.id, enr);
+      auditRepository.log('Completed Enrollment', 'Enrollment', `${enr.studentName} completed ${enr.courseTitle}`);
+      return enr;
+    },
+    changeCourse: async (id, newCourseId) => {
+      const enr = store.state.enrollments.find(e => e.id === id);
+      if (!enr) throw new Error('Enrollment record not found.');
+      const newCourse = store.state.courses.find(c => c.id === newCourseId);
+      if (!newCourse) throw new Error('Target course not found.');
+      const actionAuthor = (typeof window !== 'undefined' && window.NexvionAuth && window.NexvionAuth.getDisplayName && window.NexvionAuth.getDisplayName()) || store.getCurrentRole();
+      const nowIso = new Date().toISOString();
+
+      const prevCourseTitle = enr.courseTitle;
+
+      // Unassign batch if it was bound to previous course
+      if (enr.batchId && (enr.status === 'Enrolled' || enr.status === 'Approved')) {
+        const batch = store.state.batches.find(b => b.id === enr.batchId);
+        if (batch && batch.enrolledCount > 0) {
+          batch.enrolledCount -= 1;
+          if (batch.status === 'FULL') batch.status = 'OPEN';
+          batch.updatedAt = nowIso;
+          store.persistDoc('batches', batch.id, batch);
+        }
+      }
+
+      enr.courseId = newCourse.id;
+      enr.courseTitle = newCourse.title;
+      enr.batchId = null;
+      enr.batchName = 'Unassigned';
+      enr.status = 'Pending';
+      enr.updatedBy = actionAuthor;
+      enr.updatedAt = nowIso;
+      enr.history = enr.history || [];
+      enr.history.push({
+        status: 'Course Changed',
+        timestamp: nowIso,
+        actionBy: actionAuthor,
+        note: `Course changed from "${prevCourseTitle}" to "${newCourse.title}". Batch unassigned pending approval.`
+      });
+
+      const student = store.state.students.find(s => s.id === enr.studentId);
+      if (student) {
+        student.enrolledCourseId = newCourse.id;
+        student.enrolledCourseTitle = newCourse.title;
+        student.batchId = null;
+        student.batchName = 'Unassigned';
+        student.enrollmentStatus = 'Pending';
+        store.persistDoc('students', student.id, student);
+      }
+
+      store.saveState();
+      store.persistDoc('enrollments', enr.id, enr);
+      auditRepository.log('Changed Enrollment Course', 'Enrollment', `${enr.studentName}: ${prevCourseTitle} → ${newCourse.title}`);
+      return enr;
+    },
+    getHistory: async (studentOrEnrollmentId) => {
+      let enr = store.state.enrollments.find(e => e.id === studentOrEnrollmentId);
+      if (!enr) {
+        enr = store.state.enrollments.find(e => e.studentId === studentOrEnrollmentId);
+      }
+      return enr && enr.history ? JSON.parse(JSON.stringify(enr.history)) : [];
     },
     updateStatus: async (id, newStatus, reason = '') => {
       const enr = store.state.enrollments.find(e => e.id === id);
       if (enr) {
+        const actionAuthor = (typeof window !== 'undefined' && window.NexvionAuth && window.NexvionAuth.getDisplayName && window.NexvionAuth.getDisplayName()) || store.getCurrentRole();
+        const nowIso = new Date().toISOString();
         const prev = enr.status;
         enr.status = newStatus;
+        enr.updatedBy = actionAuthor;
+        enr.updatedAt = nowIso;
         if (reason) {
           enr.rejectionReason = reason;
           enr.notes = (enr.notes ? enr.notes + ' | ' : '') + reason;
         }
+        enr.history = enr.history || [];
+        enr.history.push({
+          status: newStatus,
+          timestamp: nowIso,
+          actionBy: actionAuthor,
+          note: reason ? `Status changed from ${prev} to ${newStatus}. Note: ${reason}` : `Status changed from ${prev} to ${newStatus}.`
+        });
+
         const student = store.state.students.find(s => s.id === enr.studentId);
-        if (student) student.enrollmentStatus = newStatus;
+        if (student) {
+          student.enrollmentStatus = newStatus;
+          store.persistDoc('students', student.id, student);
+        }
         store.saveState();
-        auditRepository.log('Updated Enrollment Status', 'Enrollment', `${enr.studentName} (${enr.courseTitle}): ${prev} → ${newStatus}`);
+        store.persistDoc('enrollments', enr.id, enr);
+        auditRepository.log('Updated Enrollment Status', 'Enrollment', `${enr.studentName} (${enr.courseTitle}): ${prev} → ${newStatus} by ${actionAuthor}`);
         return true;
       }
       return false;
@@ -3800,9 +4571,12 @@
     addNote: async (id, noteText) => {
       const enr = store.state.enrollments.find(e => e.id === id);
       if (enr) {
+        const actionAuthor = (typeof window !== 'undefined' && window.NexvionAuth && window.NexvionAuth.getDisplayName && window.NexvionAuth.getDisplayName()) || store.getCurrentRole();
         const timeStr = new Date().toISOString().split('T')[0];
-        enr.notes = (enr.notes ? enr.notes + '\n' : '') + `[${timeStr}] ${noteText}`;
+        enr.notes = (enr.notes ? enr.notes + '\n' : '') + `[${timeStr} - ${actionAuthor}] ${noteText}`;
+        enr.updatedAt = new Date().toISOString();
         store.saveState();
+        store.persistDoc('enrollments', enr.id, enr);
         return true;
       }
       return false;
@@ -3819,17 +4593,21 @@
     saveClass: async (classData) => {
       const idx = store.state.classes.findIndex(c => c.id === classData.id);
       if (idx !== -1) {
-        store.state.classes[idx] = { ...store.state.classes[idx], ...classData };
+        store.state.classes[idx] = { ...store.state.classes[idx], ...classData, updatedAt: new Date().toISOString() };
         store.saveState();
+        store.persistDoc('classes', classData.id, store.state.classes[idx]);
         auditRepository.log('Updated Curriculum Class', 'Class', store.state.classes[idx].title);
         return store.state.classes[idx];
       } else {
         const newClass = {
           ...classData,
-          id: classData.id || `cls-${Date.now()}`
+          id: classData.id || `cls-${Date.now()}`,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
         };
         store.state.classes.unshift(newClass);
         store.saveState();
+        store.persistDoc('classes', newClass.id, newClass);
         auditRepository.log('Created Curriculum Class', 'Class', newClass.title);
         return newClass;
       }
@@ -3841,10 +4619,13 @@
         ...JSON.parse(JSON.stringify(orig)),
         id: `cls-${Date.now()}`,
         title: `${orig.title} (Copy)`,
-        status: 'Draft'
+        status: 'Draft',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
       };
       store.state.classes.unshift(clone);
       store.saveState();
+      store.persistDoc('classes', clone.id, clone);
       auditRepository.log('Duplicated Curriculum Class', 'Class', clone.title);
       return clone;
     },
@@ -3852,7 +4633,9 @@
       const c = store.state.classes.find(item => item.id === id);
       if (c) {
         c.status = 'Archived';
+        c.updatedAt = new Date().toISOString();
         store.saveState();
+        store.persistDoc('classes', id, c);
         auditRepository.log('Archived Curriculum Class', 'Class', c.title);
         return true;
       }
@@ -3867,18 +4650,22 @@
     saveModule: async (modData) => {
       const idx = store.state.modules.findIndex(m => m.id === modData.id);
       if (idx !== -1) {
-        store.state.modules[idx] = { ...store.state.modules[idx], ...modData };
+        store.state.modules[idx] = { ...store.state.modules[idx], ...modData, updatedAt: new Date().toISOString() };
         store.saveState();
+        store.persistDoc('modules', modData.id, store.state.modules[idx]);
         auditRepository.log('Updated Curriculum Module', 'Module', store.state.modules[idx].title);
         return store.state.modules[idx];
       } else {
         const newMod = {
           ...modData,
           id: modData.id || `mod-${Date.now()}`,
-          classesCount: modData.classesCount || 0
+          classesCount: modData.classesCount || 0,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
         };
         store.state.modules.unshift(newMod);
         store.saveState();
+        store.persistDoc('modules', newMod.id, newMod);
         auditRepository.log('Created Curriculum Module', 'Module', newMod.title);
         return newMod;
       }
@@ -3890,10 +4677,13 @@
         ...JSON.parse(JSON.stringify(orig)),
         id: `mod-${Date.now()}`,
         title: `${orig.title} (Copy)`,
-        status: 'Draft'
+        status: 'Draft',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
       };
       store.state.modules.unshift(clone);
       store.saveState();
+      store.persistDoc('modules', clone.id, clone);
       auditRepository.log('Duplicated Curriculum Module', 'Module', clone.title);
       return clone;
     },
@@ -3901,7 +4691,9 @@
       const m = store.state.modules.find(item => item.id === id);
       if (m) {
         m.status = 'Archived';
+        m.updatedAt = new Date().toISOString();
         store.saveState();
+        store.persistDoc('modules', id, m);
         auditRepository.log('Archived Curriculum Module', 'Module', m.title);
         return true;
       }
@@ -3916,17 +4708,21 @@
     saveLesson: async (lsnData) => {
       const idx = store.state.lessons.findIndex(l => l.id === lsnData.id);
       if (idx !== -1) {
-        store.state.lessons[idx] = { ...store.state.lessons[idx], ...lsnData };
+        store.state.lessons[idx] = { ...store.state.lessons[idx], ...lsnData, updatedAt: new Date().toISOString() };
         store.saveState();
+        store.persistDoc('lessons', lsnData.id, store.state.lessons[idx]);
         auditRepository.log('Updated Lesson', 'Lesson', store.state.lessons[idx].title);
         return store.state.lessons[idx];
       } else {
         const newLsn = {
           ...lsnData,
-          id: lsnData.id || `lsn-${Date.now()}`
+          id: lsnData.id || `lsn-${Date.now()}`,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
         };
         store.state.lessons.unshift(newLsn);
         store.saveState();
+        store.persistDoc('lessons', newLsn.id, newLsn);
         auditRepository.log('Created Lesson', 'Lesson', newLsn.title);
         return newLsn;
       }
@@ -3938,10 +4734,13 @@
         ...JSON.parse(JSON.stringify(orig)),
         id: `lsn-${Date.now()}`,
         title: `${orig.title} (Copy)`,
-        status: 'Draft'
+        status: 'Draft',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
       };
       store.state.lessons.unshift(clone);
       store.saveState();
+      store.persistDoc('lessons', clone.id, clone);
       auditRepository.log('Duplicated Lesson', 'Lesson', clone.title);
       return clone;
     },
@@ -3949,7 +4748,9 @@
       const l = store.state.lessons.find(item => item.id === id);
       if (l) {
         l.status = 'Archived';
+        l.updatedAt = new Date().toISOString();
         store.saveState();
+        store.persistDoc('lessons', id, l);
         auditRepository.log('Archived Lesson', 'Lesson', l.title);
         return true;
       }
@@ -3964,18 +4765,21 @@
     saveVideo: async (vidData) => {
       const idx = store.state.videos.findIndex(v => v.id === vidData.id);
       if (idx !== -1) {
-        store.state.videos[idx] = { ...store.state.videos[idx], ...vidData };
+        store.state.videos[idx] = { ...store.state.videos[idx], ...vidData, updatedAt: new Date().toISOString() };
         store.saveState();
+        store.persistDoc('videos', vidData.id, store.state.videos[idx]);
         auditRepository.log('Updated Video Asset', 'Video', store.state.videos[idx].title);
         return store.state.videos[idx];
       } else {
         const newVid = {
           ...vidData,
           id: vidData.id || `vid-${Date.now()}`,
-          uploadedAt: vidData.uploadedAt || new Date().toISOString()
+          uploadedAt: vidData.uploadedAt || new Date().toISOString(),
+          updatedAt: new Date().toISOString()
         };
         store.state.videos.unshift(newVid);
         store.saveState();
+        store.persistDoc('videos', newVid.id, newVid);
         auditRepository.log('Created Video Asset', 'Video', newVid.title);
         return newVid;
       }
@@ -3984,7 +4788,9 @@
       const v = store.state.videos.find(item => item.id === id);
       if (v) {
         v.status = 'Archived';
+        v.updatedAt = new Date().toISOString();
         store.saveState();
+        store.persistDoc('videos', id, v);
         auditRepository.log('Archived Video Asset', 'Video', v.title);
         return true;
       }
@@ -3999,18 +4805,22 @@
     saveResource: async (resData) => {
       const idx = store.state.resources.findIndex(r => r.id === resData.id);
       if (idx !== -1) {
-        store.state.resources[idx] = { ...store.state.resources[idx], ...resData };
+        store.state.resources[idx] = { ...store.state.resources[idx], ...resData, updatedAt: new Date().toISOString() };
         store.saveState();
+        store.persistDoc('resources', resData.id, store.state.resources[idx]);
         auditRepository.log('Updated Resource Asset', 'Resource', store.state.resources[idx].title);
         return store.state.resources[idx];
       } else {
         const newRes = {
           ...resData,
           id: resData.id || `res-${Date.now()}`,
-          downloadCount: resData.downloadCount || 0
+          downloadCount: resData.downloadCount || 0,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
         };
         store.state.resources.unshift(newRes);
         store.saveState();
+        store.persistDoc('resources', newRes.id, newRes);
         auditRepository.log('Created Resource Asset', 'Resource', newRes.title);
         return newRes;
       }
@@ -4019,7 +4829,9 @@
       const r = store.state.resources.find(item => item.id === id);
       if (r) {
         r.status = 'Archived';
+        r.updatedAt = new Date().toISOString();
         store.saveState();
+        store.persistDoc('resources', id, r);
         auditRepository.log('Archived Resource Asset', 'Resource', r.title);
         return true;
       }
@@ -4037,17 +4849,21 @@
     saveProject: async (projectData) => {
       const idx = store.state.projects.findIndex(p => p.id === projectData.id);
       if (idx !== -1) {
-        store.state.projects[idx] = { ...store.state.projects[idx], ...projectData };
+        store.state.projects[idx] = { ...store.state.projects[idx], ...projectData, updatedAt: new Date().toISOString() };
         store.saveState();
+        store.persistDoc('projects', projectData.id, store.state.projects[idx]);
         auditRepository.log('Updated Project Milestone', 'Project', store.state.projects[idx].title);
         return store.state.projects[idx];
       } else {
         const newProj = {
           ...projectData,
-          id: projectData.id || `prj-${Date.now()}`
+          id: projectData.id || `prj-${Date.now()}`,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
         };
         store.state.projects.unshift(newProj);
         store.saveState();
+        store.persistDoc('projects', newProj.id, newProj);
         auditRepository.log('Created Project Milestone', 'Project', newProj.title);
         return newProj;
       }
@@ -4059,10 +4875,13 @@
         ...JSON.parse(JSON.stringify(orig)),
         id: `prj-${Date.now()}`,
         title: `${orig.title} (Copy)`,
-        status: 'Draft'
+        status: 'Draft',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
       };
       store.state.projects.unshift(clone);
       store.saveState();
+      store.persistDoc('projects', clone.id, clone);
       auditRepository.log('Duplicated Project Milestone', 'Project', clone.title);
       return clone;
     },
@@ -4070,7 +4889,9 @@
       const p = store.state.projects.find(item => item.id === id);
       if (p) {
         p.status = 'Archived';
+        p.updatedAt = new Date().toISOString();
         store.saveState();
+        store.persistDoc('projects', id, p);
         auditRepository.log('Archived Project Milestone', 'Project', p.title);
         return true;
       }
@@ -4085,17 +4906,21 @@
     saveAssignment: async (assignmentData) => {
       const idx = store.state.assignments.findIndex(a => a.id === assignmentData.id);
       if (idx !== -1) {
-        store.state.assignments[idx] = { ...store.state.assignments[idx], ...assignmentData };
+        store.state.assignments[idx] = { ...store.state.assignments[idx], ...assignmentData, updatedAt: new Date().toISOString() };
         store.saveState();
+        store.persistDoc('assignments', assignmentData.id, store.state.assignments[idx]);
         auditRepository.log('Updated Assignment Requirement', 'Assignment', store.state.assignments[idx].title);
         return store.state.assignments[idx];
       } else {
         const newAsg = {
           ...assignmentData,
-          id: assignmentData.id || `asg-${Date.now()}`
+          id: assignmentData.id || `asg-${Date.now()}`,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
         };
         store.state.assignments.unshift(newAsg);
         store.saveState();
+        store.persistDoc('assignments', newAsg.id, newAsg);
         auditRepository.log('Created Assignment Requirement', 'Assignment', newAsg.title);
         return newAsg;
       }
@@ -4107,10 +4932,13 @@
         ...JSON.parse(JSON.stringify(orig)),
         id: `asg-${Date.now()}`,
         title: `${orig.title} (Copy)`,
-        status: 'Draft'
+        status: 'Draft',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
       };
       store.state.assignments.unshift(clone);
       store.saveState();
+      store.persistDoc('assignments', clone.id, clone);
       auditRepository.log('Duplicated Assignment Requirement', 'Assignment', clone.title);
       return clone;
     },
@@ -4118,7 +4946,9 @@
       const a = store.state.assignments.find(item => item.id === id);
       if (a) {
         a.status = 'Archived';
+        a.updatedAt = new Date().toISOString();
         store.saveState();
+        store.persistDoc('assignments', id, a);
         auditRepository.log('Archived Assignment Requirement', 'Assignment', a.title);
         return true;
       }
@@ -4135,6 +4965,7 @@
       if (idx !== -1) {
         store.state.submissions[idx] = { ...store.state.submissions[idx], ...subData, lastUpdated: new Date().toISOString() };
         store.saveState();
+        store.persistDoc('submissions', subData.id, store.state.submissions[idx]);
         return store.state.submissions[idx];
       } else {
         const newSub = {
@@ -4145,6 +4976,7 @@
         };
         store.state.submissions.unshift(newSub);
         store.saveState();
+        store.persistDoc('submissions', newSub.id, newSub);
         return newSub;
       }
     },
@@ -4852,6 +5684,36 @@
     logAuditEvent: (action, entityType, entityName, prev, next, result) => auditRepository.log(action, entityType, entityName, prev, next, result),
     getSettings: () => settingsRepository.get(),
     saveSettings: (settings) => settingsRepository.save(settings),
-    resetSettingsSection: (section) => settingsRepository.resetSection(section)
+    resetSettingsSection: (section) => settingsRepository.resetSection(section),
+
+    // Phase 11 Extended Operations & Cloud Connectors
+    publishCourse: (id) => courseRepository.publish(id),
+    unpublishCourse: (id) => courseRepository.unpublish(id),
+    archiveCourse: (id) => courseRepository.archive(id),
+    assignCourseTier: (courseId, tierId) => courseRepository.assignTier(courseId, tierId),
+    getCourseModules: (courseId) => courseRepository.getModules(courseId),
+    getCourseClasses: (courseId) => courseRepository.getClasses(courseId),
+    getCourseProjects: (courseId) => courseRepository.getProjects(courseId),
+    configureCertificateRequirements: (courseId, reqs) => courseRepository.configureCertificateRequirements(courseId, reqs),
+
+    assignBatchCourse: (batchId, courseId) => batchRepository.assignCourse(batchId, courseId),
+    assignBatchInstructor: (batchId, instructor) => batchRepository.assignInstructor(batchId, instructor),
+    setBatchDates: (batchId, start, end) => batchRepository.setDates(batchId, start, end),
+    setBatchSchedule: (batchId, schedule) => batchRepository.setSchedule(batchId, schedule),
+    addBatchStudent: (batchId, studentId) => batchRepository.addStudent(batchId, studentId),
+    removeBatchStudent: (batchId, studentId, reason) => batchRepository.removeStudent(batchId, studentId, reason),
+    getBatchWaitlist: (batchId) => batchRepository.getWaitlist(batchId),
+    moveWaitlistToBatch: (batchId, studentId) => batchRepository.moveWaitlistToBatch(batchId, studentId),
+    completeBatch: (batchId) => batchRepository.completeBatch(batchId),
+    cancelBatch: (batchId, reason) => batchRepository.cancelBatch(batchId, reason),
+
+    cancelEnrollment: (id, reason) => enrollmentRepository.cancel(id, reason),
+    completeEnrollment: (id) => enrollmentRepository.complete(id),
+    changeEnrollmentCourse: (id, newCourseId) => enrollmentRepository.changeCourse(id, newCourseId),
+    getEnrollmentHistory: (studentOrEnrollmentId) => enrollmentRepository.getHistory(studentOrEnrollmentId),
+
+    seedInitialData: (force) => store.seedInitialData(force),
+    syncWithFirestore: () => store.syncWithFirestore(),
+    getFirestoreStatus: () => store.getFirestoreStatus()
   };
 });

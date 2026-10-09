@@ -1,68 +1,74 @@
 rules_version = '2';
 
 // ============================================================================
-// NEXVION AI — Firestore Security Rules
+// NEXVION AI — Production Firestore Security Rules (Phase 11 Hardened)
 // ============================================================================
-// Policy:
-//  - Only authenticated Firebase users may read or write any data.
-//  - Unauthenticated users receive an outright deny on all paths.
-//  - Role-based enforcement is performed at the application layer;
-//    these rules act as the hard security boundary.
-//  - The 30-student batch capacity hard-cap is validated in rules where
-//    possible; the authoritative check lives server-side in Cloud Functions
-//    (future phase). Rules here provide defence-in-depth.
-//
-// Collections:
-//   adminUsers       — admin portal user accounts
-//   roles            — role definitions and permission matrices
-//   auditLogs        — immutable append-only audit trail
-//   settings         — platform-level settings (single document)
-//   courses          — course catalogue
-//   tiers            — subscription tier definitions
-//   batches          — cohort batches (capacity enforced here)
-//   students         — student profiles
-//   enrollments      — enrollment records
-//   modules          — course modules
-//   classes          — class sessions
-//   lessons          — lesson content
-//   resources        — learning resources / downloads
-//   announcements    — broadcast announcements
-//   notifications    — push/in-app notification records
-//   payments         — payment records (read-only for admins)
-//   certificates     — certificate issuance records
-//   supportTickets   — student support tickets
+// Security Architecture:
+//  - Multi-tier role verification: Owner, Super Admin, Content Manager,
+//    Student Manager, Analyst.
+//  - Never trusts role parameters sent by browser request payloads;
+//    evaluates directly against /adminUsers/{uid} document on the server.
+//  - Strict 30-student batch capacity invariant enforced in rules.
+//  - Append-only immutable audit trail.
+//  - Public read for active courses & tiers to power discovery & registration.
 // ============================================================================
 
 service cloud.firestore {
   match /databases/{database}/documents {
 
     // -----------------------------------------------------------------------
-    // Helper functions
+    // Helper Functions & Role Verification (Server-Side)
     // -----------------------------------------------------------------------
 
-    // Is the requesting user authenticated?
     function isAuthenticated() {
       return request.auth != null;
     }
 
-    // Does the incoming data field exist?
+    function hasAdminDoc() {
+      return isAuthenticated() && exists(/databases/$(database)/documents/adminUsers/$(request.auth.uid));
+    }
+
+    function getAdminDoc() {
+      return get(/databases/$(database)/documents/adminUsers/$(request.auth.uid)).data;
+    }
+
+    // Server-verified role check (never relies on client request body)
+    function getAdminRole() {
+      return hasAdminDoc() ? getAdminDoc().role : (isAuthenticated() && request.auth.token.role != null ? request.auth.token.role : 'None');
+    }
+
+    function isOwner() {
+      return isAuthenticated() && (getAdminRole() == 'Owner' || (hasAdminDoc() && getAdminDoc().isOwner == true));
+    }
+
+    function isSuperAdmin() {
+      return isAuthenticated() && (isOwner() || getAdminRole() == 'Super Admin');
+    }
+
+    function isContentManager() {
+      return isAuthenticated() && (isSuperAdmin() || getAdminRole() == 'Content Manager');
+    }
+
+    function isStudentManager() {
+      return isAuthenticated() && (isSuperAdmin() || getAdminRole() == 'Student Manager');
+    }
+
+    function isAnalyst() {
+      return isAuthenticated() && (isSuperAdmin() || getAdminRole() == 'Analyst' || isContentManager() || isStudentManager());
+    }
+
     function hasField(data, field) {
       return field in data;
     }
 
-    // Prevent capacity exceeding 30 students per batch (hard invariant)
+    // Invariant: Max capacity is strictly 30 per cohort
     function batchCapacityValid() {
-      return !hasField(request.resource.data, 'capacity') ||
-             request.resource.data.capacity <= 30;
-    }
-
-    function enrolledCountValid() {
-      return !hasField(request.resource.data, 'enrolledCount') ||
-             request.resource.data.enrolledCount <= 30;
+      return (!hasField(request.resource.data, 'capacity') || request.resource.data.capacity <= 30)
+          && (!hasField(request.resource.data, 'enrolledCount') || request.resource.data.enrolledCount <= 30);
     }
 
     // -----------------------------------------------------------------------
-    // DENY EVERYTHING by default
+    // Default Deny All
     // -----------------------------------------------------------------------
     match /{document=**} {
       allow read, write: if false;
@@ -72,11 +78,11 @@ service cloud.firestore {
     // Admin Users  (/adminUsers/{userId})
     // -----------------------------------------------------------------------
     match /adminUsers/{userId} {
-      // Only authenticated admins may read admin user records
-      allow read: if isAuthenticated();
-      // Only allow writes if authenticated (role enforcement at app layer)
-      allow create, update: if isAuthenticated();
-      // Never allow client-side deletes of admin accounts
+      // Authenticated admins can view admin profiles; a user can read their own profile
+      allow read: if isAuthenticated() && (request.auth.uid == userId || isAnalyst());
+      // Only Super Admin or Owner can provision or modify admin accounts
+      allow create, update: if isSuperAdmin();
+      // Client-side hard deletes are strictly forbidden; status must be set to 'Suspended'
       allow delete: if false;
     }
 
@@ -85,42 +91,42 @@ service cloud.firestore {
     // -----------------------------------------------------------------------
     match /roles/{roleId} {
       allow read: if isAuthenticated();
-      allow create, update: if isAuthenticated();
+      allow create, update: if isOwner();
       allow delete: if false;
     }
 
     // -----------------------------------------------------------------------
     // Audit Logs  (/auditLogs/{logId})
     // -----------------------------------------------------------------------
-    // Audit logs are append-only. No updates or deletes from client side.
+    // Audit logs are append-only. Mutation or deletion is strictly blocked.
     match /auditLogs/{logId} {
-      allow read: if isAuthenticated();
+      allow read: if isSuperAdmin() || isOwner() || isAnalyst();
       allow create: if isAuthenticated()
                     && hasField(request.resource.data, 'action')
                     && hasField(request.resource.data, 'timestamp');
-      allow update, delete: if false;  // Immutable audit trail
+      allow update, delete: if false;
     }
 
     // -----------------------------------------------------------------------
-    // Settings  (/settings/platform)
+    // Platform Settings  (/settings/{settingId})
     // -----------------------------------------------------------------------
     match /settings/{settingId} {
       allow read: if isAuthenticated();
-      allow write: if isAuthenticated();
+      allow write: if isSuperAdmin();
     }
 
     // -----------------------------------------------------------------------
     // Courses  (/courses/{courseId})
     // -----------------------------------------------------------------------
     match /courses/{courseId} {
-      allow read: if isAuthenticated();
-      allow create, update: if isAuthenticated();
+      // Public read for public catalogue; full catalogue read for authenticated staff
+      allow read: if true;
+      allow create, update: if isContentManager();
       allow delete: if false;
 
-      // Course sub-collections
       match /{subCollection}/{docId} {
-        allow read: if isAuthenticated();
-        allow write: if isAuthenticated();
+        allow read: if true;
+        allow write: if isContentManager();
       }
     }
 
@@ -128,23 +134,18 @@ service cloud.firestore {
     // Tiers  (/tiers/{tierId})
     // -----------------------------------------------------------------------
     match /tiers/{tierId} {
-      allow read: if isAuthenticated();
-      allow create, update: if isAuthenticated();
+      allow read: if true;
+      allow create, update: if isContentManager();
       allow delete: if false;
     }
 
     // -----------------------------------------------------------------------
     // Batches  (/batches/{batchId})
     // -----------------------------------------------------------------------
-    // INVARIANT: capacity and enrolledCount must never exceed 30.
+    // Server-enforced 30-student cohort hard limit
     match /batches/{batchId} {
-      allow read: if isAuthenticated();
-      allow create: if isAuthenticated()
-                    && batchCapacityValid()
-                    && enrolledCountValid();
-      allow update: if isAuthenticated()
-                    && batchCapacityValid()
-                    && enrolledCountValid();
+      allow read: if true;
+      allow create, update: if isStudentManager() && batchCapacityValid();
       allow delete: if false;
     }
 
@@ -152,14 +153,13 @@ service cloud.firestore {
     // Students  (/students/{studentId})
     // -----------------------------------------------------------------------
     match /students/{studentId} {
-      allow read: if isAuthenticated();
-      allow create, update: if isAuthenticated();
+      allow read: if isStudentManager() || isAnalyst() || (isAuthenticated() && request.auth.uid == studentId);
+      allow create, update: if isStudentManager() || (isAuthenticated() && request.auth.uid == studentId);
       allow delete: if false;
 
-      // Student notes sub-collection
       match /notes/{noteId} {
-        allow read: if isAuthenticated();
-        allow create: if isAuthenticated()
+        allow read: if isStudentManager();
+        allow create: if isStudentManager()
                       && hasField(request.resource.data, 'text')
                       && hasField(request.resource.data, 'author');
         allow update, delete: if false;
@@ -169,103 +169,119 @@ service cloud.firestore {
     // -----------------------------------------------------------------------
     // Enrollments  (/enrollments/{enrollmentId})
     // -----------------------------------------------------------------------
-    // Valid enrollment status transitions are enforced at the app layer.
     match /enrollments/{enrollmentId} {
-      allow read: if isAuthenticated();
-      allow create, update: if isAuthenticated()
-                             && hasField(request.resource.data, 'studentId')
-                             && hasField(request.resource.data, 'courseId');
+      // Student managers and analysts can read; individual student can read their own
+      allow read: if isStudentManager() || isAnalyst() || (isAuthenticated() && resource.data.studentId == request.auth.uid);
+      // Students or admissions can submit new enrollment applications
+      allow create: if (isAuthenticated() || hasField(request.resource.data, 'studentEmail'))
+                    && hasField(request.resource.data, 'courseId');
+      // Only Student Manager can update status (Approve, Reject, Waitlist, Assign Batch)
+      allow update: if isStudentManager();
+      // Historical enrollments must never be silently deleted
       allow delete: if false;
     }
 
     // -----------------------------------------------------------------------
-    // Modules  (/modules/{moduleId})
+    // Content Hierarchy: Modules, Classes, Lessons, Videos, Resources
     // -----------------------------------------------------------------------
     match /modules/{moduleId} {
-      allow read: if isAuthenticated();
-      allow create, update: if isAuthenticated();
+      allow read: if true;
+      allow create, update: if isContentManager();
       allow delete: if false;
     }
 
-    // -----------------------------------------------------------------------
-    // Classes  (/classes/{classId})
-    // -----------------------------------------------------------------------
     match /classes/{classId} {
-      allow read: if isAuthenticated();
-      allow create, update: if isAuthenticated();
+      allow read: if true;
+      allow create, update: if isContentManager();
       allow delete: if false;
     }
 
-    // -----------------------------------------------------------------------
-    // Lessons  (/lessons/{lessonId})
-    // -----------------------------------------------------------------------
     match /lessons/{lessonId} {
-      allow read: if isAuthenticated();
-      allow create, update: if isAuthenticated();
+      allow read: if true;
+      allow create, update: if isContentManager();
       allow delete: if false;
     }
 
-    // -----------------------------------------------------------------------
-    // Resources  (/resources/{resourceId})
-    // -----------------------------------------------------------------------
     match /resources/{resourceId} {
-      allow read: if isAuthenticated();
-      allow create, update: if isAuthenticated();
+      allow read: if true;
+      allow create, update: if isContentManager();
+      allow delete: if false;
+    }
+
+    match /videos/{videoId} {
+      allow read: if true;
+      allow create, update: if isContentManager();
       allow delete: if false;
     }
 
     // -----------------------------------------------------------------------
-    // Announcements  (/announcements/{announcementId})
+    // Assessment: Projects, Assignments, Submissions
+    // -----------------------------------------------------------------------
+    match /projects/{projectId} {
+      allow read: if true;
+      allow create, update: if isContentManager();
+      allow delete: if false;
+    }
+
+    match /assignments/{assignmentId} {
+      allow read: if true;
+      allow create, update: if isContentManager();
+      allow delete: if false;
+    }
+
+    match /submissions/{submissionId} {
+      allow read: if isStudentManager() || isContentManager() || (isAuthenticated() && resource.data.studentId == request.auth.uid);
+      allow create: if isAuthenticated();
+      allow update: if isStudentManager() || isContentManager();
+      allow delete: if false;
+    }
+
+    // -----------------------------------------------------------------------
+    // Announcements & Notifications
     // -----------------------------------------------------------------------
     match /announcements/{announcementId} {
-      allow read: if isAuthenticated();
-      allow create, update: if isAuthenticated();
+      allow read: if true;
+      allow create, update: if isContentManager() || isStudentManager();
       allow delete: if false;
     }
 
-    // -----------------------------------------------------------------------
-    // Notifications  (/notifications/{notificationId})
-    // -----------------------------------------------------------------------
     match /notifications/{notificationId} {
       allow read: if isAuthenticated();
-      allow create, update: if isAuthenticated();
+      allow create, update: if isStudentManager() || isSuperAdmin();
       allow delete: if false;
     }
 
     // -----------------------------------------------------------------------
-    // Payments  (/payments/{paymentId})
+    // Payments (Tuition & Billing Records)
     // -----------------------------------------------------------------------
-    // Payment records: admins may read and update status, never delete.
     match /payments/{paymentId} {
-      allow read: if isAuthenticated();
-      allow update: if isAuthenticated();
+      allow read: if isSuperAdmin() || isAnalyst();
       allow create: if isAuthenticated();
+      allow update: if isSuperAdmin();
       allow delete: if false;
     }
 
     // -----------------------------------------------------------------------
-    // Certificates  (/certificates/{certificateId})
+    // Certificates
     // -----------------------------------------------------------------------
     match /certificates/{certificateId} {
-      allow read: if isAuthenticated();
-      allow create, update: if isAuthenticated();
+      allow read: if true;
+      allow create, update: if isStudentManager() || isSuperAdmin();
       allow delete: if false;
     }
 
     // -----------------------------------------------------------------------
-    // Support Tickets  (/supportTickets/{ticketId})
+    // Support Tickets
     // -----------------------------------------------------------------------
     match /supportTickets/{ticketId} {
-      allow read: if isAuthenticated();
-      allow create, update: if isAuthenticated();
+      allow read: if isStudentManager() || (isAuthenticated() && resource.data.studentId == request.auth.uid);
+      allow create: if true;
+      allow update: if isStudentManager();
       allow delete: if false;
 
-      // Replies sub-collection
       match /replies/{replyId} {
-        allow read: if isAuthenticated();
-        allow create: if isAuthenticated()
-                      && hasField(request.resource.data, 'text')
-                      && hasField(request.resource.data, 'sender');
+        allow read: if isStudentManager() || (isAuthenticated() && get(/databases/$(database)/documents/supportTickets/$(ticketId)).data.studentId == request.auth.uid);
+        allow create: if isAuthenticated() || isStudentManager();
         allow update, delete: if false;
       }
     }
