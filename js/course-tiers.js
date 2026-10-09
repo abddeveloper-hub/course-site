@@ -415,14 +415,7 @@
             }
           } else {
             btn.innerHTML = `<span>ENROLL IN BUILDER →</span>`;
-            btn.href = 'javascript:void(0)';
-            btn.addEventListener('click', (e) => {
-              e.preventDefault();
-              user.enrolledCourse = 'AI BUILDER';
-              user.enrolledCourseId = 'ai-builder';
-              localStorage.setItem('nexvion_current_user', JSON.stringify(user));
-              window.location.href = 'dashboard.html?enrolled=ai-builder';
-            });
+            btn.href = 'checkout.html?tier=ai-builder';
           }
         }
       }

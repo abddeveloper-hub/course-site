@@ -5649,6 +5649,9 @@
                     <span class="adm-badge ${p.amountDisplay === 'FREE' ? 'adm-badge-open' : 'adm-badge-price-coming-soon'}" style="font-weight:700;">
                       ${p.amountDisplay}
                     </span>
+                    <div style="font-size:0.7rem; color:var(--adm-text-muted); font-family:var(--adm-font-mono); margin-top:2px;">
+                      ${escapeHtml(p.currency || 'USD')}
+                    </div>
                   </td>
                   <td>
                     ${AdminComponents.StatusBadge({ status: p.status })}
@@ -5658,6 +5661,9 @@
                   </td>
                   <td>
                     <code style="font-size:0.72rem; color:var(--adm-tertiary); background:var(--adm-surface-elevated); padding:2px 6px; border-radius:4px; border:1px solid var(--adm-border);">${escapeHtml(p.transactionRef)}</code>
+                    <div style="font-size:0.68rem; color:var(--adm-text-muted); margin-top:3px;">
+                      ${escapeHtml(p.provider ? p.provider.split('(')[0].trim() : 'Gateway')} • <span style="color:${p.verificationStatus === 'Verified' ? 'var(--adm-success)' : p.verificationStatus === 'Verification failed' ? 'var(--adm-danger)' : 'var(--adm-warning)'};">${escapeHtml(p.verificationStatus || 'Pending')}</span>
+                    </div>
                   </td>
                   <td>
                     ${p.refundStatus === 'Processed'
@@ -12027,8 +12033,9 @@
               <div><span style="color:var(--adm-text-muted);">Invoice Number:</span> <code style="display:block; color:var(--adm-primary); margin-top:2px; font-size:0.75rem;">${escapeHtml(p.invoiceId)}</code></div>
               <div><span style="color:var(--adm-text-muted);">Payment Date:</span> <span style="display:block; color:var(--adm-text-secondary); margin-top:2px;">${escapeHtml(p.date)}</span></div>
               <div><span style="color:var(--adm-text-muted);">Method:</span> <span style="display:block; color:var(--adm-text-primary); margin-top:2px;">${escapeHtml(p.method)}</span></div>
-              <div><span style="color:var(--adm-text-muted);">Refund Status:</span> <span style="display:block; margin-top:2px;">${p.refundStatus === 'Processed' ? '<span class="adm-badge adm-badge-refunded">Processed</span>' : p.refundStatus || 'None'}</span></div>
-              <div><span style="color:var(--adm-text-muted);">Amount:</span> <strong style="display:block; color:var(--adm-primary); margin-top:2px;">${p.amountDisplay}</strong></div>
+              <div><span style="color:var(--adm-text-muted);">Amount & Currency:</span> <strong style="display:block; color:var(--adm-primary); margin-top:2px;">${p.amountDisplay} (${escapeHtml(p.currency || 'USD')})</strong></div>
+              <div><span style="color:var(--adm-text-muted);">Provider:</span> <span style="display:block; color:var(--adm-text-primary); margin-top:2px;">${escapeHtml(p.provider || 'Nexvion Gateway')}</span></div>
+              <div><span style="color:var(--adm-text-muted);">Verification Status:</span> <span style="display:block; margin-top:2px;"><span class="adm-badge ${p.verificationStatus === 'Verified' ? 'adm-badge-published' : p.verificationStatus === 'Exempt' ? 'adm-badge-open' : 'adm-badge-pending'}" style="font-size:0.75rem;">${escapeHtml(p.verificationStatus || 'Pending')}</span></span></div>
             </div>
           </div>
 

@@ -53,6 +53,10 @@ service cloud.firestore {
       return isAuthenticated() && (isSuperAdmin() || getAdminRole() == 'Student Manager');
     }
 
+    function isFinanceManager() {
+      return isAuthenticated() && (isSuperAdmin() || getAdminRole() == 'Finance Manager');
+    }
+
     function isAnalyst() {
       return isAuthenticated() && (isSuperAdmin() || getAdminRole() == 'Analyst' || isContentManager() || isStudentManager());
     }
@@ -261,9 +265,8 @@ service cloud.firestore {
     // Payments (Tuition & Billing Records)
     // -----------------------------------------------------------------------
     match /payments/{paymentId} {
-      allow read: if isSuperAdmin() || isAnalyst();
-      allow create: if isAuthenticated();
-      allow update: if isSuperAdmin();
+      allow read: if isFinanceManager() || (isAuthenticated() && getAdminRole() == 'Analyst');
+      allow create, update: if isFinanceManager();
       allow delete: if false;
     }
 

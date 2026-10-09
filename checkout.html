@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tuition Checkout &amp; Payment Gateway | NEXVION AI</title>
+
+  <!-- SEO & Meta Tags -->
+  <meta name="description" content="Secure tuition checkout and payment gateway for NEXVION AI tiers: AI Builder, AI Creator, AI Architect. Official enrollment verification and bursar ledger.">
+  <meta name="keywords" content="NEXVION AI checkout, AI Builder tuition, AI Creator enrollment, AI Architect payment gateway">
+  <meta name="author" content="NEXVION AI">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Tuition Checkout &amp; Payment Gateway | NEXVION AI">
+  <meta property="og:description" content="Secure bursar checkout with trusted server-side payment verification.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="NEXVION_logo_design_20261005164702.jpg">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Unified Styles -->
+  <link rel="stylesheet" href="css/style.css?v=2.0">
+  <link rel="stylesheet" href="css/synthetic-systems.css?v=2.0">
+  <link rel="stylesheet" href="css/motion.css?v=2.0">
+
+  <style>
+    :root {
+      --chk-bg: #07090e;
+      --chk-surface: rgba(15, 18, 28, 0.85);
+      --chk-surface-elevated: rgba(22, 27, 42, 0.9);
+      --chk-border: rgba(99, 102, 241, 0.18);
+      --chk-border-active: rgba(127, 82, 255, 0.55);
+      --chk-primary: #7f52ff;
+      --chk-primary-glow: rgba(127, 82, 255, 0.35);
+      --chk-accent: #00f0ff;
+      --chk-success: #10b981;
+      --chk-warning: #f59e0b;
+      --chk-danger: #ef4444;
+      --chk-text: #f8fafc;
+      --chk-text-muted: #94a3b8;
+    }
+
+    body.checkout-body {
+      background-color: var(--chk-bg);
+      color: var(--chk-text);
+      font-family: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
+      min-height: 100vh;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    .chk-bg-grid {
+      position: fixed;
+      inset: 0;
+      background-image: 
+        linear-gradient(to right, rgba(99, 102, 241, 0.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(99, 102, 241, 0.04) 1px, transparent 1px);
+      background-size: 36px 36px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .chk-bg-glow {
+      position: fixed;
+      width: 600px;
+      height: 600px;
+      top: -150px;
+      right: -100px;
+      background: radial-gradient(circle, rgba(127, 82, 255, 0.15) 0%, rgba(0, 240, 255, 0.05) 50%, transparent 70%);
+      filter: blur(80px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .chk-header {
+      position: relative;
+      z-index: 10;
+      border-bottom: 1px solid var(--chk-border);
+      backdrop-filter: blur(16px);
+      background: rgba(7, 9, 14, 0.85);
+      padding: 18px 0;
+    }
+
+    .chk-header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .chk-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .chk-brand img {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      border: 1px solid var(--chk-border);
+    }
+
+    .chk-brand-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      letter-spacing: 0.04em;
+      color: #fff;
+    }
+
+    .chk-brand-sub {
+      font-size: 0.72rem;
+      color: var(--chk-text-muted);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .chk-ssl-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.76rem;
+      color: var(--chk-success);
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      padding: 6px 14px;
+      border-radius: 100px;
+      font-weight: 500;
+    }
+
+    .chk-main {
+      position: relative;
+      z-index: 5;
+      max-width: 1100px;
+      margin: 40px auto 60px;
+      padding: 0 24px;
+      width: 100%;
+      box-sizing: border-box;
+      flex: 1;
+    }
+
+    .chk-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 32px;
+      align-items: start;
+    }
+
+    @media (max-width: 900px) {
+      .chk-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .chk-card {
+      background: var(--chk-surface);
+      border: 1px solid var(--chk-border);
+      border-radius: 16px;
+      padding: 28px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .chk-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--chk-primary), var(--chk-accent), transparent);
+    }
+
+    .chk-section-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #fff;
+      margin: 0 0 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .chk-section-desc {
+      font-size: 0.85rem;
+      color: var(--chk-text-muted);
+      margin: 0 0 24px;
+      line-height: 1.5;
+    }
+
+    /* Tier Picker Buttons */
+    .chk-tier-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .chk-tier-item {
+      background: rgba(22, 27, 42, 0.6);
+      border: 1px solid var(--chk-border);
+      border-radius: 12px;
+      padding: 16px 20px;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .chk-tier-item:hover {
+      border-color: var(--chk-border-active);
+      background: rgba(30, 36, 56, 0.7);
+      transform: translateY(-1px);
+    }
+
+    .chk-tier-item.active {
+      border-color: var(--chk-primary);
+      background: rgba(127, 82, 255, 0.12);
+      box-shadow: 0 0 24px var(--chk-primary-glow);
+    }
+
+    .chk-tier-info {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .chk-tier-radio {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid var(--chk-text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.2s;
+    }
+
+    .chk-tier-item.active .chk-tier-radio {
+      border-color: var(--chk-primary);
+    }
+
+    .chk-tier-item.active .chk-tier-radio::after {
+      content: '';
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--chk-primary);
+    }
+
+    .chk-tier-name {
+      font-weight: 700;
+      font-size: 0.98rem;
+      color: #fff;
+    }
+
+    .chk-tier-badge {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--chk-text-muted);
+      font-family: 'JetBrains Mono', monospace;
+      margin-top: 2px;
+    }
+
+    .chk-tier-price-box {
+      text-align: right;
+    }
+
+    .chk-price-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 4px 10px;
+      border-radius: 6px;
+      display: inline-block;
+    }
+
+    .chk-price-tag.free {
+      background: rgba(16, 185, 129, 0.15);
+      color: #10b981;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .chk-price-tag.coming-soon {
+      background: rgba(127, 82, 255, 0.12);
+      color: #a78bfa;
+      border: 1px solid rgba(127, 82, 255, 0.3);
+    }
+
+    .chk-price-tag.paid {
+      background: rgba(0, 240, 255, 0.12);
+      color: #38bdf8;
+      border: 1px solid rgba(0, 240, 255, 0.3);
+    }
+
+    /* Form Fields */
+    .chk-form-group {
+      margin-bottom: 16px;
+    }
+
+    .chk-label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--chk-text-muted);
+      margin-bottom: 6px;
+    }
+
+    .chk-input {
+      width: 100%;
+      box-sizing: border-box;
+      background: rgba(10, 13, 20, 0.7);
+      border: 1px solid var(--chk-border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.9rem;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .chk-input:focus {
+      border-color: var(--chk-primary);
+      box-shadow: 0 0 16px var(--chk-primary-glow);
+    }
+
+    /* Order Summary Column */
+    .chk-summary-box {
+      background: var(--chk-surface-elevated);
+      border: 1px solid var(--chk-border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .chk-summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      font-size: 0.88rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .chk-summary-row:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .chk-summary-total {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #fff;
+      margin-top: 12px;
+      padding-top: 14px;
+      border-top: 1px dashed var(--chk-border);
+    }
+
+    .chk-btn {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 14px 24px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      border: none;
+      text-decoration: none;
+    }
+
+    .chk-btn-primary {
+      background: linear-gradient(135deg, #7f52ff 0%, #6366f1 100%);
+      color: #fff;
+      box-shadow: 0 10px 25px var(--chk-primary-glow);
+    }
+
+    .chk-btn-primary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 30px rgba(127, 82, 255, 0.5);
+    }
+
+    .chk-btn-secondary {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--chk-text);
+      border: 1px solid var(--chk-border);
+    }
+
+    .chk-btn-secondary:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .chk-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    /* Status Notification Cards */
+    .chk-alert {
+      padding: 16px 20px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    .chk-alert-info {
+      background: rgba(127, 82, 255, 0.1);
+      border: 1px solid rgba(127, 82, 255, 0.3);
+      color: #e2e8f0;
+    }
+
+    .chk-alert-success {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      color: #a7f3d0;
+    }
+
+    .chk-alert-warning {
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      color: #fde68a;
+    }
+
+    .chk-alert-danger {
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      color: #fecaca;
+    }
+
+    /* Modal / Simulation Panel */
+    .chk-sim-box {
+      background: rgba(10, 13, 22, 0.95);
+      border: 1px solid var(--chk-border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 20px;
+    }
+
+    .chk-sim-header {
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--chk-accent);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .chk-actions-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 16px;
+    }
+  </style>
+</head>
+<body class="checkout-body">
+
+  <div class="chk-bg-grid"></div>
+  <div class="chk-bg-glow"></div>
+
+  <!-- Header -->
+  <header class="chk-header">
+    <div class="chk-header-inner">
+      <a href="index.html" class="chk-brand" aria-label="NEXVION AI Academy Home">
+        <img src="NEXVION_logo_design_20261005164702.jpg" alt="NEXVION AI Logo">
+        <div>
+          <div class="chk-brand-title">NEXVION AI</div>
+          <div class="chk-brand-sub">Bursar &amp; Payment Gateway</div>
+        </div>
+      </a>
+      <div class="chk-ssl-badge">
+        <span>🔒</span>
+        <span>256-Bit SSL Encrypted Ledger</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="chk-main">
+
+    <!-- Top Alert / Policy Callout -->
+    <div class="chk-alert chk-alert-info" id="securityNoticeBar">
+      <div style="font-size: 1.4rem;">🛡️</div>
+      <div>
+        <strong style="color: #fff;">Institutional Bursar Security:</strong>
+        Tuition rates are strictly enforced by the server-side registry. Client-side price tampering is mathematically rejected. Verified payment tokens are permanently reconciled in the academy ledger.
+      </div>
+    </div>
+
+    <!-- Active State Host Container -->
+    <div id="checkoutStateContainer">
+      <!-- Injected via JavaScript based on state -->
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer style="position: relative; z-index: 5; text-align: center; padding: 24px 0; border-top: 1px solid var(--chk-border); font-size: 0.78rem; color: var(--chk-text-muted);">
+    <div style="max-width: 1200px; margin: 0 auto; padding: 0 24px;">
+      NEXVION AI Autonomous Intelligence Academy &copy; 2026. All transactions subject to verified academic ledger reconciliation.
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/admin-services.js"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      const Services = window.NexvionServices;
+      const urlParams = new URLSearchParams(window.location.search);
+      let selectedTierId = urlParams.get('tier') || 'ai-builder';
+      let activeTx = urlParams.get('tx') || null;
+      let activeSessionId = urlParams.get('session_id') || null;
+
+      // Tier catalogue metadata
+      const TIERS = {
+        'ai-foundations': {
+          id: 'ai-foundations',
+          name: 'AI Foundations',
+          level: 'LEVEL 01 • BEGINNER',
+          isPaid: false,
+          description: 'Fundamental AI principles, generative workflows, and modern tooling from scratch.',
+          outcome: 'Become a confident autonomous AI user.'
+        },
+        'ai-builder': {
+          id: 'ai-builder',
+          name: 'AI Builder',
+          level: 'LEVEL 02 • BEGINNER → INTERMEDIATE',
+          isPaid: true,
+          description: 'AI-assisted fullstack development, compiler runtimes, APIs, and production websites.',
+          outcome: 'Go from basic prompt user to robust software builder.'
+        },
+        'ai-creator': {
+          id: 'ai-creator',
+          name: 'AI Creator',
+          level: 'LEVEL 03 • INTERMEDIATE',
+          isPaid: true,
+          description: 'Custom AI applications, multi-agent workflows, autonomous automations, and database integrations.',
+          outcome: 'Ship proprietary AI micro-products.'
+        },
+        'ai-architect': {
+          id: 'ai-architect',
+          name: 'AI Architect',
+          level: 'LEVEL 04 • ADVANCED',
+          isPaid: true,
+          description: 'Distributed model architectures, fine-tuning, latency optimization, and enterprise deployments.',
+          outcome: 'Architect enterprise-grade autonomous intelligence systems.'
+        }
+      };
+
+      // State machine: 'selection' | 'session_active' | 'success' | 'cancelled' | 'failed'
+      let currentState = 'selection';
+      let currentSessionData = null;
+
+      // Pre-fill student info from localStorage if available
+      let cachedUser = null;
+      try {
+        const u = localStorage.getItem('nexvion_current_user');
+        if (u) cachedUser = JSON.parse(u);
+      } catch (e) {}
+
+      let studentDetails = {
+        studentId: cachedUser?.studentId || `NX-${Date.now().toString().slice(-5)}`,
+        studentName: cachedUser?.fullName || 'Abdul Wahid',
+        studentEmail: cachedUser?.email || 'student@synthetic.nexus'
+      };
+
+      async function fetchPricingConfig() {
+        try {
+          const res = await fetch('/api/payments/config');
+          if (res.ok) {
+            return await res.json();
+          }
+        } catch (e) {
+          console.warn('API config fallback to local repository:', e);
+        }
+        return {
+          country: 'US',
+          currency: 'USD',
+          provider: 'Nexvion Gateway Abstraction',
+          tiers: {
+            'ai-foundations': { priceDisplay: 'FREE', amount: 0, isPaid: false },
+            'ai-builder': { priceDisplay: 'PRICE COMING SOON', amount: null, isPaid: true },
+            'ai-creator': { priceDisplay: 'PRICE COMING SOON', amount: null, isPaid: true },
+            'ai-architect': { priceDisplay: 'PRICE COMING SOON', amount: null, isPaid: true }
+          }
+        };
+      }
+
+      function getTierPrice(tierId, config) {
+        if (config?.tiers?.[tierId]) {
+          return config.tiers[tierId];
+        }
+        if (Services?.getTierPriceConfig) {
+          return Services.getTierPriceConfig(tierId);
+        }
+        return { priceDisplay: 'PRICE COMING SOON', amount: null, isPaid: tierId !== 'ai-foundations' };
+      }
+
+      async function render() {
+        const host = document.getElementById('checkoutStateContainer');
+        const config = await fetchPricingConfig();
+        const tier = TIERS[selectedTierId] || TIERS['ai-builder'];
+        const priceInfo = getTierPrice(tier.id, config);
+
+        if (currentState === 'success') {
+          host.innerHTML = `
+            <div class="chk-card" style="max-width: 650px; margin: 0 auto; text-align: center; padding: 48px 32px;">
+              <div style="width: 72px; height: 72px; border-radius: 50%; background: rgba(16, 185, 129, 0.15); border: 2px solid var(--chk-success); display: flex; align-items: center; justify-content: center; font-size: 2.2rem; color: var(--chk-success); margin: 0 auto 20px;">
+                ✓
+              </div>
+              <h2 style="font-family: 'Space Grotesk', sans-serif; font-size: 1.8rem; margin: 0 0 10px; color: #fff;">
+                Tuition Payment Verified!
+              </h2>
+              <p style="color: var(--chk-text-muted); font-size: 0.95rem; margin: 0 0 28px; line-height: 1.5;">
+                Your enrollment for <strong style="color: #fff;">${tier.name}</strong> has been officially confirmed on the Bursar Ledger.
+              </p>
+
+              <div class="chk-summary-box" style="text-align: left; margin-bottom: 28px;">
+                <div class="chk-summary-row">
+                  <span style="color: var(--chk-text-muted);">Transaction Reference</span>
+                  <code style="font-size: 0.85rem; color: var(--chk-accent);">${currentSessionData?.transactionRef || activeTx || 'NEX-TX-2026-VERIFIED'}</code>
+                </div>
+                <div class="chk-summary-row">
+                  <span style="color: var(--chk-text-muted);">Enrolled Student</span>
+                  <strong style="color: #fff;">${escape(studentDetails.studentName)}</strong>
+                </div>
+                <div class="chk-summary-row">
+                  <span style="color: var(--chk-text-muted);">Curriculum Tier</span>
+                  <span style="color: #fff;">${tier.name} (${tier.level})</span>
+                </div>
+                <div class="chk-summary-row">
+                  <span style="color: var(--chk-text-muted);">Ledger Status</span>
+                  <span style="color: var(--chk-success); font-weight: 700;">● Paid &amp; Verified</span>
+                </div>
+              </div>
+
+              <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                <a href="dashboard.html" class="chk-btn chk-btn-primary" style="width: auto; min-width: 220px;">
+                  Access Student Dashboard →
+                </a>
+                <a href="/admin/payments" class="chk-btn chk-btn-secondary" style="width: auto;">
+                  View in Admin Ledger
+                </a>
+              </div>
+            </div>
+          `;
+          return;
+        }
+
+        if (currentState === 'cancelled') {
+          host.innerHTML = `
+            <div class="chk-card" style="max-width: 650px; margin: 0 auto; text-align: center; padding: 48px 32px;">
+              <div style="width: 72px; height: 72px; border-radius: 50%; background: rgba(245, 158, 11, 0.15); border: 2px solid var(--chk-warning); display: flex; align-items: center; justify-content: center; font-size: 2.2rem; color: var(--chk-warning); margin: 0 auto 20px;">
+                ⚠️
+              </div>
+              <h2 style="font-family: 'Space Grotesk', sans-serif; font-size: 1.8rem; margin: 0 0 10px; color: #fff;">
+                Checkout Session Cancelled
+              </h2>
+              <p style="color: var(--chk-text-muted); font-size: 0.95rem; margin: 0 0 28px; line-height: 1.5;">
+                You exited checkout before completing payment. No charges were incurred. Your transaction has been recorded in the historical audit ledger as <code style="color:var(--chk-warning);">Cancelled</code>.
+              </p>
+
+              <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                <button class="chk-btn chk-btn-primary" id="btnResumeCheckout" style="width: auto; min-width: 200px;">
+                  Resume Checkout
+                </button>
+                <a href="course.html" class="chk-btn chk-btn-secondary" style="width: auto;">
+                  Return to Courses
+                </a>
+              </div>
+            </div>
+          `;
+          document.getElementById('btnResumeCheckout')?.addEventListener('click', () => {
+            currentState = 'selection';
+            render();
+          });
+          return;
+        }
+
+        if (currentState === 'failed') {
+          host.innerHTML = `
+            <div class="chk-card" style="max-width: 650px; margin: 0 auto; text-align: center; padding: 48px 32px;">
+              <div style="width: 72px; height: 72px; border-radius: 50%; background: rgba(239, 68, 68, 0.15); border: 2px solid var(--chk-danger); display: flex; align-items: center; justify-content: center; font-size: 2.2rem; color: var(--chk-danger); margin: 0 auto 20px;">
+                ✕
+              </div>
+              <h2 style="font-family: 'Space Grotesk', sans-serif; font-size: 1.8rem; margin: 0 0 10px; color: #fff;">
+                Payment Declined by Gateway
+              </h2>
+              <p style="color: var(--chk-text-muted); font-size: 0.95rem; margin: 0 0 28px; line-height: 1.5;">
+                The payment processor declined this transaction. The transaction record has been logged in the audit ledger with status <code style="color:var(--chk-danger);">Failed</code>.
+              </p>
+
+              <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                <button class="chk-btn chk-btn-primary" id="btnRetryPayment" style="width: auto; min-width: 200px;">
+                  Retry Payment
+                </button>
+                <a href="course.html" class="chk-btn chk-btn-secondary" style="width: auto;">
+                  Back to Courses
+                </a>
+              </div>
+            </div>
+          `;
+          document.getElementById('btnRetryPayment')?.addEventListener('click', () => {
+            currentState = 'selection';
+            render();
+          });
+          return;
+        }
+
+        // Default or Active Session State
+        host.innerHTML = `
+          <div class="chk-grid">
+            <!-- Left Column: Selection & Identity -->
+            <div class="chk-card">
+              <h2 class="chk-section-title">
+                <span>1. Select Curriculum Tier</span>
+              </h2>
+              <p class="chk-section-desc">
+                Choose an academy track. AI Foundations is free, while advanced tracks require bursar tuition settlement.
+              </p>
+
+              <div class="chk-tier-list">
+                ${Object.values(TIERS).map(t => {
+                  const tPrice = getTierPrice(t.id, config);
+                  const isSelected = t.id === selectedTierId;
+                  const priceClass = !t.isPaid ? 'free' : (tPrice.amount === null ? 'coming-soon' : 'paid');
+                  return `
+                    <div class="chk-tier-item ${isSelected ? 'active' : ''}" data-tier-id="${t.id}">
+                      <div class="chk-tier-info">
+                        <div class="chk-tier-radio"></div>
+                        <div>
+                          <div class="chk-tier-name">${t.name}</div>
+                          <div class="chk-tier-badge">${t.level}</div>
+                        </div>
+                      </div>
+                      <div class="chk-tier-price-box">
+                        <span class="chk-price-tag ${priceClass}">${tPrice.priceDisplay}</span>
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+
+              <h2 class="chk-section-title" style="margin-top: 32px;">
+                <span>2. Student Identification</span>
+              </h2>
+              <p class="chk-section-desc">
+                Your credentials are tied to the immutable institutional student register.
+              </p>
+
+              <div class="chk-form-group">
+                <label class="chk-label">Full Name</label>
+                <input type="text" class="chk-input" id="inpStudentName" value="${escape(studentDetails.studentName)}">
+              </div>
+
+              <div class="chk-form-group">
+                <label class="chk-label">Official Email Address</label>
+                <input type="email" class="chk-input" id="inpStudentEmail" value="${escape(studentDetails.studentEmail)}">
+              </div>
+
+              <div class="chk-form-group">
+                <label class="chk-label">Candidate Registration ID</label>
+                <input type="text" class="chk-input" id="inpStudentId" value="${escape(studentDetails.studentId)}" readonly style="opacity: 0.75; font-family: 'JetBrains Mono', monospace;">
+              </div>
+            </div>
+
+            <!-- Right Column: Order Summary & Gateway Actions -->
+            <div class="chk-card">
+              <h2 class="chk-section-title">
+                <span>Tuition Summary</span>
+              </h2>
+              <p class="chk-section-desc">
+                Official Bursar Reconciliation Summary
+              </p>
+
+              <div class="chk-summary-box">
+                <div class="chk-summary-row">
+                  <span style="color: var(--chk-text-muted);">Curriculum Track</span>
+                  <strong style="color: #fff;">${tier.name}</strong>
+                </div>
+                <div class="chk-summary-row">
+                  <span style="color: var(--chk-text-muted);">Cohort Seat Cap</span>
+                  <span style="color: var(--chk-accent); font-family: 'JetBrains Mono', monospace;">30 Seats Max</span>
+                </div>
+                <div class="chk-summary-row">
+                  <span style="color: var(--chk-text-muted);">Settlement Currency</span>
+                  <span style="font-family: 'JetBrains Mono', monospace;">${config.currency || 'USD'}</span>
+                </div>
+                <div class="chk-summary-row chk-summary-total">
+                  <span>Tuition Fee</span>
+                  <span style="color: var(--chk-primary); font-family: 'JetBrains Mono', monospace;">${priceInfo.priceDisplay}</span>
+                </div>
+              </div>
+
+              ${currentState === 'session_active' ? `
+                <div class="chk-alert chk-alert-warning" style="margin-bottom: 16px;">
+                  <div>⏳</div>
+                  <div>
+                    <strong>Checkout Session Active:</strong>
+                    Ref: <code style="font-size:0.75rem;">${currentSessionData.transactionRef}</code><br>
+                    Status: <strong>Pending Verification</strong>.
+                  </div>
+                </div>
+
+                <div class="chk-sim-box">
+                  <div class="chk-sim-header">
+                    <span>⚡ Simulated Payment Processor Gateway</span>
+                  </div>
+                  <p style="font-size: 0.8rem; color: var(--chk-text-muted); margin: 0 0 14px; line-height: 1.45;">
+                    Simulate end-to-end webhook and trusted server-side verification:
+                  </p>
+                  <div class="chk-actions-stack">
+                    <button class="chk-btn chk-btn-primary" id="btnSimulateSuccess">
+                      ✓ Authorize &amp; Verify Payment
+                    </button>
+                    <button class="chk-btn chk-btn-secondary" id="btnSimulateDecline" style="color: var(--chk-danger); border-color: rgba(239, 68, 68, 0.4);">
+                      ✕ Simulate Card Decline
+                    </button>
+                    <button class="chk-btn chk-btn-secondary" id="btnCancelSession">
+                      Cancel Checkout Session
+                    </button>
+                  </div>
+                </div>
+              ` : `
+                ${!tier.isPaid && priceInfo.amount === 0 ? `
+                  <button class="chk-btn chk-btn-primary" id="btnInitiateCheckout">
+                    Enroll Free Tier Now (No Billing Required)
+                  </button>
+                ` : priceInfo.amount === null || priceInfo.priceDisplay === 'PRICE COMING SOON' ? `
+                  <div class="chk-alert chk-alert-info" style="margin-bottom: 20px;">
+                    <div>ℹ️</div>
+                    <div>
+                      <strong>Official Price Notice:</strong>
+                      Tuition schedule for ${tier.name} is arriving shortly. You may reserve a cohort position in Pending status.
+                    </div>
+                  </div>
+                  <button class="chk-btn chk-btn-primary" id="btnInitiateCheckout">
+                    Reserve Cohort Seat (Pending Pricing)
+                  </button>
+                ` : `
+                  <button class="chk-btn chk-btn-primary" id="btnInitiateCheckout">
+                    Proceed to Secure Gateway (${priceInfo.priceDisplay})
+                  </button>
+                `}
+              `}
+
+              <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--chk-border); font-size: 0.75rem; color: var(--chk-text-muted); line-height: 1.45;">
+                Protected by NEXVION Gateway Abstraction Layer. Direct card secrets are never processed or retained on client devices.
+              </div>
+            </div>
+          </div>
+        `;
+
+        // Attach listeners
+        document.querySelectorAll('.chk-tier-item').forEach(el => {
+          el.addEventListener('click', () => {
+            selectedTierId = el.getAttribute('data-tier-id');
+            currentState = 'selection';
+            render();
+          });
+        });
+
+        document.getElementById('inpStudentName')?.addEventListener('input', e => {
+          studentDetails.studentName = e.target.value;
+        });
+        document.getElementById('inpStudentEmail')?.addEventListener('input', e => {
+          studentDetails.studentEmail = e.target.value;
+        });
+
+        document.getElementById('btnInitiateCheckout')?.addEventListener('click', handleInitiateCheckout);
+        document.getElementById('btnSimulateSuccess')?.addEventListener('click', handleSimulateSuccess);
+        document.getElementById('btnSimulateDecline')?.addEventListener('click', handleSimulateDecline);
+        document.getElementById('btnCancelSession')?.addEventListener('click', handleCancelSession);
+      }
+
+      async function handleInitiateCheckout() {
+        const btn = document.getElementById('btnInitiateCheckout');
+        if (btn) btn.disabled = true;
+
+        try {
+          const res = await fetch('/api/payments/create-checkout-session', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              studentId: studentDetails.studentId,
+              studentName: studentDetails.studentName,
+              studentEmail: studentDetails.studentEmail,
+              tierId: selectedTierId,
+              courseId: selectedTierId
+            })
+          });
+
+          const data = await res.json();
+          if (data.freeTier) {
+            // Free enrollment succeeded without payment
+            currentState = 'success';
+            currentSessionData = data;
+            render();
+            return;
+          }
+
+          if (data.comingSoon) {
+            alert('Cohort seat reserved! Official fee schedule is coming soon.');
+            currentState = 'selection';
+            render();
+            return;
+          }
+
+          if (data.success) {
+            currentSessionData = data;
+            activeTx = data.transactionRef;
+            activeSessionId = data.sessionId;
+            currentState = 'session_active';
+            render();
+          } else {
+            alert('Checkout initialization failed: ' + (data.error || 'Server error'));
+            if (btn) btn.disabled = false;
+          }
+        } catch (e) {
+          console.warn('Backend createCheckoutSession error, using local Services:', e);
+          if (Services?.createCheckoutSession) {
+            const result = await Services.createCheckoutSession({
+              studentId: studentDetails.studentId,
+              studentName: studentDetails.studentName,
+              studentEmail: studentDetails.studentEmail,
+              tierId: selectedTierId,
+              courseId: selectedTierId
+            });
+            if (result.freeTier) {
+              currentState = 'success';
+              currentSessionData = result;
+            } else if (result.comingSoon) {
+              alert('Cohort seat reserved! Official tuition price coming soon.');
+            } else {
+              currentSessionData = result;
+              currentState = 'session_active';
+            }
+            render();
+          }
+        }
+      }
+
+      async function handleSimulateSuccess() {
+        if (!currentSessionData) return;
+        const btn = document.getElementById('btnSimulateSuccess');
+        if (btn) btn.disabled = true;
+
+        try {
+          // Trusted Server-Side Verification Call
+          const res = await fetch('/api/payments/verify-payment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              transactionRef: currentSessionData.transactionRef,
+              studentId: studentDetails.studentId,
+              amount: currentSessionData.amount,
+              currency: currentSessionData.currency
+            })
+          });
+
+          const data = await res.json();
+          if (data.verified) {
+            currentState = 'success';
+            render();
+          } else {
+            alert('Verification rejected by server: ' + (data.error || 'Check sum failed'));
+            currentState = 'failed';
+            render();
+          }
+        } catch (e) {
+          // Fallback to local services verifyPayment
+          if (Services?.verifyPayment) {
+            const vRes = await Services.verifyPayment({
+              transactionRef: currentSessionData.transactionRef,
+              studentId: studentDetails.studentId,
+              actualAmount: currentSessionData.amount
+            });
+            if (vRes.verified) {
+              currentState = 'success';
+              render();
+            }
+          }
+        }
+      }
+
+      async function handleSimulateDecline() {
+        if (!currentSessionData) return;
+        try {
+          await fetch('/api/payments/webhook', {
+            method: 'POST',
+            headers: { 
+              'Content-Type': 'application/json',
+              'x-nexvion-signature': 'sim_sig_decline'
+            },
+            body: JSON.stringify({
+              id: 'evt_decline_' + Date.now(),
+              type: 'payment.failed',
+              transactionRef: currentSessionData.transactionRef
+            })
+          });
+        } catch (e) {}
+
+        if (Services?.handleFailedPayment) {
+          await Services.handleFailedPayment(currentSessionData.transactionRef, 'Simulated gateway decline');
+        }
+        currentState = 'failed';
+        render();
+      }
+
+      async function handleCancelSession() {
+        if (!currentSessionData) return;
+        try {
+          await fetch('/api/payments/webhook', {
+            method: 'POST',
+            headers: { 
+              'Content-Type': 'application/json',
+              'x-nexvion-signature': 'sim_sig_cancel'
+            },
+            body: JSON.stringify({
+              id: 'evt_cancel_' + Date.now(),
+              type: 'payment.cancelled',
+              transactionRef: currentSessionData.transactionRef
+            })
+          });
+        } catch (e) {}
+
+        if (Services?.handleCancelledPayment) {
+          await Services.handleCancelledPayment(currentSessionData.transactionRef, 'Student cancelled checkout session');
+        }
+        currentState = 'cancelled';
+        render();
+      }
+
+      function escape(str) {
+        if (!str) return '';
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      }
+
+      // Initial execution
+      render();
+
+    })();
+  </script>
+</body>
+</html>

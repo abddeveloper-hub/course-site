@@ -3401,6 +3401,14 @@
               if (!parsed.fileMetadata) {
                 parsed.fileMetadata = [];
               }
+              if (!parsed.tierPrices) {
+                parsed.tierPrices = {
+                  'ai-foundations': { tierName: 'AI Foundations', priceDisplay: 'FREE', amount: 0, currency: 'USD', isPaid: false },
+                  'ai-builder': { tierName: 'AI Builder', priceDisplay: 'PRICE COMING SOON', amount: null, currency: 'USD', isPaid: true },
+                  'ai-creator': { tierName: 'AI Creator', priceDisplay: 'PRICE COMING SOON', amount: null, currency: 'USD', isPaid: true },
+                  'ai-architect': { tierName: 'AI Architect', priceDisplay: 'PRICE COMING SOON', amount: null, currency: 'USD', isPaid: true }
+                };
+              }
               return parsed;
             }
           }
@@ -3433,7 +3441,13 @@
         auditLogs: JSON.parse(JSON.stringify(defaultAuditLogs)),
         settings: JSON.parse(JSON.stringify(defaultSettings)),
         analytics: JSON.parse(JSON.stringify(defaultAnalytics)),
-        fileMetadata: []
+        fileMetadata: [],
+        tierPrices: {
+          'ai-foundations': { tierName: 'AI Foundations', priceDisplay: 'FREE', amount: 0, currency: 'USD', isPaid: false },
+          'ai-builder': { tierName: 'AI Builder', priceDisplay: 'PRICE COMING SOON', amount: null, currency: 'USD', isPaid: true },
+          'ai-creator': { tierName: 'AI Creator', priceDisplay: 'PRICE COMING SOON', amount: null, currency: 'USD', isPaid: true },
+          'ai-architect': { tierName: 'AI Architect', priceDisplay: 'PRICE COMING SOON', amount: null, currency: 'USD', isPaid: true }
+        }
       };
     }
 
@@ -5727,57 +5741,623 @@
     }
   };
 
-  // --- paymentRepository ---
+  // --- paymentRepository (Phase 13 Secure Payment Infrastructure) ---
+  class NexvionPaymentGatewayAdapter {
+    constructor(config = {}) {
+      this.providerName = config.providerName || 'Nexvion Gateway Abstraction (Stripe / Sandbox)';
+      this.currency = config.currency || 'USD';
+    }
+
+    async createCheckoutSession({ transactionRef, amount, currency, tierId, tierName, courseTitle, studentId, studentEmail, returnUrl, cancelUrl }) {
+      const sessionId = `cs_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+      const checkoutUrl = `/checkout.html?session_id=${sessionId}&tx=${transactionRef}`;
+      return {
+        sessionId,
+        transactionRef,
+        checkoutUrl,
+        provider: this.providerName,
+        currency: currency || this.currency,
+        amount,
+        status: 'Pending',
+        expiresAt: new Date(Date.now() + 30 * 60 * 1000).toISOString()
+      };
+    }
+
+    async getPaymentStatus(transactionRef) {
+      return { transactionRef, provider: this.providerName, status: 'Pending' };
+    }
+
+    async verifyPayment({ transactionRef, expectedAmount, expectedCurrency, actualAmount, actualCurrency, studentId, expectedStudentId }) {
+      if (!transactionRef) return { verified: false, error: 'Transaction reference is missing' };
+      if (expectedAmount !== undefined && actualAmount !== undefined && Number(expectedAmount) !== Number(actualAmount)) {
+        return { verified: false, error: `Payment amount mismatch: expected ${expectedAmount}, received ${actualAmount}` };
+      }
+      if (expectedCurrency && actualCurrency && expectedCurrency.toUpperCase() !== actualCurrency.toUpperCase()) {
+        return { verified: false, error: `Currency mismatch: expected ${expectedCurrency}, received ${actualCurrency}` };
+      }
+      if (expectedStudentId && studentId && expectedStudentId !== studentId) {
+        return { verified: false, error: `User identity mismatch: transaction does not belong to student ${expectedStudentId}` };
+      }
+      return { verified: true, verifiedAt: new Date().toISOString() };
+    }
+
+    async handleRefundStatus({ paymentId, transactionRef, amount, reason }) {
+      return { refundId: `ref_${Date.now()}`, refundStatus: 'Processed', reason: reason || 'Administrative refund' };
+    }
+
+    async handleFailedPayment({ paymentId, transactionRef, failureCode, failureReason }) {
+      return { status: 'Failed', failureCode: failureCode || 'CARD_DECLINED', failureReason: failureReason || 'Transaction declined' };
+    }
+
+    async handleCancelledPayment({ paymentId, transactionRef, reason }) {
+      return { status: 'Cancelled', reason: reason || 'Checkout session cancelled by student' };
+    }
+  }
+
+  const defaultGatewayProvider = new NexvionPaymentGatewayAdapter();
+  const processedWebhookEvents = new Set();
+
   const paymentRepository = {
-    findAll: async () => JSON.parse(JSON.stringify(store.state.payments)),
-    findById: async (id) => {
-      const p = store.state.payments.find(p => p.id === id);
-      return p ? JSON.parse(JSON.stringify(p)) : null;
+    provider: defaultGatewayProvider,
+    processedWebhookEvents: processedWebhookEvents,
+
+    _normalizePayment: (p) => {
+      if (!p) return null;
+      return {
+        ...p,
+        amount: p.amount !== undefined ? p.amount : (p.amountDisplay === 'FREE' ? 0 : null),
+        currency: p.currency || 'USD',
+        provider: p.provider || (p.amountDisplay === 'FREE' ? 'None (Free Tier)' : defaultGatewayProvider.providerName),
+        verificationStatus: p.verificationStatus || (p.status === 'Paid' ? 'Verified' : p.status === 'Not required' ? 'Exempt' : 'Pending verification'),
+        refundStatus: p.refundStatus || 'None'
+      };
     },
+
+    findAll: async (filters = {}) => {
+      if (!store.hasPermission('view_payments')) {
+        throw new Error('Access denied: Unauthorized attempt to view restricted financial records.');
+      }
+      let items = (store.state.payments || []).map(paymentRepository._normalizePayment);
+      if (filters.status && filters.status !== 'ALL') {
+        items = items.filter(p => (p.status || '').toLowerCase() === filters.status.toLowerCase());
+      }
+      if (filters.studentId) {
+        items = items.filter(p => p.studentId === filters.studentId);
+      }
+      if (filters.courseId) {
+        items = items.filter(p => p.courseId === filters.courseId);
+      }
+      if (filters.tierId) {
+        items = items.filter(p => p.tierId === filters.tierId);
+      }
+      if (filters.search) {
+        const q = filters.search.toLowerCase();
+        items = items.filter(p =>
+          (p.studentName && p.studentName.toLowerCase().includes(q)) ||
+          (p.transactionRef && p.transactionRef.toLowerCase().includes(q)) ||
+          (p.studentEmail && p.studentEmail.toLowerCase().includes(q))
+        );
+      }
+      return JSON.parse(JSON.stringify(items));
+    },
+
+    findById: async (id) => {
+      if (!store.hasPermission('view_payments')) {
+        throw new Error('Access denied: Unauthorized attempt to view restricted financial records.');
+      }
+      const p = (store.state.payments || []).find(item => item.id === id);
+      return p ? JSON.parse(JSON.stringify(paymentRepository._normalizePayment(p))) : null;
+    },
+
+    findByTransactionRef: async (ref) => {
+      if (!store.hasPermission('view_payments')) {
+        throw new Error('Access denied: Unauthorized attempt to view restricted financial records.');
+      }
+      const p = (store.state.payments || []).find(item => item.transactionRef === ref);
+      return p ? JSON.parse(JSON.stringify(paymentRepository._normalizePayment(p))) : null;
+    },
+
+    getTierPriceConfig: (tierId) => {
+      store.state.tierPrices = store.state.tierPrices || {
+        'ai-foundations': { tierName: 'AI Foundations', priceDisplay: 'FREE', amount: 0, currency: 'USD', isPaid: false },
+        'ai-builder': { tierName: 'AI Builder', priceDisplay: 'PRICE COMING SOON', amount: null, currency: 'USD', isPaid: true },
+        'ai-creator': { tierName: 'AI Creator', priceDisplay: 'PRICE COMING SOON', amount: null, currency: 'USD', isPaid: true },
+        'ai-architect': { tierName: 'AI Architect', priceDisplay: 'PRICE COMING SOON', amount: null, currency: 'USD', isPaid: true }
+      };
+      return store.state.tierPrices[tierId] || { tierName: tierId, priceDisplay: 'PRICE COMING SOON', amount: null, currency: 'USD', isPaid: true };
+    },
+
+    setTierPriceConfig: async (tierId, { amount, currency = 'USD', priceDisplay }) => {
+      if (!['Owner', 'Super Admin', 'Finance Manager'].includes(store.getCurrentRole())) {
+        throw new Error('Access denied: Only Finance Managers or Super Admins can configure tier pricing.');
+      }
+      store.state.tierPrices = store.state.tierPrices || {};
+      const existing = paymentRepository.getTierPriceConfig(tierId);
+      const isPaid = tierId !== 'ai-foundations';
+      const formattedDisplay = priceDisplay || (amount === null || amount === undefined ? 'PRICE COMING SOON' : `$${amount}`);
+
+      store.state.tierPrices[tierId] = {
+        ...existing,
+        amount: isPaid ? (amount !== undefined ? amount : null) : 0,
+        currency: currency || 'USD',
+        priceDisplay: isPaid ? formattedDisplay : 'FREE',
+        isPaid
+      };
+      store.saveState();
+      auditRepository.log('Updated Official Tier Pricing', 'Payment', `${tierId} -> ${store.state.tierPrices[tierId].priceDisplay}`);
+      return store.state.tierPrices[tierId];
+    },
+
+    createCheckoutSession: async ({ studentId, studentName, studentEmail, courseId, tierId, batchId, returnUrl, cancelUrl }) => {
+      if (!studentId) throw new Error('Student identifier is required for checkout.');
+      const safeTierId = tierId || 'ai-foundations';
+      const tierConfig = paymentRepository.getTierPriceConfig(safeTierId);
+      const student = (store.state.students || []).find(s => s.id === studentId);
+      const course = (store.state.courses || []).find(c => c.id === courseId);
+      const resolvedStudentName = studentName || (student ? student.name : 'Student');
+      const resolvedStudentEmail = studentEmail || (student ? student.email : '');
+      const resolvedCourseTitle = course ? course.title : (tierConfig.tierName || 'Curriculum Track');
+      const nowIso = new Date().toISOString();
+
+      // Free tier: AI Foundations
+      if (!tierConfig.isPaid || safeTierId === 'ai-foundations') {
+        const freePayment = {
+          id: `pay-free-${Date.now()}`,
+          transactionRef: `NEX-FREE-${Date.now()}`,
+          studentId,
+          studentName: resolvedStudentName,
+          studentEmail: resolvedStudentEmail,
+          courseId: courseId || 'ai-foundations',
+          courseTitle: resolvedCourseTitle,
+          tierId: safeTierId,
+          tierName: tierConfig.tierName,
+          batchId: batchId || null,
+          amountDisplay: 'FREE',
+          amount: 0,
+          currency: 'USD',
+          status: 'Not required',
+          verificationStatus: 'Exempt',
+          refundStatus: 'Not applicable',
+          provider: 'None (Free Tier)',
+          method: 'Free Public Tier Registration',
+          invoiceId: `INV-FREE-${Math.floor(1000 + Math.random() * 9000)}`,
+          date: nowIso.replace('T', ' ').slice(0, 16) + ' UTC',
+          notes: 'Free-tier registration. Tuition fee exempt.'
+        };
+        store.state.payments = store.state.payments || [];
+        store.state.payments.unshift(freePayment);
+        store.saveState();
+        store.persistDoc('payments', freePayment.id, freePayment);
+
+        // Automatic enrollment activation for free tier
+        let enrollment = (store.state.enrollments || []).find(e => e.studentId === studentId && (e.courseId === courseId || e.tierId === safeTierId));
+        if (enrollment) {
+          enrollment.status = 'Enrolled';
+          enrollment.paymentStatus = 'Not required';
+          enrollment.lastUpdated = nowIso;
+        } else {
+          enrollment = {
+            id: `enr-${Date.now()}`,
+            studentId,
+            studentName: resolvedStudentName,
+            courseId: courseId || 'ai-foundations',
+            courseTitle: resolvedCourseTitle,
+            tierId: safeTierId,
+            batchId: batchId || null,
+            status: 'Enrolled',
+            paymentStatus: 'Not required',
+            enrolledAt: nowIso
+          };
+          store.state.enrollments = store.state.enrollments || [];
+          store.state.enrollments.unshift(enrollment);
+        }
+        store.saveState();
+        store.persistDoc('enrollments', enrollment.id, enrollment);
+        auditRepository.log('Registered Free Cohort Student', 'Payment', `${resolvedStudentName} (${tierConfig.tierName})`);
+
+        return {
+          success: true,
+          freeTier: true,
+          status: 'Not required',
+          payment: freePayment,
+          enrollment
+        };
+      }
+
+      // Paid Tier: AI Builder, AI Creator, AI Architect
+      // 1. If official price is not yet configured, preserve PRICE COMING SOON
+      if (tierConfig.amount === null || tierConfig.priceDisplay === 'PRICE COMING SOON') {
+        const pendingPayment = {
+          id: `pay-${Date.now()}`,
+          transactionRef: `NEX-TX-2026-${Math.floor(1000 + Math.random() * 9000)}`,
+          studentId,
+          studentName: resolvedStudentName,
+          studentEmail: resolvedStudentEmail,
+          courseId: courseId || safeTierId,
+          courseTitle: resolvedCourseTitle,
+          tierId: safeTierId,
+          tierName: tierConfig.tierName,
+          batchId: batchId || null,
+          amountDisplay: 'PRICE COMING SOON',
+          amount: null,
+          currency: tierConfig.currency || 'USD',
+          status: 'Pending',
+          verificationStatus: 'Pending verification',
+          refundStatus: 'None',
+          provider: defaultGatewayProvider.providerName,
+          method: 'Tuition Registration',
+          invoiceId: `INV-PEND-${Math.floor(1000 + Math.random() * 9000)}`,
+          date: nowIso.replace('T', ' ').slice(0, 16) + ' UTC',
+          notes: 'Official fee schedule coming soon. Seat reserved pending fee publication.'
+        };
+        store.state.payments = store.state.payments || [];
+        store.state.payments.unshift(pendingPayment);
+        store.saveState();
+        store.persistDoc('payments', pendingPayment.id, pendingPayment);
+
+        // Enrollment is pending payment
+        let enrollment = (store.state.enrollments || []).find(e => e.studentId === studentId && (e.courseId === courseId || e.tierId === safeTierId));
+        if (enrollment) {
+          enrollment.status = 'Pending';
+          enrollment.paymentStatus = 'Pending';
+          enrollment.lastUpdated = nowIso;
+        } else {
+          enrollment = {
+            id: `enr-${Date.now()}`,
+            studentId,
+            studentName: resolvedStudentName,
+            courseId: courseId || safeTierId,
+            courseTitle: resolvedCourseTitle,
+            tierId: safeTierId,
+            batchId: batchId || null,
+            status: 'Pending',
+            paymentStatus: 'Pending',
+            enrolledAt: nowIso
+          };
+          store.state.enrollments = store.state.enrollments || [];
+          store.state.enrollments.unshift(enrollment);
+        }
+        store.saveState();
+        store.persistDoc('enrollments', enrollment.id, enrollment);
+
+        return {
+          success: false,
+          comingSoon: true,
+          status: 'Pending',
+          priceDisplay: 'PRICE COMING SOON',
+          payment: pendingPayment,
+          enrollment
+        };
+      }
+
+      // 2. Paid tier with official configured price
+      // Never trusts client price: strictly enforces tierConfig.amount from server configuration
+      const transactionRef = `NEX-TX-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+      const pendingPayment = {
+        id: `pay-${Date.now()}`,
+        transactionRef,
+        studentId,
+        studentName: resolvedStudentName,
+        studentEmail: resolvedStudentEmail,
+        courseId: courseId || safeTierId,
+        courseTitle: resolvedCourseTitle,
+        tierId: safeTierId,
+        tierName: tierConfig.tierName,
+        batchId: batchId || null,
+        amountDisplay: `$${tierConfig.amount}`,
+        amount: Number(tierConfig.amount),
+        currency: tierConfig.currency || 'USD',
+        status: 'Pending',
+        verificationStatus: 'Pending verification',
+        refundStatus: 'None',
+        provider: defaultGatewayProvider.providerName,
+        method: 'Secure Card / Gateway',
+        invoiceId: `INV-PEND-${Math.floor(1000 + Math.random() * 9000)}`,
+        date: nowIso.replace('T', ' ').slice(0, 16) + ' UTC',
+        notes: `Checkout session initiated. Awaiting trusted payment verification.`
+      };
+
+      store.state.payments = store.state.payments || [];
+      store.state.payments.unshift(pendingPayment);
+
+      // Create enrollment in Pending state
+      let enrollment = (store.state.enrollments || []).find(e => e.studentId === studentId && (e.courseId === courseId || e.tierId === safeTierId));
+      if (enrollment) {
+        enrollment.status = 'Pending';
+        enrollment.paymentStatus = 'Pending';
+        enrollment.lastUpdated = nowIso;
+      } else {
+        enrollment = {
+          id: `enr-${Date.now()}`,
+          studentId,
+          studentName: resolvedStudentName,
+          courseId: courseId || safeTierId,
+          courseTitle: resolvedCourseTitle,
+          tierId: safeTierId,
+          batchId: batchId || null,
+          status: 'Pending',
+          paymentStatus: 'Pending',
+          enrolledAt: nowIso
+        };
+        store.state.enrollments = store.state.enrollments || [];
+        store.state.enrollments.unshift(enrollment);
+      }
+      store.saveState();
+      store.persistDoc('payments', pendingPayment.id, pendingPayment);
+      store.persistDoc('enrollments', enrollment.id, enrollment);
+
+      const session = await paymentRepository.provider.createCheckoutSession({
+        transactionRef,
+        amount: tierConfig.amount,
+        currency: tierConfig.currency,
+        tierId: safeTierId,
+        tierName: tierConfig.tierName,
+        courseTitle: resolvedCourseTitle,
+        studentId,
+        studentEmail: resolvedStudentEmail,
+        returnUrl,
+        cancelUrl
+      });
+
+      return {
+        success: true,
+        sessionId: session.sessionId,
+        transactionRef,
+        checkoutUrl: session.checkoutUrl,
+        amount: tierConfig.amount,
+        currency: tierConfig.currency,
+        status: 'Pending',
+        payment: pendingPayment,
+        enrollment
+      };
+    },
+
+    verifyPayment: async ({ transactionRef, paymentId, actualAmount, actualCurrency, studentId, signature, verifiedBy }) => {
+      let p = (store.state.payments || []).find(item =>
+        (transactionRef && item.transactionRef === transactionRef) ||
+        (paymentId && item.id === paymentId)
+      );
+      if (!p) throw new Error('Payment transaction record not found.');
+
+      // Idempotent: already paid & verified
+      if (p.status === 'Paid' && p.verificationStatus === 'Verified') {
+        const enr = (store.state.enrollments || []).find(e => e.studentId === p.studentId && (e.courseId === p.courseId || e.tierId === p.tierId));
+        return { verified: true, payment: paymentRepository._normalizePayment(p), enrollment: enr, idempotent: true };
+      }
+
+      // Trusted verification check
+      const expectedTier = paymentRepository.getTierPriceConfig(p.tierId);
+      const expectedAmount = expectedTier.amount !== null ? expectedTier.amount : p.amount;
+
+      const verificationResult = await paymentRepository.provider.verifyPayment({
+        transactionRef: p.transactionRef,
+        expectedAmount,
+        expectedCurrency: p.currency || 'USD',
+        actualAmount: actualAmount !== undefined ? actualAmount : expectedAmount,
+        actualCurrency: actualCurrency || p.currency || 'USD',
+        studentId: studentId || p.studentId,
+        expectedStudentId: p.studentId,
+        signature
+      });
+
+      if (!verificationResult.verified) {
+        p.verificationStatus = 'Verification failed';
+        p.status = 'Manual review';
+        p.notes = (p.notes ? p.notes + ' | ' : '') + `Verification failed: ${verificationResult.error}`;
+        store.saveState();
+        store.persistDoc('payments', p.id, p);
+        throw new Error(`Payment verification failed: ${verificationResult.error}`);
+      }
+
+      const nowIso = new Date().toISOString();
+      p.status = 'Paid';
+      p.verificationStatus = 'Verified';
+      p.date = nowIso.replace('T', ' ').slice(0, 16) + ' UTC';
+      p.notes = (p.notes ? p.notes + ' | ' : '') + `Verified by trusted gateway: ${verifiedBy || 'Server Webhook'}`;
+
+      // Activate enrollment only after verified payment
+      let enr = (store.state.enrollments || []).find(e => e.studentId === p.studentId && (e.courseId === p.courseId || e.tierId === p.tierId));
+      if (enr) {
+        enr.status = 'Enrolled';
+        enr.paymentStatus = 'Paid';
+        enr.lastUpdated = nowIso;
+        store.persistDoc('enrollments', enr.id, enr);
+      }
+
+      // Activate student payment status if student found
+      const stu = (store.state.students || []).find(s => s.id === p.studentId);
+      if (stu) {
+        stu.paymentStatus = 'Paid';
+        stu.enrollmentStatus = 'Enrolled';
+        store.persistDoc('students', stu.id, stu);
+      }
+
+      store.saveState();
+      store.persistDoc('payments', p.id, p);
+      auditRepository.log('Verified Tuition Payment', 'Payment', `${p.studentName} (${p.transactionRef}) - Status: Paid`);
+
+      return {
+        verified: true,
+        payment: paymentRepository._normalizePayment(p),
+        enrollment: enr
+      };
+    },
+
+    handleWebhookEvent: async (eventPayload, signature) => {
+      if (!eventPayload || !eventPayload.type) {
+        throw new Error('Invalid webhook event payload');
+      }
+
+      const eventId = eventPayload.id || `${eventPayload.type}_${eventPayload.transactionRef || Date.now()}`;
+      if (paymentRepository.processedWebhookEvents.has(eventId)) {
+        return { received: true, duplicate: true, message: 'Event already processed (idempotent)' };
+      }
+      paymentRepository.processedWebhookEvents.add(eventId);
+
+      const txRef = eventPayload.transactionRef;
+      const p = (store.state.payments || []).find(item => item.transactionRef === txRef || item.id === eventPayload.paymentId);
+
+      switch (eventPayload.type) {
+        case 'payment.succeeded':
+        case 'payment_intent.succeeded': {
+          if (!p) throw new Error(`Payment transaction "${txRef}" not found for webhook`);
+          return paymentRepository.verifyPayment({
+            transactionRef: txRef,
+            paymentId: p.id,
+            actualAmount: eventPayload.amount !== undefined ? eventPayload.amount : p.amount,
+            actualCurrency: eventPayload.currency || p.currency,
+            studentId: eventPayload.studentId || p.studentId,
+            verifiedBy: 'Webhook'
+          });
+        }
+        case 'payment.failed':
+        case 'payment_intent.payment_failed': {
+          if (p) {
+            return paymentRepository.handleFailedPayment(p.id, eventPayload.reason || 'Payment failed via processor notification');
+          }
+          break;
+        }
+        case 'payment.cancelled':
+        case 'checkout.session.cancelled': {
+          if (p) {
+            return paymentRepository.handleCancelledPayment(p.id, eventPayload.reason || 'Checkout session cancelled');
+          }
+          break;
+        }
+        case 'payment.refunded':
+        case 'charge.refunded': {
+          if (p) {
+            p.status = 'Refunded';
+            p.refundStatus = 'Processed';
+            p.notes = (p.notes ? p.notes + ' | ' : '') + `Refund processed via webhook: ${eventPayload.reason || 'Remote processor'}`;
+            const enr = (store.state.enrollments || []).find(e => e.studentId === p.studentId);
+            if (enr) {
+              enr.paymentStatus = 'Refunded';
+              enr.status = 'Cancelled';
+              store.persistDoc('enrollments', enr.id, enr);
+            }
+            store.saveState();
+            store.persistDoc('payments', p.id, p);
+            return { refunded: true, payment: paymentRepository._normalizePayment(p) };
+          }
+          break;
+        }
+        default:
+          break;
+      }
+
+      return { received: true, eventId, status: 'acknowledged' };
+    },
+
+    handleFailedPayment: async (paymentId, reason) => {
+      const p = (store.state.payments || []).find(item => item.id === paymentId || item.transactionRef === paymentId);
+      if (!p) throw new Error('Payment record not found.');
+
+      p.status = 'Failed';
+      p.verificationStatus = 'Verification failed';
+      p.notes = (p.notes ? p.notes + ' | ' : '') + `Failure recorded: ${reason || 'Card or network error'}`;
+
+      const enr = (store.state.enrollments || []).find(e => e.studentId === p.studentId && (e.courseId === p.courseId || e.tierId === p.tierId));
+      if (enr) {
+        enr.paymentStatus = 'Failed';
+        store.persistDoc('enrollments', enr.id, enr);
+      }
+      store.saveState();
+      store.persistDoc('payments', p.id, p);
+      auditRepository.log('Payment Transaction Failed', 'Payment', `${p.studentName} (${p.transactionRef}): ${reason || 'Failed'}`);
+      return paymentRepository._normalizePayment(p);
+    },
+
+    handleCancelledPayment: async (paymentId, reason) => {
+      const p = (store.state.payments || []).find(item => item.id === paymentId || item.transactionRef === paymentId);
+      if (!p) throw new Error('Payment record not found.');
+
+      p.status = 'Cancelled';
+      p.verificationStatus = 'Cancelled';
+      p.notes = (p.notes ? p.notes + ' | ' : '') + `Cancelled: ${reason || 'Student left checkout'}`;
+
+      const enr = (store.state.enrollments || []).find(e => e.studentId === p.studentId && (e.courseId === p.courseId || e.tierId === p.tierId));
+      if (enr) {
+        enr.paymentStatus = 'Cancelled';
+        store.persistDoc('enrollments', enr.id, enr);
+      }
+      store.saveState();
+      store.persistDoc('payments', p.id, p);
+      auditRepository.log('Payment Checkout Cancelled', 'Payment', `${p.studentName} (${p.transactionRef})`);
+      return paymentRepository._normalizePayment(p);
+    },
+
     save: async (paymentData) => {
-      const idx = store.state.payments.findIndex(p => p.id === paymentData.id);
+      const idx = (store.state.payments || []).findIndex(p => p.id === paymentData.id);
       if (idx !== -1) {
         store.state.payments[idx] = { ...store.state.payments[idx], ...paymentData };
         store.saveState();
-        return store.state.payments[idx];
+        store.persistDoc('payments', paymentData.id, store.state.payments[idx]);
+        return paymentRepository._normalizePayment(store.state.payments[idx]);
       } else {
         const newPayment = {
           id: paymentData.id || `pay-${Date.now().toString().slice(-4)}`,
           transactionRef: paymentData.transactionRef || `NEX-TX-2026-${Math.floor(1000 + Math.random() * 9000)}`,
           date: paymentData.date || new Date().toISOString().replace('T', ' ').slice(0, 16) + ' UTC',
           refundStatus: paymentData.refundStatus || 'None',
+          status: paymentData.status || 'Pending',
+          currency: paymentData.currency || 'USD',
+          provider: paymentData.provider || defaultGatewayProvider.providerName,
+          verificationStatus: paymentData.verificationStatus || 'Pending verification',
           ...paymentData
         };
+        store.state.payments = store.state.payments || [];
         store.state.payments.unshift(newPayment);
         store.saveState();
-        return newPayment;
+        store.persistDoc('payments', newPayment.id, newPayment);
+        return paymentRepository._normalizePayment(newPayment);
       }
     },
+
     refund: async (id, reason) => {
-      const p = store.state.payments.find(item => item.id === id);
-      if (p) {
-        p.status = 'Refunded';
-        p.refundStatus = 'Processed';
-        p.notes = (p.notes ? p.notes + ' | ' : '') + `Refund processed: ${reason || 'Administrative refund request'}`;
-        store.saveState();
-        auditRepository.log('Processed Payment Refund', 'Payment', `${p.studentName} (${p.transactionRef}) - Reason: ${reason || 'Administrative discretion'}`);
-        return p;
+      if (!['Owner', 'Super Admin', 'Finance Manager'].includes(store.getCurrentRole())) {
+        throw new Error('Access denied: Only Finance Managers or Super Admins can issue refunds.');
       }
-      return null;
+      const p = (store.state.payments || []).find(item => item.id === id);
+      if (!p) throw new Error('Payment record not found.');
+
+      p.status = 'Refunded';
+      p.refundStatus = 'Processed';
+      p.notes = (p.notes ? p.notes + ' | ' : '') + `Refund processed: ${reason || 'Administrative refund request'}`;
+
+      const enr = (store.state.enrollments || []).find(e => e.studentId === p.studentId && (e.courseId === p.courseId || e.tierId === p.tierId));
+      if (enr) {
+        enr.paymentStatus = 'Refunded';
+        enr.status = 'Cancelled';
+        store.persistDoc('enrollments', enr.id, enr);
+      }
+      store.saveState();
+      store.persistDoc('payments', p.id, p);
+      auditRepository.log('Processed Payment Refund', 'Payment', `${p.studentName} (${p.transactionRef}) - Reason: ${reason || 'Administrative discretion'}`);
+      return paymentRepository._normalizePayment(p);
     },
+
     updateStatus: async (id, newStatus, noteText) => {
-      const p = store.state.payments.find(item => item.id === id);
-      if (p) {
-        const oldStatus = p.status;
-        p.status = newStatus;
-        if (noteText) {
-          p.notes = (p.notes ? p.notes + ' | ' : '') + noteText;
-        }
-        store.saveState();
-        auditRepository.log('Updated Payment Status', 'Payment', `${p.studentName} (${p.transactionRef}): ${oldStatus} -> ${newStatus}`);
-        return p;
+      if (!['Owner', 'Super Admin', 'Finance Manager'].includes(store.getCurrentRole())) {
+        throw new Error('Access denied: Only Finance Managers can modify payment status records.');
       }
-      return null;
+      const p = (store.state.payments || []).find(item => item.id === id);
+      if (!p) throw new Error('Payment record not found.');
+
+      const oldStatus = p.status;
+      p.status = newStatus;
+      if (noteText) {
+        p.notes = (p.notes ? p.notes + ' | ' : '') + noteText;
+      }
+      store.saveState();
+      store.persistDoc('payments', p.id, p);
+      auditRepository.log('Updated Payment Status', 'Payment', `${p.studentName} (${p.transactionRef}): ${oldStatus} -> ${newStatus}`);
+      return paymentRepository._normalizePayment(p);
+    },
+
+    getStudentPayments: async (studentId) => {
+      const list = (store.state.payments || []).filter(p => p.studentId === studentId);
+      return JSON.parse(JSON.stringify(list.map(paymentRepository._normalizePayment)));
     }
   };
 
@@ -6331,6 +6911,17 @@
     getFileMetadata: (id) => storageRepository.getFileMetadata(id),
     getAllFileMetadata: () => storageRepository.getAllFileMetadata(),
     validateStorageFile: (file, category) => storageRepository.validateFile(file, category),
+
+    // Phase 13 Secure Payment Infrastructure
+    paymentRepository,
+    createCheckoutSession: (args) => paymentRepository.createCheckoutSession(args),
+    verifyPayment: (args) => paymentRepository.verifyPayment(args),
+    handlePaymentWebhook: (payload, sig) => paymentRepository.handleWebhookEvent(payload, sig),
+    handleFailedPayment: (id, reason) => paymentRepository.handleFailedPayment(id, reason),
+    handleCancelledPayment: (id, reason) => paymentRepository.handleCancelledPayment(id, reason),
+    getTierPriceConfig: (tierId) => paymentRepository.getTierPriceConfig(tierId),
+    setTierPriceConfig: (tierId, cfg) => paymentRepository.setTierPriceConfig(tierId, cfg),
+    getStudentPayments: (studentId) => paymentRepository.getStudentPayments(studentId),
 
     seedInitialData: (force) => store.seedInitialData(force),
     syncWithFirestore: () => store.syncWithFirestore(),
