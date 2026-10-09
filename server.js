@@ -2,6 +2,18 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const url = require('url');
+// Load environment variables from .env if present
+if (fs.existsSync(path.join(__dirname, '.env'))) {
+  const envContent = fs.readFileSync(path.join(__dirname, '.env'), 'utf8');
+  envContent.split('\n').forEach(line => {
+    const match = line.match(/^\s*([\w.-]+)\s*=\s*(.*)?\s*$/);
+    if (match) {
+      const key = match[1];
+      const val = (match[2] || '').trim();
+      if (!process.env[key]) process.env[key] = val;
+    }
+  });
+}
 
 const PORT = process.env.PORT || 3000;
 const BASE_DIR = __dirname;
@@ -283,6 +295,39 @@ const server = http.createServer((req, res) => {
       'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-nexvion-signature, webhook-signature, x-admin-role'
     });
     res.end();
+    return;
+  }
+
+  // Phase 18 Firebase Configuration & Status Endpoints
+  if (pathname === '/api/firebase/config' && req.method === 'GET') {
+    const requiredEnvVars = ['FIREBASE_API_KEY', 'FIREBASE_AUTH_DOMAIN', 'FIREBASE_PROJECT_ID', 'FIREBASE_STORAGE_BUCKET', 'FIREBASE_APP_ID'];
+    const missing = requiredEnvVars.filter(k => !process.env[k]);
+    sendJson(res, 200, {
+      configured: missing.length === 0,
+      projectId: process.env.FIREBASE_PROJECT_ID || 'nexvion-ai',
+      authDomain: process.env.FIREBASE_AUTH_DOMAIN || 'nexvion-ai.firebaseapp.com',
+      storageBucket: process.env.FIREBASE_STORAGE_BUCKET || 'nexvion-ai.firebasestorage.app',
+      messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID || '916097030104',
+      appId: process.env.FIREBASE_APP_ID || '1:916097030104:web:e9b393b7fa8c89a84b84ad',
+      measurementId: process.env.FIREBASE_MEASUREMENT_ID || 'G-Q09E6TX5XJ',
+      missingVariables: missing
+    });
+    return;
+  }
+
+  if (pathname === '/api/firebase/status' && req.method === 'GET') {
+    sendJson(res, 200, {
+      status: 'active',
+      projectId: process.env.FIREBASE_PROJECT_ID || 'nexvion-ai',
+      collections: [
+        'courses', 'tiers', 'batches', 'students', 'enrollments',
+        'modules', 'classes', 'lessons', 'videos', 'resources',
+        'projects', 'assignments', 'submissions', 'announcements',
+        'notifications', 'payments', 'certificates', 'supportTickets',
+        'auditLogs', 'settings'
+      ],
+      timestamp: new Date().toISOString()
+    });
     return;
   }
 

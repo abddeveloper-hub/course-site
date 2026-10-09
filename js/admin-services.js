@@ -2941,9 +2941,9 @@
       usersCount: 1,
       isSystem: false,
       permissions: [
-        'view_dashboard', 'view_analytics', 'view_payments'
+        'view_dashboard', 'view_analytics'
       ],
-      accessLevel: 'Institutional Reporting & Metrics (3 / 23 Modules)'
+      accessLevel: 'Institutional Reporting & Metrics (2 / 23 Modules)'
     }
   ];
 
@@ -3229,6 +3229,16 @@
   // 2. DATA STORE
   // --------------------------------------------------------------------------
 
+  const FIREBASE_CONFIG = (typeof window !== 'undefined' && window.firebaseConfig) || {
+    apiKey: "AIzaSyCT5ieblE-Uj_fvBfeodPackWJ38M_RuF4",
+    authDomain: "nexvion-ai.firebaseapp.com",
+    projectId: "nexvion-ai",
+    storageBucket: "nexvion-ai.firebasestorage.app",
+    messagingSenderId: "916097030104",
+    appId: "1:916097030104:web:e9b393b7fa8c89a84b84ad",
+    measurementId: "G-Q09E6TX5XJ"
+  };
+
   class ProductionDataStore {
     constructor() {
       this.state = this.loadState();
@@ -3238,7 +3248,84 @@
       this.storage = null;
       this.syncInProgress = false;
       this.lastSyncTime = null;
+      this.stateStatus = {};
+      const allCols = [
+        'courses', 'tiers', 'batches', 'students', 'enrollments',
+        'modules', 'classes', 'lessons', 'videos', 'resources',
+        'projects', 'assignments', 'submissions', 'announcements',
+        'notifications', 'payments', 'certificates', 'supportTickets',
+        'auditLogs', 'settings'
+      ];
+      allCols.forEach(c => {
+        this.stateStatus[c] = {
+          loading: false,
+          empty: false,
+          error: null,
+          permissionDenied: false,
+          retrying: false,
+          lastFetched: null
+        };
+      });
       this.initFirestore();
+    }
+
+    validateFirebaseConfig() {
+      const required = ['apiKey', 'authDomain', 'projectId', 'storageBucket', 'appId'];
+      const missing = required.filter(k => !FIREBASE_CONFIG[k] || String(FIREBASE_CONFIG[k]).includes('your-'));
+      return {
+        configured: missing.length === 0,
+        missingFields: missing,
+        projectId: FIREBASE_CONFIG.projectId,
+        authDomain: FIREBASE_CONFIG.authDomain
+      };
+    }
+
+    getFirebaseConfig() {
+      return { ...FIREBASE_CONFIG };
+    }
+
+    getRepositoryState(collectionName) {
+      return this.stateStatus[collectionName] ? { ...this.stateStatus[collectionName] } : { loading: false, empty: false, error: null, permissionDenied: false, retrying: false, lastFetched: null };
+    }
+
+    setRepositoryLoading(collectionName, loading) {
+      if (!this.stateStatus[collectionName]) {
+        this.stateStatus[collectionName] = { loading: false, empty: false, error: null, permissionDenied: false, retrying: false, lastFetched: null };
+      }
+      this.stateStatus[collectionName].loading = !!loading;
+      if (loading) {
+        this.stateStatus[collectionName].error = null;
+      }
+    }
+
+    setRepositoryError(collectionName, err, isPermissionDenied = false) {
+      if (!this.stateStatus[collectionName]) {
+        this.stateStatus[collectionName] = { loading: false, empty: false, error: null, permissionDenied: false, retrying: false, lastFetched: null };
+      }
+      this.stateStatus[collectionName].loading = false;
+      this.stateStatus[collectionName].error = typeof err === 'string' ? err : (err && err.message) || 'Repository fetch error';
+      this.stateStatus[collectionName].permissionDenied = !!isPermissionDenied;
+    }
+
+    setRepositorySuccess(collectionName, isEmpty = false) {
+      if (!this.stateStatus[collectionName]) {
+        this.stateStatus[collectionName] = { loading: false, empty: false, error: null, permissionDenied: false, retrying: false, lastFetched: null };
+      }
+      this.stateStatus[collectionName].loading = false;
+      this.stateStatus[collectionName].error = null;
+      this.stateStatus[collectionName].permissionDenied = false;
+      this.stateStatus[collectionName].empty = !!isEmpty;
+      this.stateStatus[collectionName].retrying = false;
+      this.stateStatus[collectionName].lastFetched = new Date().toISOString();
+    }
+
+    async retryRepository(collectionName) {
+      if (!this.stateStatus[collectionName]) {
+        this.stateStatus[collectionName] = { loading: false, empty: false, error: null, permissionDenied: false, retrying: false, lastFetched: null };
+      }
+      this.stateStatus[collectionName].retrying = true;
+      this.stateStatus[collectionName].error = null;
+      return this.queryDocs(collectionName, { forceRefresh: true });
     }
 
     initFirestore() {
@@ -3311,6 +3398,165 @@
       return true;
     }
 
+    async queryDocs(collectionName, options = {}) {
+      this.setRepositoryLoading(collectionName, true);
+      let results = [];
+      let totalCount = 0;
+
+      // 1. Try real Firestore if enabled
+      if (this.firestoreEnabled && this.db) {
+        let attempts = 0;
+        let lastErr = null;
+        while (attempts < 3) {
+          try {
+            let q = this.db.collection(collectionName);
+            if (options.filters && Array.isArray(options.filters)) {
+              for (const f of options.filters) {
+                if (f.value !== undefined && f.value !== null && f.value !== 'ALL') {
+                  q = q.where(f.field, f.op || '==', f.value);
+                }
+              }
+            }
+            if (options.orderBy) {
+              q = q.orderBy(options.orderBy.field, options.orderBy.direction || 'asc');
+            }
+            if (options.limit) {
+              q = q.limit(Number(options.limit));
+            }
+            const snap = await q.get();
+            const remoteDocs = [];
+            snap.forEach(doc => {
+              remoteDocs.push({ id: doc.id, ...doc.data() });
+            });
+
+            if (collectionName === 'batches') {
+              remoteDocs.forEach(b => {
+                b.capacity = 30; // 30-cap hard invariant
+                if (b.enrolledCount > 30) b.enrolledCount = 30;
+              });
+            }
+
+            if (remoteDocs.length > 0) {
+              if (collectionName === 'settings') {
+                this.state.settings = { ...this.state.settings, ...remoteDocs[0] };
+              } else {
+                this.state[collectionName] = remoteDocs;
+              }
+              this.saveState();
+            }
+
+            results = remoteDocs;
+            totalCount = snap.size;
+            this.setRepositorySuccess(collectionName, results.length === 0);
+            break;
+          } catch (err) {
+            lastErr = err;
+            attempts++;
+            const isPerm = err.code === 'permission-denied' ||
+              (err.message && (err.message.toLowerCase().includes('permission') || err.message.toLowerCase().includes('access denied')));
+            if (isPerm) {
+              this.setRepositoryError(collectionName, err.message, true);
+              break;
+            }
+            if (attempts < 3) {
+              await new Promise(r => setTimeout(r, 200 * attempts));
+            }
+          }
+        }
+
+        if (lastErr && results.length === 0) {
+          const isPerm = lastErr.code === 'permission-denied' ||
+            (lastErr.message && (lastErr.message.toLowerCase().includes('permission') || lastErr.message.toLowerCase().includes('access denied')));
+          this.setRepositoryError(collectionName, lastErr.message, isPerm);
+        }
+      }
+
+      // Fallback to local state if Firestore query returned nothing or failed
+      if (results.length === 0 && this.state[collectionName]) {
+        let local = Array.isArray(this.state[collectionName])
+          ? [...this.state[collectionName]]
+          : (this.state[collectionName] ? [this.state[collectionName]] : []);
+
+        if (options.filters && Array.isArray(options.filters)) {
+          for (const f of options.filters) {
+            if (f.value !== undefined && f.value !== null && f.value !== 'ALL') {
+              local = local.filter(item => {
+                if (f.op === '===' || f.op === '==' || !f.op) return item[f.field] === f.value;
+                if (f.op === '>') return item[f.field] > f.value;
+                if (f.op === '<') return item[f.field] < f.value;
+                if (f.op === 'array-contains') return Array.isArray(item[f.field]) && item[f.field].includes(f.value);
+                return true;
+              });
+            }
+          }
+        }
+
+        if (options.search) {
+          const s = options.search.toLowerCase();
+          local = local.filter(item => {
+            return Object.values(item).some(v => typeof v === 'string' && v.toLowerCase().includes(s));
+          });
+        }
+
+        if (collectionName === 'batches') {
+          local.forEach(b => {
+            b.capacity = 30;
+            if (b.enrolledCount > 30) b.enrolledCount = 30;
+          });
+        }
+
+        totalCount = local.length;
+        if (options.limit) {
+          const page = Number(options.page) || 1;
+          const limit = Number(options.limit);
+          const start = (page - 1) * limit;
+          local = local.slice(start, start + limit);
+        }
+
+        results = local;
+        if (!this.stateStatus[collectionName]?.error) {
+          this.setRepositorySuccess(collectionName, results.length === 0);
+        }
+      }
+
+      const out = JSON.parse(JSON.stringify(results));
+      out.pagination = {
+        page: Number(options.page) || 1,
+        limit: Number(options.limit) || results.length,
+        total: totalCount,
+        hasMore: options.limit ? totalCount > (Number(options.page) || 1) * Number(options.limit) : false
+      };
+      return out;
+    }
+
+    async getDoc(collectionName, docId) {
+      if (this.firestoreEnabled && this.db && docId) {
+        try {
+          const snap = await this.db.collection(collectionName).doc(String(docId)).get();
+          if (snap.exists) {
+            const data = { id: snap.id, ...snap.data() };
+            if (collectionName === 'batches') {
+              data.capacity = 30;
+              if (data.enrolledCount > 30) data.enrolledCount = 30;
+            }
+            return data;
+          }
+        } catch (err) {
+          // Fall back to local
+        }
+      }
+      if (collectionName === 'settings') {
+        return JSON.parse(JSON.stringify(this.state.settings || {}));
+      }
+      const list = this.state[collectionName] || [];
+      const item = list.find(x => x.id === docId || (x.verificationId && x.verificationId === docId) || (x.ticketRef && x.ticketRef === docId));
+      if (item && collectionName === 'batches') {
+        item.capacity = 30;
+        if (item.enrolledCount > 30) item.enrolledCount = 30;
+      }
+      return item ? JSON.parse(JSON.stringify(item)) : null;
+    }
+
     async syncWithFirestore() {
       if (!this.firestoreEnabled || !this.db || this.syncInProgress) return;
       this.syncInProgress = true;
@@ -3318,7 +3564,9 @@
         const collections = [
           'tiers', 'courses', 'batches', 'students', 'enrollments',
           'modules', 'classes', 'lessons', 'videos', 'resources',
-          'projects', 'assignments', 'settings'
+          'projects', 'assignments', 'submissions', 'announcements',
+          'notifications', 'payments', 'certificates', 'supportTickets',
+          'auditLogs', 'settings'
         ];
         for (const col of collections) {
           try {
@@ -3549,11 +3797,8 @@
 
   // --- courseRepository ---
   const courseRepository = {
-    findAll: async () => JSON.parse(JSON.stringify(store.state.courses)),
-    findById: async (id) => {
-      const c = store.state.courses.find(c => c.id === id);
-      return c ? JSON.parse(JSON.stringify(c)) : null;
-    },
+    findAll: async (options = {}) => store.queryDocs('courses', options),
+    findById: async (id) => store.getDoc('courses', id),
     create: async (courseData) => {
       const newCourse = {
         ...courseData,
@@ -3644,11 +3889,8 @@
 
   // --- tierRepository ---
   const tierRepository = {
-    findAll: async () => JSON.parse(JSON.stringify(store.state.tiers)),
-    findById: async (id) => {
-      const t = store.state.tiers.find(t => t.id === id);
-      return t ? JSON.parse(JSON.stringify(t)) : null;
-    },
+    findAll: async (options = {}) => store.queryDocs('tiers', options),
+    findById: async (id) => store.getDoc('tiers', id),
     update: async (id, tierData) => {
       const idx = store.state.tiers.findIndex(t => t.id === id);
       if (idx !== -1) {
@@ -3664,19 +3906,25 @@
 
   // --- batchRepository (Strict 30-Cap Invariant Enforced) ---
   const batchRepository = {
-    findAll: async () => {
-      store.state.batches.forEach(b => {
+    findAll: async (options = {}) => {
+      const items = await store.queryDocs('batches', options);
+      items.forEach(b => {
         b.capacity = 30; // Hard invariant: strictly 30 seats per cohort
         if (b.enrolledCount >= 30) {
           b.status = b.status === 'COMPLETED' ? 'COMPLETED' : 'FULL';
         }
       });
-      return JSON.parse(JSON.stringify(store.state.batches));
+      return items;
     },
     findById: async (id) => {
-      const b = store.state.batches.find(b => b.id === id);
-      if (b) b.capacity = 30;
-      return b ? JSON.parse(JSON.stringify(b)) : null;
+      const b = await store.getDoc('batches', id);
+      if (b) {
+        b.capacity = 30;
+        if (b.enrolledCount >= 30) {
+          b.status = b.status === 'COMPLETED' ? 'COMPLETED' : 'FULL';
+        }
+      }
+      return b;
     },
     create: async (batchData) => {
       const clean = {
@@ -4029,11 +4277,8 @@
 
   // --- studentRepository ---
   const studentRepository = {
-    findAll: async () => JSON.parse(JSON.stringify(store.state.students)),
-    findById: async (id) => {
-      const s = store.state.students.find(s => s.id === id);
-      return s ? JSON.parse(JSON.stringify(s)) : null;
-    },
+    findAll: async (options = {}) => store.queryDocs('students', options),
+    findById: async (id) => store.getDoc('students', id),
     create: async (studentData) => {
       const clean = {
         ...studentData,
@@ -4044,6 +4289,7 @@
       };
       store.state.students.unshift(clean);
       store.saveState();
+      store.persistDoc('students', clean.id, clean);
       auditRepository.log('Added Student Record', 'Student', clean.name);
       return clean;
     },
@@ -4052,6 +4298,7 @@
       if (idx !== -1) {
         store.state.students[idx] = { ...store.state.students[idx], ...studentData };
         store.saveState();
+        store.persistDoc('students', id, store.state.students[idx]);
         auditRepository.log('Updated Student Record', 'Student', store.state.students[idx].name);
         return store.state.students[idx];
       }
@@ -4072,6 +4319,7 @@
       student.internalNotesList.unshift(noteObj);
       student.internalNotes = (student.internalNotes ? student.internalNotes + '\n' : '') + `[${timeStr.split('T')[0]} - ${noteObj.author}] ${noteText}`;
       store.saveState();
+      store.persistDoc('students', student.id, student);
       auditRepository.log('Added Internal Student Note', 'Student', `${student.name} (${priority})`);
       return noteObj;
     },
@@ -4227,11 +4475,8 @@
 
   // --- enrollmentRepository ---
   const enrollmentRepository = {
-    findAll: async () => JSON.parse(JSON.stringify(store.state.enrollments)),
-    findById: async (id) => {
-      const e = store.state.enrollments.find(e => e.id === id);
-      return e ? JSON.parse(JSON.stringify(e)) : null;
-    },
+    findAll: async (options = {}) => store.queryDocs('enrollments', options),
+    findById: async (id) => store.getDoc('enrollments', id),
     create: async (enrData) => {
       const actionAuthor = (typeof window !== 'undefined' && window.NexvionAuth && window.NexvionAuth.getDisplayName && window.NexvionAuth.getDisplayName()) || store.getCurrentRole();
       const nowIso = new Date().toISOString();
@@ -4690,11 +4935,8 @@
 
   // --- contentRepository (Classes, Modules, Lessons, Videos, Resources) ---
   const contentRepository = {
-    getClasses: async () => JSON.parse(JSON.stringify(store.state.classes)),
-    getClassById: async (id) => {
-      const c = store.state.classes.find(item => item.id === id);
-      return c ? JSON.parse(JSON.stringify(c)) : null;
-    },
+    getClasses: async (options = {}) => store.queryDocs('classes', options),
+    getClassById: async (id) => store.getDoc('classes', id),
     saveClass: async (classData) => {
       const idx = store.state.classes.findIndex(c => c.id === classData.id);
       if (idx !== -1) {
@@ -4756,11 +4998,8 @@
       return false;
     },
 
-    getModules: async () => JSON.parse(JSON.stringify(store.state.modules)),
-    getModuleById: async (id) => {
-      const m = store.state.modules.find(item => item.id === id);
-      return m ? JSON.parse(JSON.stringify(m)) : null;
-    },
+    getModules: async (options = {}) => store.queryDocs('modules', options),
+    getModuleById: async (id) => store.getDoc('modules', id),
     saveModule: async (modData) => {
       const idx = store.state.modules.findIndex(m => m.id === modData.id);
       if (idx !== -1) {
@@ -4814,11 +5053,8 @@
       return false;
     },
 
-    getLessons: async () => JSON.parse(JSON.stringify(store.state.lessons)),
-    getLessonById: async (id) => {
-      const l = store.state.lessons.find(item => item.id === id);
-      return l ? JSON.parse(JSON.stringify(l)) : null;
-    },
+    getLessons: async (options = {}) => store.queryDocs('lessons', options),
+    getLessonById: async (id) => store.getDoc('lessons', id),
     saveLesson: async (lsnData) => {
       const idx = store.state.lessons.findIndex(l => l.id === lsnData.id);
       if (idx !== -1) {
@@ -4871,11 +5107,8 @@
       return false;
     },
 
-    getVideos: async () => JSON.parse(JSON.stringify(store.state.videos)),
-    getVideoById: async (id) => {
-      const v = store.state.videos.find(item => item.id === id);
-      return v ? JSON.parse(JSON.stringify(v)) : null;
-    },
+    getVideos: async (options = {}) => store.queryDocs('videos', options),
+    getVideoById: async (id) => store.getDoc('videos', id),
     saveVideo: async (vidData) => {
       const idx = store.state.videos.findIndex(v => v.id === vidData.id);
       if (idx !== -1) {
@@ -4911,11 +5144,8 @@
       return false;
     },
 
-    getResources: async () => JSON.parse(JSON.stringify(store.state.resources)),
-    getResourceById: async (id) => {
-      const r = store.state.resources.find(item => item.id === id);
-      return r ? JSON.parse(JSON.stringify(r)) : null;
-    },
+    getResources: async (options = {}) => store.queryDocs('resources', options),
+    getResourceById: async (id) => store.getDoc('resources', id),
     saveResource: async (resData) => {
       const idx = store.state.resources.findIndex(r => r.id === resData.id);
       if (idx !== -1) {
@@ -4955,11 +5185,8 @@
 
   // --- projectRepository (Projects, Assignments & Submissions) ---
   const projectRepository = {
-    getProjects: async () => JSON.parse(JSON.stringify(store.state.projects)),
-    getProjectById: async (id) => {
-      const p = store.state.projects.find(item => item.id === id);
-      return p ? JSON.parse(JSON.stringify(p)) : null;
-    },
+    getProjects: async (options = {}) => store.queryDocs('projects', options),
+    getProjectById: async (id) => store.getDoc('projects', id),
     saveProject: async (projectData) => {
       const idx = store.state.projects.findIndex(p => p.id === projectData.id);
       if (idx !== -1) {
@@ -5012,11 +5239,8 @@
       return false;
     },
 
-    getAssignments: async () => JSON.parse(JSON.stringify(store.state.assignments)),
-    getAssignmentById: async (id) => {
-      const a = store.state.assignments.find(item => item.id === id);
-      return a ? JSON.parse(JSON.stringify(a)) : null;
-    },
+    getAssignments: async (options = {}) => store.queryDocs('assignments', options),
+    getAssignmentById: async (id) => store.getDoc('assignments', id),
     saveAssignment: async (assignmentData) => {
       const idx = store.state.assignments.findIndex(a => a.id === assignmentData.id);
       if (idx !== -1) {
@@ -5070,20 +5294,9 @@
     },
 
     getSubmissions: async (filter = {}) => {
-      let items = (store.state.submissions || []);
-      if (filter && typeof filter === 'object') {
-        if (filter.studentId) items = items.filter(s => s.studentId === filter.studentId);
-        if (filter.courseId) items = items.filter(s => s.courseId === filter.courseId);
-        if (filter.assignmentId) items = items.filter(s => s.assignmentId === filter.assignmentId);
-        if (filter.projectId) items = items.filter(s => s.projectId === filter.projectId);
-        if (filter.status) items = items.filter(s => (s.status || '').toLowerCase() === filter.status.toLowerCase());
-      }
-      return JSON.parse(JSON.stringify(items));
+      return store.queryDocs('submissions', typeof filter === 'object' ? { filters: Object.entries(filter).map(([k, v]) => ({ field: k, value: v })) } : {});
     },
-    getSubmissionById: async (id) => {
-      const s = store.state.submissions.find(item => item.id === id);
-      return s ? JSON.parse(JSON.stringify(s)) : null;
-    },
+    getSubmissionById: async (id) => store.getDoc('submissions', id),
     saveSubmission: async (subData) => {
       const idx = store.state.submissions.findIndex(s => s.id === subData.id);
       if (idx !== -1) {
@@ -6230,11 +6443,8 @@
 
   // --- notificationRepository (Backward-compatible adapter) ---
   const notificationRepository = {
-    findAll: async () => notificationDeliveryService.getDeliveryHistory(),
-    findById: async (id) => {
-      const list = await notificationDeliveryService.getDeliveryHistory();
-      return list.find(item => item.id === id) || null;
-    },
+    findAll: async (options = {}) => store.queryDocs('notifications', options),
+    findById: async (id) => store.getDoc('notifications', id),
     save: async (data) => notificationDeliveryService.sendNotification(data),
     send: async (data) => notificationDeliveryService.sendNotification(data),
     sendTest: async (data) => notificationDeliveryService.sendNotification({
@@ -6318,10 +6528,12 @@
     },
 
     findAll: async (filters = {}) => {
-      if (!store.hasPermission('view_payments')) {
+      if (!store.hasPermission('view_payments') || store.getCurrentRole() === 'Analyst') {
+        store.setRepositoryError('payments', 'Access denied: Unauthorized attempt to view restricted financial records.', true);
         throw new Error('Access denied: Unauthorized attempt to view restricted financial records.');
       }
-      let items = (store.state.payments || []).map(paymentRepository._normalizePayment);
+      let items = await store.queryDocs('payments', typeof filters === 'object' ? { filters: Object.entries(filters).filter(([k]) => ['status', 'studentId', 'courseId', 'tierId'].includes(k)).map(([k, v]) => ({ field: k, value: v })), search: filters.search } : {});
+      items = (items || []).map(paymentRepository._normalizePayment);
       if (filters.status && filters.status !== 'ALL') {
         items = items.filter(p => (p.status || '').toLowerCase() === filters.status.toLowerCase());
       }
@@ -6346,15 +6558,17 @@
     },
 
     findById: async (id) => {
-      if (!store.hasPermission('view_payments')) {
+      if (!store.hasPermission('view_payments') || store.getCurrentRole() === 'Analyst') {
+        store.setRepositoryError('payments', 'Access denied: Unauthorized attempt to view restricted financial records.', true);
         throw new Error('Access denied: Unauthorized attempt to view restricted financial records.');
       }
-      const p = (store.state.payments || []).find(item => item.id === id);
+      const p = await store.getDoc('payments', id);
       return p ? JSON.parse(JSON.stringify(paymentRepository._normalizePayment(p))) : null;
     },
 
     findByTransactionRef: async (ref) => {
-      if (!store.hasPermission('view_payments')) {
+      if (!store.hasPermission('view_payments') || store.getCurrentRole() === 'Analyst') {
+        store.setRepositoryError('payments', 'Access denied: Unauthorized attempt to view restricted financial records.', true);
         throw new Error('Access denied: Unauthorized attempt to view restricted financial records.');
       }
       const p = (store.state.payments || []).find(item => item.transactionRef === ref);
@@ -6867,11 +7081,8 @@
 
   // --- certificateRepository (Phase 15 Secure Eligibility & Issuance) ---
   const certificateRepository = {
-    findAll: async () => JSON.parse(JSON.stringify(store.state.certificates || [])),
-    findById: async (id) => {
-      const c = (store.state.certificates || []).find(c => c.id === id || c.verificationId === id);
-      return c ? JSON.parse(JSON.stringify(c)) : null;
-    },
+    findAll: async (options = {}) => store.queryDocs('certificates', options),
+    findById: async (id) => store.getDoc('certificates', id),
     getStudentCertificates: async (studentId) => {
       const list = (store.state.certificates || []).filter(c => c.studentId === studentId);
       return JSON.parse(JSON.stringify(list));
@@ -7305,7 +7516,8 @@
     },
 
     findAll: async (filters = {}, requestingUserId = null, isAdmin = true) => {
-      let list = store.state.supportTickets || [];
+      let list = await store.queryDocs('supportTickets', typeof filters === 'object' ? { filters: Object.entries(filters).filter(([k]) => ['category', 'status', 'priority', 'assignedAdmin', 'studentId'].includes(k)).map(([k, v]) => ({ field: k, value: v })), search: filters.search } : {});
+      list = list || store.state.supportTickets || [];
 
       // Student isolation: Students can access only their own tickets
       if (!isAdmin && requestingUserId) {
@@ -7343,7 +7555,7 @@
     },
 
     findById: async (id, requestingUserId = null, isAdmin = true) => {
-      const t = (store.state.supportTickets || []).find(ticket => ticket.id === id || ticket.ticketRef === id);
+      const t = await store.getDoc('supportTickets', id);
       if (!t) return null;
 
       // Security: Students can access only their own tickets
@@ -8002,11 +8214,8 @@
 
   // --- auditRepository ---
   const auditRepository = {
-    findAll: async () => JSON.parse(JSON.stringify(store.state.auditLogs)),
-    findById: async (id) => {
-      const l = store.state.auditLogs.find(log => log.id === id);
-      return l ? JSON.parse(JSON.stringify(l)) : null;
-    },
+    findAll: async (options = {}) => store.queryDocs('auditLogs', options),
+    findById: async (id) => store.getDoc('auditLogs', id),
     log: (action, entityType, entityName, previousState = 'Prior state baseline', newState = 'Modified by administrative operation', result = 'Success', admin = null, ipDevice = null) => {
       const currentRole = store.getCurrentRole();
       const entry = {
@@ -8021,18 +8230,22 @@
         newState: typeof newState === 'object' ? JSON.stringify(newState) : String(newState),
         ipDevice: ipDevice || '192.168.1.102 • Chrome 130 on macOS',
         result: result,
-        notes: `Server-side audit logging will be connected during backend integration.`
+        notes: `Server-side audit logging synchronized to Firestore auditLogs.`
       };
       store.state.auditLogs.unshift(entry);
       if (store.state.auditLogs.length > 100) store.state.auditLogs.pop();
       store.saveState();
+      store.persistDoc('auditLogs', entry.id, entry);
       return entry;
     }
   };
 
   // --- settingsRepository ---
   const settingsRepository = {
-    get: async () => JSON.parse(JSON.stringify(store.state.settings)),
+    get: async () => {
+      const s = await store.getDoc('settings', 'platformSettings');
+      return s || JSON.parse(JSON.stringify(store.state.settings));
+    },
     save: async (newSettings) => {
       // STRICT INVARIANT ENFORCEMENT: Max batch size fixed at 30, cannot exceed 30
       if (newSettings.batchRules) {
@@ -8044,6 +8257,7 @@
       const prev = JSON.stringify(store.state.settings);
       store.state.settings = { ...store.state.settings, ...newSettings };
       store.saveState();
+      store.persistDoc('settings', 'platformSettings', store.state.settings);
       auditRepository.log('SETTINGS_UPDATED', 'Settings', 'Platform Configuration & Governance', prev, JSON.stringify(newSettings), 'Success');
       return true;
     },
@@ -8051,6 +8265,7 @@
       if (defaultSettings[sectionKey]) {
         store.state.settings[sectionKey] = JSON.parse(JSON.stringify(defaultSettings[sectionKey]));
         store.saveState();
+        store.persistDoc('settings', 'platformSettings', store.state.settings);
         auditRepository.log('SETTINGS_SECTION_RESET', 'Settings', `Reset section: ${sectionKey}`, 'Custom configuration', 'Factory default state restored', 'Success');
         return store.state.settings[sectionKey];
       }
@@ -8060,11 +8275,8 @@
 
   // --- announcementsRepository ---
   const announcementsRepository = {
-    findAll: async () => JSON.parse(JSON.stringify(store.state.announcements)),
-    findById: async (id) => {
-      const a = store.state.announcements.find(item => item.id === id);
-      return a ? JSON.parse(JSON.stringify(a)) : null;
-    },
+    findAll: async (options = {}) => store.queryDocs('announcements', options),
+    findById: async (id) => store.getDoc('announcements', id),
     save: async (data) => {
       const idx = store.state.announcements.findIndex(a => a.id === data.id);
       if (idx !== -1) {
@@ -8074,6 +8286,7 @@
           lastUpdated: new Date().toISOString()
         };
         store.saveState();
+        store.persistDoc('announcements', store.state.announcements[idx].id, store.state.announcements[idx]);
         auditRepository.log('Updated Platform Announcement', 'Announcement', store.state.announcements[idx].title);
         return store.state.announcements[idx];
       } else {
@@ -8085,6 +8298,7 @@
         };
         store.state.announcements.unshift(item);
         store.saveState();
+        store.persistDoc('announcements', item.id, item);
         auditRepository.log('Created Platform Announcement', 'Announcement', item.title);
         return item;
       }
@@ -8102,6 +8316,7 @@
       };
       store.state.announcements.unshift(clone);
       store.saveState();
+      store.persistDoc('announcements', clone.id, clone);
       auditRepository.log('Duplicated Platform Announcement', 'Announcement', clone.title);
       return clone;
     },
@@ -8120,7 +8335,9 @@
       if (a) {
         a.status = 'Published';
         a.publishedAt = new Date().toISOString();
+        a.lastUpdated = a.publishedAt;
         store.saveState();
+        store.persistDoc('announcements', a.id, a);
         auditRepository.log('Published Platform Announcement', 'Announcement', a.title);
         try {
           await notificationDeliveryService.triggerAnnouncementNotification(a);
@@ -8135,7 +8352,9 @@
       const a = store.state.announcements.find(item => item.id === id);
       if (a) {
         a.status = 'Archived';
+        a.lastUpdated = new Date().toISOString();
         store.saveState();
+        store.persistDoc('announcements', id, a);
         auditRepository.log('Archived Platform Announcement', 'Announcement', a.title);
         return a;
       }
@@ -8383,6 +8602,12 @@
 
     seedInitialData: (force) => store.seedInitialData(force),
     syncWithFirestore: () => store.syncWithFirestore(),
-    getFirestoreStatus: () => store.getFirestoreStatus()
+    getFirestoreStatus: () => store.getFirestoreStatus(),
+    getRepositoryState: (col) => store.getRepositoryState(col),
+    setRepositoryLoading: (col, l) => store.setRepositoryLoading(col, l),
+    retryRepository: (col) => store.retryRepository(col),
+    queryRepository: (col, opts) => store.queryDocs(col, opts),
+    validateFirebaseConfig: () => store.validateFirebaseConfig(),
+    getFirebaseConfig: () => store.getFirebaseConfig()
   };
 });
