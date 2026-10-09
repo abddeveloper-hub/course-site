@@ -61,6 +61,10 @@ service cloud.firestore {
       return isAuthenticated() && (isSuperAdmin() || getAdminRole() == 'Analyst' || isContentManager() || isStudentManager());
     }
 
+    function isAcademicDirector() {
+      return isAuthenticated() && (isSuperAdmin() || getAdminRole() == 'Academic Director' || getAdminRole() == 'Certifier');
+    }
+
     function hasField(data, field) {
       return field in data;
     }
@@ -289,11 +293,11 @@ service cloud.firestore {
     }
 
     // -----------------------------------------------------------------------
-    // Certificates
+    // Certificates (Phase 15: Secure Eligibility & Issuance)
     // -----------------------------------------------------------------------
     match /certificates/{certificateId} {
-      allow read: if true;
-      allow create, update: if isStudentManager() || isSuperAdmin();
+      allow read: if isStudentManager() || isAcademicDirector() || (isAuthenticated() && resource.data.studentId == request.auth.uid);
+      allow create, update: if isSuperAdmin() || isAcademicDirector();
       allow delete: if false;
     }
 

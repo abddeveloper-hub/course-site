@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Official Certificate Verification | NEXVION AI Academy</title>
+  <meta name="description" content="Cryptographically verified credential authenticity lookup for NEXVION AI graduates.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/synthetic-systems.css">
+  <style>
+    :root {
+      --bg-dark: #07090E;
+      --card-bg: rgba(15, 23, 42, 0.75);
+      --card-border: rgba(148, 163, 184, 0.12);
+      --accent-glow: rgba(99, 102, 241, 0.18);
+      --emerald: #10B981;
+      --emerald-bg: rgba(16, 185, 129, 0.12);
+      --ruby: #EF4444;
+      --ruby-bg: rgba(239, 68, 68, 0.12);
+    }
+    body {
+      background: var(--bg-dark);
+      color: #F8FAFC;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .verify-nav {
+      padding: 20px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--card-border);
+      background: rgba(7, 9, 14, 0.85);
+      backdrop-filter: blur(12px);
+    }
+    .verify-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: #fff;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      font-size: 1.1rem;
+    }
+    .verify-main {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px 20px;
+    }
+    .verify-container {
+      max-width: 680px;
+      width: 100%;
+    }
+    .verify-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 36px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6), 0 0 50px -10px var(--accent-glow);
+      position: relative;
+      overflow: hidden;
+    }
+    .verify-header-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .badge-valid {
+      background: var(--emerald-bg);
+      color: var(--emerald);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    .badge-revoked {
+      background: var(--ruby-bg);
+      color: var(--ruby);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+    .badge-notfound {
+      background: rgba(148, 163, 184, 0.1);
+      color: #94A3B8;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+    }
+    .verify-title {
+      font-size: 1.75rem;
+      font-weight: 800;
+      margin: 0 0 8px 0;
+      color: #FFFFFF;
+      letter-spacing: -0.02em;
+    }
+    .verify-subtitle {
+      color: #94A3B8;
+      font-size: 0.95rem;
+      margin: 0 0 28px 0;
+      line-height: 1.5;
+    }
+    .verify-details-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+      background: rgba(15, 23, 42, 0.45);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 28px;
+    }
+    @media (max-width: 560px) {
+      .verify-details-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .detail-item-label {
+      font-size: 0.75rem;
+      color: #64748B;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .detail-item-value {
+      font-size: 0.95rem;
+      color: #F8FAFC;
+      font-weight: 600;
+    }
+    .detail-code {
+      font-family: 'JetBrains Mono', monospace;
+      color: #818CF8;
+      background: rgba(99, 102, 241, 0.1);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      display: inline-block;
+    }
+    .verify-seal {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--card-border);
+      padding-top: 20px;
+      font-size: 0.8rem;
+      color: #64748B;
+    }
+    .seal-mark {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #94A3B8;
+      font-weight: 600;
+    }
+    .search-input-wrap {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .search-input {
+      flex: 1;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--card-border);
+      color: #fff;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      outline: none;
+    }
+    .search-input:focus {
+      border-color: #6366F1;
+    }
+    .verify-btn {
+      background: #6366F1;
+      color: #fff;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+    .verify-btn:hover {
+      background: #4F46E5;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation -->
+  <header class="verify-nav">
+    <a href="/" class="verify-logo">
+      <span style="color: #6366F1; font-size: 1.25rem;">✦</span>
+      <span>NEXVION AI</span>
+    </a>
+    <div style="font-size: 0.8rem; color: #94A3B8; font-weight: 600;">
+      TRUST & ACCREDITATION DIRECTORY
+    </div>
+  </header>
+
+  <!-- Main Verification Card -->
+  <main class="verify-main">
+    <div class="verify-container">
+      <div class="verify-card" id="cardContainer">
+        
+        <!-- Loading State -->
+        <div id="loadingState" style="text-align: center; padding: 40px 0;">
+          <div style="font-size: 2rem; margin-bottom: 12px; animation: spin 1s infinite linear;">⚙️</div>
+          <div style="font-weight: 600; color: #94A3B8;">Verifying cryptographic credential with registry...</div>
+        </div>
+
+        <!-- Valid State -->
+        <div id="validState" style="display: none;">
+          <div class="verify-header-badge badge-valid">
+            <span>✓</span>
+            <span>Official Verified Credential</span>
+          </div>
+          <h1 class="verify-title" id="certStudentName">Graduate Name</h1>
+          <p class="verify-subtitle">This digital credential was officially issued by NEXVION AI Academy upon rigorous completion of syllabus milestones.</p>
+
+          <div class="verify-details-grid">
+            <div>
+              <div class="detail-item-label">Curriculum Track</div>
+              <div class="detail-item-value" id="certCourseName">—</div>
+            </div>
+            <div>
+              <div class="detail-item-label">Accreditation Tier</div>
+              <div class="detail-item-value" id="certTierName">—</div>
+            </div>
+            <div>
+              <div class="detail-item-label">Certificate ID</div>
+              <div class="detail-item-value"><span class="detail-code" id="certIdValue">—</span></div>
+            </div>
+            <div>
+              <div class="detail-item-label">Issue Date</div>
+              <div class="detail-item-value" id="certIssueDate">—</div>
+            </div>
+            <div id="certGradeWrap">
+              <div class="detail-item-label">Standing / Grade</div>
+              <div class="detail-item-value" id="certGrade">—</div>
+            </div>
+            <div>
+              <div class="detail-item-label">Issuing Authority</div>
+              <div class="detail-item-value" id="certIssuingOrg">NEXVION AI Academy</div>
+            </div>
+          </div>
+
+          <div class="verify-seal">
+            <div class="seal-mark">
+              <span>🛡️</span>
+              <span>Tamper-Resistant Public Registry Record</span>
+            </div>
+            <div>Status: <strong style="color: var(--emerald);">Active & Valid</strong></div>
+          </div>
+        </div>
+
+        <!-- Revoked State -->
+        <div id="revokedState" style="display: none;">
+          <div class="verify-header-badge badge-revoked">
+            <span>⚠️</span>
+            <span>Credential Revoked</span>
+          </div>
+          <h1 class="verify-title" style="color: #F87171;" id="revokedStudentName">Credential Revoked</h1>
+          <p class="verify-subtitle">This certificate credential was previously issued but has been officially revoked by the Academic Compliance Directorate.</p>
+
+          <div class="verify-details-grid">
+            <div>
+              <div class="detail-item-label">Certificate ID</div>
+              <div class="detail-item-value"><span class="detail-code" id="revokedIdValue">—</span></div>
+            </div>
+            <div>
+              <div class="detail-item-label">Course Track</div>
+              <div class="detail-item-value" id="revokedCourseName">—</div>
+            </div>
+            <div>
+              <div class="detail-item-label">Revocation Date</div>
+              <div class="detail-item-value" style="color: #F87171;" id="revokedDateValue">—</div>
+            </div>
+            <div>
+              <div class="detail-item-label">Revocation Notice</div>
+              <div class="detail-item-value" id="revokedReasonValue">—</div>
+            </div>
+          </div>
+
+          <div class="verify-seal">
+            <div class="seal-mark" style="color: #F87171;">
+              <span>⚠️</span>
+              <span>De-accredited Record Preserved for Compliance Audit</span>
+            </div>
+            <div>Status: <strong style="color: var(--ruby);">Revoked</strong></div>
+          </div>
+        </div>
+
+        <!-- Not Found / Search State -->
+        <div id="notFoundState" style="display: none;">
+          <div class="verify-header-badge badge-notfound">
+            <span>✕</span>
+            <span>Credential Not Found</span>
+          </div>
+          <h1 class="verify-title">Verify a NEXVION Credential</h1>
+          <p class="verify-subtitle">Enter an official certificate verification ID below (e.g. <code>NEX-FND-2026-0042</code>) to verify authentic academic standing.</p>
+
+          <div class="search-input-wrap">
+            <input type="text" id="certSearchInput" class="search-input" placeholder="e.g. NEX-FND-2026-0042">
+            <button class="verify-btn" onclick="lookupCertificate()">Verify</button>
+          </div>
+          <div id="notFoundError" style="margin-top: 14px; font-size: 0.85rem; color: #F87171; display: none;">
+            No official certificate matches that verification ID.
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <script>
+    function extractCertId() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const queryId = urlParams.get('id') || urlParams.get('cert') || urlParams.get('certificateId');
+      if (queryId) return queryId.trim();
+
+      const pathParts = window.location.pathname.split('/').filter(Boolean);
+      const last = pathParts[pathParts.length - 1];
+      if (last && !last.includes('verify-certificate')) {
+        return last.trim();
+      }
+      return null;
+    }
+
+    async function verifyId(id) {
+      document.getElementById('loadingState').style.display = 'block';
+      document.getElementById('validState').style.display = 'none';
+      document.getElementById('revokedState').style.display = 'none';
+      document.getElementById('notFoundState').style.display = 'none';
+
+      try {
+        const resp = await fetch(`/api/certificates/verify?id=${encodeURIComponent(id)}`);
+        const data = await resp.json();
+        document.getElementById('loadingState').style.display = 'none';
+
+        if (data && data.valid === true) {
+          document.getElementById('certStudentName').textContent = data.studentName || 'Certified Graduate';
+          document.getElementById('certCourseName').textContent = data.courseName || '—';
+          document.getElementById('certTierName').textContent = data.tier || 'Standard';
+          document.getElementById('certIdValue').textContent = data.certificateId || id;
+          document.getElementById('certIssueDate').textContent = data.issueDate || '—';
+          document.getElementById('certGrade').textContent = data.grade || 'Certified';
+          document.getElementById('certIssuingOrg').textContent = data.issuingOrganization || 'NEXVION AI Academy';
+          document.getElementById('validState').style.display = 'block';
+        } else if (data && data.revoked === true) {
+          document.getElementById('revokedStudentName').textContent = data.studentName ? `${data.studentName} (Revoked)` : 'Credential Revoked';
+          document.getElementById('revokedIdValue').textContent = data.certificateId || id;
+          document.getElementById('revokedCourseName').textContent = data.courseName || '—';
+          document.getElementById('revokedDateValue').textContent = data.revocationDate || 'Recorded';
+          document.getElementById('revokedReasonValue').textContent = data.revocationReason || 'Administrative action';
+          document.getElementById('revokedState').style.display = 'block';
+        } else {
+          document.getElementById('notFoundState').style.display = 'block';
+          if (id) {
+            document.getElementById('certSearchInput').value = id;
+            document.getElementById('notFoundError').style.display = 'block';
+          }
+        }
+      } catch (err) {
+        document.getElementById('loadingState').style.display = 'none';
+        document.getElementById('notFoundState').style.display = 'block';
+        document.getElementById('notFoundError').textContent = 'Verification service temporarily unavailable.';
+        document.getElementById('notFoundError').style.display = 'block';
+      }
+    }
+
+    function lookupCertificate() {
+      const input = document.getElementById('certSearchInput');
+      const val = input ? input.value.trim() : '';
+      if (val) {
+        verifyId(val);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const certId = extractCertId();
+      if (certId) {
+        verifyId(certId);
+      } else {
+        document.getElementById('loadingState').style.display = 'none';
+        document.getElementById('notFoundState').style.display = 'block';
+      }
+    });
+  </script>
+</body>
+</html>

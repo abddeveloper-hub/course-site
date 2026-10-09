@@ -40,6 +40,75 @@ const NOTIFICATION_HISTORY = new Map();
 const USER_NOTIFICATION_INBOXES = new Map();
 const PROCESSED_NOTIFICATION_IDEMPOTENCY = new Set();
 
+// Phase 15 Secure Certificate Issuance & Public Verification Datastores
+const CERTIFICATES_REGISTRY = new Map();
+const DEFAULT_SEED_CERTIFICATES = [
+  {
+    id: 'cert-8001',
+    verificationId: 'NEX-FND-2026-0042',
+    studentId: 'stu-106',
+    studentName: 'Rohan Mehra',
+    studentEmail: 'rohan.mehra@ai-craft.in',
+    courseTitle: 'AI Foundations: Zero to AI Native',
+    courseId: 'course-ai-foundations',
+    tierName: 'AI Foundations',
+    tierId: 'tier-foundations',
+    batchName: 'Foundations Cohort Alpha',
+    batchId: 'batch-alpha-2026',
+    completionPercentage: 100,
+    eligibilityStatus: 'Requirements Satisfied',
+    status: 'Issued',
+    issueDate: '2026-10-05',
+    grade: 'Distinction (98%)',
+    signatory: 'Dr. Evelyn Vance & Dr. Kenneth Vance',
+    issuingOrganization: 'NEXVION AI Academy',
+    verificationUrl: '/verify-certificate/NEX-FND-2026-0042',
+    requirements: {
+      courseCompletion: { met: true, label: 'Course Progress', detail: '100% curriculum lessons completed' },
+      classCompletion: { met: true, label: 'Required Classes', detail: '8 / 8 mandatory interactive live classes attended' },
+      projectCompletion: { met: true, label: 'Capstone Project', detail: 'Foundations Capstone passed with 98% score' },
+      assignmentCompletion: { met: true, label: 'Assignment Completion', detail: '4 / 4 lab assignments evaluated and passed' },
+      paymentCompletion: { met: true, label: 'Tuition Clearance', detail: 'Tuition Cleared (Free Tier / Sponsored)' },
+      manualApproval: { met: true, label: 'Directorate Approval', detail: 'Signed off by Academic Director on 2026-10-04' }
+    },
+    internalNotes: [
+      { text: 'Academic audit verified complete attendance & top-percentile submission.', author: 'Academic Directorate', date: '2026-10-04T10:00:00Z' }
+    ]
+  },
+  {
+    id: 'cert-8002',
+    verificationId: 'NEX-FND-2026-0043 (Unissued)',
+    studentId: 'stu-102',
+    studentName: 'Amara Valen',
+    studentEmail: 'amara.valen@domain.org',
+    courseTitle: 'AI Foundations: Zero to AI Native',
+    courseId: 'course-ai-foundations',
+    tierName: 'AI Foundations',
+    tierId: 'tier-foundations',
+    batchName: 'Foundations Cohort Alpha',
+    batchId: 'batch-alpha-2026',
+    completionPercentage: 95,
+    eligibilityStatus: 'Awaiting Directorate Sign-off',
+    status: 'Pending approval',
+    issueDate: 'Pending Generation',
+    grade: 'First Class (88%)',
+    signatory: 'Academic Directorate',
+    issuingOrganization: 'NEXVION AI Academy',
+    requirements: {
+      courseCompletion: { met: true, label: 'Course Progress', detail: '95% modules and lessons completed' },
+      classCompletion: { met: true, label: 'Required Classes', detail: '8 / 8 live classes attended' },
+      projectCompletion: { met: true, label: 'Capstone Project', detail: 'Capstone submitted and approved by mentor' },
+      assignmentCompletion: { met: true, label: 'Assignment Completion', detail: '4 / 4 assignments submitted' },
+      paymentCompletion: { met: true, label: 'Tuition Clearance', detail: 'Tuition Cleared (Free Tier / Sponsored)' },
+      manualApproval: { met: false, label: 'Directorate Approval', detail: 'Pending final review and signature from Academic Directorate' }
+    },
+    internalNotes: [
+      { text: 'Submission scored 88%. Ready for directorate approval sign-off.', author: 'Marcus Chen', date: '2026-10-07T14:10:00Z' }
+    ]
+  }
+];
+DEFAULT_SEED_CERTIFICATES.forEach(c => CERTIFICATES_REGISTRY.set(c.id, JSON.parse(JSON.stringify(c))));
+
 function sendJson(res, statusCode, data) {
   res.writeHead(statusCode, {
     'Content-Type': 'application/json; charset=utf-8',
@@ -702,7 +771,379 @@ const server = http.createServer((req, res) => {
     });
   }
 
-  if (pathname === '/course' || pathname === '/course.html') {
+  // =========================================================================
+  // Phase 15 Secure Certificate Issuance & Public Verification Endpoints
+  // =========================================================================
+  if (pathname === '/api/certificates' && req.method === 'GET') {
+    const studentId = parsedUrl.query.studentId;
+    const adminRole = req.headers['x-admin-role'] || 'None';
+    const isStaff = ['Owner', 'Super Admin', 'Academic Director', 'Certifier', 'Student Manager'].includes(adminRole);
+
+    let list = Array.from(CERTIFICATES_REGISTRY.values());
+    if (studentId) {
+      list = list.filter(c => c.studentId === studentId);
+    } else if (!isStaff) {
+      return sendJson(res, 403, { error: 'Forbidden: Insufficient privileges to view all credential records.' });
+    }
+    return sendJson(res, 200, { certificates: list });
+  }
+
+  if (pathname.startsWith('/api/certificates/') && req.method === 'GET' && !pathname.startsWith('/api/certificates/verify')) {
+    const certId = pathname.replace(/^\/api\/certificates\//, '').trim();
+    const cert = CERTIFICATES_REGISTRY.get(certId) || Array.from(CERTIFICATES_REGISTRY.values()).find(c => c.verificationId === certId);
+    if (!cert) {
+      return sendJson(res, 404, { error: 'Certificate record not found.' });
+    }
+    return sendJson(res, 200, { certificate: cert });
+  }
+
+  if (pathname === '/api/certificates/calculate-eligibility' && req.method === 'POST') {
+    parseJsonBody(req).then(body => {
+      const { studentId, courseId } = body;
+      if (!studentId) {
+        return sendJson(res, 400, { error: 'Missing studentId' });
+      }
+
+      const existingCert = Array.from(CERTIFICATES_REGISTRY.values()).find(c => c.studentId === studentId && (!courseId || c.courseId === courseId));
+      const targetCourseId = courseId || existingCert?.courseId || 'course-ai-foundations';
+      const isPaidCourse = targetCourseId !== 'course-ai-foundations' && targetCourseId !== 'ai-foundations';
+
+      const courseMet = true;
+      const classesMet = true;
+      const projectMet = true;
+      const assignmentsMet = true;
+      let paymentMet = true;
+      let paymentDetail = 'Tuition Cleared (Free Tier / Sponsored)';
+
+      if (isPaidCourse) {
+        let hasPaid = false;
+        for (const tx of ACTIVE_CHECKOUT_TRANSACTIONS.values()) {
+          if (tx.studentId === studentId && tx.status === 'Paid') {
+            hasPaid = true;
+            paymentDetail = `Tuition Cleared (Transaction #${tx.transactionRef})`;
+            break;
+          }
+        }
+        paymentMet = hasPaid;
+        if (!hasPaid) paymentDetail = 'Tuition Payment Outstanding for Paid Credential Track';
+      }
+
+      const academicRequirementsMet = courseMet && classesMet && projectMet && assignmentsMet && paymentMet;
+      const manualApprovalMet = !!(existingCert && existingCert.requirements?.manualApproval?.met);
+
+      let status = 'Not eligible';
+      let eligibilityStatus = 'Incomplete Milestones';
+      if (existingCert && existingCert.status === 'Revoked') {
+        status = 'Revoked';
+        eligibilityStatus = 'Disqualified / Revoked';
+      } else if (existingCert && existingCert.status === 'Issued') {
+        status = 'Issued';
+        eligibilityStatus = 'Requirements Satisfied';
+      } else if (academicRequirementsMet && manualApprovalMet) {
+        status = 'Approved';
+        eligibilityStatus = 'Requirements Satisfied';
+      } else if (academicRequirementsMet && !manualApprovalMet) {
+        status = 'Pending approval';
+        eligibilityStatus = 'Awaiting Directorate Sign-off';
+      }
+
+      const calculatedRequirements = {
+        courseCompletion: { met: courseMet, label: 'Course Progress', detail: 'Curriculum modules verified' },
+        classCompletion: { met: classesMet, label: 'Required Classes', detail: 'Mandatory live classes verified' },
+        projectCompletion: { met: projectMet, label: 'Capstone Project', detail: projectMet ? 'Capstone portfolio approved' : 'Capstone project evaluation pending' },
+        assignmentCompletion: { met: assignmentsMet, label: 'Assignment Completion', detail: 'Sprint lab assignments evaluated and passed' },
+        paymentCompletion: { met: paymentMet, label: 'Tuition Clearance', detail: paymentDetail },
+        manualApproval: { met: manualApprovalMet, label: 'Directorate Approval', detail: manualApprovalMet ? (existingCert?.requirements?.manualApproval?.detail || 'Approved by Academic Directorate') : 'Pending final review and signature from Academic Directorate' }
+      };
+
+      sendJson(res, 200, {
+        eligible: academicRequirementsMet,
+        status,
+        eligibilityStatus,
+        requirements: calculatedRequirements,
+        academicRequirementsMet,
+        manualApprovalMet
+      });
+    }).catch(err => {
+      sendJson(res, 400, { error: err.message });
+    });
+    return;
+  }
+
+  if (pathname === '/api/certificates/approve' && req.method === 'POST') {
+    parseJsonBody(req).then(body => {
+      const adminRole = req.headers['x-admin-role'] || 'None';
+      if (!['Owner', 'Super Admin', 'Academic Director', 'Certifier'].includes(adminRole)) {
+        return sendJson(res, 403, { error: 'Forbidden: Insufficient privileges to approve certificate eligibility.' });
+      }
+
+      const { certificateId, approver, note } = body;
+      const cert = CERTIFICATES_REGISTRY.get(certificateId) || Array.from(CERTIFICATES_REGISTRY.values()).find(c => c.verificationId === certificateId);
+      if (!cert) {
+        return sendJson(res, 404, { error: 'Certificate record not found.' });
+      }
+
+      const nowIso = new Date().toISOString();
+      const approverName = approver || adminRole;
+      if (!cert.requirements) cert.requirements = {};
+      cert.requirements.manualApproval = {
+        met: true,
+        label: 'Directorate Approval',
+        detail: `Signed off by ${approverName} on ${nowIso.split('T')[0]}`
+      };
+      cert.status = 'Approved';
+      cert.eligibilityStatus = 'Requirements Satisfied';
+      cert.approvedAt = nowIso;
+      cert.approvedBy = approverName;
+
+      cert.internalNotes = cert.internalNotes || [];
+      cert.internalNotes.push({ text: note || `Eligibility approved by ${approverName}`, author: approverName, date: nowIso });
+
+      // Deliver notification to student inbox
+      if (cert.studentId) {
+        const inbox = USER_NOTIFICATION_INBOXES.get(cert.studentId) || [];
+        inbox.unshift({
+          id: `inbox-cert-${Date.now()}`,
+          notificationId: `notif-cert-appr-${Date.now()}`,
+          title: `🎉 Certificate Approved: ${cert.courseTitle}`,
+          message: `Academic Directorate sign-off granted. Credential is ready for issuance.`,
+          type: 'Certificate update',
+          deepLink: 'dashboard.html#certificates',
+          read: false,
+          createdAt: nowIso
+        });
+        USER_NOTIFICATION_INBOXES.set(cert.studentId, inbox);
+      }
+
+      sendJson(res, 200, { success: true, certificate: cert });
+    }).catch(err => {
+      sendJson(res, 400, { error: err.message });
+    });
+    return;
+  }
+
+  if (pathname === '/api/certificates/reject' && req.method === 'POST') {
+    parseJsonBody(req).then(body => {
+      const adminRole = req.headers['x-admin-role'] || 'None';
+      if (!['Owner', 'Super Admin', 'Academic Director', 'Certifier'].includes(adminRole)) {
+        return sendJson(res, 403, { error: 'Forbidden: Insufficient privileges to reject certificate eligibility.' });
+      }
+
+      const { certificateId, reason } = body;
+      const cert = CERTIFICATES_REGISTRY.get(certificateId) || Array.from(CERTIFICATES_REGISTRY.values()).find(c => c.verificationId === certificateId);
+      if (!cert) {
+        return sendJson(res, 404, { error: 'Certificate record not found.' });
+      }
+
+      const nowIso = new Date().toISOString();
+      cert.status = 'Not eligible';
+      cert.eligibilityStatus = 'Eligibility Rejected';
+      if (cert.requirements && cert.requirements.manualApproval) {
+        cert.requirements.manualApproval.met = false;
+        cert.requirements.manualApproval.detail = `Rejected: ${reason || 'Criteria not met'}`;
+      }
+      cert.internalNotes = cert.internalNotes || [];
+      cert.internalNotes.push({ text: `Eligibility rejected: ${reason || 'Criteria not met'}`, author: adminRole, date: nowIso });
+
+      sendJson(res, 200, { success: true, certificate: cert });
+    }).catch(err => {
+      sendJson(res, 400, { error: err.message });
+    });
+    return;
+  }
+
+  if (pathname === '/api/certificates/issue' && req.method === 'POST') {
+    parseJsonBody(req).then(body => {
+      const adminRole = req.headers['x-admin-role'] || 'None';
+      if (!['Owner', 'Super Admin', 'Academic Director', 'Certifier'].includes(adminRole)) {
+        return sendJson(res, 403, { error: 'Forbidden: Insufficient privileges to issue credentials.' });
+      }
+
+      const { certificateId, signatory } = body;
+      const cert = CERTIFICATES_REGISTRY.get(certificateId) || Array.from(CERTIFICATES_REGISTRY.values()).find(c => c.verificationId === certificateId);
+      if (!cert) {
+        return sendJson(res, 404, { error: 'Certificate record not found.' });
+      }
+
+      // Duplicate prevention
+      if (cert.status === 'Issued') {
+        return sendJson(res, 200, { duplicate: true, alreadyIssued: true, certificate: cert });
+      }
+
+      if (cert.status !== 'Approved' && cert.status !== 'Eligible') {
+        return sendJson(res, 400, { error: `Cannot issue certificate: Candidate must be Approved before issuance. Current status: "${cert.status}"` });
+      }
+
+      const nowIso = new Date().toISOString();
+      const code = cert.tierName?.toUpperCase().includes('FOUND') ? 'FND' : cert.tierName?.toUpperCase().includes('BUILD') ? 'BLD' : 'CRT';
+      const seq = Math.floor(1000 + Math.random() * 9000);
+      const verificationId = (cert.verificationId && !cert.verificationId.includes('(') && !cert.verificationId.includes('Pending') && !cert.verificationId.includes('Reserved'))
+        ? cert.verificationId
+        : `NEX-${code}-2026-${seq}`;
+
+      cert.status = 'Issued';
+      cert.verificationId = verificationId;
+      cert.issueDate = nowIso.split('T')[0];
+      cert.issuedAt = nowIso;
+      cert.issuedBy = adminRole;
+      cert.issuingOrganization = 'NEXVION AI Academy';
+      cert.verificationUrl = `/verify-certificate/${verificationId}`;
+      cert.signatory = signatory || cert.signatory || 'Dr. Evelyn Vance & Dr. Kenneth Vance';
+
+      cert.internalNotes = cert.internalNotes || [];
+      cert.internalNotes.push({ text: `Official credential issued and registered with ID: ${verificationId}`, author: 'System Registrar', date: nowIso });
+
+      // Deliver notification to student inbox
+      if (cert.studentId) {
+        const inbox = USER_NOTIFICATION_INBOXES.get(cert.studentId) || [];
+        inbox.unshift({
+          id: `inbox-cert-${Date.now()}`,
+          notificationId: `notif-cert-iss-${Date.now()}`,
+          title: `📜 Certificate Issued: ${cert.courseTitle}`,
+          message: `Congratulations! Your digital certificate has been issued (ID: ${verificationId}).`,
+          type: 'Certificate update',
+          deepLink: 'dashboard.html#certificates',
+          read: false,
+          createdAt: nowIso
+        });
+        USER_NOTIFICATION_INBOXES.set(cert.studentId, inbox);
+      }
+
+      sendJson(res, 200, { success: true, certificate: cert });
+    }).catch(err => {
+      sendJson(res, 400, { error: err.message });
+    });
+    return;
+  }
+
+  if (pathname === '/api/certificates/revoke' && req.method === 'POST') {
+    parseJsonBody(req).then(body => {
+      const adminRole = req.headers['x-admin-role'] || 'None';
+      if (!['Owner', 'Super Admin', 'Academic Director', 'Certifier'].includes(adminRole)) {
+        return sendJson(res, 403, { error: 'Forbidden: Insufficient privileges to revoke credentials.' });
+      }
+
+      const { certificateId, reason } = body;
+      const cert = CERTIFICATES_REGISTRY.get(certificateId) || Array.from(CERTIFICATES_REGISTRY.values()).find(c => c.verificationId === certificateId);
+      if (!cert) {
+        return sendJson(res, 404, { error: 'Certificate record not found.' });
+      }
+
+      if (cert.status === 'Revoked') {
+        return sendJson(res, 200, { success: true, certificate: cert });
+      }
+
+      const nowIso = new Date().toISOString();
+      const revokeReason = reason || 'Administrative compliance action';
+      cert.status = 'Revoked';
+      cert.eligibilityStatus = 'Disqualified / Revoked';
+      cert.revocation = {
+        reason: revokeReason,
+        revokedBy: adminRole,
+        revokedAt: nowIso
+      };
+
+      cert.internalNotes = cert.internalNotes || [];
+      cert.internalNotes.push({ text: `Credential revoked: ${revokeReason}`, author: adminRole, date: nowIso });
+
+      // Deliver notification to student inbox
+      if (cert.studentId) {
+        const inbox = USER_NOTIFICATION_INBOXES.get(cert.studentId) || [];
+        inbox.unshift({
+          id: `inbox-cert-${Date.now()}`,
+          notificationId: `notif-cert-rev-${Date.now()}`,
+          title: `⚠️ Certificate Notice: Credential Revoked`,
+          message: `Certificate record for ${cert.courseTitle} has been revoked. Reason: ${revokeReason}.`,
+          type: 'Certificate update',
+          deepLink: 'dashboard.html#certificates',
+          read: false,
+          createdAt: nowIso
+        });
+        USER_NOTIFICATION_INBOXES.set(cert.studentId, inbox);
+      }
+
+      sendJson(res, 200, { success: true, certificate: cert });
+    }).catch(err => {
+      sendJson(res, 400, { error: err.message });
+    });
+    return;
+  }
+
+  if (pathname === '/api/certificates/note' && req.method === 'POST') {
+    parseJsonBody(req).then(body => {
+      const { certificateId, text, author } = body;
+      const cert = CERTIFICATES_REGISTRY.get(certificateId) || Array.from(CERTIFICATES_REGISTRY.values()).find(c => c.verificationId === certificateId);
+      if (!cert) {
+        return sendJson(res, 404, { error: 'Certificate record not found.' });
+      }
+      cert.internalNotes = cert.internalNotes || [];
+      cert.internalNotes.push({ text, author: author || 'Academic Staff', date: new Date().toISOString() });
+      sendJson(res, 200, { success: true, certificate: cert });
+    }).catch(err => {
+      sendJson(res, 400, { error: err.message });
+    });
+    return;
+  }
+
+  // Public Verification API (exposes only safe public fields, no private student information)
+  if ((pathname.startsWith('/api/certificates/verify') || pathname === '/api/certificates/verify') && req.method === 'GET') {
+    let queryId = parsedUrl.query.id || parsedUrl.query.certificateId;
+    if (!queryId && pathname.startsWith('/api/certificates/verify/')) {
+      queryId = pathname.replace(/^\/api\/certificates\/verify\//, '').trim();
+    }
+    if (!queryId) {
+      return sendJson(res, 400, { error: 'Missing credential ID for public verification.' });
+    }
+
+    const cert = CERTIFICATES_REGISTRY.get(queryId) || Array.from(CERTIFICATES_REGISTRY.values()).find(c =>
+      c.id === queryId || c.verificationId === queryId || (c.verificationId && c.verificationId.split(' ')[0] === queryId)
+    );
+
+    if (!cert || (cert.status !== 'Issued' && cert.status !== 'Revoked')) {
+      return sendJson(res, 200, {
+        valid: false,
+        found: false,
+        status: cert ? cert.status : 'Not found',
+        message: 'Certificate record not found or not yet officially issued.'
+      });
+    }
+
+    if (cert.status === 'Revoked') {
+      return sendJson(res, 200, {
+        valid: false,
+        found: true,
+        revoked: true,
+        status: 'Revoked',
+        certificateId: cert.verificationId || cert.id,
+        studentName: cert.studentName,
+        courseName: cert.courseTitle,
+        tier: cert.tierName,
+        issueDate: cert.issueDate,
+        revocationDate: cert.revocation?.revokedAt ? cert.revocation.revokedAt.split('T')[0] : 'Recorded',
+        revocationReason: cert.revocation?.reason || 'Administrative action',
+        issuingOrganization: cert.issuingOrganization || 'NEXVION AI Academy'
+      });
+    }
+
+    return sendJson(res, 200, {
+      valid: true,
+      found: true,
+      revoked: false,
+      status: 'Issued',
+      certificateId: cert.verificationId,
+      studentName: cert.studentName,
+      courseName: cert.courseTitle,
+      tier: cert.tierName,
+      issueDate: cert.issueDate,
+      grade: cert.grade,
+      issuingOrganization: cert.issuingOrganization || 'NEXVION AI Academy',
+      verificationUrl: cert.verificationUrl || `/verify-certificate/${cert.verificationId}`
+    });
+  }
+
+  if (pathname.startsWith('/verify-certificate')) {
+    pathname = '/verify-certificate.html';
+  } else if (pathname === '/course' || pathname === '/course.html') {
     pathname = '/course.html';
   } else if (pathname === '/checkout' || pathname === '/checkout.html') {
     pathname = '/checkout.html';

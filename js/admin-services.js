@@ -5799,7 +5799,8 @@
     // 3. Notification Dispatch & Delivery
     sendNotification: async (notifData) => {
       const currentRole = store.getCurrentRole();
-      if (!store.hasPermission('send_notifications') && !['Owner', 'Super Admin'].includes(currentRole)) {
+      const isSystemDispatcher = notifData.sentBy && ['System Automation', 'Registrar Directorate', 'Bursar System Automation', 'Curriculum Scheduler'].includes(notifData.sentBy);
+      if (!isSystemDispatcher && !store.hasPermission('send_notifications') && !['Owner', 'Super Admin', 'Academic Director'].includes(currentRole)) {
         throw new Error('Access denied: Unauthorized role cannot dispatch broadcast notifications.');
       }
 
@@ -6126,6 +6127,50 @@
         audience: classItem.courseId ? 'Specific Course' : 'All Enrolled Students',
         deepLink,
         sentBy: 'Curriculum Scheduler'
+      });
+    },
+
+    triggerCertificateNotification: async (cert, eventType, extraReason) => {
+      if (!cert || !cert.studentId) return null;
+      let title = '';
+      let message = '';
+      const course = cert.courseTitle || 'Curriculum Track';
+      const deepLink = `dashboard.html#certificates`;
+
+      switch (eventType) {
+        case 'eligibility_achieved':
+          title = `🎓 Certificate Eligibility Achieved: ${course}`;
+          message = `You have completed curriculum milestones for ${course}. Application queued for directorate sign-off.`;
+          break;
+        case 'pending_approval':
+          title = `⏳ Certificate Pending Approval: ${course}`;
+          message = `Your completion records are being audited by the Academic Directorate.`;
+          break;
+        case 'approved':
+          title = `🎉 Certificate Approved: ${course}`;
+          message = `Directorate sign-off granted for ${course}. Your credential is now eligible for issuance.`;
+          break;
+        case 'issued':
+          title = `📜 Certificate Issued: ${course}`;
+          message = `Congratulations! Your official digital certificate has been issued (ID: ${cert.verificationId || cert.id}).`;
+          break;
+        case 'revoked':
+          title = `⚠️ Certificate Notice: Credential Revoked`;
+          message = `Certificate record for ${course} has been revoked by issuing authority. Reason: ${extraReason || cert.revocation?.reason || 'Administrative review'}.`;
+          break;
+        default:
+          title = `Certificate Update: ${course}`;
+          message = `Your certificate status is now ${cert.status}.`;
+      }
+
+      return notificationDeliveryService.sendNotification({
+        title,
+        message,
+        type: 'Certificate update',
+        targetUserId: cert.studentId,
+        courseId: cert.courseId || '',
+        deepLink,
+        sentBy: 'Registrar Directorate'
       });
     }
   };
@@ -6767,88 +6812,411 @@
     }
   };
 
-  // --- certificateRepository ---
+  // --- certificateRepository (Phase 15 Secure Eligibility & Issuance) ---
   const certificateRepository = {
-    findAll: async () => JSON.parse(JSON.stringify(store.state.certificates)),
+    findAll: async () => JSON.parse(JSON.stringify(store.state.certificates || [])),
     findById: async (id) => {
-      const c = store.state.certificates.find(c => c.id === id);
+      const c = (store.state.certificates || []).find(c => c.id === id || c.verificationId === id);
       return c ? JSON.parse(JSON.stringify(c)) : null;
     },
-    approve: async (id, approver) => {
-      const cert = store.state.certificates.find(c => c.id === id);
-      if (cert) {
-        if (!cert.requirements) cert.requirements = {};
-        if (!cert.requirements.manualApproval) {
-          cert.requirements.manualApproval = { met: true, label: 'Directorate Approval', detail: '' };
+    getStudentCertificates: async (studentId) => {
+      const list = (store.state.certificates || []).filter(c => c.studentId === studentId);
+      return JSON.parse(JSON.stringify(list));
+    },
+
+    // 1. Calculate eligibility from verified backend data (never trust client percentages)
+    calculateEligibility: async ({ studentId, courseId }) => {
+      if (!studentId) throw new Error('studentId is required to calculate eligibility.');
+      const student = store.state.students.find(s => s.id === studentId);
+      const enrollment = store.state.enrollments.find(e => e.studentId === studentId && (!courseId || e.courseId === courseId));
+      const targetCourseId = courseId || enrollment?.courseId || student?.enrolledCourse || 'course-ai-foundations';
+      const course = store.state.courses.find(c => c.id === targetCourseId || (targetCourseId && targetCourseId.includes(c.id)));
+      const defaultTitle = targetCourseId.includes('builder') ? 'AI Builder: Intelligent Application Engineering' :
+                           targetCourseId.includes('creator') ? 'AI Creator: Multimodal Generative Systems' :
+                           targetCourseId.includes('architect') ? 'AI Architect: Enterprise AI Systems' :
+                           'AI Foundations: Zero to AI Native';
+      const courseTitle = course?.title || enrollment?.courseTitle || defaultTitle;
+
+      // 1. Required Course / Module completion
+      const courseModules = store.state.modules.filter(m => m.courseId === targetCourseId);
+      const totalModules = courseModules.length || 5;
+      const completedModulesCount = student?.completedModules !== undefined ? student.completedModules : (enrollment?.status === 'Completed' ? totalModules : (student?.progressPercent ? Math.floor((student.progressPercent / 100) * totalModules) : 0));
+      const courseMet = completedModulesCount >= totalModules || enrollment?.status === 'Completed';
+
+      // 2. Required Class completion
+      const courseClasses = store.state.classes.filter(c => c.courseId === targetCourseId && c.status !== 'Archived');
+      const totalClasses = courseClasses.length || 8;
+      const attendedClasses = student?.completedClasses !== undefined ? student.completedClasses : (enrollment?.status === 'Completed' ? totalClasses : Math.floor(totalClasses * 0.8));
+      const classesMet = attendedClasses >= totalClasses || enrollment?.status === 'Completed';
+
+      // 3. Required Capstone Project completion
+      const userSubs = store.state.submissions.filter(s => s.studentId === studentId);
+      const projectSub = userSubs.find(s => s.type === 'Project' || s.title?.toLowerCase().includes('capstone') || s.projectId);
+      const projectMet = (projectSub && (projectSub.status === 'Approved' || projectSub.status === 'Reviewed' || (projectSub.gradeScore !== undefined && projectSub.gradeScore >= 70))) || enrollment?.status === 'Completed';
+
+      // 4. Required Assignment completion
+      const assignmentSubs = userSubs.filter(s => s.type === 'Assignment');
+      const assignmentsMet = assignmentSubs.length >= 2 || enrollment?.status === 'Completed';
+
+      // 5. Required Payment completion (free tier is cleared; paid tier requires status === 'Paid')
+      const tierId = enrollment?.tierId || course?.tierId || (targetCourseId.includes('builder') ? 'ai-builder' : targetCourseId.includes('creator') ? 'ai-creator' : targetCourseId.includes('architect') ? 'ai-architect' : 'ai-foundations');
+      const isPaidCourse = targetCourseId.includes('builder') || targetCourseId.includes('creator') || targetCourseId.includes('architect') ||
+        (tierId !== 'ai-foundations' && !courseTitle.toLowerCase().includes('foundations'));
+      let paymentMet = true;
+      let paymentDetail = 'Tuition Cleared (Free Tier / Sponsored)';
+      if (isPaidCourse) {
+        const studentPayments = (store.state.payments || []).filter(p => p.studentId === studentId);
+        const validPayment = studentPayments.find(p => p.status === 'Paid');
+        if (validPayment) {
+          paymentMet = true;
+          paymentDetail = `Tuition Cleared (Transaction #${validPayment.transactionRef || validPayment.id})`;
+        } else {
+          paymentMet = false;
+          paymentDetail = 'Tuition Payment Outstanding for Paid Credential Track';
         }
-        cert.requirements.manualApproval.met = true;
-        cert.requirements.manualApproval.detail = `Signed off by ${approver || 'Academic Directorate'} on ${new Date().toISOString().split('T')[0]}`;
-        cert.status = 'Eligible';
-        cert.eligibilityStatus = 'Requirements Satisfied';
-        if (!cert.internalNotes) cert.internalNotes = [];
-        cert.internalNotes.push({
-          text: `Eligibility approved by ${approver || 'Academic Directorate'}`,
-          author: approver || 'Academic Directorate',
-          date: new Date().toISOString()
-        });
-        store.saveState();
-        auditRepository.log('Approved Certificate Eligibility', 'Certificate', `${cert.studentName} (${cert.id})`);
-        return cert;
       }
-      return null;
-    },
-    issue: async (id) => {
-      const cert = store.state.certificates.find(c => c.id === id);
-      if (cert) {
-        cert.status = 'Issued';
-        cert.issueDate = new Date().toISOString().split('T')[0];
-        if (!cert.verificationId || cert.verificationId.includes('Pending') || cert.verificationId.includes('Reserved') || cert.verificationId.includes('Unissued')) {
-          const code = cert.tierName?.toUpperCase().includes('FOUND') ? 'FND' : cert.tierName?.toUpperCase().includes('BUILD') ? 'BLD' : cert.tierName?.toUpperCase().includes('CREAT') ? 'CRT' : 'ARC';
-          cert.verificationId = `NEX-${code}-2026-${Math.floor(1000 + Math.random() * 9000)}`;
-        }
-        if (!cert.internalNotes) cert.internalNotes = [];
-        cert.internalNotes.push({
-          text: `Credential issued and assigned verification ID: ${cert.verificationId}`,
-          author: 'System Registrar',
-          date: new Date().toISOString()
-        });
-        store.saveState();
-        auditRepository.log('Issued Certificate Credential', 'Certificate', `${cert.studentName} (${cert.verificationId})`);
-        return cert;
+
+      // Check existing certificate record
+      let existingCert = (store.state.certificates || []).find(c => c.studentId === studentId && (c.courseId === targetCourseId || !courseId));
+
+      const academicRequirementsMet = courseMet && classesMet && projectMet && assignmentsMet && paymentMet;
+      const manualApprovalMet = !!(existingCert && existingCert.requirements?.manualApproval?.met);
+
+      let status = 'Not eligible';
+      let eligibilityStatus = 'Incomplete Milestones';
+
+      if (existingCert && existingCert.status === 'Revoked') {
+        status = 'Revoked';
+        eligibilityStatus = 'Disqualified / Revoked';
+      } else if (existingCert && existingCert.status === 'Issued') {
+        status = 'Issued';
+        eligibilityStatus = 'Requirements Satisfied';
+      } else if (academicRequirementsMet && manualApprovalMet) {
+        status = 'Approved';
+        eligibilityStatus = 'Requirements Satisfied';
+      } else if (academicRequirementsMet && !manualApprovalMet) {
+        status = 'Pending approval';
+        eligibilityStatus = 'Awaiting Directorate Sign-off';
+      } else {
+        status = 'Not eligible';
+        eligibilityStatus = 'Incomplete Milestones';
       }
-      return null;
-    },
-    revoke: async (id, reason) => {
-      const cert = store.state.certificates.find(c => c.id === id);
-      if (cert) {
-        cert.status = 'Revoked';
-        cert.eligibilityStatus = 'Disqualified / Revoked';
-        if (!cert.internalNotes) cert.internalNotes = [];
-        cert.internalNotes.push({
-          text: `Credential revoked: ${reason || 'Administrative action'}`,
-          author: 'Compliance Directorate',
-          date: new Date().toISOString()
-        });
+
+      const calculatedRequirements = {
+        courseCompletion: { met: courseMet, label: 'Course Progress', detail: `${completedModulesCount} / ${totalModules} curriculum modules completed` },
+        classCompletion: { met: classesMet, label: 'Required Classes', detail: `${attendedClasses} / ${totalClasses} live interactive sessions attended` },
+        projectCompletion: { met: projectMet, label: 'Capstone Project', detail: projectMet ? 'Capstone portfolio evaluated and approved' : 'Capstone project evaluation pending' },
+        assignmentCompletion: { met: assignmentsMet, label: 'Assignment Completion', detail: assignmentsMet ? 'Sprint lab challenges verified' : 'Sprint lab assignments pending' },
+        paymentCompletion: { met: paymentMet, label: 'Tuition Clearance', detail: paymentDetail },
+        manualApproval: { met: manualApprovalMet, label: 'Directorate Approval', detail: manualApprovalMet ? (existingCert?.requirements?.manualApproval?.detail || 'Approved by Academic Directorate') : 'Pending final review and signature from Academic Directorate' }
+      };
+
+      // If existing certificate, keep requirements in sync
+      if (existingCert && existingCert.status !== 'Issued' && existingCert.status !== 'Revoked') {
+        existingCert.status = status;
+        existingCert.eligibilityStatus = eligibilityStatus;
+        existingCert.requirements = calculatedRequirements;
         store.saveState();
-        auditRepository.log('Revoked Certificate Credential', 'Certificate', `${cert.studentName} (${cert.verificationId}) - Reason: ${reason || 'Administrative action'}`);
-        return cert;
       }
-      return null;
+
+      // Trigger notification if newly achieved eligibility
+      if (academicRequirementsMet && (!existingCert || existingCert.notifiedEligibility !== true)) {
+        try {
+          if (existingCert) existingCert.notifiedEligibility = true;
+          await notificationDeliveryService.triggerCertificateNotification(
+            existingCert || { studentId, courseTitle, courseId: targetCourseId },
+            'eligibility_achieved'
+          );
+        } catch (e) {}
+      }
+
+      return {
+        eligible: academicRequirementsMet,
+        status,
+        eligibilityStatus,
+        requirements: calculatedRequirements,
+        academicRequirementsMet,
+        manualApprovalMet
+      };
     },
+
+    // 2. Approve Eligibility
+    approve: async (id, approver, note) => {
+      const currentRole = store.getCurrentRole();
+      if (!['Owner', 'Super Admin', 'Academic Director', 'Certifier'].includes(currentRole)) {
+        throw new Error('Access denied: Unauthorized role cannot approve certificate eligibility.');
+      }
+
+      const cert = (store.state.certificates || []).find(c => c.id === id);
+      if (!cert) throw new Error('Certificate record not found.');
+
+      const nowIso = new Date().toISOString();
+      const approverName = approver || (typeof window !== 'undefined' && window.NexvionAuth && window.NexvionAuth.getDisplayName && window.NexvionAuth.getDisplayName()) || 'Academic Directorate';
+
+      if (!cert.requirements) cert.requirements = {};
+      cert.requirements.manualApproval = {
+        met: true,
+        label: 'Directorate Approval',
+        detail: `Signed off by ${approverName} on ${nowIso.split('T')[0]}`
+      };
+
+      cert.status = 'Approved';
+      cert.eligibilityStatus = 'Requirements Satisfied';
+      cert.approvedAt = nowIso;
+      cert.approvedBy = approverName;
+
+      cert.internalNotes = cert.internalNotes || [];
+      cert.internalNotes.push({
+        text: note || `Eligibility approved by ${approverName}`,
+        author: approverName,
+        date: nowIso
+      });
+
+      cert.history = cert.history || [];
+      cert.history.push({
+        action: 'Eligibility Approved',
+        by: approverName,
+        date: nowIso,
+        note: note || 'Academic Directorate sign-off recorded'
+      });
+
+      store.saveState();
+      store.persistDoc('certificates', cert.id, cert);
+      auditRepository.log('Approved Certificate Eligibility', 'Certificate', `${cert.studentName} (${cert.id}) by ${approverName}`);
+
+      try {
+        await notificationDeliveryService.triggerCertificateNotification(cert, 'approved');
+      } catch (e) {}
+
+      return JSON.parse(JSON.stringify(cert));
+    },
+
+    // 3. Reject Eligibility
+    reject: async (id, reason, rejecter) => {
+      const currentRole = store.getCurrentRole();
+      if (!['Owner', 'Super Admin', 'Academic Director', 'Certifier'].includes(currentRole)) {
+        throw new Error('Access denied: Unauthorized role cannot reject certificate eligibility.');
+      }
+
+      const cert = (store.state.certificates || []).find(c => c.id === id);
+      if (!cert) throw new Error('Certificate record not found.');
+
+      const nowIso = new Date().toISOString();
+      const rejecterName = rejecter || currentRole;
+
+      cert.status = 'Not eligible';
+      cert.eligibilityStatus = 'Eligibility Rejected';
+      if (cert.requirements && cert.requirements.manualApproval) {
+        cert.requirements.manualApproval.met = false;
+        cert.requirements.manualApproval.detail = `Rejected: ${reason || 'Academic criteria not met'}`;
+      }
+
+      cert.internalNotes = cert.internalNotes || [];
+      cert.internalNotes.push({
+        text: `Eligibility rejected: ${reason || 'Academic criteria not met'}`,
+        author: rejecterName,
+        date: nowIso
+      });
+
+      cert.history = cert.history || [];
+      cert.history.push({
+        action: 'Eligibility Rejected',
+        by: rejecterName,
+        date: nowIso,
+        note: reason || 'Academic criteria not met'
+      });
+
+      store.saveState();
+      store.persistDoc('certificates', cert.id, cert);
+      auditRepository.log('Rejected Certificate Eligibility', 'Certificate', `${cert.studentName} (${cert.id}) - Reason: ${reason}`);
+
+      return JSON.parse(JSON.stringify(cert));
+    },
+
+    // 4. Issue Certificate
+    issue: async (id, options = {}) => {
+      const currentRole = store.getCurrentRole();
+      if (!['Owner', 'Super Admin', 'Academic Director', 'Certifier'].includes(currentRole)) {
+        throw new Error('Access denied: Unauthorized role cannot issue certificates.');
+      }
+
+      const cert = (store.state.certificates || []).find(c => c.id === id);
+      if (!cert) throw new Error('Certificate record not found.');
+
+      // Duplicate prevention
+      if (cert.status === 'Issued') {
+        return { duplicate: true, alreadyIssued: true, certificate: JSON.parse(JSON.stringify(cert)), ...cert };
+      }
+
+      // Candidate must be Approved or Eligible
+      if (cert.status !== 'Approved' && cert.status !== 'Eligible') {
+        throw new Error(`Cannot issue certificate: Candidate must be Approved before issuance. Current status: "${cert.status}"`);
+      }
+
+      const nowIso = new Date().toISOString();
+      const code = cert.tierName?.toUpperCase().includes('FOUND') ? 'FND' : cert.tierName?.toUpperCase().includes('BUILD') ? 'BLD' : cert.tierName?.toUpperCase().includes('CREAT') ? 'CRT' : 'ARC';
+      const seq = Math.floor(1000 + Math.random() * 9000);
+      const verificationId = (cert.verificationId && !cert.verificationId.includes('(') && !cert.verificationId.includes('Pending') && !cert.verificationId.includes('Reserved'))
+        ? cert.verificationId
+        : `NEX-${code}-2026-${seq}`;
+
+      cert.status = 'Issued';
+      cert.verificationId = verificationId;
+      cert.issueDate = nowIso.split('T')[0];
+      cert.issuedAt = nowIso;
+      cert.issuedBy = (typeof window !== 'undefined' && window.NexvionAuth && window.NexvionAuth.getDisplayName && window.NexvionAuth.getDisplayName()) || currentRole;
+      cert.issuingOrganization = 'NEXVION AI Academy';
+      cert.verificationUrl = `/verify-certificate/${verificationId}`;
+      cert.signatory = options.signatory || cert.signatory || 'Dr. Evelyn Vance & Dr. Kenneth Vance';
+
+      cert.internalNotes = cert.internalNotes || [];
+      cert.internalNotes.push({
+        text: `Official credential issued and registered with ID: ${verificationId}`,
+        author: 'System Registrar',
+        date: nowIso
+      });
+
+      cert.history = cert.history || [];
+      cert.history.push({
+        action: 'Certificate Issued',
+        by: cert.issuedBy,
+        date: nowIso,
+        note: `Verification ID assigned: ${verificationId}`
+      });
+
+      store.saveState();
+      store.persistDoc('certificates', cert.id, cert);
+      auditRepository.log('Issued Certificate Credential', 'Certificate', `${cert.studentName} (${verificationId})`);
+
+      try {
+        await notificationDeliveryService.triggerCertificateNotification(cert, 'issued');
+      } catch (e) {}
+
+      return JSON.parse(JSON.stringify(cert));
+    },
+
+    // 5. Revoke Certificate
+    revoke: async (id, reason, revoker) => {
+      const currentRole = store.getCurrentRole();
+      if (!['Owner', 'Super Admin', 'Academic Director', 'Certifier'].includes(currentRole)) {
+        throw new Error('Access denied: Unauthorized role cannot revoke certificates.');
+      }
+
+      const cert = (store.state.certificates || []).find(c => c.id === id);
+      if (!cert) throw new Error('Certificate record not found.');
+
+      if (cert.status === 'Revoked') {
+        return JSON.parse(JSON.stringify(cert));
+      }
+
+      const nowIso = new Date().toISOString();
+      const revokerName = revoker || (typeof window !== 'undefined' && window.NexvionAuth && window.NexvionAuth.getDisplayName && window.NexvionAuth.getDisplayName()) || currentRole;
+      const revokeReason = reason || 'Administrative compliance action';
+
+      cert.status = 'Revoked';
+      cert.eligibilityStatus = 'Disqualified / Revoked';
+      cert.revocation = {
+        reason: revokeReason,
+        revokedBy: revokerName,
+        revokedAt: nowIso
+      };
+
+      cert.internalNotes = cert.internalNotes || [];
+      cert.internalNotes.push({
+        text: `Credential revoked: ${revokeReason}`,
+        author: revokerName,
+        date: nowIso
+      });
+
+      cert.history = cert.history || [];
+      cert.history.push({
+        action: 'Certificate Revoked',
+        by: revokerName,
+        date: nowIso,
+        note: revokeReason
+      });
+
+      store.saveState();
+      store.persistDoc('certificates', cert.id, cert);
+      auditRepository.log('Revoked Certificate Credential', 'Certificate', `${cert.studentName} (${cert.verificationId || cert.id}) - Reason: ${revokeReason}`);
+
+      try {
+        await notificationDeliveryService.triggerCertificateNotification(cert, 'revoked', revokeReason);
+      } catch (e) {}
+
+      return JSON.parse(JSON.stringify(cert));
+    },
+
+    // 6. Add Internal Note
     addNote: async (id, noteText, author) => {
-      const cert = store.state.certificates.find(c => c.id === id);
-      if (cert) {
-        if (!cert.internalNotes) cert.internalNotes = [];
-        cert.internalNotes.push({
-          text: noteText,
-          author: author || 'Academic Staff',
-          date: new Date().toISOString()
-        });
-        store.saveState();
-        auditRepository.log('Added Certificate Audit Note', 'Certificate', `${cert.studentName} (${cert.id})`);
-        return cert;
+      const cert = (store.state.certificates || []).find(c => c.id === id);
+      if (!cert) throw new Error('Certificate record not found.');
+
+      const nowIso = new Date().toISOString();
+      cert.internalNotes = cert.internalNotes || [];
+      cert.internalNotes.push({
+        text: noteText,
+        author: author || store.getCurrentRole(),
+        date: nowIso
+      });
+
+      store.saveState();
+      store.persistDoc('certificates', cert.id, cert);
+      auditRepository.log('Added Certificate Audit Note', 'Certificate', `${cert.studentName} (${cert.id})`);
+      return JSON.parse(JSON.stringify(cert));
+    },
+
+    // 7. Public Verification (Safe metadata only, no private student information)
+    verifyPublic: async (idOrVerificationId) => {
+      if (!idOrVerificationId) {
+        return { valid: false, found: false, message: 'No credential ID provided.' };
       }
-      return null;
+      const cert = (store.state.certificates || []).find(c =>
+        c.id === idOrVerificationId ||
+        c.verificationId === idOrVerificationId ||
+        (c.verificationId && c.verificationId.split(' ')[0] === idOrVerificationId)
+      );
+
+      if (!cert || (cert.status !== 'Issued' && cert.status !== 'Revoked')) {
+        return {
+          valid: false,
+          found: false,
+          status: cert ? cert.status : 'Not found',
+          message: 'Certificate record not found or not yet officially issued.'
+        };
+      }
+
+      if (cert.status === 'Revoked') {
+        return {
+          valid: false,
+          found: true,
+          revoked: true,
+          status: 'Revoked',
+          certificateId: cert.verificationId || cert.id,
+          studentName: cert.studentName,
+          courseName: cert.courseTitle,
+          tier: cert.tierName,
+          issueDate: cert.issueDate,
+          revocationDate: cert.revocation?.revokedAt ? cert.revocation.revokedAt.split('T')[0] : 'Recorded',
+          revocationReason: cert.revocation?.reason || 'Administrative action',
+          issuingOrganization: cert.issuingOrganization || 'NEXVION AI Academy'
+        };
+      }
+
+      return {
+        valid: true,
+        found: true,
+        revoked: false,
+        status: 'Issued',
+        certificateId: cert.verificationId,
+        studentName: cert.studentName,
+        courseName: cert.courseTitle,
+        tier: cert.tierName,
+        issueDate: cert.issueDate,
+        grade: cert.grade,
+        issuingOrganization: cert.issuingOrganization || 'NEXVION AI Academy',
+        verificationUrl: cert.verificationUrl || `/verify-certificate/${cert.verificationId}`
+      };
     }
   };
 
@@ -7143,6 +7511,8 @@
   };
 
   return {
+    store,
+    _store: store,
     // Service Repositories
     courseRepository,
     tierRepository,
@@ -7258,12 +7628,17 @@
     refundPayment: (id, reason) => paymentRepository.refund(id, reason),
     updatePaymentStatus: (id, status, notes) => paymentRepository.updateStatus(id, status, notes),
     savePayment: (data) => paymentRepository.save(data),
+    certificateRepository,
     getCertificates: () => certificateRepository.findAll(),
     getCertificateById: (id) => certificateRepository.findById(id),
-    approveCertificate: (id, approver) => certificateRepository.approve(id, approver),
-    issueCertificate: (id) => certificateRepository.issue(id),
-    revokeCertificate: (id, reason) => certificateRepository.revoke(id, reason),
+    getStudentCertificates: (studentId) => certificateRepository.getStudentCertificates(studentId),
+    calculateCertificateEligibility: (args) => certificateRepository.calculateEligibility(args),
+    approveCertificate: (id, approver, note) => certificateRepository.approve(id, approver, note),
+    rejectCertificate: (id, reason, rejecter) => certificateRepository.reject(id, reason, rejecter),
+    issueCertificate: (id, options) => certificateRepository.issue(id, options),
+    revokeCertificate: (id, reason, revoker) => certificateRepository.revoke(id, reason, revoker),
     addCertificateNote: (id, noteText, author) => certificateRepository.addNote(id, noteText, author),
+    verifyCertificatePublic: (id) => certificateRepository.verifyPublic(id),
     issueMockCertificate: (id) => certificateRepository.issue(id),
     revokeMockCertificate: (id) => certificateRepository.revoke(id),
     getSupportTickets: () => supportRepository.findAll(),
