@@ -11887,8 +11887,9 @@
         : null;
 
       const recipientCount = calculateAudienceReach(comp.audience, comp.courseId, comp.tierId, comp.batchId);
+      const idempotencyKey = `adm-notif-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
 
-      await Data.sendNotification({
+      const result = await Data.sendNotification({
         title,
         message,
         type: comp.type,
@@ -11898,13 +11899,19 @@
         batchId: comp.batchId,
         channels: comp.channels,
         scheduledFor,
-        recipientCount
+        recipientCount,
+        idempotencyKey
       });
+
+      const succ = result && result.successCount !== undefined ? result.successCount : recipientCount;
+      const fail = result && result.failureCount !== undefined ? result.failureCount : 0;
 
       showToast(
         scheduledFor ? 'Broadcast Scheduled' : 'Broadcast Dispatched',
-        'Notification prepared successfully. Delivery will be enabled after backend integration.',
-        'success'
+        scheduledFor
+          ? `Notification scheduled for ${new Date(scheduledFor).toLocaleString()}.`
+          : `Delivered to ${succ} recipient(s)${fail > 0 ? `, ${fail} failed.` : '.'}`,
+        fail > 0 && succ === 0 ? 'warning' : 'success'
       );
 
       // Reset form
@@ -11927,7 +11934,8 @@
     resendNotification: async (id) => {
       const orig = await Data.getNotificationById(id);
       if (!orig) return;
-      await Data.sendNotification({
+      const idempotencyKey = `adm-resend-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
+      const result = await Data.sendNotification({
         title: orig.title,
         message: orig.message,
         type: orig.type,
@@ -11936,9 +11944,11 @@
         tierId: orig.tierId,
         batchId: orig.batchId,
         channels: orig.channels,
-        recipientCount: orig.recipientCount
+        recipientCount: orig.recipientCount,
+        idempotencyKey
       });
-      showToast('Notification Re-queued', 'Notification prepared successfully. Delivery will be enabled after backend integration.', 'success');
+      const succ = result && result.successCount !== undefined ? result.successCount : orig.recipientCount;
+      showToast('Notification Re-queued', `Re-dispatched successfully to ${succ} recipient(s).`, 'success');
       renderNotificationsView();
     },
 

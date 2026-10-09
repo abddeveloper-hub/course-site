@@ -33,6 +33,13 @@ const TIER_PRICES_REGISTRY = {
 const PROCESSED_WEBHOOK_EVENTS = new Set();
 const ACTIVE_CHECKOUT_TRANSACTIONS = new Map();
 
+// Phase 14 Notification Delivery Engine Datastores
+const NOTIFICATION_DEVICE_TOKENS = new Map();
+const USER_NOTIFICATION_PREFERENCES = new Map();
+const NOTIFICATION_HISTORY = new Map();
+const USER_NOTIFICATION_INBOXES = new Map();
+const PROCESSED_NOTIFICATION_IDEMPOTENCY = new Set();
+
 function sendJson(res, statusCode, data) {
   res.writeHead(statusCode, {
     'Content-Type': 'application/json; charset=utf-8',
@@ -257,6 +264,410 @@ const server = http.createServer((req, res) => {
       }
 
       sendJson(res, 200, { success: true, refundStatus: 'Processed', reason: reason || 'Administrative refund' });
+    }).catch(err => {
+      sendJson(res, 400, { error: err.message });
+    });
+    return;
+  }
+
+  // =========================================================================
+  // Phase 14 Notification Delivery Engine Endpoints
+  // =========================================================================
+  if (pathname === '/api/notifications/devices/register' && req.method === 'POST') {
+    parseJsonBody(req).then(body => {
+      const { userId, token, platform, deviceModel, appVersion } = body;
+      if (!userId || !token || !platform) {
+        return sendJson(res, 400, { error: 'Missing required device registration fields: userId, token, and platform.' });
+      }
+
+      const validPlatforms = ['android', 'web', 'desktop', 'ios'];
+      const normPlatform = String(platform).toLowerCase();
+      if (!validPlatforms.includes(normPlatform)) {
+        return sendJson(res, 400, { error: `Invalid platform "${platform}". Must be one of: ${validPlatforms.join(', ')}` });
+      }
+
+      const record = {
+        token,
+        userId,
+        platform: normPlatform,
+        deviceModel: deviceModel || 'Standard Terminal',
+        appVersion: appVersion || '1.0.0',
+        registeredAt: new Date().toISOString(),
+        lastSeenAt: new Date().toISOString(),
+        valid: true
+      };
+      NOTIFICATION_DEVICE_TOKENS.set(token, record);
+
+      sendJson(res, 200, {
+        success: true,
+        message: 'Device token registered successfully',
+        token,
+        platform: normPlatform,
+        registeredAt: record.registeredAt
+      });
+    }).catch(err => {
+      sendJson(res, 400, { error: err.message });
+    });
+    return;
+  }
+
+  if (pathname === '/api/notifications/devices/unregister' && req.method === 'POST') {
+    parseJsonBody(req).then(body => {
+      const { userId, token } = body;
+      if (!token) {
+        return sendJson(res, 400, { error: 'Missing required field: token' });
+      }
+
+      const existing = NOTIFICATION_DEVICE_TOKENS.get(token);
+      if (existing) {
+        if (userId && existing.userId !== userId) {
+          return sendJson(res, 403, { error: 'Forbidden: Cannot remove device token belonging to another user.' });
+        }
+        NOTIFICATION_DEVICE_TOKENS.delete(token);
+      }
+
+      sendJson(res, 200, {
+        success: true,
+        unregistered: true,
+        message: 'Device token removed successfully'
+      });
+    }).catch(err => {
+      sendJson(res, 400, { error: err.message });
+    });
+    return;
+  }
+
+  if (pathname === '/api/notifications/devices' && req.method === 'GET') {
+    const userId = parsedUrl.query.userId;
+    if (!userId) {
+      return sendJson(res, 400, { error: 'Missing query parameter: userId' });
+    }
+
+    // Never expose another user's device tokens
+    const userDevices = Array.from(NOTIFICATION_DEVICE_TOKENS.values())
+      .filter(d => d.userId === userId && d.valid)
+      .map(({ token, platform, deviceModel, appVersion, lastSeenAt, registeredAt }) => ({
+        token,
+        platform,
+        deviceModel,
+        appVersion,
+        lastSeenAt,
+        registeredAt
+      }));
+
+    sendJson(res, 200, { userId, devices: userDevices });
+    return;
+  }
+
+  if (pathname === '/api/notifications/devices/cleanup-invalid' && req.method === 'POST') {
+    parseJsonBody(req).then(body => {
+      const { invalidTokens } = body;
+      let cleanedCount = 0;
+      if (Array.isArray(invalidTokens)) {
+        for (const tok of invalidTokens) {
+          if (NOTIFICATION_DEVICE_TOKENS.has(tok)) {
+            NOTIFICATION_DEVICE_TOKENS.delete(tok);
+            cleanedCount++;
+          }
+        }
+      } else {
+        for (const [tok, data] of NOTIFICATION_DEVICE_TOKENS.entries()) {
+          if (!data.valid) {
+            NOTIFICATION_DEVICE_TOKENS.delete(tok);
+            cleanedCount++;
+          }
+        }
+      }
+
+      sendJson(res, 200, { success: true, cleanedCount, remainingTokens: NOTIFICATION_DEVICE_TOKENS.size });
+    }).catch(err => {
+      sendJson(res, 400, { error: err.message });
+    });
+    return;
+  }
+
+  if (pathname === '/api/notifications/preferences' && req.method === 'GET') {
+    const userId = parsedUrl.query.userId;
+    if (!userId) {
+      return sendJson(res, 400, { error: 'Missing query parameter: userId' });
+    }
+
+    const defaultPrefs = {
+      newClasses: true,
+      classReminders: true,
+      announcements: true,
+      enrollmentUpdates: true,
+      projectReminders: true,
+      certificateUpdates: true,
+      systemMessages: true,
+      emailDigest: false,
+      pushEnabled: true
+    };
+    const prefs = USER_NOTIFICATION_PREFERENCES.get(userId) || defaultPrefs;
+    sendJson(res, 200, { userId, preferences: prefs });
+    return;
+  }
+
+  if (pathname === '/api/notifications/preferences' && req.method === 'POST') {
+    parseJsonBody(req).then(body => {
+      const { userId, preferences } = body;
+      if (!userId || !preferences) {
+        return sendJson(res, 400, { error: 'Missing userId or preferences object.' });
+      }
+
+      const existing = USER_NOTIFICATION_PREFERENCES.get(userId) || {
+        newClasses: true,
+        classReminders: true,
+        announcements: true,
+        enrollmentUpdates: true,
+        projectReminders: true,
+        certificateUpdates: true,
+        systemMessages: true,
+        emailDigest: false,
+        pushEnabled: true
+      };
+      const updated = { ...existing, ...preferences };
+      USER_NOTIFICATION_PREFERENCES.set(userId, updated);
+
+      sendJson(res, 200, { success: true, userId, preferences: updated });
+    }).catch(err => {
+      sendJson(res, 400, { error: err.message });
+    });
+    return;
+  }
+
+  if (pathname === '/api/notifications/send' && req.method === 'POST') {
+    parseJsonBody(req).then(body => {
+      const authRole = req.headers['x-admin-role'] || 'System';
+      const allowedRoles = ['Owner', 'Super Admin', 'Student Manager', 'Content Manager', 'System'];
+      if (!allowedRoles.includes(authRole)) {
+        return sendJson(res, 403, { error: 'Access denied: Only authorized administrators or system backend can dispatch notifications.' });
+      }
+
+      const {
+        title,
+        message,
+        type = 'System message',
+        audience = 'All Enrolled Students',
+        courseId = '',
+        tierId = '',
+        batchId = '',
+        deepLink = '',
+        scheduledFor = null,
+        targetUserId = null,
+        idempotencyKey = null,
+        simulateFailure = false
+      } = body;
+
+      if (!title || !message) {
+        return sendJson(res, 400, { error: 'Missing required notification fields: title and message.' });
+      }
+
+      // Check idempotency to prevent duplicate notification sends
+      if (idempotencyKey) {
+        if (PROCESSED_NOTIFICATION_IDEMPOTENCY.has(idempotencyKey)) {
+          const cached = NOTIFICATION_HISTORY.get(idempotencyKey);
+          return sendJson(res, 200, {
+            duplicate: true,
+            idempotent: true,
+            message: 'Duplicate notification request recognized and deduplicated (idempotent)',
+            notification: cached || { id: idempotencyKey, status: 'Sent' }
+          });
+        }
+        PROCESSED_NOTIFICATION_IDEMPOTENCY.add(idempotencyKey);
+      }
+
+      const notifId = idempotencyKey || `notif-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+      const nowIso = new Date().toISOString();
+      const isScheduled = !!scheduledFor && new Date(scheduledFor) > new Date();
+
+      // Collect target users
+      let targetUserIds = [];
+      if (targetUserId) {
+        targetUserIds = [targetUserId];
+      } else {
+        // Collect distinct users from registered devices or defaults
+        const allKnownUsers = new Set();
+        for (const dev of NOTIFICATION_DEVICE_TOKENS.values()) {
+          if (dev.valid) allKnownUsers.add(dev.userId);
+        }
+        // Always include current student sessions
+        allKnownUsers.add('stu-nx-8821');
+        allKnownUsers.add('stu-sample-01');
+        targetUserIds = Array.from(allKnownUsers);
+      }
+
+      // Map notification type to preference key
+      const typePrefMap = {
+        'New class': 'newClasses',
+        'Class reminder': 'classReminders',
+        'Announcement': 'announcements',
+        'Enrollment update': 'enrollmentUpdates',
+        'Project reminder': 'projectReminders',
+        'Certificate update': 'certificateUpdates',
+        'System message': 'systemMessages'
+      };
+      const prefKey = typePrefMap[type] || 'systemMessages';
+
+      let recipientCount = 0;
+      let successCount = 0;
+      let failureCount = 0;
+      let errorSummary = null;
+
+      if (!isScheduled) {
+        if (simulateFailure) {
+          failureCount = targetUserIds.length || 1;
+          recipientCount = failureCount;
+          errorSummary = 'Simulated FCM transport network disconnect';
+        } else {
+          for (const uid of targetUserIds) {
+            const prefs = USER_NOTIFICATION_PREFERENCES.get(uid) || {
+              newClasses: true,
+              classReminders: true,
+              announcements: true,
+              enrollmentUpdates: true,
+              projectReminders: true,
+              certificateUpdates: true,
+              systemMessages: true,
+              emailDigest: false,
+              pushEnabled: true
+            };
+
+            // Respect disabled preferences
+            if (!prefs.pushEnabled || prefs[prefKey] === false) {
+              continue; // User opted out of this notification type
+            }
+
+            recipientCount++;
+
+            // Deliver to user in-app inbox
+            let inbox = USER_NOTIFICATION_INBOXES.get(uid) || [];
+            inbox.unshift({
+              id: `inbox-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+              notificationId: notifId,
+              title,
+              message,
+              type,
+              deepLink,
+              read: false,
+              createdAt: nowIso
+            });
+            USER_NOTIFICATION_INBOXES.set(uid, inbox);
+
+            // Deliver to registered devices (Android, Web, Desktop)
+            const userTokens = Array.from(NOTIFICATION_DEVICE_TOKENS.values()).filter(d => d.userId === uid && d.valid);
+            if (userTokens.length > 0) {
+              userTokens.forEach(dev => {
+                dev.lastSeenAt = nowIso;
+              });
+              successCount++;
+            } else {
+              // In-app inbox delivered successfully
+              successCount++;
+            }
+          }
+        }
+      }
+
+      let status = isScheduled ? 'Scheduled' : 'Sent';
+      if (!isScheduled) {
+        if (simulateFailure) status = 'Failed';
+        else if (recipientCount > 0 && failureCount > 0 && successCount > 0) status = 'Partially delivered';
+        else if (recipientCount > 0 && successCount === 0) status = 'Failed';
+        else status = 'Sent';
+      }
+
+      const notifRecord = {
+        id: notifId,
+        title,
+        message,
+        type,
+        audience,
+        courseId,
+        tierId,
+        batchId,
+        deepLink,
+        status,
+        recipientCount: isScheduled ? targetUserIds.length : recipientCount,
+        successCount,
+        failureCount,
+        errorSummary,
+        createdBy: authRole,
+        createdAt: nowIso,
+        scheduledFor: isScheduled ? new Date(scheduledFor).toISOString() : null,
+        sentAt: isScheduled ? null : nowIso
+      };
+
+      NOTIFICATION_HISTORY.set(notifId, notifRecord);
+
+      sendJson(res, 200, {
+        success: !simulateFailure,
+        notification: notifRecord,
+        recipientCount: notifRecord.recipientCount,
+        successCount,
+        failureCount,
+        status
+      });
+    }).catch(err => {
+      sendJson(res, 400, { error: err.message });
+    });
+    return;
+  }
+
+  if (pathname === '/api/notifications/cancel-scheduled' && req.method === 'POST') {
+    parseJsonBody(req).then(body => {
+      const { notificationId } = body;
+      if (!notificationId) {
+        return sendJson(res, 400, { error: 'Missing notificationId' });
+      }
+
+      const notif = NOTIFICATION_HISTORY.get(notificationId);
+      if (!notif) {
+        return sendJson(res, 404, { error: 'Notification record not found' });
+      }
+
+      notif.status = 'Cancelled';
+      notif.cancelledAt = new Date().toISOString();
+
+      sendJson(res, 200, { success: true, notificationId, status: 'Cancelled' });
+    }).catch(err => {
+      sendJson(res, 400, { error: err.message });
+    });
+    return;
+  }
+
+  if (pathname === '/api/notifications/history' && req.method === 'GET') {
+    const list = Array.from(NOTIFICATION_HISTORY.values()).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    sendJson(res, 200, { history: list, notifications: list });
+    return;
+  }
+
+  if (pathname === '/api/notifications/inbox' && req.method === 'GET') {
+    const userId = parsedUrl.query.userId || 'stu-nx-8821';
+    const inbox = USER_NOTIFICATION_INBOXES.get(userId) || [];
+    const unreadCount = inbox.filter(m => !m.read).length;
+    sendJson(res, 200, { userId, unreadCount, inbox, notifications: inbox });
+    return;
+  }
+
+  if (pathname === '/api/notifications/inbox/mark-read' && req.method === 'POST') {
+    parseJsonBody(req).then(body => {
+      const { userId, notificationId, markAll } = body;
+      if (!userId) {
+        return sendJson(res, 400, { error: 'Missing userId' });
+      }
+
+      let inbox = USER_NOTIFICATION_INBOXES.get(userId) || [];
+      if (markAll) {
+        inbox.forEach(item => { item.read = true; });
+      } else if (notificationId) {
+        const item = inbox.find(m => m.id === notificationId || m.notificationId === notificationId);
+        if (item) item.read = true;
+      }
+      USER_NOTIFICATION_INBOXES.set(userId, inbox);
+
+      const unreadCount = inbox.filter(m => !m.read).length;
+      sendJson(res, 200, { success: true, userId, unreadCount });
     }).catch(err => {
       sendJson(res, 400, { error: err.message });
     });

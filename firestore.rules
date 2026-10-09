@@ -261,6 +261,24 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    match /deviceTokens/{tokenId} {
+      allow read: if isSuperAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+      allow create, update: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+
+    match /notificationPreferences/{userId} {
+      allow read: if isAuthenticated() && (request.auth.uid == userId || isStudentManager());
+      allow create, update: if isAuthenticated() && request.auth.uid == userId;
+      allow delete: if false;
+    }
+
+    match /userInboxes/{userId}/messages/{messageId} {
+      allow read, update: if isAuthenticated() && request.auth.uid == userId;
+      allow create: if isAuthenticated();
+      allow delete: if false;
+    }
+
     // -----------------------------------------------------------------------
     // Payments (Tuition & Billing Records)
     // -----------------------------------------------------------------------

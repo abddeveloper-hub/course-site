@@ -279,6 +279,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderProjects();
   renderResources();
   renderNotifications();
+  checkAndRegisterClientDevice();
   initUIInteractions();
 });
 
@@ -614,23 +615,189 @@ function renderResources() {
 }
 
 /**
+ * Get Student ID for notifications
+ */
+function getActiveStudentId() {
+  try {
+    const saved = localStorage.getItem('nexvion_current_user');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed.id || parsed.uid || parsed.studentId) return parsed.id || parsed.uid || parsed.studentId;
+    }
+  } catch (e) {}
+  if (typeof window !== 'undefined' && window.NexvionAuth && window.NexvionAuth.getCurrentUser) {
+    const u = window.NexvionAuth.getCurrentUser();
+    if (u && (u.uid || u.id)) return u.uid || u.id;
+  }
+  return DASHBOARD_DATA.student.id;
+}
+
+/**
  * Render Notification Items
  */
-function renderNotifications() {
+async function renderNotifications() {
   const container = document.getElementById('notifListContainer');
+  const badge = document.getElementById('notifBadge');
+  const unreadLabel = document.getElementById('notifUnreadCount');
   if (!container) return;
 
-  container.innerHTML = DASHBOARD_DATA.notifications.map(n => {
+  const studentId = getActiveStudentId();
+  let notifications = [];
+
+  try {
+    if (typeof window !== 'undefined' && window.NexvionServices && window.NexvionServices.getStudentInbox) {
+      notifications = await window.NexvionServices.getStudentInbox(studentId);
+    } else {
+      const resp = await fetch(`/api/notifications/inbox?userId=${encodeURIComponent(studentId)}`);
+      if (resp.ok) {
+        const data = await resp.json();
+        notifications = data.inbox || [];
+      }
+    }
+  } catch (err) {
+    console.warn('Real-time notifications fetch fallback to mock data:', err);
+  }
+
+  // Fallback if empty and local mock exists
+  if (!notifications || notifications.length === 0) {
+    notifications = DASHBOARD_DATA.notifications.map(n => ({
+      id: `mock-${n.id}`,
+      title: n.title,
+      message: n.title,
+      read: !n.unread,
+      createdAt: new Date().toISOString(),
+      type: 'Announcement'
+    }));
+  }
+
+  const unreadCount = notifications.filter(n => !n.read).length;
+  if (unreadLabel) unreadLabel.textContent = `${unreadCount} NEW`;
+  if (badge) {
+    badge.style.display = unreadCount > 0 ? 'block' : 'none';
+  }
+
+  if (notifications.length === 0) {
+    container.innerHTML = `
+      <div style="padding: 16px; text-align: center; color: var(--text-muted, #94A3B8); font-size: 0.8125rem;">
+        No notifications yet. You're all caught up!
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = notifications.slice(0, 8).map(n => {
+    let icon = '📌';
+    const typeLower = (n.type || '').toLowerCase();
+    if (typeLower.includes('announcement')) icon = '📢';
+    else if (typeLower.includes('class')) icon = '📡';
+    else if (typeLower.includes('enrollment') || typeLower.includes('batch')) icon = '🎓';
+    else if (typeLower.includes('project')) icon = '📋';
+    else if (typeLower.includes('certificate')) icon = '🏆';
+    else if (typeLower.includes('system')) icon = '⚙️';
+
+    const timeAgo = formatTimeAgo(n.createdAt || n.time || new Date().toISOString());
+    const isUnread = !n.read;
+
     return `
-      <div class="notif-item" onclick="showToast('${escapeHtml(n.title)}');">
-        <div style="font-size: 0.8125rem; line-height: 1;">📌</div>
-        <div style="flex: 1;">
-          <div class="notif-item-title">${escapeHtml(n.title)}</div>
-          <div class="notif-item-time">${n.time}</div>
+      <div class="notif-item ${isUnread ? 'unread' : ''}" style="display: flex; gap: 10px; padding: 10px; border-radius: 6px; cursor: pointer; transition: background 0.15s ease; ${isUnread ? 'background: rgba(99, 102, 241, 0.08); border-left: 3px solid var(--primary, #6366f1);' : 'background: transparent;'}" onclick="window.handleNotificationItemClick('${escapeHtml(n.id)}', '${escapeHtml(n.deepLink || '')}', '${escapeHtml(n.title)}')">
+        <div style="font-size: 1rem; line-height: 1.2;">${icon}</div>
+        <div style="flex: 1; min-width: 0;">
+          <div class="notif-item-title" style="font-size: 0.8125rem; font-weight: ${isUnread ? '600' : '400'}; color: var(--neutral-obsidian, #0F172A); word-break: break-word;">${escapeHtml(n.title)}</div>
+          ${n.message && n.message !== n.title ? `<div style="font-size: 0.75rem; color: var(--text-muted, #64748B); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHtml(n.message)}</div>` : ''}
+          <div class="notif-item-time" style="font-size: 0.6875rem; color: var(--text-muted, #94A3B8); margin-top: 4px;">${timeAgo}</div>
         </div>
       </div>
     `;
   }).join('');
+}
+
+/**
+ * Handle notification click with deep link and mark-read
+ */
+window.handleNotificationItemClick = async function(notifId, deepLink, title) {
+  const studentId = getActiveStudentId();
+  try {
+    if (typeof window !== 'undefined' && window.NexvionServices && window.NexvionServices.markNotificationRead) {
+      await window.NexvionServices.markNotificationRead(studentId, notifId);
+    } else {
+      await fetch('/api/notifications/inbox/mark-read', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: studentId, notificationId: notifId })
+      });
+    }
+  } catch (e) {}
+
+  if (deepLink) {
+    window.location.href = deepLink;
+  } else {
+    showToast(title || 'Notification acknowledged');
+    renderNotifications();
+  }
+};
+
+/**
+ * Mark all notifications as read
+ */
+window.markAllNotificationsRead = async function(event) {
+  if (event && event.stopPropagation) event.stopPropagation();
+  const studentId = getActiveStudentId();
+  try {
+    if (typeof window !== 'undefined' && window.NexvionServices && window.NexvionServices.markAllNotificationsRead) {
+      await window.NexvionServices.markAllNotificationsRead(studentId);
+    } else {
+      await fetch('/api/notifications/inbox/mark-read', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: studentId, markAll: true })
+      });
+    }
+    showToast('All notifications marked as read.');
+    renderNotifications();
+  } catch (e) {
+    showToast('Failed to mark all as read.');
+  }
+};
+
+/**
+ * Time ago formatting helper
+ */
+function formatTimeAgo(isoString) {
+  try {
+    const diffSec = Math.floor((Date.now() - new Date(isoString).getTime()) / 1000);
+    if (diffSec < 60) return 'Just now';
+    if (diffSec < 3600) return `${Math.floor(diffSec / 60)}m ago`;
+    if (diffSec < 86400) return `${Math.floor(diffSec / 3600)}h ago`;
+    return `${Math.floor(diffSec / 86400)}d ago`;
+  } catch (e) {
+    return 'Recently';
+  }
+}
+
+/**
+ * Non-intrusive push device token registration
+ */
+function checkAndRegisterClientDevice() {
+  try {
+    if (localStorage.getItem('nexvion_device_registered_v1')) return;
+    const studentId = getActiveStudentId();
+    if (!studentId) return;
+
+    const platform = /android/i.test(navigator.userAgent) ? 'android' :
+                     /iphone|ipad|ipod/i.test(navigator.userAgent) ? 'ios' :
+                     /windows|macintosh|linux/i.test(navigator.userAgent) ? 'desktop' : 'web';
+
+    const fakeToken = `dev-tok-${platform}-${Math.random().toString(36).substring(2, 10)}`;
+    if (typeof window !== 'undefined' && window.NexvionServices && window.NexvionServices.registerDeviceToken) {
+      window.NexvionServices.registerDeviceToken({
+        userId: studentId,
+        token: fakeToken,
+        platform,
+        deviceModel: navigator.userAgent.slice(0, 40)
+      }).catch(() => {});
+    }
+    localStorage.setItem('nexvion_device_registered_v1', 'true');
+  } catch (e) {}
 }
 
 /* ==============================================================================

@@ -159,12 +159,15 @@
 
             <!-- Notifications Panel -->
             <div class="notification-dropdown" id="notifDropdown" role="menu">
-              <div class="notif-header">
+              <div class="notif-header" style="display: flex; justify-content: space-between; align-items: center;">
                 <span>NOTIFICATIONS</span>
-                <span style="font-size: 0.6875rem; color: var(--accent-purple-light); font-weight: 600;" id="notifUnreadCount">2 NEW</span>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <button id="markAllReadBtn" style="background: none; border: none; color: var(--primary, #06B6D4); font-size: 11px; cursor: pointer; text-decoration: underline; padding: 0;" onclick="window.markAllNotificationsRead && window.markAllNotificationsRead(event)">Mark read</button>
+                  <span style="font-size: 0.6875rem; color: var(--accent-purple-light); font-weight: 600;" id="notifUnreadCount">0 NEW</span>
+                </div>
               </div>
-              <div id="notifListContainer" style="display: flex; flex-direction: column; gap: 8px;">
-                <!-- Populated dynamically via DASHBOARD_DATA -->
+              <div id="notifListContainer" style="display: flex; flex-direction: column; gap: 8px; max-height: 360px; overflow-y: auto;">
+                <!-- Populated dynamically via DASHBOARD_DATA or NexvionServices -->
               </div>
             </div>
           </div>
