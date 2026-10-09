@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Synthetic Systems Academy — Design System & Command Surface</title>
+  
+  <!-- SEO & Meta Tags -->
+  <meta name="description" content="Design System and Technical Precision Command Surface for Synthetic Systems Academy. Calibrated for compiler engineers, AI runtime architects, and high-performance Kotlin systems programmers.">
+  <meta name="keywords" content="Synthetic Systems Academy, Design System, Technical Precision Minimalism, Kotlin systems, compiler engineering, AI runtime, AST inspector, benchmark meter">
+  <meta name="author" content="Synthetic Systems Academy">
+
+  <!-- Google Fonts: Space Grotesk, Geist, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Design System CSS -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/synthetic-systems.css">
+
+  <style>
+    /* Design System Specific Command Surface Styles */
+    .ds-wrapper {
+      max-width: 1360px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem 6rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    .ds-nav-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 1.25rem;
+      margin-bottom: 2.5rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .ds-brand-lockup {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .ds-brand-badge {
+      background: var(--neutral-obsidian);
+      color: #FFFFFF;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 6px 10px;
+      border-radius: var(--rounded);
+      letter-spacing: 0.05em;
+    }
+
+    .ds-nav-links {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      list-style: none;
+    }
+
+    .ds-nav-link {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--on-surface-variant);
+      text-decoration: none;
+      padding: 4px 8px;
+      border-radius: var(--rounded);
+      transition: color 0.12s ease;
+    }
+
+    .ds-nav-link:hover {
+      color: var(--primary);
+    }
+
+    .ds-section-divider {
+      border: none;
+      border-top: 1px solid var(--border-hairline);
+      margin: 3.5rem 0 2.5rem;
+    }
+
+    .ds-section-header {
+      margin-bottom: 1.5rem;
+    }
+
+    .ds-token-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .ds-token-card {
+      background: #FFFFFF;
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--rounded);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      cursor: pointer;
+      transition: border-color 0.12s ease;
+    }
+
+    .ds-token-card:hover {
+      border-color: var(--primary);
+    }
+
+    .ds-swatch {
+      height: 48px;
+      border-radius: 3px;
+      border: 1px solid rgba(0,0,0,0.06);
+    }
+
+    .ds-token-name {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--neutral-obsidian);
+    }
+
+    .ds-token-value {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--on-surface-variant);
+    }
+
+    .ds-component-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .ds-demo-panel {
+      background: #FAFAFC;
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--rounded-lg);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .ds-demo-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--on-surface-variant);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 6px;
+    }
+
+    .ds-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .toast-feedback {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--neutral-obsidian);
+      color: #fff;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      padding: 8px 16px;
+      border-radius: var(--rounded);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+      z-index: 1000;
+    }
+    .toast-feedback.show {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body class="ssa-page">
+
+  <!-- Micro Toast for Copied Tokens -->
+  <div id="toast" class="toast-feedback">Copied token value to clipboard</div>
+
+  <div class="ds-wrapper">
+
+    <!-- =========================================================================
+         1. COMMAND SURFACE HEADER
+         ========================================================================= -->
+    <header class="ds-nav-header">
+      <div class="ds-brand-lockup">
+        <span class="ds-brand-badge">SSA // SPEC-2026</span>
+        <div>
+          <h1 style="font-size: 20px; font-weight: 700; margin: 0; line-height: 1.2;">Synthetic Systems Academy</h1>
+          <span class="ssa-label-code" style="color: var(--primary);">DESIGN SYSTEM: TECHNICAL PRECISION MINIMALISM</span>
+        </div>
+      </div>
+
+      <nav aria-label="System Quick Links">
+        <ul class="ds-nav-links">
+          <li><a href="index.html" class="ds-nav-link">&larr; Return to Main Academy</a></li>
+          <li><a href="course.html" class="ds-nav-link">4 Tiers</a></li>
+          <li><a href="dashboard.html" class="ds-nav-link">Dashboard</a></li>
+          <li><a href="register.html" class="ds-nav-link">Register</a></li>
+          <li>
+            <span class="ssa-chip ssa-chip-pass">
+              <span class="ssa-dot"></span> SYSTEM ONLINE
+            </span>
+          </li>
+        </ul>
+      </nav>
+    </header>
+
+    <!-- Overview Banner -->
+    <section class="ssa-card" style="margin-bottom: 2.5rem; background: #FFFFFF; border-left: 3px solid var(--primary);">
+      <div class="ssa-card-body" style="padding: 24px;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <div class="ssa-chip ssa-chip-active" style="margin-bottom: 8px;">
+              <span class="ssa-dot"></span> CALIBRATED FOR COMPILER ENGINEERS & AI RUNTIME ARCHITECTS
+            </div>
+            <h2 class="ssa-headline-md" style="margin: 0 0 8px;">Technical Precision Minimalism Command Surface</h2>
+            <p class="ssa-body-md" style="max-width: 860px; margin: 0;">
+              Pure radiant negative space, razor-sharp hairline dividers, technical monospaced telemetry, and deliberate injections of high-energy spectrum accents (Kotlin violet-indigo <code style="color: var(--primary); font-family: var(--font-mono);">#7F52FF</code> and cyber lilac <code style="color: var(--secondary); font-family: var(--font-mono);">#C757BC</code>).
+            </p>
+          </div>
+          <div style="display: flex; gap: 8px; flex-direction: column; align-items: flex-end;">
+            <span class="ssa-label-mono" style="color: var(--on-surface-variant);">GRID: 12-COL / MAX-W 1360PX</span>
+            <span class="ssa-label-code" style="color: var(--tertiary-base);">HEALTH: 100% COMPILE_PASS</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         2. SYSTEM-SPECIFIC CUSTOM HIGHLIGHTS: AST INSPECTOR & BENCHMARK METER
+         ========================================================================= -->
+    <section id="system-components" style="margin-bottom: 3.5rem;">
+      <div class="ds-section-header">
+        <span class="ssa-telemetry-badge" style="color: var(--primary);">SPEC_SECTION::01</span>
+        <h2 class="ssa-headline-md" style="margin-top: 4px;">System-Specific Custom Components</h2>
+        <p class="ssa-body-sm">Interactive demonstrations of the AST & Tensor Inspector and Inline Benchmark Meter.</p>
+      </div>
+
+      <!-- AST & Tensor Inspector -->
+      <div class="ssa-card" style="margin-bottom: 2rem;">
+        <div class="ssa-card-header-strip">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span class="ssa-card-header-title">AST &amp; Tensor Inspector</span>
+            <span class="ssa-chip ssa-chip-pass"><span class="ssa-dot"></span> LIVE_IR</span>
+          </div>
+          <span class="ssa-card-header-meta">RUNTIME::KOTLIN_IR_OPTIMIZER_04</span>
+        </div>
+
+        <div class="ssa-ast-inspector-split">
+          <!-- Left: Collapsible Node Tree with inline memory meters -->
+          <div class="ast-pane-tree" id="astTreePane">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <span class="ssa-label-mono" style="font-weight: 700;">SYNTAX &amp; IR NODE HIERARCHY</span>
+              <span class="ssa-label-code" style="color: #6B7280;">CLICK NODE TO INSPECT</span>
+            </div>
+
+            <!-- Root Module -->
+            <div class="ast-node-row selected" onclick="inspectNode('PackageDeclaration')">
+              <div>
+                <span class="ast-node-bracket">[P]</span>
+                <span>org.synthetic.runtime.inference</span>
+              </div>
+              <div class="ast-memory-meter">
+                <span class="ast-mem-bar"><span class="ast-mem-fill" style="width: 25%;"></span></span>
+                <span>1.4 KB</span>
+              </div>
+            </div>
+
+            <!-- Function Declaration -->
+            <div style="padding-left: 16px;">
+              <div class="ast-node-row" onclick="inspectNode('FunDeclaration')">
+                <div>
+                  <span class="ast-node-bracket">[fn]</span>
+                  <span>fun computeMatMulForward()</span>
+                </div>
+                <div class="ast-memory-meter">
+                  <span class="ast-mem-bar"><span class="ast-mem-fill" style="width: 48%;"></span></span>
+                  <span>4.8 KB</span>
+                </div>
+              </div>
+
+              <!-- Parameter List -->
+              <div style="padding-left: 16px;">
+                <div class="ast-node-row" onclick="inspectNode('ParamA')">
+                  <div>
+                    <span class="ast-node-bracket">[arg]</span>
+                    <span>lhsTensor: FloatTensor[B, M, K]</span>
+                  </div>
+                  <div class="ast-memory-meter">
+                    <span class="ast-mem-bar"><span class="ast-mem-fill" style="width: 65%;"></span></span>
+                    <span>16.0 MB</span>
+                  </div>
+                </div>
+
+                <div class="ast-node-row" onclick="inspectNode('ParamB')">
+                  <div>
+                    <span class="ast-node-bracket">[arg]</span>
+                    <span>rhsTensor: FloatTensor[K, N]</span>
+                  </div>
+                  <div class="ast-memory-meter">
+                    <span class="ast-mem-bar"><span class="ast-mem-fill" style="width: 80%;"></span></span>
+                    <span>32.0 MB</span>
+                  </div>
+                </div>
+
+                <!-- Tensor Kernel Operation -->
+                <div class="ast-node-row" onclick="inspectNode('TensorOp')">
+                  <div>
+                    <span class="ast-node-bracket">[op]</span>
+                    <span style="color: var(--secondary); font-weight: 600;">TensorGEMM::FusedBiasReLU</span>
+                  </div>
+                  <div class="ast-memory-meter">
+                    <span class="ast-mem-bar"><span class="ast-mem-fill" style="width: 95%;"></span></span>
+                    <span>64.0 MB</span>
+                  </div>
+                </div>
+
+                <!-- Loop Unrolling Pass -->
+                <div class="ast-node-row" onclick="inspectNode('LoopUnroll')">
+                  <div>
+                    <span class="ast-node-bracket">[opt]</span>
+                    <span style="color: var(--primary);">LoopUnrollPass &lt;SIMD_AVX512&gt;</span>
+                  </div>
+                  <div class="ast-memory-meter">
+                    <span class="ast-mem-bar"><span class="ast-mem-fill" style="width: 15%;"></span></span>
+                    <span>380 B</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Inspector Details & Tensor Metadata -->
+          <div class="ast-pane-details" id="astDetailsPane">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+              <span class="ssa-label-mono" style="font-weight: 700; color: var(--primary);" id="nodeTitle">NODE: PackageDeclaration</span>
+              <span class="ssa-chip ssa-chip-active" id="nodeId">ID::0x7F4A2</span>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+              <div style="background: #FFFFFF; border: 1px solid var(--border-subtle); padding: 10px; border-radius: var(--rounded);">
+                <span class="ssa-label-code" style="color: var(--on-surface-variant);">TENSOR SHAPE</span>
+                <p class="ssa-label-mono" style="margin: 4px 0 0; font-weight: 700;" id="nodeShape">[32, 768, 64]</p>
+              </div>
+              <div style="background: #FFFFFF; border: 1px solid var(--border-subtle); padding: 10px; border-radius: var(--rounded);">
+                <span class="ssa-label-code" style="color: var(--on-surface-variant);">STRIDE &amp; ALIGNMENT</span>
+                <p class="ssa-label-mono" style="margin: 4px 0 0; font-weight: 700;" id="nodeStride">64-byte AVX-512</p>
+              </div>
+            </div>
+
+            <div style="background: #FFFFFF; border: 1px solid var(--border-subtle); padding: 12px; border-radius: var(--rounded); margin-bottom: 16px;">
+              <span class="ssa-label-code" style="color: var(--on-surface-variant); display: block; margin-bottom: 6px;">LOWERED LLVM / KOTLIN IR:</span>
+              <pre class="ssa-label-code" id="nodeIR" style="margin: 0; background: #F8F9FA; padding: 10px; border-radius: 3px; border: 1px solid #ECECEC; overflow-x: auto;">%res = call @llvm.fma.v16f32(&lt;16 x float&gt; %a, &lt;16 x float&gt; %b, &lt;16 x float&gt; %bias)
+store &lt;16 x float&gt; %res, ptr %output_ptr, align 64</pre>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span class="ssa-label-code" style="color: #6B7280;">TARGET BACKEND: JVM 21 / LLVM 18.1</span>
+              <button class="ssa-btn ssa-btn-terminal" onclick="triggerAstOptimize()">
+                <span class="prompt-glyph">&gt;</span> opt.runPass()
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Inline Benchmark Meter Section -->
+      <div class="ssa-card">
+        <div class="ssa-card-header-strip">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span class="ssa-card-header-title">Inline Benchmark Meters (Low-Latency Diagnostics)</span>
+            <span class="ssa-chip ssa-chip-profiling"><span class="ssa-dot"></span> PROFILER_ARMED</span>
+          </div>
+          <button class="ssa-btn ssa-btn-primary" style="padding: 5px 12px; font-size: 12px;" onclick="runLiveBenchmarks()">
+            Execute Benchmark Cycle
+          </button>
+        </div>
+
+        <div class="ssa-card-body">
+          <p class="ssa-body-sm" style="margin-top: 0; margin-bottom: 16px;">
+            Ultra-slim horizontal latency bars utilizing a smooth gradient transition between Kotlin Violet-Indigo (<code style="color: var(--primary);">#7F52FF</code>) and Quantum Cyan (<code style="color: var(--tertiary);">#00D2B4</code>).
+          </p>
+
+          <!-- Meter 1 -->
+          <div class="ssa-benchmark-meter">
+            <div class="benchmark-meter-header">
+              <span class="benchmark-label">PARSER AST CONSTRUCTION &amp; TOKEN LEXING</span>
+              <span class="benchmark-value" id="val-1">0.42 ms &bull; p50</span>
+            </div>
+            <div class="benchmark-track">
+              <div class="benchmark-fill" id="bar-1" style="width: 28%;"></div>
+            </div>
+          </div>
+
+          <!-- Meter 2 -->
+          <div class="ssa-benchmark-meter">
+            <div class="benchmark-meter-header">
+              <span class="benchmark-label">TYPE INFERENCE &amp; SYMBOL RESOLUTION PASS</span>
+              <span class="benchmark-value" id="val-2">1.18 ms &bull; p90</span>
+            </div>
+            <div class="benchmark-track">
+              <div class="benchmark-fill" id="bar-2" style="width: 44%;"></div>
+            </div>
+          </div>
+
+          <!-- Meter 3 -->
+          <div class="ssa-benchmark-meter">
+            <div class="benchmark-meter-header">
+              <span class="benchmark-label">LLVM IR LOWERING &amp; VECTORIZATION OPTIMIZATION</span>
+              <span class="benchmark-value" id="val-3">2.85 ms &bull; p99</span>
+            </div>
+            <div class="benchmark-track">
+              <div class="benchmark-fill" id="bar-3" style="width: 68%;"></div>
+            </div>
+          </div>
+
+          <!-- Meter 4 -->
+          <div class="ssa-benchmark-meter">
+            <div class="benchmark-meter-header">
+              <span class="benchmark-label">TENSOR KERNEL DISPATCH &amp; SIMD EXECUTION</span>
+              <span class="benchmark-value" id="val-4">0.16 ms &bull; p99.9</span>
+            </div>
+            <div class="benchmark-track">
+              <div class="benchmark-fill" id="bar-4" style="width: 14%;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="ds-section-divider">
+
+    <!-- =========================================================================
+         3. COLOR PALETTE MATRIX & TOKENS
+         ========================================================================= -->
+    <section id="colors">
+      <div class="ds-section-header">
+        <span class="ssa-telemetry-badge" style="color: var(--primary);">SPEC_SECTION::02</span>
+        <h2 class="ssa-headline-md" style="margin-top: 4px;">Color Palette &amp; Field Surfaces</h2>
+        <p class="ssa-body-sm">Click any token card to copy its CSS token value.</p>
+      </div>
+
+      <div class="ds-token-grid">
+        <!-- Primary -->
+        <div class="ds-token-card" onclick="copyToken('--primary: #7F52FF')">
+          <div class="ds-swatch" style="background: #7F52FF;"></div>
+          <span class="ds-token-name">Primary (Kotlin Violet)</span>
+          <span class="ds-token-value">#7F52FF / #6633e5</span>
+        </div>
+
+        <!-- Secondary -->
+        <div class="ds-token-card" onclick="copyToken('--secondary: #C757BC')">
+          <div class="ds-swatch" style="background: #C757BC;"></div>
+          <span class="ds-token-name">Secondary (Cyber Lilac)</span>
+          <span class="ds-token-value">#C757BC / #9c3094</span>
+        </div>
+
+        <!-- Tertiary -->
+        <div class="ds-token-card" onclick="copyToken('--tertiary: #00D2B4')">
+          <div class="ds-swatch" style="background: #00D2B4;"></div>
+          <span class="ds-token-name">Tertiary (Quantum Cyan)</span>
+          <span class="ds-token-value">#00D2B4 / #006959</span>
+        </div>
+
+        <!-- Neutral Obsidian -->
+        <div class="ds-token-card" onclick="copyToken('--neutral-obsidian: #0B0C10')">
+          <div class="ds-swatch" style="background: #0B0C10;"></div>
+          <span class="ds-token-name">Precision Obsidian</span>
+          <span class="ds-token-value">#0B0C10 / #1a1b20</span>
+        </div>
+
+        <!-- Base Surface -->
+        <div class="ds-token-card" onclick="copyToken('--surface: #faf8fe')">
+          <div class="ds-swatch" style="background: #faf8fe; border: 1px solid #E2E8F0;"></div>
+          <span class="ds-token-name">Base Surface</span>
+          <span class="ds-token-value">#faf8fe (Field Canvas)</span>
+        </div>
+
+        <!-- Container Lowest -->
+        <div class="ds-token-card" onclick="copyToken('--surface-container-lowest: #ffffff')">
+          <div class="ds-swatch" style="background: #ffffff; border: 1px solid #E2E8F0;"></div>
+          <span class="ds-token-name">Container Lowest</span>
+          <span class="ds-token-value">#ffffff (Pure Card)</span>
+        </div>
+
+        <!-- Hairline Border -->
+        <div class="ds-token-card" onclick="copyToken('--border-subtle: #E2E8F0')">
+          <div class="ds-swatch" style="background: #E2E8F0;"></div>
+          <span class="ds-token-name">Hairline Border</span>
+          <span class="ds-token-value">#E2E8F0 / #E5E7EB</span>
+        </div>
+
+        <!-- Error Container -->
+        <div class="ds-token-card" onclick="copyToken('--error: #ba1a1a')">
+          <div class="ds-swatch" style="background: #ba1a1a;"></div>
+          <span class="ds-token-name">Error Diagnostic</span>
+          <span class="ds-token-value">#ba1a1a</span>
+        </div>
+      </div>
+    </section>
+
+    <hr class="ds-section-divider">
+
+    <!-- =========================================================================
+         4. TYPOGRAPHY SPECIMEN
+         ========================================================================= -->
+    <section id="typography">
+      <div class="ds-section-header">
+        <span class="ssa-telemetry-badge" style="color: var(--primary);">SPEC_SECTION::03</span>
+        <h2 class="ssa-headline-md" style="margin-top: 4px;">Typographic Hierarchy</h2>
+        <p class="ssa-body-sm">Calibrated balance of Space Grotesk, Geist, and JetBrains Mono.</p>
+      </div>
+
+      <div class="ssa-card" style="padding: 24px; display: flex; flex-direction: column; gap: 20px;">
+        <div style="border-bottom: 1px solid var(--border-hairline); padding-bottom: 16px;">
+          <span class="ssa-label-code" style="color: #6B7280;">DISPLAY &bull; SPACE GROTESK 56PX / WEIGHT 700 / LS -0.03EM</span>
+          <div class="ssa-display" style="margin-top: 6px;">Synthetic Systems Architecture</div>
+        </div>
+
+        <div style="border-bottom: 1px solid var(--border-hairline); padding-bottom: 16px;">
+          <span class="ssa-label-code" style="color: #6B7280;">HEADLINE-LG &bull; SPACE GROTESK 40PX / WEIGHT 600 / LS -0.02EM</span>
+          <div class="ssa-headline-lg" style="margin-top: 6px;">Compiler-Grade Execution Runtime</div>
+        </div>
+
+        <div style="border-bottom: 1px solid var(--border-hairline); padding-bottom: 16px;">
+          <span class="ssa-label-code" style="color: #6B7280;">HEADLINE-MD &bull; SPACE GROTESK 28PX / WEIGHT 600 / LS -0.015EM</span>
+          <div class="ssa-headline-md" style="margin-top: 6px;">High-Velocity Diagnostics &amp; Coroutines</div>
+        </div>
+
+        <div style="border-bottom: 1px solid var(--border-hairline); padding-bottom: 16px;">
+          <span class="ssa-label-code" style="color: #6B7280;">BODY-LG &amp; BODY-MD &bull; GEIST 18PX / 15PX</span>
+          <p class="ssa-body-lg" style="margin: 6px 0 4px;">
+            The design movement is Technical Precision Minimalism: pure radiant negative space, razor-sharp hairline dividers, and surgical engineering rigor.
+          </p>
+          <p class="ssa-body-md" style="margin: 0;">
+            Calibrated for mental clarity and zero cognitive bloat. Systematic, uncluttered, and uncompromisingly fast across all viewports.
+          </p>
+        </div>
+
+        <div>
+          <span class="ssa-label-code" style="color: #6B7280;">TELEMETRY &amp; LABELS &bull; JETBRAINS MONO 13PX / 12PX / 11PX</span>
+          <div style="display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px;">
+            <span class="ssa-label-mono">LABEL_MONO::sys.target_arch = "x86_64_avx512"</span>
+            <span class="ssa-label-code" style="color: var(--primary);">LABEL_CODE::inline val threadPoolSize = 64</span>
+            <span class="ssa-telemetry-badge" style="background: #F3F4F6; padding: 2px 6px; border-radius: 2px;">TELEMETRY_BADGE::GC_PAUSE &lt; 0.05MS</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="ds-section-divider">
+
+    <!-- =========================================================================
+         5. INTERACTIVE COMPONENT GALLERY
+         ========================================================================= -->
+    <section id="components">
+      <div class="ds-section-header">
+        <span class="ssa-telemetry-badge" style="color: var(--primary);">SPEC_SECTION::04</span>
+        <h2 class="ssa-headline-md" style="margin-top: 4px;">Interactive Component Gallery</h2>
+        <p class="ssa-body-sm">Standard controls crafted to 4px/8px baseline precision.</p>
+      </div>
+
+      <div class="ds-component-grid">
+
+        <!-- Panel 1: Buttons -->
+        <div class="ds-demo-panel">
+          <span class="ds-demo-label">1. Action Buttons</span>
+          <div class="ds-row">
+            <button class="ssa-btn ssa-btn-primary">Primary Action</button>
+            <button class="ssa-btn ssa-btn-secondary">Secondary / Ghost</button>
+          </div>
+          <div class="ds-row">
+            <button class="ssa-btn ssa-btn-terminal">
+              <span class="prompt-glyph">&gt;</span> sys.execute()
+            </button>
+            <button class="ssa-btn ssa-btn-terminal">
+              <span class="prompt-glyph">$</span> kotlin -Xir-produce-js
+            </button>
+          </div>
+          <span class="ssa-label-code" style="color: #6B7280;">Solid #7F52FF, instantaneous #6A3FE6 hover, 2px #C757BC focus ring.</span>
+        </div>
+
+        <!-- Panel 2: Telemetry Badges & Chips -->
+        <div class="ds-demo-panel">
+          <span class="ds-demo-label">2. Telemetry Badges &amp; Glowing Chips</span>
+          <div class="ds-row">
+            <span class="ssa-chip ssa-chip-pass">
+              <span class="ssa-dot"></span> COMPILE_PASS
+            </span>
+            <span class="ssa-chip ssa-chip-active">
+              <span class="ssa-dot"></span> RUNTIME_ACTIVE
+            </span>
+            <span class="ssa-chip ssa-chip-profiling">
+              <span class="ssa-dot"></span> PROFILING
+            </span>
+            <span class="ssa-chip ssa-chip-lilac">
+              <span class="ssa-dot"></span> TENSOR_INFERENCE
+            </span>
+          </div>
+          <span class="ssa-label-code" style="color: #6B7280;">JetBrains Mono 11px with 6px luminous glowing status pins.</span>
+        </div>
+
+        <!-- Panel 3: Input Fields & REPL Prompt -->
+        <div class="ds-demo-panel">
+          <span class="ds-demo-label">3. Input Fields &amp; REPL Prompt</span>
+          <input type="text" class="ssa-input" placeholder="Enter compiler flag (e.g. -Xopt-in=kotlin.RequiresOptIn)">
+          <div class="ssa-repl-prompt-bar">
+            <span class="repl-symbol">&gt;</span>
+            <input type="text" class="ssa-repl-input" id="demoReplInput" placeholder="Type 'help', 'compile', 'bench', or 'clear'..." onkeydown="handleReplKey(event)">
+          </div>
+          <div id="replOutput" class="ssa-label-code" style="background: #FFFFFF; border: 1px solid var(--border-subtle); padding: 8px 12px; border-radius: var(--rounded); min-height: 28px; color: var(--primary);">
+            Ready for command input...
+          </div>
+        </div>
+
+        <!-- Panel 4: Selection Controls -->
+        <div class="ds-demo-panel">
+          <span class="ds-demo-label">4. Geometric Selection Controls</span>
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <label class="ssa-checkbox-label">
+              <input type="checkbox" class="ssa-checkbox" checked>
+              <span>Enable SIMD Vectorization Pass (AVX-512)</span>
+            </label>
+            <label class="ssa-checkbox-label">
+              <input type="checkbox" class="ssa-checkbox">
+              <span>Inline Cross-Module Suspend Coroutines</span>
+            </label>
+          </div>
+          <div style="display: flex; gap: 16px; margin-top: 6px;">
+            <label class="ssa-radio-label">
+              <input type="radio" name="opt_level" class="ssa-radio" checked>
+              <span>-O3 Speed</span>
+            </label>
+            <label class="ssa-radio-label">
+              <input type="radio" name="opt_level" class="ssa-radio">
+              <span>-Os Size</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Panel 5: Cards with Integrated Header Strip -->
+        <div class="ds-demo-panel" style="grid-column: 1 / -1;">
+          <span class="ds-demo-label">5. Architecture Panels with Header Strips</span>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+            <div class="ssa-card">
+              <div class="ssa-card-header-strip">
+                <span class="ssa-card-header-title">Coroutines &amp; Structured Concurrency</span>
+                <span class="ssa-card-header-meta">MODULE::COROUTINES_04</span>
+              </div>
+              <div class="ssa-card-body">
+                <p class="ssa-body-sm" style="margin: 0 0 12px;">Zero-allocation state machines, continuation passing style, and low-latency thread scheduling.</p>
+                <span class="ssa-label-code" style="color: var(--primary);">4 Capstones &bull; 18 Benchmarks</span>
+              </div>
+            </div>
+
+            <div class="ssa-card">
+              <div class="ssa-card-header-strip">
+                <span class="ssa-card-header-title">Tensor Ops &amp; AI Kernels</span>
+                <span class="ssa-card-header-meta">MODULE::TENSORS_02</span>
+              </div>
+              <div class="ssa-card-body">
+                <p class="ssa-body-sm" style="margin: 0 0 12px;">Memory-mapped multi-dimensional arrays, fused operators, and GPU tensor core bindings.</p>
+                <span class="ssa-label-code" style="color: var(--secondary);">CUDA &bull; Metal &bull; AVX-512</span>
+              </div>
+            </div>
+
+            <div class="ssa-card">
+              <div class="ssa-card-header-strip">
+                <span class="ssa-card-header-title">Kotlin Native &amp; LLVM Pipeline</span>
+                <span class="ssa-card-header-meta">MODULE::LLVM_05</span>
+              </div>
+              <div class="ssa-card-body">
+                <p class="ssa-body-sm" style="margin: 0 0 12px;">Ahead-of-time compilation, memory management without GC pauses, and C-interop zero-overhead.</p>
+                <span class="ssa-label-code" style="color: var(--tertiary-base);">Bare Metal &bull; WASM Target</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel 6: Lists & Tree Views with 1px Dotted Guide Rails -->
+        <div class="ds-demo-panel" style="grid-column: 1 / -1;">
+          <span class="ds-demo-label">6. Lists &amp; Tree Views (1px Dotted Guide Rails)</span>
+          <div class="ssa-tree-view">
+            <div class="ssa-tree-node active">
+              <span>&diams; Phase 01: Frontend Lexical Analysis &amp; Concrete Syntax Tree</span>
+              <span class="ssa-chip ssa-chip-pass"><span class="ssa-dot"></span> 100% COMPLETE</span>
+            </div>
+            <div class="ssa-tree-node">
+              <span>&diams; Phase 02: Intermediate Representation (IR) Lowering &amp; Desugaring</span>
+              <span class="ssa-chip ssa-chip-active"><span class="ssa-dot"></span> IN PROGRESS</span>
+            </div>
+            <div class="ssa-tree-node">
+              <span>&diams; Phase 03: Static Single Assignment (SSA) Form &amp; Optimization Passes</span>
+              <span class="ssa-chip"><span class="ssa-dot" style="background:#CBD5E1;"></span> PENDING</span>
+            </div>
+            <div class="ssa-tree-node">
+              <span>&diams; Phase 04: Native Assembly Emission &amp; Profiler Instrumentation</span>
+              <span class="ssa-chip"><span class="ssa-dot" style="background:#CBD5E1;"></span> PENDING</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Bottom Navigation Footer -->
+    <footer style="margin-top: 5rem; padding-top: 2rem; border-top: 1px solid var(--border-hairline); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+      <div class="ssa-label-code" style="color: var(--on-surface-variant);">
+        Synthetic Systems Academy &bull; Technical Precision Minimalism Design System &bull; 2026
+      </div>
+      <div style="display: flex; gap: 16px;">
+        <a href="index.html" class="ssa-btn ssa-btn-primary">Launch Academy Home</a>
+        <a href="course.html" class="ssa-btn ssa-btn-secondary">View 4 Course Tiers</a>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- Interactive JavaScript for Design System Command Surface -->
+  <script>
+    function copyToken(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        const toast = document.getElementById('toast');
+        toast.textContent = 'Copied: ' + text;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2000);
+      });
+    }
+
+    const nodeData = {
+      PackageDeclaration: {
+        title: "NODE: PackageDeclaration",
+        id: "ID::0x7F4A2",
+        shape: "[32, 768, 64]",
+        stride: "64-byte AVX-512",
+        ir: `%res = call @llvm.fma.v16f32(<16 x float> %a, <16 x float> %b, <16 x float> %bias)\nstore <16 x float> %res, ptr %output_ptr, align 64`
+      },
+      FunDeclaration: {
+        title: "NODE: FunDeclaration (computeMatMulForward)",
+        id: "ID::0x88BC1",
+        shape: "[Batch=32, M=512, N=512]",
+        stride: "Contiguous row-major",
+        ir: `define void @computeMatMulForward(ptr noalias %lhs, ptr noalias %rhs, ptr noalias %out) {\n  tail call void @fused_gemm_kernel(ptr %lhs, ptr %rhs, ptr %out)\n  ret void\n}`
+      },
+      ParamA: {
+        title: "NODE: Argument (lhsTensor)",
+        id: "ID::0x91F04",
+        shape: "[32, 512, 768] Float32",
+        stride: "Stride=[393216, 768, 1]",
+        ir: `%ptr_a = getelementptr inbounds float, ptr %lhs, i64 %linear_idx\n%val_a = load <8 x float>, ptr %ptr_a, align 32`
+      },
+      ParamB: {
+        title: "NODE: Argument (rhsTensor)",
+        id: "ID::0x91F05",
+        shape: "[768, 512] Float32",
+        stride: "Transpose-ready stride",
+        ir: `%ptr_b = getelementptr inbounds float, ptr %rhs, i64 %col_idx\n%val_b = load <8 x float>, ptr %ptr_b, align 32`
+      },
+      TensorOp: {
+        title: "NODE: TensorGEMM::FusedBiasReLU",
+        id: "ID::0xAA429",
+        shape: "[32, 512, 512] Output",
+        stride: "TensorCore FP16/FP32 Accumulate",
+        ir: `%accum = call <8 x float> @cuda.wmma.mma.sync(<8 x float> %tile_a, <8 x float> %tile_b)\n%relu = select <8 x i1> %cmp, <8 x float> %accum, <8 x float> zeroinitializer`
+      },
+      LoopUnroll: {
+        title: "NODE: LoopUnrollPass <SIMD_AVX512>",
+        id: "ID::0xCB112",
+        shape: "Vector width = 16 floats (512-bit)",
+        stride: "Unroll factor = 4",
+        ir: `; Unrolled 4x vector iterations\n#pragma unroll(4)\nfor (int k = 0; k < K_DIM; k += 64) { /* vector body */ }`
+      }
+    };
+
+    function inspectNode(nodeKey) {
+      const data = nodeData[nodeKey];
+      if (!data) return;
+
+      document.querySelectorAll('.ast-node-row').forEach(row => row.classList.remove('selected'));
+      event.currentTarget.classList.add('selected');
+
+      document.getElementById('nodeTitle').textContent = data.title;
+      document.getElementById('nodeId').textContent = data.id;
+      document.getElementById('nodeShape').textContent = data.shape;
+      document.getElementById('nodeStride').textContent = data.stride;
+      document.getElementById('nodeIR').textContent = data.ir;
+    }
+
+    function triggerAstOptimize() {
+      const irElem = document.getElementById('nodeIR');
+      irElem.textContent = "; Optimizing pass with SSA DCE & Inlining...\n" + irElem.textContent + "\n; [PASS COMPLETE: 0.04ms]";
+    }
+
+    function runLiveBenchmarks() {
+      const benchmarks = [
+        { id: '1', min: 0.28, max: 0.45, pct: [20, 32], unit: 'ms • p50' },
+        { id: '2', min: 0.95, max: 1.25, pct: [38, 48], unit: 'ms • p90' },
+        { id: '3', min: 2.10, max: 2.95, pct: [58, 72], unit: 'ms • p99' },
+        { id: '4', min: 0.11, max: 0.19, pct: [10, 18], unit: 'ms • p99.9' }
+      ];
+
+      benchmarks.forEach(bm => {
+        const randomVal = (Math.random() * (bm.max - bm.min) + bm.min).toFixed(2);
+        const randomPct = Math.floor(Math.random() * (bm.pct[1] - bm.pct[0]) + bm.pct[0]);
+        
+        document.getElementById(`val-${bm.id}`).textContent = `${randomVal} ${bm.unit}`;
+        document.getElementById(`bar-${bm.id}`).style.width = `${randomPct}%`;
+      });
+    }
+
+    function handleReplKey(e) {
+      if (e.key === 'Enter') {
+        const val = e.target.value.trim().toLowerCase();
+        const out = document.getElementById('replOutput');
+
+        if (val === 'help') {
+          out.textContent = "Commands: 'compile', 'bench', 'inspect', 'clear', 'target'";
+        } else if (val === 'compile') {
+          out.textContent = "BUILD SUCCESS: Target=JVM21, Bytecode=34.2KB, Time=18ms";
+        } else if (val === 'bench') {
+          runLiveBenchmarks();
+          out.textContent = "BENCHMARK SUITE EXECUTED: Latencies refreshed above.";
+        } else if (val === 'inspect') {
+          out.textContent = "AST INSPECTION: Root module linked. 6 nodes in active graph.";
+        } else if (val === 'clear') {
+          out.textContent = "Ready for command input...";
+        } else {
+          out.textContent = `sys.eval("${val}"): evaluated with 0 error(s).`;
+        }
+        e.target.value = '';
+      }
+    }
+  </script>
+</body>
+</html>

@@ -370,16 +370,14 @@ After each task completes, run these as **separate commands**, one per invocatio
 
 **PowerShell:**
 ```powershell
-# Stage only files modified for this task (or ensure clean worktree before committing)
-git add <files-modified-for-task>
+git add -A
 git commit -m "feat({phase}-{plan}): {task description}"
 git log -1 --oneline
 ```
 
 **Bash:**
 ```bash
-# Stage only files modified for this task (or ensure clean worktree before committing)
-git add <files-modified-for-task>
+git add -A
 git commit -m "feat({phase}-{plan}): {task description}"
 git log -1 --oneline
 ```

@@ -11,15 +11,9 @@
 set -e
 
 PATTERN="${1:-}"
-[ $# -gt 0 ] && shift
-
-SEARCH_PATH="."
-if [ $# -gt 0 ] && [[ "$1" != -* ]]; then
-    SEARCH_PATH="$1"
-    shift
-fi
-
-EXTRA_ARGS=("$@")
+SEARCH_PATH="${2:-.}"
+shift 2 2>/dev/null || true
+EXTRA_ARGS="$@"
 
 if [[ -z "$PATTERN" ]]; then
     echo "Usage: search_repo.sh <pattern> [path] [options]"
@@ -34,7 +28,7 @@ fi
 # Try ripgrep first (fastest)
 if command -v rg &> /dev/null; then
     echo "# Using ripgrep" >&2
-    rg "$PATTERN" "$SEARCH_PATH" "${EXTRA_ARGS[@]}" --color=always
+    rg "$PATTERN" "$SEARCH_PATH" $EXTRA_ARGS --color=always
     exit $?
 fi
 
@@ -43,7 +37,7 @@ echo "# Using grep (install ripgrep for better performance)" >&2
 
 # Convert common rg options to grep options
 GREP_ARGS=""
-for arg in "${EXTRA_ARGS[@]}"; do
+for arg in $EXTRA_ARGS; do
     case "$arg" in
         --type)
             # Next argument is the type, skip both

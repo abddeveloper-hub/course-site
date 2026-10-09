@@ -157,7 +157,7 @@ Extract from $ARGUMENTS:
 
 **PowerShell:**
 ```powershell
-Select-String -Path ".gsd/ROADMAP.md" -Pattern "Phase ${PHASE}:"
+Select-String -Path ".gsd/ROADMAP.md" -Pattern "Phase $PHASE:"
 ```
 
 **Bash:**
@@ -235,11 +235,6 @@ Return the compact digest from your Return Contract — nothing else.
 
 Read only the returned digest. The RESEARCH.md itself is for the planner to read, not you.
 
-Inspect the returned `status` in the digest before continuing:
-- `complete`: Proceed to step 6 (Create Plans).
-- `partial`: Retry research with refined questions, or stop and report gaps to the user.
-- `blocked`: Report the blocker to the user and stop planning.
-
 **Inline mode:** perform research based on discovery level (see `<discovery_levels>`) and
 create `$PHASE_DIR/RESEARCH.md` with findings.
 
@@ -267,15 +262,7 @@ Self-check with plan-checker before returning.
 Return the compact index from your Return Contract — nothing else.
 ```
 
-Route on the planner's returned `status`:
-
-| `status` | Action |
-|----------|--------|
-| `complete` | Planner ran its own checker loop: skip step 7 and proceed to step 8 (Update State) and step 9 (Commit Plans). |
-| `needs_input` | Route questions/decisions to the user; do not treat plans as valid or proceed to state updates or commit. |
-| `blocked` | Report the blocker to the user and stop; do not treat plans as valid or proceed to state updates or commit. |
-| no result / died | Report failure and stop; do not silently generate plans inline. |
-
+The planner runs its own checker loop, so **skip step 7** when it returns `status: complete`.
 Steps 6a-6c below describe what the planner does; run them yourself only in inline mode.
 
 ---
@@ -304,11 +291,6 @@ Create `$PHASE_DIR/{N}-PLAN.md`:
 phase: {N}
 plan: 1
 wave: 1
-depends_on: []
-files_modified: []
-autonomous: true
-must_haves:
-  - {Must-have outcome 1}
 ---
 
 # Plan {N}.1: {Plan Name}

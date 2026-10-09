@@ -1,0 +1,274 @@
+rules_version = '2';
+
+// ============================================================================
+// NEXVION AI — Firestore Security Rules
+// ============================================================================
+// Policy:
+//  - Only authenticated Firebase users may read or write any data.
+//  - Unauthenticated users receive an outright deny on all paths.
+//  - Role-based enforcement is performed at the application layer;
+//    these rules act as the hard security boundary.
+//  - The 30-student batch capacity hard-cap is validated in rules where
+//    possible; the authoritative check lives server-side in Cloud Functions
+//    (future phase). Rules here provide defence-in-depth.
+//
+// Collections:
+//   adminUsers       — admin portal user accounts
+//   roles            — role definitions and permission matrices
+//   auditLogs        — immutable append-only audit trail
+//   settings         — platform-level settings (single document)
+//   courses          — course catalogue
+//   tiers            — subscription tier definitions
+//   batches          — cohort batches (capacity enforced here)
+//   students         — student profiles
+//   enrollments      — enrollment records
+//   modules          — course modules
+//   classes          — class sessions
+//   lessons          — lesson content
+//   resources        — learning resources / downloads
+//   announcements    — broadcast announcements
+//   notifications    — push/in-app notification records
+//   payments         — payment records (read-only for admins)
+//   certificates     — certificate issuance records
+//   supportTickets   — student support tickets
+// ============================================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // -----------------------------------------------------------------------
+    // Helper functions
+    // -----------------------------------------------------------------------
+
+    // Is the requesting user authenticated?
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Does the incoming data field exist?
+    function hasField(data, field) {
+      return field in data;
+    }
+
+    // Prevent capacity exceeding 30 students per batch (hard invariant)
+    function batchCapacityValid() {
+      return !hasField(request.resource.data, 'capacity') ||
+             request.resource.data.capacity <= 30;
+    }
+
+    function enrolledCountValid() {
+      return !hasField(request.resource.data, 'enrolledCount') ||
+             request.resource.data.enrolledCount <= 30;
+    }
+
+    // -----------------------------------------------------------------------
+    // DENY EVERYTHING by default
+    // -----------------------------------------------------------------------
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // -----------------------------------------------------------------------
+    // Admin Users  (/adminUsers/{userId})
+    // -----------------------------------------------------------------------
+    match /adminUsers/{userId} {
+      // Only authenticated admins may read admin user records
+      allow read: if isAuthenticated();
+      // Only allow writes if authenticated (role enforcement at app layer)
+      allow create, update: if isAuthenticated();
+      // Never allow client-side deletes of admin accounts
+      allow delete: if false;
+    }
+
+    // -----------------------------------------------------------------------
+    // Roles & Permissions  (/roles/{roleId})
+    // -----------------------------------------------------------------------
+    match /roles/{roleId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated();
+      allow delete: if false;
+    }
+
+    // -----------------------------------------------------------------------
+    // Audit Logs  (/auditLogs/{logId})
+    // -----------------------------------------------------------------------
+    // Audit logs are append-only. No updates or deletes from client side.
+    match /auditLogs/{logId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated()
+                    && hasField(request.resource.data, 'action')
+                    && hasField(request.resource.data, 'timestamp');
+      allow update, delete: if false;  // Immutable audit trail
+    }
+
+    // -----------------------------------------------------------------------
+    // Settings  (/settings/platform)
+    // -----------------------------------------------------------------------
+    match /settings/{settingId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated();
+    }
+
+    // -----------------------------------------------------------------------
+    // Courses  (/courses/{courseId})
+    // -----------------------------------------------------------------------
+    match /courses/{courseId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated();
+      allow delete: if false;
+
+      // Course sub-collections
+      match /{subCollection}/{docId} {
+        allow read: if isAuthenticated();
+        allow write: if isAuthenticated();
+      }
+    }
+
+    // -----------------------------------------------------------------------
+    // Tiers  (/tiers/{tierId})
+    // -----------------------------------------------------------------------
+    match /tiers/{tierId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated();
+      allow delete: if false;
+    }
+
+    // -----------------------------------------------------------------------
+    // Batches  (/batches/{batchId})
+    // -----------------------------------------------------------------------
+    // INVARIANT: capacity and enrolledCount must never exceed 30.
+    match /batches/{batchId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated()
+                    && batchCapacityValid()
+                    && enrolledCountValid();
+      allow update: if isAuthenticated()
+                    && batchCapacityValid()
+                    && enrolledCountValid();
+      allow delete: if false;
+    }
+
+    // -----------------------------------------------------------------------
+    // Students  (/students/{studentId})
+    // -----------------------------------------------------------------------
+    match /students/{studentId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated();
+      allow delete: if false;
+
+      // Student notes sub-collection
+      match /notes/{noteId} {
+        allow read: if isAuthenticated();
+        allow create: if isAuthenticated()
+                      && hasField(request.resource.data, 'text')
+                      && hasField(request.resource.data, 'author');
+        allow update, delete: if false;
+      }
+    }
+
+    // -----------------------------------------------------------------------
+    // Enrollments  (/enrollments/{enrollmentId})
+    // -----------------------------------------------------------------------
+    // Valid enrollment status transitions are enforced at the app layer.
+    match /enrollments/{enrollmentId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated()
+                             && hasField(request.resource.data, 'studentId')
+                             && hasField(request.resource.data, 'courseId');
+      allow delete: if false;
+    }
+
+    // -----------------------------------------------------------------------
+    // Modules  (/modules/{moduleId})
+    // -----------------------------------------------------------------------
+    match /modules/{moduleId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated();
+      allow delete: if false;
+    }
+
+    // -----------------------------------------------------------------------
+    // Classes  (/classes/{classId})
+    // -----------------------------------------------------------------------
+    match /classes/{classId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated();
+      allow delete: if false;
+    }
+
+    // -----------------------------------------------------------------------
+    // Lessons  (/lessons/{lessonId})
+    // -----------------------------------------------------------------------
+    match /lessons/{lessonId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated();
+      allow delete: if false;
+    }
+
+    // -----------------------------------------------------------------------
+    // Resources  (/resources/{resourceId})
+    // -----------------------------------------------------------------------
+    match /resources/{resourceId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated();
+      allow delete: if false;
+    }
+
+    // -----------------------------------------------------------------------
+    // Announcements  (/announcements/{announcementId})
+    // -----------------------------------------------------------------------
+    match /announcements/{announcementId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated();
+      allow delete: if false;
+    }
+
+    // -----------------------------------------------------------------------
+    // Notifications  (/notifications/{notificationId})
+    // -----------------------------------------------------------------------
+    match /notifications/{notificationId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated();
+      allow delete: if false;
+    }
+
+    // -----------------------------------------------------------------------
+    // Payments  (/payments/{paymentId})
+    // -----------------------------------------------------------------------
+    // Payment records: admins may read and update status, never delete.
+    match /payments/{paymentId} {
+      allow read: if isAuthenticated();
+      allow update: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow delete: if false;
+    }
+
+    // -----------------------------------------------------------------------
+    // Certificates  (/certificates/{certificateId})
+    // -----------------------------------------------------------------------
+    match /certificates/{certificateId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated();
+      allow delete: if false;
+    }
+
+    // -----------------------------------------------------------------------
+    // Support Tickets  (/supportTickets/{ticketId})
+    // -----------------------------------------------------------------------
+    match /supportTickets/{ticketId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated();
+      allow delete: if false;
+
+      // Replies sub-collection
+      match /replies/{replyId} {
+        allow read: if isAuthenticated();
+        allow create: if isAuthenticated()
+                      && hasField(request.resource.data, 'text')
+                      && hasField(request.resource.data, 'sender');
+        allow update, delete: if false;
+      }
+    }
+
+  }
+}

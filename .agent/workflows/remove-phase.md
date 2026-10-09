@@ -15,17 +15,16 @@ Remove a phase from the roadmap, with safety checks for in-progress or completed
 
 **PowerShell:**
 ```powershell
-$phase = Select-String -Path ".gsd/ROADMAP.md" -Pattern "### Phase ${N}:"
+$phase = Select-String -Path ".gsd/ROADMAP.md" -Pattern "### Phase $N:"
 if (-not $phase) {
-    throw "Phase $N not found in ROADMAP.md"
+    Write-Error "Phase $N not found in ROADMAP.md"
 }
 ```
 
 **Bash:**
 ```bash
-if ! grep -q "### Phase ${N}:" ".gsd/ROADMAP.md"; then
+if ! grep -q "### Phase $N:" ".gsd/ROADMAP.md"; then
     echo "Error: Phase $N not found in ROADMAP.md" >&2
-    exit 1
 fi
 ```
 
@@ -35,15 +34,12 @@ fi
 
 **PowerShell:**
 ```powershell
-$content = Get-Content -Raw ".gsd/ROADMAP.md"
-if ($content -match "### Phase ${N}:[^\r\n]*\r?\n\*\*Status\*\*:\s*([^\r\n]+)") {
-    $status = $matches[1].Trim()
-}
+$status = Select-String -Path ".gsd/ROADMAP.md" -Pattern "Phase $N:.*\n.*Status: (.*)"
 ```
 
 **Bash:**
 ```bash
-status=$(grep -A2 "Phase ${N}:" ".gsd/ROADMAP.md" | grep -i "Status" | head -n1 | cut -d: -f2- | tr -d '* ')
+status=$(grep -A1 "Phase $N:" ".gsd/ROADMAP.md" | grep "Status:" | cut -d: -f2)
 ```
 
 **Safety checks:**

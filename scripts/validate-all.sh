@@ -13,7 +13,7 @@ echo ""
 
 # Run workflow validator
 echo "▶ Running workflow validation..."
-bash "$script_dir/validate-workflows.sh"
+"$script_dir/validate-workflows.sh"
 if [ $? -ne 0 ]; then ((total_errors++)); fi
 echo ""
 

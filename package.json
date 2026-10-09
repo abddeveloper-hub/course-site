@@ -1,0 +1,13 @@
+{
+  "name": "nexvion-ai",
+  "version": "1.0.0",
+  "description": "NEXVION AI - Next-Generation AI Education Platform Landing Page",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["ai", "education", "landing-page", "nexvion"],
+  "author": "NEXVION AI",
+  "license": "ISC"
+}

@@ -1,7 +1,5 @@
 {
   "projects": {
-    "default": "ai-cour"
-  },
-  "targets": {},
-  "etags": {}
+    "default": "nexvion-ai"
+  }
 }

@@ -10,33 +10,54 @@ Display recent changes, new features, and improvements to GSD for Antigravity.
 
 <process>
 
-## 1. Read and Parse CHANGELOG.md
+## 1. Read CHANGELOG.md
 
-**PowerShell:**
-```powershell
-$changelog = Get-Content "CHANGELOG.md" -Raw -ErrorAction SilentlyContinue
-if ($changelog -and ($changelog -match '(?ms)(## \[[^\]]+\][^\r\n]*\r?\n.*?(?=\r?\n## \[|\Z))')) {
-    $latestRelease = $matches[1].Trim()
-} else {
-    $latestRelease = "See CHANGELOG.md for recent changes."
-}
-```
-
-**Bash:**
 ```bash
-latest_release=$(awk '/^## \[/{if (found) exit; found=1; print; next} found{print}' CHANGELOG.md 2>/dev/null || echo "See CHANGELOG.md for recent changes.")
+# Read the latest version section from CHANGELOG.md
+head -50 CHANGELOG.md
 ```
 
 ## 2. Display Recent Changes
 
-Display the parsed latest version section from CHANGELOG.md within the standard banner:
+Display the latest version(s) from CHANGELOG.md:
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  GSD ► WHAT'S NEW
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-{latestRelease parsed from CHANGELOG.md}
+VERSION 1.2.0 — 2026-01-17
+══════════════════════════
+
+🌍 CROSS-PLATFORM SUPPORT
+
+• All 16 workflow files now have Bash equivalents
+• README with dual-syntax Getting Started
+• /web-search workflow for research
+
+───────────────────────────────────────────────────────
+
+VERSION 1.1.0 — 2026-01-17
+══════════════════════════
+
+📚 TEMPLATE PARITY & EXAMPLES
+
+• 14 new templates (DEBUG.md, UAT.md, etc.)
+• Examples directory with walkthroughs
+• /add-todo and /check-todos workflows
+• Cross-references between workflows
+
+───────────────────────────────────────────────────────
+
+VERSION 1.0.0 — 2026-01-17
+══════════════════════════
+
+🎉 INITIAL RELEASE
+
+Full port of GSD methodology to Google Antigravity.
+• 24 workflows, 8 skills, 14 templates
+• 4 core rules: Planning Lock, State Persistence,
+  Context Hygiene, Empirical Validation
 
 ───────────────────────────────────────────────────────
 

@@ -14,20 +14,21 @@ Finalize the current milestone, archive documentation, and prepare for next mile
 
 **PowerShell:**
 ```powershell
-# Check ROADMAP.md for incomplete phases and abort if any exist
-$incomplete = Select-String -Path ".gsd/ROADMAP.md" -Pattern "Status.*Not Started|Status.*In Progress"
-if ($incomplete) {
-    throw "⚠️ Cannot complete milestone — $($incomplete.Count) phase(s) incomplete. Run /progress to see status."
-}
+# Check ROADMAP.md for incomplete phases
+Select-String -Path ".gsd/ROADMAP.md" -Pattern "Status.*Not Started|Status.*In Progress"
 ```
 
 **Bash:**
 ```bash
-# Check ROADMAP.md for incomplete phases and abort if any exist
-if grep -E -q "Status.*Not Started|Status.*In Progress" ".gsd/ROADMAP.md"; then
-    echo "⚠️ Cannot complete milestone — incomplete phases found. Run /progress to see status."
-    exit 1
-fi
+# Check ROADMAP.md for incomplete phases
+grep -E "Status.*Not Started|Status.*In Progress" ".gsd/ROADMAP.md"
+```
+
+**If incomplete phases found:**
+```
+⚠️ Cannot complete milestone — {N} phases incomplete
+
+Run /progress to see status.
 ```
 
 ---
@@ -158,12 +159,8 @@ If `.gsd/REQUIREMENTS.md` exists, mark completed requirements:
 
 ## 6. Commit and Tag
 
-Stage only the intended milestone archive and reset paths (or ensure a clean worktree) so unrelated changes cannot enter the commit:
-
 ```bash
-git add .gsd/milestones/{name} .gsd/ROADMAP.md .gsd/STATE.md .gsd/DECISIONS.md .gsd/JOURNAL.md
-# Stage refreshed architecture or requirements if updated in steps 5c-5d:
-git add -u .gsd/phases .gsd/ARCHITECTURE.md .gsd/STACK.md .gsd/REQUIREMENTS.md 2>/dev/null || true
+git add -A
 git commit -m "docs: complete milestone {name}"
 git tag -a "{name}" -m "Milestone {name} complete"
 ```

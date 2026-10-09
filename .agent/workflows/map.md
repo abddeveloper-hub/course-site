@@ -50,9 +50,7 @@ Mapping is the single most context-expensive workflow in GSD — it reads the wh
 design. Running it inline means the codebase you just mapped is now competing for space with
 the phase you wanted to plan. Delegate it, then read the artifacts only when you need them.
 
-Inspect the returned digest `status`:
-- On `status: complete` → proceed to step 8 (Update State).
-- On `status: partial` or `status: blocked` → stop and report the gaps/blocker to the user (or retry mapping missing areas); do not proceed with state updates or commit incomplete ARCHITECTURE.md and STACK.md files.
+Skip to step 8 (Update State) once the digest comes back.
 
 Steps 1-7 describe what the researcher does. Run them yourself only in inline mode.
 

@@ -15,7 +15,7 @@ Add a new phase to the end of the current roadmap.
 
 ```powershell
 if (-not (Test-Path ".gsd/ROADMAP.md")) {
-    throw "ROADMAP.md required. Run /new-milestone first."
+    Write-Error "ROADMAP.md required. Run /new-milestone first."
 }
 ```
 
@@ -36,20 +36,20 @@ $nextPhase = $phases.Count + 1
 Ask for:
 - **Name** — Phase title
 - **Objective** — What this phase achieves
-- **Depends on** — Previous phases (usually N-1; omit if Phase 1)
+- **Depends on** — Previous phases (usually N-1)
 
 ---
 
 ## 4. Add to ROADMAP.md
 
-Append (omit the `**Depends on**` line for Phase 1; only include when a preceding phase exists):
+Append:
 ```markdown
 ---
 
 ### Phase {N}: {name}
 **Status**: ⬜ Not Started
 **Objective**: {objective}
-**Depends on**: Phase {N-1} <!-- Only include if preceding phase exists; omit for Phase 1 -->
+**Depends on**: Phase {N-1}
 
 **Tasks**:
 - [ ] TBD (run /plan {N} to create)

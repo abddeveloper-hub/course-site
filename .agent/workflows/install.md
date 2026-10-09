@@ -65,15 +65,13 @@ git clone --depth 1 https://github.com/toonight/get-shit-done-for-antigravity.gi
 **PowerShell:**
 ```powershell
 # Core directories
-Copy-Item -Recurse -Force ".gsd-install-temp\.agent" ".\"
-Copy-Item -Recurse -Force ".gsd-install-temp\.agents" ".\"
-Copy-Item -Recurse -Force ".gsd-install-temp\.gemini" ".\"
-# Installer-owned .gsd files only (preserve existing SPEC.md, ROADMAP.md, STATE.md, DECISIONS.md, JOURNAL.md, and phases/)
-New-Item -ItemType Directory -Force ".gsd/templates" | Out-Null
-Copy-Item -Recurse -Force ".gsd-install-temp\.gsd\templates\*" ".gsd\templates\"
-Copy-Item -Recurse -Force ".gsd-install-temp\adapters" ".\"
-Copy-Item -Recurse -Force ".gsd-install-temp\docs" ".\"
-Copy-Item -Recurse -Force ".gsd-install-temp\scripts" ".\"
+Copy-Item -Recurse ".gsd-install-temp\.agent" ".\"
+Copy-Item -Recurse ".gsd-install-temp\.agents" ".\"
+Copy-Item -Recurse ".gsd-install-temp\.gemini" ".\"
+Copy-Item -Recurse ".gsd-install-temp\.gsd" ".\"
+Copy-Item -Recurse ".gsd-install-temp\adapters" ".\"
+Copy-Item -Recurse ".gsd-install-temp\docs" ".\"
+Copy-Item -Recurse ".gsd-install-temp\scripts" ".\"
 
 # Root files
 Copy-Item -Force ".gsd-install-temp\PROJECT_RULES.md" ".\"
@@ -87,9 +85,7 @@ Copy-Item -Force ".gsd-install-temp\model_capabilities.yaml" ".\"
 cp -r .gsd-install-temp/.agent ./
 cp -r .gsd-install-temp/.agents ./
 cp -r .gsd-install-temp/.gemini ./
-# Installer-owned .gsd files only (preserve existing SPEC.md, ROADMAP.md, STATE.md, DECISIONS.md, JOURNAL.md, and phases/)
-mkdir -p .gsd/templates
-cp -r .gsd-install-temp/.gsd/templates/* .gsd/templates/
+cp -r .gsd-install-temp/.gsd ./
 cp -r .gsd-install-temp/adapters ./
 cp -r .gsd-install-temp/docs ./
 cp -r .gsd-install-temp/scripts ./

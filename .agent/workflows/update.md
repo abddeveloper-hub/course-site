@@ -107,14 +107,13 @@ Copy-Item -Recurse ".agent" ".agent.backup"
 Copy-Item -Recurse ".agents" ".agents.backup"
 Copy-Item -Recurse ".gsd/templates" ".gsd/templates.backup"
 
-# Prune installer-managed directories to remove files deleted upstream (preserve user's .gsd docs)
-Remove-Item -Recurse -Force ".agent\*"
-Remove-Item -Recurse -Force ".agents\*"
-Remove-Item -Recurse -Force ".gsd\templates\*"
-
-# Copy current upstream files
+# Update workflows (preserve user's .gsd docs)
 Copy-Item -Recurse -Force ".gsd-update-temp/.agent/*" ".agent/"
+
+# Update skills (Agent Skills standard)
 Copy-Item -Recurse -Force ".gsd-update-temp/.agents/*" ".agents/"
+
+# Update templates only
 Copy-Item -Recurse -Force ".gsd-update-temp/.gsd/templates/*" ".gsd/templates/"
 
 # Update root files
@@ -131,14 +130,13 @@ cp -r .agent .agent.backup
 cp -r .agents .agents.backup
 cp -r .gsd/templates .gsd/templates.backup
 
-# Prune installer-managed directories to remove files deleted upstream (preserve user's .gsd docs)
-rm -rf .agent/*
-rm -rf .agents/*
-rm -rf .gsd/templates/*
-
-# Copy current upstream files
+# Update workflows (preserve user's .gsd docs)
 cp -r .gsd-update-temp/.agent/* .agent/
+
+# Update skills (Agent Skills standard)
 cp -r .gsd-update-temp/.agents/* .agents/
+
+# Update templates only
 cp -r .gsd-update-temp/.gsd/templates/* .gsd/templates/
 
 # Update root files
@@ -154,13 +152,6 @@ cp .gsd-update-temp/VERSION ./
 
 **PowerShell:**
 ```powershell
-# Validate installation before removing backups
-$valid = (Test-Path ".agent") -and (Test-Path ".agents") -and (Test-Path ".gsd/templates") -and (Test-Path "VERSION")
-if (-not $valid) {
-    Write-Error "Update validation failed. Backups retained (.agent.backup, .agents.backup, .gsd/templates.backup) for rollback."
-    exit 1
-}
-
 Remove-Item -Recurse -Force ".gsd-update-temp"
 Remove-Item -Recurse -Force ".agent.backup"
 Remove-Item -Recurse -Force ".agents.backup"
@@ -169,12 +160,6 @@ Remove-Item -Recurse -Force ".gsd/templates.backup"
 
 **Bash:**
 ```bash
-# Validate installation before removing backups
-if [ ! -d ".agent" ] || [ ! -d ".agents" ] || [ ! -d ".gsd/templates" ] || [ ! -f "VERSION" ]; then
-    echo "Error: Update validation failed. Backups retained (.agent.backup, .agents.backup, .gsd/templates.backup) for rollback." >&2
-    exit 1
-fi
-
 rm -rf .gsd-update-temp
 rm -rf .agent.backup
 rm -rf .agents.backup

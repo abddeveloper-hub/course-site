@@ -40,7 +40,6 @@ CORE WORKFLOW
 
 PROJECT SETUP
 ─────────────
-/install          Install GSD into current project
 /new-project      Deep questioning → SPEC.md
 /new-milestone    Create milestone with phases
 /complete-milestone   Archive completed milestone
@@ -53,7 +52,6 @@ PHASE MANAGEMENT
 /remove-phase     Remove phase (with safety checks)
 /discuss-phase    Clarify scope before planning
 /research-phase   Deep technical research
-/sprint [goal]    Time-boxed sprint for quick focused work
 /list-phase-assumptions   Surface planning assumptions
 /plan-milestone-gaps      Create gap closure plans
 
@@ -68,9 +66,6 @@ NAVIGATION & STATE
 UTILITIES
 ─────────
 /help             Show this help
-/update           Update GSD to latest version
-/whats-new        Show recent changes and new features
-/web-search [q]   Search the web to inform decisions
 
 ───────────────────────────────────────────────────────
 

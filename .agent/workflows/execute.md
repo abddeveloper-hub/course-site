@@ -67,7 +67,7 @@ test -f ".gsd/STATE.md"
 **PowerShell:**
 ```powershell
 # Check phase exists in roadmap
-Select-String -Path ".gsd/ROADMAP.md" -Pattern "Phase ${PHASE}:"
+Select-String -Path ".gsd/ROADMAP.md" -Pattern "Phase $PHASE:"
 ```
 
 **Bash:**
@@ -126,7 +126,7 @@ ls "$PHASE_DIR"/*-SUMMARY.md 2>/dev/null
 
 **If `--gaps-only`:** Filter to only plans with `gap_closure: true` in frontmatter.
 
-**If no incomplete plans found:** All plans have summaries; skip plan execution (steps 5-6) and proceed to step 7 (Verify Phase Goal) to verify and create VERIFICATION.md before completing the phase.
+**If no incomplete plans found:** Phase already complete, skip to step 8.
 
 ---
 
@@ -326,9 +326,7 @@ Phase {N} executed successfully. {X} plans, {Y} tasks completed.
 ## 9. Commit Phase Completion
 
 ```bash
-git add .gsd/ROADMAP.md .gsd/STATE.md
-# Stage REQUIREMENTS.md only if it exists
-[ -f .gsd/REQUIREMENTS.md ] && git add .gsd/REQUIREMENTS.md
+git add .gsd/ROADMAP.md .gsd/STATE.md .gsd/REQUIREMENTS.md
 git commit -m "docs(phase-{N}): complete {phase-name}"
 ```
 

@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Compiler Workbench | Synthetic Systems Academy</title>
+
+  <!-- SEO & Meta Tags -->
+  <meta name="description" content="Synthetic Systems Academy Student Engineering Workbench. Track compiler pipeline progress, explore AST passes, run SIMD benchmarks, and inspect runtime telemetry.">
+  <meta name="keywords" content="Synthetic Systems Academy, compiler workbench, student portal, Kotlin native, AI runtime">
+  <meta name="author" content="Synthetic Systems Academy">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Compiler Workbench | Synthetic Systems Academy">
+  <meta property="og:description" content="Engineering portal for Synthetic Systems Academy. Track compiler modules, AST passes, and SIMD benchmarks.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="NEXVION_logo_design_20261005164702.jpg">
+
+  <!-- Google Fonts: Space Grotesk, Geist, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Unified Styles -->
+  <link rel="stylesheet" href="css/style.css?v=2.0">
+  <link rel="stylesheet" href="css/synthetic-systems.css?v=2.0">
+  <link rel="stylesheet" href="css/motion.css?v=2.0">
+</head>
+<body class="dashboard-page-body" id="top">
+
+  <!-- =========================================================================
+       DASHBOARD WRAPPER LAYOUT
+       ========================================================================= -->
+  <div class="dashboard-layout">
+
+    <!-- Mobile Sidebar Backdrop Overlay -->
+    <div class="dash-sidebar-overlay" id="sidebarOverlay" aria-hidden="true"></div>
+
+    <!-- =======================================================================
+         1. PERSISTENT SIDEBAR (240–280px)
+         ======================================================================= -->
+    <aside class="dashboard-sidebar" id="dashboardSidebar" aria-label="Student Navigation">
+      
+      <!-- Top Section: Synthetic Systems Brand & Navigation -->
+      <div>
+        <div class="dash-sidebar-header">
+          <a href="index.html" class="dash-sidebar-brand" title="Return to Synthetic Systems Academy Home">
+            <div class="dash-brand-emblem">
+              <img src="NEXVION_logo_design_20261005164702.jpg" alt="Synthetic Systems Academy Logo">
+            </div>
+            <div class="dash-brand-text">
+              <span class="dash-brand-title">SYNTHETIC SYSTEMS</span>
+              <span class="dash-brand-sub">STUDENT WORKBENCH</span>
+            </div>
+          </a>
+        </div>
+
+        <!-- Navigation Menu -->
+        <nav aria-label="Main Dashboard Navigation">
+          <ul class="dash-nav-menu">
+            <li>
+              <a href="#top" class="dash-nav-item active" id="navDashboard" aria-current="page">
+                <span class="dash-nav-icon" aria-hidden="true">🏠</span>
+                <span>Dashboard</span>
+              </a>
+            </li>
+            <li>
+              <a href="#myCourseSection" class="dash-nav-item" id="navMyCourse">
+                <span class="dash-nav-icon" aria-hidden="true">📚</span>
+                <span>My Course</span>
+              </a>
+            </li>
+            <li>
+              <a href="#recentClassesSection" class="dash-nav-item" id="navClasses">
+                <span class="dash-nav-icon" aria-hidden="true">🎥</span>
+                <span>Classes</span>
+              </a>
+            </li>
+            <li>
+              <a href="#projectsSection" class="dash-nav-item" id="navProjects">
+                <span class="dash-nav-icon" aria-hidden="true">🛠️</span>
+                <span>Projects</span>
+              </a>
+            </li>
+            <li>
+              <a href="#resourcesSection" class="dash-nav-item" id="navResources">
+                <span class="dash-nav-icon" aria-hidden="true">📁</span>
+                <span>Resources</span>
+              </a>
+            </li>
+            <li>
+              <a href="#certificateSection" class="dash-nav-item" id="navCertificate">
+                <span class="dash-nav-icon" aria-hidden="true">🏆</span>
+                <span>Certificate</span>
+              </a>
+            </li>
+            <li>
+              <a href="design-system.html" class="dash-nav-item" style="color: var(--primary); font-weight: 600;">
+                <span class="dash-nav-icon" aria-hidden="true">⚡</span>
+                <span>Design System Spec</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+
+      <!-- Bottom Section: Account & Logout -->
+      <div>
+        <div class="dash-nav-divider"></div>
+        <div class="dash-nav-subhead">ACCOUNT</div>
+        <ul class="dash-nav-menu">
+          <li>
+            <a href="javascript:void(0)" class="dash-nav-item" id="btnSidebarSettings" onclick="openProfileSettings()">
+              <span class="dash-nav-icon" aria-hidden="true">⚙</span>
+              <span>Settings</span>
+            </a>
+          </li>
+          <li>
+            <a href="javascript:void(0)" class="dash-nav-item" id="btnSidebarLogout" onclick="handleLogout()">
+              <span class="dash-nav-icon" aria-hidden="true">🚪</span>
+              <span>Logout</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </aside>
+
+    <!-- =======================================================================
+         2. MAIN DASHBOARD CONTENT AREA
+         ======================================================================= -->
+    <main class="dashboard-main">
+
+      <!-- TOP BAR -->
+      <header class="dash-topbar" id="dashTopbar">
+        <div class="topbar-left">
+          <!-- Mobile Sidebar Toggle -->
+          <button class="sidebar-toggle-btn" id="sidebarToggle" aria-label="Open navigation sidebar">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+          <h1 class="dash-page-title">Dashboard</h1>
+          <span class="dash-cohort-badge" id="topbarCohortBadge">SPRING 2026 COHORT</span>
+        </div>
+
+        <div class="topbar-right">
+          <!-- Notifications Dropdown -->
+          <div class="notification-wrap">
+            <button class="btn-notification" id="notifBtn" aria-label="View notifications" aria-expanded="false" aria-haspopup="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+              </svg>
+              <span class="notification-badge" id="notifBadge"></span>
+            </button>
+
+            <!-- Notifications Panel -->
+            <div class="notification-dropdown" id="notifDropdown" role="menu">
+              <div class="notif-header">
+                <span>NOTIFICATIONS</span>
+                <span style="font-size: 0.6875rem; color: var(--accent-purple-light); font-weight: 600;" id="notifUnreadCount">2 NEW</span>
+              </div>
+              <div id="notifListContainer" style="display: flex; flex-direction: column; gap: 8px;">
+                <!-- Populated dynamically via DASHBOARD_DATA -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Student Profile Pill & Menu -->
+          <div class="student-profile-wrap">
+            <button class="student-profile-btn" id="profileBtn" aria-label="Student account menu" aria-expanded="false" aria-haspopup="true">
+              <div class="student-avatar-badge" id="topbarAvatar">AW</div>
+              <span class="student-name-text" id="topbarStudentName">Abdul Wahid</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted);">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+
+            <!-- Profile Dropdown Menu -->
+            <div class="profile-dropdown-menu" id="profileDropdown" role="menu">
+              <a href="javascript:void(0)" class="profile-menu-item" onclick="showToast('Profile: Abdul Wahid (Student ID #NX-8821)')" role="menuitem">
+                <span aria-hidden="true">👤</span>
+                <span>My Profile</span>
+              </a>
+              <a href="javascript:void(0)" class="profile-menu-item" onclick="openProfileSettings()" role="menuitem">
+                <span aria-hidden="true">⚙</span>
+                <span>Settings</span>
+              </a>
+              <a href="javascript:void(0)" class="profile-menu-item" onclick="handleLogout()" role="menuitem" style="color: #F87171;">
+                <span aria-hidden="true">🚪</span>
+                <span>Logout</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- DASHBOARD INNER CONTENT -->
+      <div class="dashboard-content">
+
+        <!-- =====================================================================
+             6. WELCOME SECTION
+             ===================================================================== -->
+        <section class="dash-welcome-bar" aria-labelledby="welcomeTitle">
+          <div class="welcome-text-group">
+            <h2 class="welcome-title" id="welcomeTitle">GOOD TO SEE YOU AGAIN, ABDUL 👋</h2>
+            <p class="welcome-subtitle">Continue your AI journey and keep building your skills.</p>
+          </div>
+          <div class="motivational-badge">
+            <span>🔥 LEARN → BUILD → CREATE</span>
+          </div>
+        </section>
+
+        <!-- =====================================================================
+             7 & 8. HERO GRID: CURRENT COURSE + CONTINUE LEARNING
+             ===================================================================== -->
+        <div class="dash-hero-grid">
+
+          <!-- 7. CURRENT COURSE CARD (Prominent Component) -->
+          <section class="current-course-card" id="myCourseSection" aria-labelledby="currentCourseTitle">
+            <div>
+              <div class="course-card-top">
+                <span class="course-card-heading-tag">YOUR CURRENT COURSE</span>
+                <div class="course-badges-row">
+                  <span class="cbadge-tier" id="courseTierBadge">LEVEL 01 • BEGINNER</span>
+                  <span class="cbadge-batch" id="courseBatchBadge">Batch 01</span>
+                  <span class="cbadge-status" id="courseStatusBadge">ACTIVE</span>
+                </div>
+              </div>
+
+              <h3 class="course-card-title" id="currentCourseTitle">AI FOUNDATIONS</h3>
+
+              <div class="course-progress-block">
+                <div class="progress-header-row">
+                  <span class="progress-percentage" id="courseProgressPercent">68%</span>
+                  <span class="progress-classes-count" id="courseProgressCount">12 of 20 classes completed</span>
+                </div>
+                <div class="dash-progress-track" role="progressbar" aria-valuenow="68" aria-valuemin="0" aria-valuemax="100">
+                  <div class="dash-progress-fill" id="courseProgressBar" style="width: 68%;"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="course-card-actions">
+              <button class="btn btn-primary" id="btnContinueLearning" onclick="handleContinueClass()">
+                <span>CONTINUE LEARNING</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+              </button>
+              <a href="course.html#modules" class="btn btn-secondary" id="btnViewCourse">
+                <span>VIEW COURSE</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="7" y1="17" x2="17" y2="7"></line>
+                  <polyline points="7 7 17 7 17 17"></polyline>
+                </svg>
+              </a>
+            </div>
+          </section>
+
+          <!-- 8. CONTINUE LEARNING NEXT CLASS CARD -->
+          <section class="continue-class-card" id="continueClassCard" aria-labelledby="continueClassTitle">
+            <div>
+              <div class="continue-badge-tag">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                <span id="nextClassModuleTag">MODULE 03 • AI TOOLS</span>
+              </div>
+              <h3 class="continue-class-title" id="continueClassTitle">AI Research Tools</h3>
+              <p class="continue-class-desc" id="nextClassDesc">
+                Learn how modern AI research tools can help you find, understand and organize information.
+              </p>
+            </div>
+
+            <div>
+              <div class="continue-class-meta">
+                <span id="nextClassMeta">Lesson • 12 min</span>
+              </div>
+              <button class="btn btn-primary" style="width: 100%; justify-content: center;" id="btnContinueClass" onclick="handleContinueClass()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+                <span>CONTINUE CLASS →</span>
+              </button>
+            </div>
+          </section>
+
+        </div>
+
+        <!-- =====================================================================
+             9. LEARNING PROGRESS OVERVIEW (4-METRICS)
+             ===================================================================== -->
+        <section aria-labelledby="progressMetricsTitle">
+          <div class="dash-section-header" style="border: none; margin-bottom: 12px; padding: 0;">
+            <h3 class="dash-section-title" id="progressMetricsTitle">YOUR PROGRESS</h3>
+          </div>
+          <div class="dash-progress-metrics-grid">
+            
+            <div class="metric-card">
+              <span class="metric-label">COURSE PROGRESS</span>
+              <span class="metric-value" id="metricCourseProgress" style="color: var(--accent-purple-light);">68%</span>
+            </div>
+
+            <div class="metric-card">
+              <span class="metric-label">CLASSES COMPLETED</span>
+              <span class="metric-value" id="metricClassesCount">12 / 20</span>
+            </div>
+
+            <div class="metric-card">
+              <span class="metric-label">MODULES COMPLETED</span>
+              <span class="metric-value" id="metricModulesCount">2 / 5</span>
+            </div>
+
+            <div class="metric-card">
+              <span class="metric-label">PROJECTS COMPLETED</span>
+              <span class="metric-value" id="metricProjectsCount" style="color: #10B981;">1 / 3</span>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- =====================================================================
+             10 & 11. SPLIT GRID: COURSE MODULES & RECENT CLASSES
+             ===================================================================== -->
+        <div class="dash-split-grid">
+
+          <!-- 10. ENROLLED COURSE MODULES (Left Column) -->
+          <div>
+            <section class="dash-section-box" id="modulesSection" aria-labelledby="courseModulesTitle">
+              <div class="dash-section-header">
+                <h3 class="dash-section-title" id="courseModulesTitle">YOUR COURSE</h3>
+                <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">5 Modules Total</span>
+              </div>
+
+              <!-- Module List Rendered Dynamically from DASHBOARD_DATA -->
+              <div class="dash-modules-list" id="modulesListContainer">
+                <!-- Modules items rendered here -->
+              </div>
+            </section>
+
+            <!-- 16. ACHIEVEMENT / MOTIVATION COMPONENT -->
+            <div class="dash-section-box" style="background: linear-gradient(135deg, rgba(127, 82, 255, 0.05) 0%, rgba(0, 210, 180, 0.05) 100%); border: 1px solid rgba(127, 82, 255, 0.2);">
+              <div style="display: flex; align-items: flex-start; gap: 14px;">
+                <div style="font-size: 1.8rem; line-height: 1;">⚡</div>
+                <div>
+                  <h4 style="font-size: 0.9375rem; font-weight: 700; color: var(--neutral-obsidian); margin-bottom: 4px; letter-spacing: 0.02em;">KEEP GOING</h4>
+                  <p style="font-size: 0.8125rem; color: var(--on-surface-variant); line-height: 1.5; margin-bottom: 8px;">
+                    You're making steady progress. Complete your next classes to unlock advanced compiler pipeline modules.
+                  </p>
+                  <span style="font-size: 0.75rem; color: var(--primary); font-weight: 700;">Target: Complete AI Research Tools today</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 11 & 14. RECENT CLASSES & UP NEXT (Right Column) -->
+          <div>
+            <!-- 11. Recent Classes -->
+            <section class="dash-section-box" id="recentClassesSection" aria-labelledby="recentClassesTitle">
+              <div class="dash-section-header">
+                <h3 class="dash-section-title" id="recentClassesTitle">RECENT CLASSES</h3>
+                <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">Latest 4</span>
+              </div>
+
+              <div class="recent-classes-list" id="recentClassesContainer">
+                <!-- Recent class rows rendered dynamically -->
+              </div>
+            </section>
+
+            <!-- 14. Up Next Box -->
+            <section class="dash-section-box" aria-labelledby="upNextTitle">
+              <div class="dash-section-header">
+                <h3 class="dash-section-title" id="upNextTitle">UP NEXT</h3>
+                <span style="font-size: 0.6875rem; color: var(--primary); font-weight: 700; text-transform: uppercase;">Upcoming Schedule</span>
+              </div>
+
+              <div style="display: flex; flex-direction: column; gap: 14px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; background: #FAFAFC; border-radius: var(--rounded-md); border: 1px solid var(--border-hairline);">
+                  <div>
+                    <span style="font-size: 0.6875rem; color: #6B7280; font-weight: 700; text-transform: uppercase; display: block; margin-bottom: 2px;">NEXT CLASS</span>
+                    <span style="font-size: 0.875rem; font-weight: 700; color: var(--neutral-obsidian);" id="upNextClassTitle">AI Research Tools</span>
+                  </div>
+                  <span style="font-size: 0.75rem; color: #007361; font-weight: 700; background: rgba(0, 210, 180, 0.1); padding: 4px 8px; border-radius: 4px;" id="upNextClassTime">Tomorrow</span>
+                </div>
+
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; background: #FAFAFC; border-radius: var(--rounded-md); border: 1px solid var(--border-hairline);">
+                  <div>
+                    <span style="font-size: 0.6875rem; color: #6B7280; font-weight: 700; text-transform: uppercase; display: block; margin-bottom: 2px;">NEXT PROJECT</span>
+                    <span style="font-size: 0.875rem; font-weight: 700; color: var(--neutral-obsidian);" id="upNextProjectTitle">AI Research Assistant</span>
+                  </div>
+                  <span style="font-size: 0.75rem; color: var(--primary); font-weight: 700; background: rgba(127, 82, 255, 0.1); padding: 4px 8px; border-radius: 4px;" id="upNextProjectTime">Due in 4 days</span>
+                </div>
+              </div>
+            </section>
+          </div>
+
+        </div>
+
+        <!-- =====================================================================
+             12. YOUR PROJECTS SECTION
+             ===================================================================== -->
+        <section class="dash-section-box" id="projectsSection" aria-labelledby="projectsSectionTitle">
+          <div class="dash-section-header">
+            <div>
+              <h3 class="dash-section-title" id="projectsSectionTitle">YOUR PROJECTS</h3>
+              <p style="font-size: 0.8125rem; color: var(--text-muted); margin-top: 2px;">Hands-on practical AI projects built in this course</p>
+            </div>
+            <span style="font-size: 0.75rem; color: #10B981; font-weight: 700;">1 of 3 Completed</span>
+          </div>
+
+          <div class="dash-projects-list" id="projectsListContainer">
+            <!-- Project cards rendered dynamically -->
+          </div>
+        </section>
+
+        <!-- =====================================================================
+             13. LEARNING RESOURCES SECTION
+             ===================================================================== -->
+        <section class="dash-section-box" id="resourcesSection" aria-labelledby="resourcesTitle">
+          <div class="dash-section-header">
+            <div>
+              <h3 class="dash-section-title" id="resourcesTitle">LEARNING RESOURCES</h3>
+              <p style="font-size: 0.8125rem; color: var(--text-muted); margin-top: 2px;">Supplementary guides, cheatsheets, and tools</p>
+            </div>
+            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">Student Library</span>
+          </div>
+
+          <div class="dash-resources-grid" id="resourcesGridContainer">
+            <!-- Resource cards rendered dynamically -->
+          </div>
+        </section>
+
+        <!-- =====================================================================
+             15. CERTIFICATE SECTION
+             ===================================================================== -->
+        <section class="dash-cert-box" id="certificateSection" aria-labelledby="certSectionTitle">
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+            <div>
+              <span style="font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.12em; color: var(--primary); text-transform: uppercase;">VERIFIED CREDENTIAL</span>
+              <h3 style="font-size: 1.35rem; font-weight: 800; color: var(--neutral-obsidian); margin: 4px 0;" id="certSectionTitle">YOUR CERTIFICATE</h3>
+            </div>
+            <span class="cbadge-tier" style="background: rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.35); color: #B45309;" id="certStatusBadge">
+              NOT YET ELIGIBLE
+            </span>
+          </div>
+
+          <p style="font-size: 0.875rem; color: var(--on-surface-variant); line-height: 1.6; max-width: 750px;">
+            Complete the required course content and projects to become eligible for your Synthetic Systems Academy certificate.
+          </p>
+
+          <div style="margin: 6px 0 12px 0;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.8125rem;">
+              <span style="color: var(--text-muted);">Eligibility Progress</span>
+              <span style="font-weight: 700; color: var(--primary);" id="certProgressPercent">68% completed</span>
+            </div>
+            <div class="dash-progress-track" role="progressbar" aria-valuenow="68" aria-valuemin="0" aria-valuemax="100">
+              <div class="dash-progress-fill" style="width: 68%;"></div>
+            </div>
+          </div>
+
+          <div>
+            <button class="btn btn-secondary" id="btnViewRequirements" onclick="openCertModal()">
+              <span>VIEW REQUIREMENTS</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+            </button>
+          </div>
+        </section>
+
+      </div> <!-- /.dashboard-content -->
+
+    </main>
+
+  </div> <!-- /.dashboard-layout -->
+
+  <!-- =========================================================================
+       17. MOBILE BOTTOM NAVIGATION (Home, Course, Classes, Projects, Profile)
+       ========================================================================= -->
+  <nav class="mobile-bottom-nav" aria-label="Mobile Navigation">
+    <a href="#top" class="mob-nav-item active" id="mobNavHome">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+      </svg>
+      <span>Home</span>
+    </a>
+    <a href="#myCourseSection" class="mob-nav-item" id="mobNavCourse">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+      </svg>
+      <span>Course</span>
+    </a>
+    <a href="#recentClassesSection" class="mob-nav-item" id="mobNavClasses">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+      </svg>
+      <span>Classes</span>
+    </a>
+    <a href="#projectsSection" class="mob-nav-item" id="mobNavProjects">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+      </svg>
+      <span>Projects</span>
+    </a>
+    <a href="javascript:void(0)" class="mob-nav-item" id="mobNavProfile" onclick="toggleProfileDropdown()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+        <circle cx="12" cy="7" r="4"></circle>
+      </svg>
+      <span>Profile</span>
+    </a>
+  </nav>
+
+  <!-- =========================================================================
+       MODAL 1: CERTIFICATE REQUIREMENTS MODAL
+       ========================================================================= -->
+  <div class="dash-modal-backdrop" id="certModalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalCertTitle">
+    <div class="dash-modal-box">
+      <button class="dash-modal-close" onclick="closeCertModal()" aria-label="Close modal">✕</button>
+      <div class="modal-header-tag">CERTIFICATE CRITERIA</div>
+      <h3 class="modal-title" id="modalCertTitle">Synthetic Systems Academy Certificate</h3>
+      <p class="modal-body-desc">
+        To receive your digitally verifiable Certificate of Completion with authenticated cryptographic badge, satisfy all requirements below:
+      </p>
+
+      <ul class="req-checklist" id="certChecklistContainer">
+        <!-- Injected dynamically from DASHBOARD_DATA.certificate.requirements -->
+      </ul>
+
+      <div style="display: flex; justify-content: flex-end; gap: 10px;">
+        <button class="btn btn-secondary" onclick="closeCertModal()">Close</button>
+        <button class="btn btn-primary" onclick="closeCertModal(); handleContinueClass();">
+          <span>Continue Learning</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 2: LOCKED CONTENT EXPLANATION MODAL
+       ========================================================================= -->
+  <div class="dash-modal-backdrop" id="lockedModalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalLockedTitle">
+    <div class="dash-modal-box">
+      <button class="dash-modal-close" onclick="closeLockedModal()" aria-label="Close modal">✕</button>
+      <div class="modal-header-tag" style="color: #F87171;">CONTENT LOCKED 🔒</div>
+      <h3 class="modal-title" id="modalLockedTitle">Module Currently Locked</h3>
+      <p class="modal-body-desc" id="modalLockedDesc">
+        Complete the previous module to unlock this content.
+      </p>
+      <div style="background: #FAFAFC; border: 1px solid var(--border-hairline); border-radius: var(--rounded-md); padding: 14px; margin-bottom: 20px;">
+        <span style="font-size: 0.75rem; color: #6B7280; display: block; margin-bottom: 4px; font-weight: 600;">PREREQUISITE</span>
+        <span style="font-size: 0.875rem; font-weight: 700; color: var(--neutral-obsidian);">Finish Module 03 (AI Tools) lessons and project first.</span>
+      </div>
+      <div style="display: flex; justify-content: flex-end;">
+        <button class="btn btn-primary" onclick="closeLockedModal(); handleContinueClass();">
+          <span>Go to In-Progress Lesson</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       FLOATING TOAST NOTIFICATION
+       ========================================================================= -->
+  <div class="dash-toast" id="dashToast" role="status" aria-live="polite">
+    <span id="toastIcon">✨</span>
+    <span id="toastMessage">Class launched!</span>
+  </div>
+
+  <!-- Dashboard Client Logic & Structured Mock Data Architecture -->
+  <script src="js/dashboard.js"></script>
+  <script src="js/motion.js?v=1.0"></script>
+</body>
+</html>

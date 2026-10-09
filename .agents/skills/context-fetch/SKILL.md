@@ -49,7 +49,7 @@ Extract searchable terms:
 **PowerShell:**
 ```powershell
 # Simple pattern search
-Get-ChildItem -Path "src" -Filter "*.ts" -Recurse | Select-String -Pattern "login"
+Select-String -Path "src/**/*.ts" -Pattern "login" -Recurse
 
 # With ripgrep (if available)
 rg "login" --type ts

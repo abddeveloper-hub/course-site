@@ -69,18 +69,11 @@ Create `.gsd/SPRINT.md` using the template from `.gsd/templates/sprint.md`:
 
 ### Update STATE.md
 
-Preserve the existing milestone state (snapshotting milestone, phase, task, and status) so the close flow can restore the prior position:
-
 ```markdown
 ## Current Position
 - **Sprint**: {name}
 - **Status**: Sprint in progress
-
-### Paused Milestone State
-- **Milestone**: {current milestone name or "none"}
-- **Phase**: {current phase or "none"}
-- **Task**: {current task or "none"}
-- **Milestone Status**: {current status or "paused"}
+- **Milestone**: (paused if active)
 ```
 
 ### Commit
@@ -156,7 +149,7 @@ Restore previous milestone position or mark as idle.
 ### Commit
 
 ```bash
-git add .gsd/sprints/ .gsd/STATE.md .gsd/SPRINT.md
+git add .gsd/sprints/ .gsd/STATE.md
 git commit -m "docs: close sprint {name}"
 ```
 

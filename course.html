@@ -1,0 +1,2371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Synthetic Systems Academy — 4 Course Tiers &amp; Systems Curriculum</title>
+  
+  <!-- SEO & Meta Tags -->
+  <meta name="description" content="Calibrated for compiler engineers, AI runtime architects, and high-performance Kotlin systems programmers. Master AST lowering, tensor vectorization, zero-allocation coroutines, and bare-metal native execution.">
+  <meta name="keywords" content="Synthetic Systems Academy, compiler course, Kotlin native, AI runtime, AST inspector, LLVM, coroutines">
+  <meta name="author" content="Synthetic Systems Academy">
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content="Synthetic Systems Academy — 4 Course Tiers &amp; Systems Curriculum">
+  <meta property="og:description" content="Calibrated for compiler engineers, AI runtime architects, and high-performance Kotlin systems programmers.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="NEXVION_logo_design_20261005164702.jpg">
+  
+  <!-- Fonts: Space Grotesk, Geist, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/style.css?v=2.0">
+  <link rel="stylesheet" href="css/synthetic-systems.css?v=2.0">
+  <link rel="stylesheet" href="css/motion.css?v=2.0">
+</head>
+<body>
+
+  <!-- =========================================================================
+       2. NAVBAR (Synthetic Systems Academy Navbar with 'Course' Active)
+       ========================================================================= -->
+  <header class="navbar" id="navbar">
+    <div class="container nav-container">
+      <!-- Left: Brand Logo Asset -->
+      <a href="index.html" class="nav-brand" id="nav-brand-logo" aria-label="Synthetic Systems Academy Home">
+        <div class="nav-logo-wrap">
+          <img src="NEXVION_logo_design_20261005164702.jpg" alt="Synthetic Systems Academy Logo" class="nav-logo-img">
+        </div>
+        <div class="brand-text">
+          <span class="brand-name">SYNTHETIC SYSTEMS</span>
+          <span class="brand-tag">ACADEMY // SPEC-2026</span>
+        </div>
+      </a>
+
+      <!-- Desktop Navigation Links -->
+      <nav aria-label="Main Navigation">
+        <ul class="nav-links">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="design-system.html" class="nav-link" style="color: var(--primary); font-weight: 600;"><span class="ssa-dot" style="display:inline-block; vertical-align:middle; margin-right:4px; background:var(--primary); width:6px; height:6px; border-radius:50%;"></span>Design System</a></li>
+          <li><a href="course.html" class="nav-link active">Course</a></li>
+          <li><a href="#roadmap" class="nav-link">Learning Path</a></li>
+          <li><a href="index.html#about" class="nav-link">About</a></li>
+          <li><a href="#faq" class="nav-link">FAQ</a></li>
+        </ul>
+      </nav>
+
+      <!-- Right CTAs -->
+      <div class="nav-actions">
+        <a href="dashboard.html" class="btn-nav-login" id="nav-login-btn">Dashboard</a>
+        <a href="register.html" class="btn btn-primary btn-sm" id="nav-cta-btn">JOIN COURSE</a>
+      </div>
+
+      <!-- Mobile Hamburger Button -->
+      <button class="mobile-nav-toggle" id="mobile-toggle" aria-label="Open mobile menu" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Mobile Drawer Backdrop & Menu -->
+  <div class="drawer-backdrop" id="drawer-backdrop"></div>
+  <aside class="mobile-drawer" id="mobile-drawer" aria-label="Mobile navigation">
+    <div>
+      <div class="drawer-header">
+        <div class="nav-logo-wrap">
+          <img src="NEXVION_logo_design_20261005164702.jpg" alt="Synthetic Systems Academy Logo" class="nav-logo-img">
+        </div>
+        <div class="brand-text">
+          <span class="brand-name">SYNTHETIC SYSTEMS</span>
+          <span class="brand-tag">ACADEMY // SPEC-2026</span>
+        </div>
+      </div>
+      <ul class="drawer-links">
+        <li><a href="index.html" class="drawer-link">Home</a></li>
+        <li><a href="design-system.html" class="drawer-link">Design System Spec</a></li>
+        <li><a href="course.html" class="drawer-link" style="color: var(--primary); font-weight: 700;">Course Overview</a></li>
+        <li><a href="#roadmap" class="drawer-link">Learning Path</a></li>
+        <li><a href="#curriculum" class="drawer-link">Course Curriculum</a></li>
+        <li><a href="#projects" class="drawer-link">Projects</a></li>
+        <li><a href="#experience" class="drawer-link">Learning Experience</a></li>
+        <li><a href="index.html#about" class="drawer-link">About Academy</a></li>
+        <li><a href="#faq" class="drawer-link">FAQ</a></li>
+      </ul>
+    </div>
+    <div class="drawer-actions">
+      <button class="btn btn-secondary btn-open-login" style="width: 100%;">Student Login</button>
+      <a href="register.html" class="btn btn-primary" style="width: 100%; text-align: center; text-decoration: none;">JOIN COURSE</a>
+    </div>
+  </aside>
+
+  <!-- =========================================================================
+       3. COURSE HERO
+       ========================================================================= -->
+  <section class="hero" id="course-hero">
+    <canvas id="ambient-canvas"></canvas>
+    <div class="container">
+      <div class="hero-grid">
+        <!-- Hero Text Content -->
+        <div class="hero-content">
+          <div class="section-badge">
+            <span class="section-badge-dot"></span>
+            <span>CHOOSE YOUR PATH • 4 PROGRESSIVE TIERS</span>
+          </div>
+
+          <h1 class="hero-title" style="text-transform: uppercase;">
+            YOUR AI JOURNEY <br>
+            <span class="text-gradient">STARTS HERE</span>
+          </h1>
+
+          <p class="hero-description">
+            Four progressive learning levels. One journey from understanding AI to building intelligent systems.
+          </p>
+
+          <div class="hero-cta-group">
+            <a href="#course-tiers" class="btn btn-primary btn-lg" id="course-hero-primary-cta">
+              <span>CHOOSE YOUR LEVEL</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+            <a href="#curriculum-breakdown" class="btn btn-secondary btn-lg" id="course-hero-secondary-cta">
+              <span>EXPLORE CURRICULUM</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Right Side: Sophisticated Abstract AI Visual (Non-Logo Artwork) -->
+        <div class="hero-visual-wrapper">
+          <div class="abstract-ai-visual">
+            <div class="abstract-top-telemetry">
+              <div class="telemetry-node">
+                <span class="status-pulse"></span>
+                <div>
+                  <div class="telemetry-title">NEURAL ARCHITECTURE MATRIX</div>
+                  <div class="telemetry-meta">ACTIVE REASONING GRAPH</div>
+                </div>
+              </div>
+              <div class="card-badge-status">10 MODULES</div>
+            </div>
+
+            <!-- Geometric SVG Neural Network Visualizer -->
+            <div class="abstract-node-matrix">
+              <svg class="abstract-neural-svg" viewBox="0 0 440 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Background Geometric Grid Lines -->
+                <line x1="40" y1="20" x2="400" y2="20" stroke="rgba(255, 255, 255, 0.05)" stroke-width="1" />
+                <line x1="40" y1="70" x2="400" y2="70" stroke="rgba(255, 255, 255, 0.05)" stroke-width="1" />
+                <line x1="40" y1="120" x2="400" y2="120" stroke="rgba(255, 255, 255, 0.05)" stroke-width="1" />
+                <line x1="40" y1="170" x2="400" y2="170" stroke="rgba(255, 255, 255, 0.05)" stroke-width="1" />
+                
+                <!-- Synapse Connection Paths -->
+                <path d="M 60 110 Q 140 30 220 110 T 380 110" stroke="rgba(139, 92, 246, 0.4)" stroke-width="2" class="data-flow-line" />
+                <path d="M 60 60 Q 140 160 220 60 T 380 60" stroke="rgba(99, 102, 241, 0.35)" stroke-width="1.5" class="data-flow-line" />
+                <path d="M 60 160 Q 140 60 220 160 T 380 160" stroke="rgba(56, 189, 248, 0.3)" stroke-width="1.5" class="data-flow-line" />
+
+                <!-- Connecting Hexagonal Cross Lines -->
+                <line x1="80" y1="50" x2="160" y2="110" stroke="rgba(139, 92, 246, 0.25)" stroke-width="1.2" />
+                <line x1="160" y1="110" x2="240" y2="50" stroke="rgba(139, 92, 246, 0.25)" stroke-width="1.2" />
+                <line x1="240" y1="50" x2="320" y2="110" stroke="rgba(139, 92, 246, 0.25)" stroke-width="1.2" />
+                <line x1="320" y1="110" x2="380" y2="70" stroke="rgba(139, 92, 246, 0.25)" stroke-width="1.2" />
+
+                <line x1="80" y1="170" x2="160" y2="110" stroke="rgba(99, 102, 241, 0.25)" stroke-width="1.2" />
+                <line x1="160" y1="110" x2="240" y2="170" stroke="rgba(99, 102, 241, 0.25)" stroke-width="1.2" />
+                <line x1="240" y1="170" x2="320" y2="110" stroke="rgba(99, 102, 241, 0.25)" stroke-width="1.2" />
+
+                <!-- Pulsing Synaptic Nodes -->
+                <circle cx="60" cy="110" r="6" fill="#8B5CF6" class="pulse-node" />
+                <circle cx="80" cy="50" r="5" fill="#6366F1" class="pulse-node" />
+                <circle cx="80" cy="170" r="5" fill="#38BDF8" class="pulse-node" />
+
+                <circle cx="160" cy="110" r="8" fill="#C4B5FD" class="pulse-node" />
+                <circle cx="220" cy="60" r="6" fill="#8B5CF6" class="pulse-node" />
+                <circle cx="220" cy="160" r="6" fill="#10B981" class="pulse-node" />
+
+                <circle cx="280" cy="110" r="7" fill="#6366F1" class="pulse-node" />
+                <circle cx="340" cy="60" r="5" fill="#38BDF8" class="pulse-node" />
+                <circle cx="340" cy="160" r="5" fill="#8B5CF6" class="pulse-node" />
+
+                <circle cx="380" cy="110" r="9" fill="#EDE9FE" class="pulse-node" />
+              </svg>
+            </div>
+
+            <!-- Telemetry Status Indicators -->
+            <div class="abstract-meta-row">
+              <div class="abstract-meta-pill">
+                <div class="meta-pill-val">Multi-Modal</div>
+                <div class="meta-pill-lbl">AI Architecture</div>
+              </div>
+              <div class="abstract-meta-pill">
+                <div class="meta-pill-val">Hands-On</div>
+                <div class="meta-pill-lbl">Project Method</div>
+              </div>
+              <div class="abstract-meta-pill">
+                <div class="meta-pill-val">End-to-End</div>
+                <div class="meta-pill-lbl">Full Journey</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       4. COURSE QUICK STATS STRIP
+       ========================================================================= -->
+  <section class="course-stats-section">
+    <div class="container">
+      <div class="course-stats-bar">
+        <!-- Stat 1 -->
+        <div class="course-stat-item">
+          <div class="course-stat-icon-wrap">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+          </div>
+          <div class="course-stat-content">
+            <span class="course-stat-label">VIDEO CLASSES</span>
+            <span class="course-stat-sub">Structured lessons</span>
+          </div>
+        </div>
+
+        <!-- Stat 2 -->
+        <div class="course-stat-item">
+          <div class="course-stat-icon-wrap" style="color: #38BDF8; background: rgba(56, 189, 248, 0.12); border-color: rgba(56, 189, 248, 0.3);">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+          </div>
+          <div class="course-stat-content">
+            <span class="course-stat-label">PRACTICAL PROJECTS</span>
+            <span class="course-stat-sub">Learn by building</span>
+          </div>
+        </div>
+
+        <!-- Stat 3 -->
+        <div class="course-stat-item">
+          <div class="course-stat-icon-wrap" style="color: #10B981; background: rgba(16, 185, 129, 0.12); border-color: rgba(16, 185, 129, 0.3);">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+          </div>
+          <div class="course-stat-content">
+            <span class="course-stat-label">BEGINNER FRIENDLY</span>
+            <span class="course-stat-sub">Start from the fundamentals</span>
+          </div>
+        </div>
+
+        <!-- Stat 4 -->
+        <div class="course-stat-item">
+          <div class="course-stat-icon-wrap" style="color: #EC4899; background: rgba(236, 72, 153, 0.12); border-color: rgba(236, 72, 153, 0.3);">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+          </div>
+          <div class="course-stat-content">
+            <span class="course-stat-label">CERTIFICATE</span>
+            <span class="course-stat-sub">Complete the course</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       4B. COURSE PROGRESSION: YOUR PATH WITH NEXVION
+       ========================================================================= -->
+  <section class="course-progression-section" id="progression">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-badge">
+          <span class="section-badge-dot"></span>
+          <span>Four-Tier Journey</span>
+        </div>
+        <h2 class="section-title">YOUR SYSTEMS ENGINEERING PATH</h2>
+        <p class="section-subtitle">
+          A structured, four-tier curriculum engineered to take engineers from AST lowering fundamentals to bare-metal AI runtime orchestration.
+        </p>
+      </div>
+
+      <div class="progression-ladder-grid">
+        <!-- 01 AI Foundations -->
+        <div class="progression-step-card">
+          <div class="progression-card-top">
+            <span class="progression-step-num">01</span>
+            <span class="progression-price-tag tag-free">FREE</span>
+          </div>
+          <h3 class="progression-title">AI FOUNDATIONS</h3>
+          <p class="progression-outcome">Understand AI and become a confident AI user.</p>
+          <div class="progression-arrow-indicator">
+            <span>Understand AI</span>
+            <span>↓</span>
+          </div>
+        </div>
+
+        <!-- 02 AI Builder -->
+        <div class="progression-step-card">
+          <div class="progression-card-top">
+            <span class="progression-step-num">02</span>
+            <span class="progression-price-tag tag-paid">PAID</span>
+          </div>
+          <h3 class="progression-title">AI BUILDER</h3>
+          <p class="progression-outcome">Go from AI user to AI builder with code, tools & APIs.</p>
+          <div class="progression-arrow-indicator">
+            <span>Build With AI</span>
+            <span>↓</span>
+          </div>
+        </div>
+
+        <!-- 03 AI Creator -->
+        <div class="progression-step-card">
+          <div class="progression-card-top">
+            <span class="progression-step-num">03</span>
+            <span class="progression-price-tag tag-paid">PAID</span>
+          </div>
+          <h3 class="progression-title">AI CREATOR</h3>
+          <p class="progression-outcome">Build applications, automations & AI-powered products.</p>
+          <div class="progression-arrow-indicator">
+            <span>Create AI Products</span>
+            <span>↓</span>
+          </div>
+        </div>
+
+        <!-- 04 AI Architect -->
+        <div class="progression-step-card">
+          <div class="progression-card-top">
+            <span class="progression-step-num">04</span>
+            <span class="progression-price-tag tag-premium">PREMIUM</span>
+          </div>
+          <h3 class="progression-title">AI ARCHITECT</h3>
+          <p class="progression-outcome">Explore advanced AI agents & multi-system orchestration.</p>
+          <div class="progression-arrow-indicator">
+            <span>Build AI Systems</span>
+            <span style="color: #38BDF8;">★</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       4C. CHOOSE YOUR AI JOURNEY (The Four Course Cards)
+       ========================================================================= -->
+  <section class="course-tiers-section" id="course-tiers">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-badge">
+          <span class="section-badge-dot"></span>
+          <span>Four Main Course Levels</span>
+        </div>
+        <h2 class="section-title">CHOOSE YOUR AI JOURNEY</h2>
+        <p class="section-subtitle">
+          Start from the fundamentals or progress toward advanced AI systems and product development.
+        </p>
+      </div>
+
+      <div class="tiers-grid">
+        <!-- CARD 01: AI FOUNDATIONS (FREE) -->
+        <div class="tier-card" id="card-ai-foundations">
+          <div class="tier-card-header">
+            <span class="tier-level-badge">LEVEL 01 • BEGINNER</span>
+            <span class="tier-price-badge price-free">FREE</span>
+          </div>
+
+          <div class="tier-title-row">
+            <span class="tier-num-prefix">COURSE 01</span>
+            <h3 class="tier-title">AI FOUNDATIONS</h3>
+          </div>
+
+          <p class="tier-description">
+            Start your AI journey from zero. Understand the fundamentals of Artificial Intelligence and learn how to confidently use modern AI tools.
+          </p>
+
+          <div class="tier-areas-box">
+            <div class="tier-areas-heading">Main Learning Areas</div>
+            <ul class="tier-areas-list">
+              <li>AI Fundamentals</li>
+              <li>Generative AI</li>
+              <li>Understanding Modern AI</li>
+              <li>AI Tools</li>
+              <li>Basic Prompt Engineering</li>
+              <li>AI for Students</li>
+            </ul>
+          </div>
+
+          <div class="tier-outcome-card">
+            <div class="tier-outcome-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+            </div>
+            <div class="tier-outcome-text">
+              <strong>Student Outcome:</strong> Understand AI and become a confident AI user.
+            </div>
+          </div>
+
+          <!-- Batch Box (Capacity = 30 students) -->
+          <div class="tier-batch-box">
+            <div class="batch-box-top">
+              <span class="batch-name-tag">Batch 01</span>
+              <span class="batch-status-pill status-open">● OPEN</span>
+            </div>
+            <div class="seat-progress-row">
+              <span><strong>18 / 30</strong> seats filled</span>
+              <span>12 remaining</span>
+            </div>
+            <div class="seat-progress-bar-track">
+              <div class="seat-progress-bar-fill fill-open" style="width: 60%;"></div>
+            </div>
+            <div class="batch-capacity-rule-note">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+              <span>Strict limit: Exactly 30 students per cohort</span>
+            </div>
+          </div>
+
+          <div class="tier-card-actions">
+            <a href="register.html?course=ai-foundations&batch=foundations-batch-01" class="btn btn-primary">
+              <span>JOIN FREE</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            </a>
+            <a href="#curriculum-breakdown" class="tier-details-link" data-tab-jump="tab-course-01">
+              <span>View Curriculum & Details</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- CARD 02: AI BUILDER (PAID) -->
+        <div class="tier-card" id="card-ai-builder">
+          <div class="tier-card-header">
+            <span class="tier-level-badge">LEVEL 02 • BEGINNER → INTERMEDIATE</span>
+            <span class="tier-price-badge price-coming-soon">PRICE COMING SOON</span>
+          </div>
+
+          <div class="tier-title-row">
+            <span class="tier-num-prefix">COURSE 02</span>
+            <h3 class="tier-title">AI BUILDER</h3>
+          </div>
+
+          <p class="tier-description">
+            Move beyond using AI and start building with it. Learn AI-assisted coding, websites, APIs and practical digital projects.
+          </p>
+
+          <div class="tier-areas-box">
+            <div class="tier-areas-heading">Main Learning Areas</div>
+            <ul class="tier-areas-list">
+              <li>Advanced Prompt Engineering</li>
+              <li>AI + Coding</li>
+              <li>Website Development</li>
+              <li>AI-assisted Development</li>
+              <li>APIs</li>
+              <li>Practical Projects</li>
+            </ul>
+          </div>
+
+          <div class="tier-outcome-card">
+            <div class="tier-outcome-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+            </div>
+            <div class="tier-outcome-text">
+              <strong>Student Outcome:</strong> Go from AI user to AI builder.
+            </div>
+          </div>
+
+          <!-- Batch Box (Capacity = 30 students, Few Seats Left State) -->
+          <div class="tier-batch-box">
+            <div class="batch-box-top">
+              <span class="batch-name-tag">Batch 01</span>
+              <span class="batch-status-pill status-few">⚠ ONLY 4 SEATS LEFT</span>
+            </div>
+            <div class="seat-progress-row">
+              <span><strong>26 / 30</strong> seats filled</span>
+              <span>4 remaining</span>
+            </div>
+            <div class="seat-progress-bar-track">
+              <div class="seat-progress-bar-fill fill-few" style="width: 86.6%;"></div>
+            </div>
+            <div class="batch-capacity-rule-note">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+              <span>Strict limit: Exactly 30 students per cohort</span>
+            </div>
+          </div>
+
+          <div class="tier-card-actions">
+            <a href="register.html?course=ai-builder&batch=builder-batch-01" class="btn btn-primary">
+              <span>ENROLL NOW</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            </a>
+            <a href="#curriculum-breakdown" class="tier-details-link" data-tab-jump="tab-course-02">
+              <span>View Curriculum & Details</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- CARD 03: AI CREATOR (PAID - FULL BATCH STATE) -->
+        <div class="tier-card" id="card-ai-creator">
+          <div class="tier-card-header">
+            <span class="tier-level-badge">LEVEL 03 • INTERMEDIATE</span>
+            <span class="tier-price-badge price-coming-soon">PRICE COMING SOON</span>
+          </div>
+
+          <div class="tier-title-row">
+            <span class="tier-num-prefix">COURSE 03</span>
+            <h3 class="tier-title">AI CREATOR</h3>
+          </div>
+
+          <p class="tier-description">
+            Build applications, automations and AI-powered products using the skills developed in the previous levels.
+          </p>
+
+          <div class="tier-areas-box">
+            <div class="tier-areas-heading">Main Learning Areas</div>
+            <ul class="tier-areas-list">
+              <li>Application Development</li>
+              <li>AI Applications</li>
+              <li>Automation</li>
+              <li>Databases</li>
+              <li>AI Workflows</li>
+              <li>Product Projects</li>
+            </ul>
+          </div>
+
+          <div class="tier-outcome-card">
+            <div class="tier-outcome-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+            </div>
+            <div class="tier-outcome-text">
+              <strong>Student Outcome:</strong> Go from AI builder to AI creator.
+            </div>
+          </div>
+
+          <!-- Batch Box (Capacity = 30 students, FULL STATE) -->
+          <div class="tier-batch-box">
+            <div class="batch-box-top">
+              <span class="batch-name-tag">Batch 01</span>
+              <span class="batch-status-pill status-full">🔒 BATCH FULL</span>
+            </div>
+            <div class="seat-progress-row">
+              <span><strong>30 / 30</strong> seats filled</span>
+              <span>0 remaining</span>
+            </div>
+            <div class="seat-progress-bar-track">
+              <div class="seat-progress-bar-fill fill-full" style="width: 100%;"></div>
+            </div>
+            <div class="batch-capacity-rule-note">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+              <span>Capacity reached: New registrations diverted to waitlist</span>
+            </div>
+          </div>
+
+          <div class="tier-card-actions">
+            <!-- Full state replaces enroll with JOIN WAITLIST -->
+            <button type="button" class="btn btn-waitlist btn-trigger-waitlist" data-course-id="ai-creator" data-course-name="AI CREATOR" data-batch-id="creator-batch-01">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              <span>JOIN WAITLIST</span>
+            </button>
+            <a href="#curriculum-breakdown" class="tier-details-link" data-tab-jump="tab-course-03">
+              <span>View Curriculum & Details</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- CARD 04: AI ARCHITECT (PREMIUM - COMING SOON STATE) -->
+        <div class="tier-card" id="card-ai-architect">
+          <div class="tier-card-header">
+            <span class="tier-level-badge">LEVEL 04 • ADVANCED</span>
+            <span class="tier-price-badge price-coming-soon">PRICE COMING SOON</span>
+          </div>
+
+          <div class="tier-title-row">
+            <span class="tier-num-prefix">COURSE 04</span>
+            <h3 class="tier-title">AI ARCHITECT</h3>
+          </div>
+
+          <p class="tier-description">
+            Explore advanced AI agents, intelligent systems, automation and AI product architecture.
+          </p>
+
+          <div class="tier-areas-box">
+            <div class="tier-areas-heading">Main Learning Areas</div>
+            <ul class="tier-areas-list">
+              <li>AI Agents</li>
+              <li>Advanced Automation</li>
+              <li>AI Systems</li>
+              <li>APIs & Integrations</li>
+              <li>AI Product Architecture</li>
+              <li>Advanced Final Project</li>
+            </ul>
+          </div>
+
+          <div class="tier-outcome-card">
+            <div class="tier-outcome-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+            </div>
+            <div class="tier-outcome-text">
+              <strong>Student Outcome:</strong> Learn to design and build advanced AI-powered systems.
+            </div>
+          </div>
+
+          <!-- Batch Box (Capacity = 30 students, COMING SOON STATE) -->
+          <div class="tier-batch-box">
+            <div class="batch-box-top">
+              <span class="batch-name-tag">Batch 01</span>
+              <span class="batch-status-pill status-soon">COMING SOON</span>
+            </div>
+            <div class="seat-progress-row">
+              <span><strong>0 / 30</strong> pre-registered</span>
+              <span>Registration opening soon</span>
+            </div>
+            <div class="seat-progress-bar-track">
+              <div class="seat-progress-bar-fill fill-soon" style="width: 15%;"></div>
+            </div>
+            <div class="batch-capacity-rule-note">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+              <span>Strict limit: Exactly 30 students per cohort</span>
+            </div>
+          </div>
+
+          <div class="tier-card-actions">
+            <!-- Coming soon CTA -->
+            <button type="button" class="btn btn-notify-soon btn-trigger-notify" data-course-id="ai-architect" data-course-name="AI ARCHITECT" data-batch-id="architect-batch-01">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              <span>NOTIFY ME</span>
+            </button>
+            <a href="#curriculum-breakdown" class="tier-details-link" data-tab-jump="tab-course-04">
+              <span>View Curriculum & Details</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       4D. COURSE COMPARISON (CHOOSE YOUR LEVEL)
+       ========================================================================= -->
+  <section class="course-comparison-section" id="comparison">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-badge">
+          <span class="section-badge-dot"></span>
+          <span>Matrix Comparison</span>
+        </div>
+        <h2 class="section-title">CHOOSE YOUR LEVEL</h2>
+        <p class="section-subtitle">
+          Compare curriculum depth, tools, and project complexity across the four progressive tiers.
+        </p>
+      </div>
+
+      <!-- Desktop & Tablet Comparison Table -->
+      <div class="comparison-table-wrapper">
+        <table class="comparison-table" aria-label="Course Level Comparison">
+          <thead>
+            <tr>
+              <th scope="col">FEATURE</th>
+              <th scope="col">01 AI FOUNDATIONS</th>
+              <th scope="col">02 AI BUILDER</th>
+              <th scope="col">03 AI CREATOR</th>
+              <th scope="col">04 AI ARCHITECT</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>AI Fundamentals</td>
+              <td><span class="comp-check">✓</span></td>
+              <td><span class="comp-check">✓</span></td>
+              <td><span class="comp-check">✓</span></td>
+              <td><span class="comp-check">✓</span></td>
+            </tr>
+            <tr>
+              <td>AI Tools</td>
+              <td><span class="comp-check">✓</span></td>
+              <td><span class="comp-check">✓</span></td>
+              <td><span class="comp-check">✓</span></td>
+              <td><span class="comp-check">✓</span></td>
+            </tr>
+            <tr>
+              <td>Prompt Engineering</td>
+              <td><span class="comp-badge-basic">Basic</span></td>
+              <td><span class="comp-badge-adv">Advanced</span></td>
+              <td><span class="comp-badge-adv">Advanced</span></td>
+              <td><span class="comp-badge-adv">Advanced</span></td>
+            </tr>
+            <tr>
+              <td>Coding</td>
+              <td><span class="comp-dash">—</span></td>
+              <td><span class="comp-check">✓</span></td>
+              <td><span class="comp-check">✓</span></td>
+              <td><span class="comp-check">✓</span></td>
+            </tr>
+            <tr>
+              <td>Web Development</td>
+              <td><span class="comp-dash">—</span></td>
+              <td><span class="comp-check">✓</span></td>
+              <td><span class="comp-check">✓</span></td>
+              <td><span class="comp-check">✓</span></td>
+            </tr>
+            <tr>
+              <td>App Development</td>
+              <td><span class="comp-dash">—</span></td>
+              <td><span class="comp-dash">—</span></td>
+              <td><span class="comp-check">✓</span></td>
+              <td><span class="comp-check">✓</span></td>
+            </tr>
+            <tr>
+              <td>Automation</td>
+              <td><span class="comp-dash">—</span></td>
+              <td><span class="comp-badge-basic">Basic</span></td>
+              <td><span class="comp-badge-adv">Advanced</span></td>
+              <td><span class="comp-badge-adv">Advanced</span></td>
+            </tr>
+            <tr>
+              <td>AI Agents</td>
+              <td><span class="comp-dash">—</span></td>
+              <td><span class="comp-dash">—</span></td>
+              <td><span class="comp-badge-basic">Introduction</span></td>
+              <td><span class="comp-check">✓</span></td>
+            </tr>
+            <tr>
+              <td>AI Systems</td>
+              <td><span class="comp-dash">—</span></td>
+              <td><span class="comp-dash">—</span></td>
+              <td><span class="comp-badge-basic">Basic</span></td>
+              <td><span class="comp-badge-adv">Advanced</span></td>
+            </tr>
+            <tr>
+              <td>Projects</td>
+              <td><span class="comp-badge-basic">Basic</span></td>
+              <td><span class="comp-check">✓</span></td>
+              <td><span class="comp-check">✓</span></td>
+              <td><span class="comp-badge-adv">Advanced</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Mobile Comparison Stacked Cards -->
+      <div class="mobile-comparison-cards">
+        <!-- 01 Foundations Mobile Card -->
+        <div class="mobile-comp-card">
+          <div class="mobile-comp-header">
+            <div>
+              <span style="font-size: 0.6875rem; color: var(--accent-purple-light); font-weight: 700;">LEVEL 01</span>
+              <div class="mobile-comp-title">AI FOUNDATIONS</div>
+            </div>
+            <span class="tier-price-badge price-free">FREE</span>
+          </div>
+          <div class="mobile-comp-row"><span>AI Fundamentals</span><span class="comp-check">✓</span></div>
+          <div class="mobile-comp-row"><span>AI Tools</span><span class="comp-check">✓</span></div>
+          <div class="mobile-comp-row"><span>Prompt Engineering</span><span class="comp-badge-basic">Basic</span></div>
+          <div class="mobile-comp-row"><span>Coding & Web</span><span class="comp-dash">—</span></div>
+          <div class="mobile-comp-row"><span>Automation & Agents</span><span class="comp-dash">—</span></div>
+          <div class="mobile-comp-row"><span>Projects</span><span class="comp-badge-basic">Basic</span></div>
+        </div>
+
+        <!-- 02 Builder Mobile Card -->
+        <div class="mobile-comp-card">
+          <div class="mobile-comp-header">
+            <div>
+              <span style="font-size: 0.6875rem; color: var(--accent-purple-light); font-weight: 700;">LEVEL 02</span>
+              <div class="mobile-comp-title">AI BUILDER</div>
+            </div>
+            <span class="tier-price-badge price-coming-soon">PAID</span>
+          </div>
+          <div class="mobile-comp-row"><span>AI Fundamentals & Tools</span><span class="comp-check">✓</span></div>
+          <div class="mobile-comp-row"><span>Prompt Engineering</span><span class="comp-badge-adv">Advanced</span></div>
+          <div class="mobile-comp-row"><span>Coding & Web Dev</span><span class="comp-check">✓</span></div>
+          <div class="mobile-comp-row"><span>Automation</span><span class="comp-badge-basic">Basic</span></div>
+          <div class="mobile-comp-row"><span>Projects</span><span class="comp-check">✓</span></div>
+        </div>
+
+        <!-- 03 Creator Mobile Card -->
+        <div class="mobile-comp-card">
+          <div class="mobile-comp-header">
+            <div>
+              <span style="font-size: 0.6875rem; color: var(--accent-purple-light); font-weight: 700;">LEVEL 03</span>
+              <div class="mobile-comp-title">AI CREATOR</div>
+            </div>
+            <span class="tier-price-badge price-coming-soon">PAID</span>
+          </div>
+          <div class="mobile-comp-row"><span>Coding & Web Dev</span><span class="comp-check">✓</span></div>
+          <div class="mobile-comp-row"><span>App Development</span><span class="comp-check">✓</span></div>
+          <div class="mobile-comp-row"><span>Automation & Workflows</span><span class="comp-badge-adv">Advanced</span></div>
+          <div class="mobile-comp-row"><span>AI Agents & Systems</span><span class="comp-badge-basic">Intro / Basic</span></div>
+          <div class="mobile-comp-row"><span>Product Projects</span><span class="comp-check">✓</span></div>
+        </div>
+
+        <!-- 04 Architect Mobile Card -->
+        <div class="mobile-comp-card">
+          <div class="mobile-comp-header">
+            <div>
+              <span style="font-size: 0.6875rem; color: var(--accent-purple-light); font-weight: 700;">LEVEL 04</span>
+              <div class="mobile-comp-title">AI ARCHITECT</div>
+            </div>
+            <span class="tier-price-badge price-coming-soon">PREMIUM</span>
+          </div>
+          <div class="mobile-comp-row"><span>AI Agents & Multi-Agent</span><span class="comp-check">✓</span></div>
+          <div class="mobile-comp-row"><span>Advanced Automation</span><span class="comp-badge-adv">Advanced</span></div>
+          <div class="mobile-comp-row"><span>AI Product Architecture</span><span class="comp-badge-adv">Advanced</span></div>
+          <div class="mobile-comp-row"><span>System Integrations</span><span class="comp-check">✓</span></div>
+          <div class="mobile-comp-row"><span>Capstone System Projects</span><span class="comp-badge-adv">Advanced</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       5. WHAT YOU'LL LEARN (6 Premium Cards)
+       ========================================================================= -->
+  <section class="topics-section" id="learn">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-badge">
+          <span class="section-badge-dot"></span>
+          <span>Core Competencies</span>
+        </div>
+        <h2 class="section-title">WHAT YOU'LL LEARN</h2>
+        <p class="section-subtitle">
+          A practical journey from understanding AI to building with it.
+        </p>
+      </div>
+
+      <div class="learn-grid-6">
+        <!-- CARD 01 -->
+        <div class="learn-card-6">
+          <div class="learn-card-header">
+            <span class="learn-card-num">CARD 01</span>
+            <div class="learn-card-icon-wrap">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            </div>
+          </div>
+          <h3 class="learn-card-title">UNDERSTAND AI</h3>
+          <p class="learn-card-desc">
+            Learn the fundamentals of artificial intelligence and how modern AI systems work.
+          </p>
+        </div>
+
+        <!-- CARD 02 -->
+        <div class="learn-card-6">
+          <div class="learn-card-header">
+            <span class="learn-card-num">CARD 02</span>
+            <div class="learn-card-icon-wrap" style="color: #38BDF8; background: rgba(56, 189, 248, 0.12); border-color: rgba(56, 189, 248, 0.3);">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+            </div>
+          </div>
+          <h3 class="learn-card-title">MASTER AI TOOLS</h3>
+          <p class="learn-card-desc">
+            Learn how to effectively use modern AI tools for learning, research, creativity and productivity.
+          </p>
+        </div>
+
+        <!-- CARD 03 -->
+        <div class="learn-card-6">
+          <div class="learn-card-header">
+            <span class="learn-card-num">CARD 03</span>
+            <div class="learn-card-icon-wrap" style="color: #EC4899; background: rgba(236, 72, 153, 0.12); border-color: rgba(236, 72, 153, 0.3);">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+            </div>
+          </div>
+          <h3 class="learn-card-title">PROMPT ENGINEERING</h3>
+          <p class="learn-card-desc">
+            Learn how to communicate with AI effectively and create better results.
+          </p>
+        </div>
+
+        <!-- CARD 04 -->
+        <div class="learn-card-6">
+          <div class="learn-card-header">
+            <span class="learn-card-num">CARD 04</span>
+            <div class="learn-card-icon-wrap" style="color: #F59E0B; background: rgba(245, 158, 11, 0.12); border-color: rgba(245, 158, 11, 0.3);">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            </div>
+          </div>
+          <h3 class="learn-card-title">AI + CODING</h3>
+          <p class="learn-card-desc">
+            Discover how AI can help you understand code and build software.
+          </p>
+        </div>
+
+        <!-- CARD 05 -->
+        <div class="learn-card-6">
+          <div class="learn-card-header">
+            <span class="learn-card-num">CARD 05</span>
+            <div class="learn-card-icon-wrap" style="color: #10B981; background: rgba(16, 185, 129, 0.12); border-color: rgba(16, 185, 129, 0.3);">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            </div>
+          </div>
+          <h3 class="learn-card-title">BUILD WITH AI</h3>
+          <p class="learn-card-desc">
+            Create websites, applications and useful digital products.
+          </p>
+        </div>
+
+        <!-- CARD 06 -->
+        <div class="learn-card-6">
+          <div class="learn-card-header">
+            <span class="learn-card-num">CARD 06</span>
+            <div class="learn-card-icon-wrap" style="color: #A855F7; background: rgba(168, 85, 247, 0.12); border-color: rgba(168, 85, 247, 0.3);">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+            </div>
+          </div>
+          <h3 class="learn-card-title">AUTOMATE</h3>
+          <p class="learn-card-desc">
+            Explore AI-powered workflows, automation and intelligent agents.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       6. COURSE ROADMAP (10 Steps to AI CREATOR)
+       ========================================================================= -->
+  <section class="roadmap-section" id="roadmap">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-badge">
+          <span class="section-badge-dot"></span>
+          <span>Sequential Progression</span>
+        </div>
+        <h2 class="section-title">YOUR AI LEARNING JOURNEY</h2>
+        <p class="section-subtitle">
+          Progress from understanding the fundamentals to building your own AI-powered projects.
+        </p>
+      </div>
+
+      <!-- 10 Steps Connected Timeline -->
+      <div class="roadmap-10-grid">
+        <!-- 01 -->
+        <div class="roadmap-10-node">
+          <div class="roadmap-10-badge">01</div>
+          <h3 class="roadmap-10-title">AI FUNDAMENTALS</h3>
+        </div>
+
+        <!-- 02 -->
+        <div class="roadmap-10-node">
+          <div class="roadmap-10-badge">02</div>
+          <h3 class="roadmap-10-title">GENERATIVE AI</h3>
+        </div>
+
+        <!-- 03 -->
+        <div class="roadmap-10-node">
+          <div class="roadmap-10-badge">03</div>
+          <h3 class="roadmap-10-title">AI TOOLS</h3>
+        </div>
+
+        <!-- 04 -->
+        <div class="roadmap-10-node">
+          <div class="roadmap-10-badge">04</div>
+          <h3 class="roadmap-10-title">PROMPT ENGINEERING</h3>
+        </div>
+
+        <!-- 05 -->
+        <div class="roadmap-10-node">
+          <div class="roadmap-10-badge">05</div>
+          <h3 class="roadmap-10-title">AI + CODING</h3>
+        </div>
+
+        <!-- 06 -->
+        <div class="roadmap-10-node">
+          <div class="roadmap-10-badge">06</div>
+          <h3 class="roadmap-10-title">WEBSITES WITH AI</h3>
+        </div>
+
+        <!-- 07 -->
+        <div class="roadmap-10-node">
+          <div class="roadmap-10-badge">07</div>
+          <h3 class="roadmap-10-title">APPS WITH AI</h3>
+        </div>
+
+        <!-- 08 -->
+        <div class="roadmap-10-node">
+          <div class="roadmap-10-badge">08</div>
+          <h3 class="roadmap-10-title">AI AUTOMATION</h3>
+        </div>
+
+        <!-- 09 -->
+        <div class="roadmap-10-node">
+          <div class="roadmap-10-badge">09</div>
+          <h3 class="roadmap-10-title">AI AGENTS</h3>
+        </div>
+
+        <!-- 10 -->
+        <div class="roadmap-10-node">
+          <div class="roadmap-10-badge">10</div>
+          <h3 class="roadmap-10-title">FINAL PROJECT</h3>
+        </div>
+      </div>
+
+      <!-- Highlighted Destination: AI CREATOR -->
+      <div class="roadmap-apex-container">
+        <div class="roadmap-apex-card">
+          <div class="apex-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <span>HIGHLIGHTED DESTINATION</span>
+          </div>
+          <h3 class="apex-title">AI CREATOR</h3>
+          <p class="apex-desc">
+            Complete the full 10-step progression to gain the technical confidence, practical tools, and project portfolio of an autonomous AI builder.
+          </p>
+          <a href="#curriculum" class="btn btn-primary btn-sm">Explore All 10 Modules ↓</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       7. COURSE CURRICULUM (10 Expandable Accordion Modules)
+       ========================================================================= -->
+  <section class="curriculum-section" id="curriculum">
+    <div class="container" id="curriculum-breakdown">
+      <div class="section-header">
+        <div class="section-badge">
+          <span class="section-badge-dot"></span>
+          <span>Four-Tier Syllabus Breakdown</span>
+        </div>
+        <h2 class="section-title">CURRICULUM &amp; MODULES</h2>
+        <p class="section-subtitle">
+          Explore the structured syllabus, projects, and batch limits for each course tier.
+        </p>
+      </div>
+
+      <!-- 4 Tier Switcher Navigation Tabs -->
+      <div class="curriculum-tabs-nav" role="tablist" aria-label="Course Tier Switcher">
+        <button type="button" class="curriculum-tier-tab active" data-target-tab="tab-course-01" role="tab" aria-selected="true">
+          <span class="tier-price-badge price-free" style="padding: 2px 7px; font-size: 0.65rem;">FREE</span>
+          <span>01 AI FOUNDATIONS</span>
+        </button>
+        <button type="button" class="curriculum-tier-tab" data-target-tab="tab-course-02" role="tab" aria-selected="false">
+          <span class="tier-price-badge price-coming-soon" style="padding: 2px 7px; font-size: 0.65rem;">PAID</span>
+          <span>02 AI BUILDER</span>
+        </button>
+        <button type="button" class="curriculum-tier-tab" data-target-tab="tab-course-03" role="tab" aria-selected="false">
+          <span class="tier-price-badge price-coming-soon" style="padding: 2px 7px; font-size: 0.65rem;">PAID</span>
+          <span>03 AI CREATOR</span>
+        </button>
+        <button type="button" class="curriculum-tier-tab" data-target-tab="tab-course-04" role="tab" aria-selected="false">
+          <span class="tier-price-badge price-coming-soon" style="padding: 2px 7px; font-size: 0.65rem;">PREMIUM</span>
+          <span>04 AI ARCHITECT</span>
+        </button>
+      </div>
+
+      <!-- Curriculum Toolbar -->
+      <div class="curriculum-toolbar">
+        <div class="curriculum-summary-pill">
+          <span>10 Progressive Modules</span>
+          <span>•</span>
+          <span>50 Structured Classes &amp; Capstones</span>
+        </div>
+        <button type="button" class="curriculum-toggle-all-btn" id="curriculum-toggle-all">
+          Expand All Modules
+        </button>
+      </div>
+
+      <!-- Modules Accordion List (Designed for database dynamic structure) -->
+      <div class="curriculum-modules-list">
+
+        <!-- MODULE 01 -->
+        <article class="module-card expanded" data-module-id="1">
+          <button class="module-header-btn" aria-expanded="true" aria-controls="module-classes-1">
+            <div class="module-title-group">
+              <div class="module-meta-bar">
+                <span class="module-num-badge">MODULE 01</span>
+                <span class="module-class-count-badge">5 Classes</span>
+                <span class="module-duration-placeholder">Duration: Coming Soon</span>
+              </div>
+              <h3 class="module-title">AI FUNDAMENTALS</h3>
+              <p class="module-desc">Understand what artificial intelligence really is, its origins, modern mechanics, and practical boundaries.</p>
+            </div>
+            <div class="module-expand-indicator" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+          </button>
+          <div class="module-classes-panel" id="module-classes-1">
+            <ul class="classes-list">
+              <li class="class-item-row">
+                <div class="class-left-info">
+                  <span class="class-num">01</span>
+                  <span class="class-name">What is Artificial Intelligence?</span>
+                </div>
+                <span class="class-type-pill">Lecture</span>
+              </li>
+              <li class="class-item-row">
+                <div class="class-left-info">
+                  <span class="class-num">02</span>
+                  <span class="class-name">A Brief History of AI</span>
+                </div>
+                <span class="class-type-pill">Lecture</span>
+              </li>
+              <li class="class-item-row">
+                <div class="class-left-info">
+                  <span class="class-num">03</span>
+                  <span class="class-name">How Modern AI Works</span>
+                </div>
+                <span class="class-type-pill">Interactive</span>
+              </li>
+              <li class="class-item-row">
+                <div class="class-left-info">
+                  <span class="class-num">04</span>
+                  <span class="class-name">Understanding Generative AI</span>
+                </div>
+                <span class="class-type-pill">Core Concept</span>
+              </li>
+              <li class="class-item-row">
+                <div class="class-left-info">
+                  <span class="class-num">05</span>
+                  <span class="class-name">AI Capabilities &amp; Limitations</span>
+                </div>
+                <span class="class-type-pill">Review &amp; Drill</span>
+              </li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- MODULE 02 -->
+        <article class="module-card" data-module-id="2">
+          <button class="module-header-btn" aria-expanded="false" aria-controls="module-classes-2">
+            <div class="module-title-group">
+              <div class="module-meta-bar">
+                <span class="module-num-badge">MODULE 02</span>
+                <span class="module-class-count-badge">5 Classes</span>
+                <span class="module-duration-placeholder">Duration: Coming Soon</span>
+              </div>
+              <h3 class="module-title">GENERATIVE AI</h3>
+              <p class="module-desc">Dive deep into large language models, text generation, image and video synthesis, and foundation architectures.</p>
+            </div>
+            <div class="module-expand-indicator" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+          </button>
+          <div class="module-classes-panel" id="module-classes-2">
+            <ul class="classes-list">
+              <li class="class-item-row">
+                <div class="class-left-info">
+                  <span class="class-num">01</span>
+                  <span class="class-name">What is Generative AI?</span>
+                </div>
+                <span class="class-type-pill">Lecture</span>
+              </li>
+              <li class="class-item-row">
+                <div class="class-left-info">
+                  <span class="class-num">02</span>
+                  <span class="class-name">Large Language Models</span>
+                </div>
+                <span class="class-type-pill">Core Concept</span>
+              </li>
+              <li class="class-item-row">
+                <div class="class-left-info">
+                  <span class="class-num">03</span>
+                  <span class="class-name">Text Generation</span>
+                </div>
+                <span class="class-type-pill">Hands-on</span>
+              </li>
+              <li class="class-item-row">
+                <div class="class-left-info">
+                  <span class="class-num">04</span>
+                  <span class="class-name">Image &amp; Video Generation</span>
+                </div>
+                <span class="class-type-pill">Hands-on</span>
+              </li>
+              <li class="class-item-row">
+                <div class="class-left-info">
+                  <span class="class-num">05</span>
+                  <span class="class-name">Understanding AI Models</span>
+                </div>
+                <span class="class-type-pill">Analysis</span>
+              </li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- MODULE 03 -->
+        <article class="module-card" data-module-id="3">
+          <button class="module-header-btn" aria-expanded="false" aria-controls="module-classes-3">
+            <div class="module-title-group">
+              <div class="module-meta-bar">
+                <span class="module-num-badge">MODULE 03</span>
+                <span class="module-class-count-badge">5 Classes</span>
+                <span class="module-duration-placeholder">Duration: Coming Soon</span>
+              </div>
+              <h3 class="module-title">AI TOOLS</h3>
+              <p class="module-desc">Master the modern tool ecosystem to superpower your personal research, everyday learning, and creative output.</p>
+            </div>
+            <div class="module-expand-indicator" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+          </button>
+          <div class="module-classes-panel" id="module-classes-3">
+            <ul class="classes-list">
+              <li class="class-item-row">
+                <div class="class-left-info">
+                  <span class="class-num">01</span>
+                  <span class="class-name">The Modern AI Tool Ecosystem</span>
+                </div>
+                <span class="class-type-pill">Overview</span>
+              </li>
+              <li class="class-item-row">
+                <div class="class-left-info">
+                  <span class="class-num">02</span>
+                  <span class="class-name">AI for Research</span>
+                </div>
+                <span class="class-type-pill">Hands-on</span>
+              </li>
+              <li class="class-item-row">
+                <div class="class-left-info">
+                  <span class="class-num">03</span>
+                  <span class="class-name">AI for Learning</span>
+                </div>
+                <span class="class-type-pill">Hands-on</span>
+              </li>
+              <li class="class-item-row">
+                <div class="class-left-info">
+                  <span class="class-num">04</span>
+                  <span class="class-name">AI for Creativity</span>
+                </div>
+                <span class="class-type-pill">Hands-on</span>
+              </li>
+              <li class="class-item-row">
+                <div class="class-left-info">
+                  <span class="class-num">05</span>
+                  <span class="class-name">AI for Productivity</span>
+                </div>
+                <span class="class-type-pill">Workflow Setup</span>
+              </li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- MODULE 04 -->
+        <article class="module-card" data-module-id="4">
+          <button class="module-header-btn" aria-expanded="false" aria-controls="module-classes-4">
+            <div class="module-title-group">
+              <div class="module-meta-bar">
+                <span class="module-num-badge">MODULE 04</span>
+                <span class="module-class-count-badge">5 Classes</span>
+                <span class="module-duration-placeholder">Duration: Coming Soon</span>
+              </div>
+              <h3 class="module-title">PROMPT ENGINEERING</h3>
+              <p class="module-desc">Gain deterministic control over AI responses through systematic context structuring and reusable prompt patterns.</p>
+            </div>
+            <div class="module-expand-indicator" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+          </button>
+          <div class="module-classes-panel" id="module-classes-4">
+            <ul class="classes-list">
+              <li class="class-item-row">
+                <div class="class-left-info">
+                  <span class="class-num">01</span>
+                  <span class="class-name">Introduction to Prompting</span>
+                </div>
+                <span class="class-type-pill">Foundations</span>
+              </li>
+              <li class="class-item-row">
+                <div class="class-left-info">
+                  <span class="class-num">02</span>
+                  <span class="class-name">Writing Better Prompts</span>
+                </div>
+                <span class="class-type-pill">Hands-on Drill</span>
+              </li>
+              <li class="class-item-row">
+                <div class="class-left-info">
+                  <span class="class-num">03</span>
+                  <span class="class-name">Context &amp; Instructions</span>
+                </div>
+                <span class="class-type-pill">Technique</span>
+              </li>
+              <li class="class-item-row">
+                <div class="class-left-info">
+                  <span class="class-num">04</span>
+                  <span class="class-name">Advanced Prompt Techniques</span>
+                </div>
+                <span class="class-type-pill">Advanced</span>
+              </li>
+              <li class="class-item-row">
+                <div class="class-left-info">
+                  <span class="class-num">05</span>
+                  <span class="class-name">Building Reusable Prompts</span>
+                </div>
+                <span class="class-type-pill">Template Lab</span>
+              </li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- MODULE 05 -->
+        <article class="module-card" data-module-id="5">
+          <button class="module-header-btn" aria-expanded="false" aria-controls="module-classes-5">
+            <div class="module-title-group">
+              <div class="module-meta-bar">
+                <span class="module-num-badge">MODULE 05</span>
+                <span class="module-class-count-badge">5 Classes</span>
+                <span class="module-duration-placeholder">Duration: Coming Soon</span>
+              </div>
+              <h3 class="module-title">AI + CODING</h3>
+              <p class="module-desc">Bridge human ideas into software syntax using AI assistants, automated refactoring, and AI-driven debugging.</p>
+            </div>
+            <div class="module-expand-indicator" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+          </button>
+          <div class="module-classes-panel" id="module-classes-5">
+            <ul class="classes-list">
+              <li class="class-item-row">
+                <div class="class-left-info">
+                  <span class="class-num">01</span>
+                  <span class="class-name">Introduction to Coding With AI</span>
+                </div>
+                <span class="class-type-pill">Foundations</span>
+              </li>
+              <li class="class-item-row">
+                <div class="class-left-info">
+                  <span class="class-num">02</span>
+                  <span class="class-name">Understanding Code With AI</span>
+                </div>
+                <span class="class-type-pill">Comprehension</span>
+              </li>
+              <li class="class-item-row">
+                <div class="class-left-info">
+                  <span class="class-num">03</span>
+                  <span class="class-name">Building With AI Coding Tools</span>
+                </div>
+                <span class="class-type-pill">Cursor &amp; Tools</span>
+              </li>
+              <li class="class-item-row">
+                <div class="class-left-info">
+                  <span class="class-num">04</span>
+                  <span class="class-name">Debugging With AI</span>
+                </div>
+                <span class="class-type-pill">Troubleshooting</span>
+              </li>
+              <li class="class-item-row">
+                <div class="class-left-info">
+                  <span class="class-num">05</span>
+                  <span class="class-name">Creating Your First AI-Assisted Project</span>
+                </div>
+                <span class="class-type-pill">Milestone Project</span>
+              </li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- MODULE 06 -->
+        <article class="module-card" data-module-id="6">
+          <button class="module-header-btn" aria-expanded="false" aria-controls="module-classes-6">
+            <div class="module-title-group">
+              <div class="module-meta-bar">
+                <span class="module-num-badge">MODULE 06</span>
+                <span class="module-class-count-badge">5 Classes</span>
+                <span class="module-duration-placeholder">Duration: Coming Soon</span>
+              </div>
+              <h3 class="module-title">WEBSITES WITH AI</h3>
+              <p class="module-desc">Design, generate, assemble, and deploy complete responsive web interfaces with generative AI tools.</p>
+            </div>
+            <div class="module-expand-indicator" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+          </button>
+          <div class="module-classes-panel" id="module-classes-6">
+            <ul class="classes-list">
+              <li class="class-item-row">
+                <div class="class-left-info">
+                  <span class="class-num">01</span>
+                  <span class="class-name">Website Fundamentals</span>
+                </div>
+                <span class="class-type-pill">Web Core</span>
+              </li>
+              <li class="class-item-row">
+                <div class="class-left-info">
+                  <span class="class-num">02</span>
+                  <span class="class-name">Designing With AI</span>
+                </div>
+                <span class="class-type-pill">UI / UX</span>
+              </li>
+              <li class="class-item-row">
+                <div class="class-left-info">
+                  <span class="class-num">03</span>
+                  <span class="class-name">Generating Web Code</span>
+                </div>
+                <span class="class-type-pill">Code Gen</span>
+              </li>
+              <li class="class-item-row">
+                <div class="class-left-info">
+                  <span class="class-num">04</span>
+                  <span class="class-name">Building a Website</span>
+                </div>
+                <span class="class-type-pill">Full Build</span>
+              </li>
+              <li class="class-item-row">
+                <div class="class-left-info">
+                  <span class="class-num">05</span>
+                  <span class="class-name">Deploying Your Website</span>
+                </div>
+                <span class="class-type-pill">Live Launch</span>
+              </li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- MODULE 07 -->
+        <article class="module-card" data-module-id="7">
+          <button class="module-header-btn" aria-expanded="false" aria-controls="module-classes-7">
+            <div class="module-title-group">
+              <div class="module-meta-bar">
+                <span class="module-num-badge">MODULE 07</span>
+                <span class="module-class-count-badge">5 Classes</span>
+                <span class="module-duration-placeholder">Duration: Coming Soon</span>
+              </div>
+              <h3 class="module-title">APPS WITH AI</h3>
+              <p class="module-desc">Plan user flows, build frontend components, connect AI APIs, and publish functional digital software.</p>
+            </div>
+            <div class="module-expand-indicator" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+          </button>
+          <div class="module-classes-panel" id="module-classes-7">
+            <ul class="classes-list">
+              <li class="class-item-row">
+                <div class="class-left-info">
+                  <span class="class-num">01</span>
+                  <span class="class-name">Introduction to AI-Assisted App Development</span>
+                </div>
+                <span class="class-type-pill">Architecture</span>
+              </li>
+              <li class="class-item-row">
+                <div class="class-left-info">
+                  <span class="class-num">02</span>
+                  <span class="class-name">Planning an App</span>
+                </div>
+                <span class="class-type-pill">Product Spec</span>
+              </li>
+              <li class="class-item-row">
+                <div class="class-left-info">
+                  <span class="class-num">03</span>
+                  <span class="class-name">Building the Interface</span>
+                </div>
+                <span class="class-type-pill">Frontend</span>
+              </li>
+              <li class="class-item-row">
+                <div class="class-left-info">
+                  <span class="class-num">04</span>
+                  <span class="class-name">Connecting Features</span>
+                </div>
+                <span class="class-type-pill">API Integration</span>
+              </li>
+              <li class="class-item-row">
+                <div class="class-left-info">
+                  <span class="class-num">05</span>
+                  <span class="class-name">Publishing the App</span>
+                </div>
+                <span class="class-type-pill">Production</span>
+              </li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- MODULE 08 -->
+        <article class="module-card" data-module-id="8">
+          <button class="module-header-btn" aria-expanded="false" aria-controls="module-classes-8">
+            <div class="module-title-group">
+              <div class="module-meta-bar">
+                <span class="module-num-badge">MODULE 08</span>
+                <span class="module-class-count-badge">5 Classes</span>
+                <span class="module-duration-placeholder">Duration: Coming Soon</span>
+              </div>
+              <h3 class="module-title">AI AUTOMATION</h3>
+              <p class="module-desc">Connect diverse AI services and webhooks to eliminate repetitive digital tasks with automated execution.</p>
+            </div>
+            <div class="module-expand-indicator" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+          </button>
+          <div class="module-classes-panel" id="module-classes-8">
+            <ul class="classes-list">
+              <li class="class-item-row">
+                <div class="class-left-info">
+                  <span class="class-num">01</span>
+                  <span class="class-name">What is AI Automation?</span>
+                </div>
+                <span class="class-type-pill">Concepts</span>
+              </li>
+              <li class="class-item-row">
+                <div class="class-left-info">
+                  <span class="class-num">02</span>
+                  <span class="class-name">Automation Workflows</span>
+                </div>
+                <span class="class-type-pill">Pipelining</span>
+              </li>
+              <li class="class-item-row">
+                <div class="class-left-info">
+                  <span class="class-num">03</span>
+                  <span class="class-name">Connecting AI Tools</span>
+                </div>
+                <span class="class-type-pill">Integrations</span>
+              </li>
+              <li class="class-item-row">
+                <div class="class-left-info">
+                  <span class="class-num">04</span>
+                  <span class="class-name">Building Automated Tasks</span>
+                </div>
+                <span class="class-type-pill">Implementation</span>
+              </li>
+              <li class="class-item-row">
+                <div class="class-left-info">
+                  <span class="class-num">05</span>
+                  <span class="class-name">Practical Automation Project</span>
+                </div>
+                <span class="class-type-pill">Portfolio Project</span>
+              </li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- MODULE 09 -->
+        <article class="module-card" data-module-id="9">
+          <button class="module-header-btn" aria-expanded="false" aria-controls="module-classes-9">
+            <div class="module-title-group">
+              <div class="module-meta-bar">
+                <span class="module-num-badge">MODULE 09</span>
+                <span class="module-class-count-badge">5 Classes</span>
+                <span class="module-duration-placeholder">Duration: Coming Soon</span>
+              </div>
+              <h3 class="module-title">AI AGENTS</h3>
+              <p class="module-desc">Construct intelligent autonomous agents capable of independent reasoning, tool usage, and goal completion.</p>
+            </div>
+            <div class="module-expand-indicator" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+          </button>
+          <div class="module-classes-panel" id="module-classes-9">
+            <ul class="classes-list">
+              <li class="class-item-row">
+                <div class="class-left-info">
+                  <span class="class-num">01</span>
+                  <span class="class-name">What Are AI Agents?</span>
+                </div>
+                <span class="class-type-pill">Theory</span>
+              </li>
+              <li class="class-item-row">
+                <div class="class-left-info">
+                  <span class="class-num">02</span>
+                  <span class="class-name">Agent Workflows</span>
+                </div>
+                <span class="class-type-pill">ReAct Loops</span>
+              </li>
+              <li class="class-item-row">
+                <div class="class-left-info">
+                  <span class="class-num">03</span>
+                  <span class="class-name">Tools &amp; Actions</span>
+                </div>
+                <span class="class-type-pill">Tool Calling</span>
+              </li>
+              <li class="class-item-row">
+                <div class="class-left-info">
+                  <span class="class-num">04</span>
+                  <span class="class-name">Building an AI Agent</span>
+                </div>
+                <span class="class-type-pill">Agent Build</span>
+              </li>
+              <li class="class-item-row">
+                <div class="class-left-info">
+                  <span class="class-num">05</span>
+                  <span class="class-name">Practical Agent Project</span>
+                </div>
+                <span class="class-type-pill">Milestone Project</span>
+              </li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- MODULE 10 -->
+        <article class="module-card" data-module-id="10">
+          <button class="module-header-btn" aria-expanded="false" aria-controls="module-classes-10">
+            <div class="module-title-group">
+              <div class="module-meta-bar">
+                <span class="module-num-badge">MODULE 10</span>
+                <span class="module-class-count-badge" style="color: #A855F7; background: rgba(168, 85, 247, 0.1); border-color: rgba(168, 85, 247, 0.3);">Project Capstone</span>
+                <span class="module-duration-placeholder">Duration: Coming Soon</span>
+              </div>
+              <h3 class="module-title">FINAL PROJECT</h3>
+              <p class="module-desc">Project-based module. Students apply everything they learned to build a complete AI-powered project.</p>
+            </div>
+            <div class="module-expand-indicator" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+          </button>
+          <div class="module-classes-panel" id="module-classes-10">
+            <ul class="classes-list">
+              <li class="class-item-row">
+                <div class="class-left-info">
+                  <span class="class-num">01</span>
+                  <span class="class-name">Capstone Problem Identification &amp; Scoping</span>
+                </div>
+                <span class="class-type-pill">Planning</span>
+              </li>
+              <li class="class-item-row">
+                <div class="class-left-info">
+                  <span class="class-num">02</span>
+                  <span class="class-name">System Architecture &amp; Prompt Pipeline</span>
+                </div>
+                <span class="class-type-pill">Design</span>
+              </li>
+              <li class="class-item-row">
+                <div class="class-left-info">
+                  <span class="class-num">03</span>
+                  <span class="class-name">Core Application Build &amp; Tool Wiring</span>
+                </div>
+                <span class="class-type-pill">Implementation</span>
+              </li>
+              <li class="class-item-row">
+                <div class="class-left-info">
+                  <span class="class-num">04</span>
+                  <span class="class-name">Testing, Refinement &amp; Error Handling</span>
+                </div>
+                <span class="class-type-pill">Quality Control</span>
+              </li>
+              <li class="class-item-row">
+                <div class="class-left-info">
+                  <span class="class-num">05</span>
+                  <span class="class-name">Final Deployment &amp; Portfolio Submission</span>
+                </div>
+                <span class="class-type-pill">Capstone Certification</span>
+              </li>
+            </ul>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       8. PROJECTS (What Will You Build?)
+       ========================================================================= -->
+  <section class="projects-section" id="projects">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-badge">
+          <span class="section-badge-dot"></span>
+          <span>Hands-on Portfolio</span>
+        </div>
+        <h2 class="section-title">WHAT WILL YOU BUILD?</h2>
+        <p class="section-subtitle">
+          Build tangible, functional software to prove your real-world capability as an AI builder.
+        </p>
+      </div>
+
+      <div class="projects-grid">
+        <!-- PROJECT 01 -->
+        <div class="project-card">
+          <div class="project-preview-header">
+            <div class="project-preview-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </div>
+          </div>
+          <div class="project-body">
+            <div class="step-level-tag" style="margin-bottom: 6px;">PROJECT 01</div>
+            <h3 class="project-title">AI CHATBOT</h3>
+            <p class="project-desc">Create custom conversational agents with context memory, custom personas, and retrieval-augmented reasoning.</p>
+            <div class="project-tech-stack">
+              <span class="tech-tag">Next.js</span>
+              <span class="tech-tag">OpenAI API</span>
+              <span class="tech-tag">Vector Store</span>
+            </div>
+            <a href="#enroll" class="project-footer-link btn-open-join">Learn how to build →</a>
+          </div>
+        </div>
+
+        <!-- PROJECT 02 -->
+        <div class="project-card">
+          <div class="project-preview-header">
+            <div class="project-preview-icon" style="color: #38BDF8; background: rgba(56, 189, 248, 0.15); border-color: rgba(56, 189, 248, 0.3);">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            </div>
+          </div>
+          <div class="project-body">
+            <div class="step-level-tag" style="margin-bottom: 6px;">PROJECT 02</div>
+            <h3 class="project-title">AI-POWERED WEBSITE</h3>
+            <p class="project-desc">Build a responsive, modern web application featuring real-time generative UI and smart content synthesis.</p>
+            <div class="project-tech-stack">
+              <span class="tech-tag">HTML5/CSS3</span>
+              <span class="tech-tag">v0 / Cursor</span>
+              <span class="tech-tag">Vercel</span>
+            </div>
+            <a href="#enroll" class="project-footer-link btn-open-join">Learn how to build →</a>
+          </div>
+        </div>
+
+        <!-- PROJECT 03 -->
+        <div class="project-card">
+          <div class="project-preview-header">
+            <div class="project-preview-icon" style="color: #EC4899; background: rgba(236, 72, 153, 0.15); border-color: rgba(236, 72, 153, 0.3);">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            </div>
+          </div>
+          <div class="project-body">
+            <div class="step-level-tag" style="margin-bottom: 6px;">PROJECT 03</div>
+            <h3 class="project-title">AI PRODUCTIVITY TOOL</h3>
+            <p class="project-desc">Develop smart assistants that summarize complex research papers, organize notes, and draft structured briefs.</p>
+            <div class="project-tech-stack">
+              <span class="tech-tag">Python</span>
+              <span class="tech-tag">Claude 3.7</span>
+              <span class="tech-tag">FastAPI</span>
+            </div>
+            <a href="#enroll" class="project-footer-link btn-open-join">Learn how to build →</a>
+          </div>
+        </div>
+
+        <!-- PROJECT 04 -->
+        <div class="project-card">
+          <div class="project-preview-header">
+            <div class="project-preview-icon" style="color: #F59E0B; background: rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.3);">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            </div>
+          </div>
+          <div class="project-body">
+            <div class="step-level-tag" style="margin-bottom: 6px;">PROJECT 04</div>
+            <h3 class="project-title">AI AUTOMATION</h3>
+            <p class="project-desc">Engineered multi-step pipelines that connect external APIs, web scrapers, and databases into automated workflows.</p>
+            <div class="project-tech-stack">
+              <span class="tech-tag">Webhooks</span>
+              <span class="tech-tag">Node.js</span>
+              <span class="tech-tag">REST APIs</span>
+            </div>
+            <a href="#enroll" class="project-footer-link btn-open-join">Learn how to build →</a>
+          </div>
+        </div>
+
+        <!-- PROJECT 05 -->
+        <div class="project-card">
+          <div class="project-preview-header">
+            <div class="project-preview-icon" style="color: #10B981; background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.3);">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            </div>
+          </div>
+          <div class="project-body">
+            <div class="step-level-tag" style="margin-bottom: 6px;">PROJECT 05</div>
+            <h3 class="project-title">AI-POWERED APP</h3>
+            <p class="project-desc">Full-featured application with user authentication, database persistence, and streaming intelligent feedback.</p>
+            <div class="project-tech-stack">
+              <span class="tech-tag">React</span>
+              <span class="tech-tag">Tailored LLM</span>
+              <span class="tech-tag">Supabase</span>
+            </div>
+            <a href="#enroll" class="project-footer-link btn-open-join">Learn how to build →</a>
+          </div>
+        </div>
+
+        <!-- PROJECT 06 -->
+        <div class="project-card">
+          <div class="project-preview-header">
+            <div class="project-preview-icon" style="color: #A855F7; background: rgba(168, 85, 247, 0.15); border-color: rgba(168, 85, 247, 0.3);">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+            </div>
+          </div>
+          <div class="project-body">
+            <div class="step-level-tag" style="margin-bottom: 6px;">PROJECT 06</div>
+            <h3 class="project-title">PERSONAL AI ASSISTANT</h3>
+            <p class="project-desc">A tailored desktop or terminal companion capable of answering domain questions and executing code scripts.</p>
+            <div class="project-tech-stack">
+              <span class="tech-tag">LangChain</span>
+              <span class="tech-tag">Tool-Calling</span>
+              <span class="tech-tag">CLI</span>
+            </div>
+            <a href="#enroll" class="project-footer-link btn-open-join">Learn how to build →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       9. LEARNING EXPERIENCE (4 Visual Blocks)
+       ========================================================================= -->
+  <section class="experience-section" id="experience">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-badge">
+          <span class="section-badge-dot"></span>
+          <span>Pedagogy</span>
+        </div>
+        <h2 class="section-title">LEARN BY DOING</h2>
+        <p class="section-subtitle">
+          An intentional, compounding feedback loop built around student execution.
+        </p>
+      </div>
+
+      <div class="experience-grid-4">
+        <!-- WATCH -->
+        <div class="experience-card">
+          <div class="experience-icon-wrap">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+          </div>
+          <h3 class="experience-title">WATCH</h3>
+          <p class="experience-desc">Learn through structured video classes designed for self-paced, deep comprehension.</p>
+        </div>
+
+        <!-- PRACTICE -->
+        <div class="experience-card">
+          <div class="experience-icon-wrap" style="color: #38BDF8; background: rgba(56, 189, 248, 0.12); border-color: rgba(56, 189, 248, 0.3);">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          </div>
+          <h3 class="experience-title">PRACTICE</h3>
+          <p class="experience-desc">Apply concepts through practical exercises and hands-on prompt and coding drills.</p>
+        </div>
+
+        <!-- BUILD -->
+        <div class="experience-card">
+          <div class="experience-icon-wrap" style="color: #10B981; background: rgba(16, 185, 129, 0.12); border-color: rgba(16, 185, 129, 0.3);">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+          </div>
+          <h3 class="experience-title">BUILD</h3>
+          <p class="experience-desc">Turn your knowledge into working projects that run live on the web and devices.</p>
+        </div>
+
+        <!-- PROGRESS -->
+        <div class="experience-card">
+          <div class="experience-icon-wrap" style="color: #EC4899; background: rgba(236, 72, 153, 0.12); border-color: rgba(236, 72, 153, 0.3);">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+          <h3 class="experience-title">PROGRESS</h3>
+          <p class="experience-desc">Move through the learning journey step by step toward complete technical fluency.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       10. WHO IS THIS COURSE FOR? (4 Cards)
+       ========================================================================= -->
+  <section class="audience-section" id="audience">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-badge">
+          <span class="section-badge-dot"></span>
+          <span>Target Audience</span>
+        </div>
+        <h2 class="section-title">BUILT FOR CURIOUS MINDS</h2>
+        <p class="section-subtitle">
+          Designed to take curious learners of all backgrounds and turn them into creators.
+        </p>
+      </div>
+
+      <div class="audience-grid">
+        <!-- 1. STUDENTS -->
+        <div class="audience-card">
+          <div class="audience-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+          </div>
+          <h3 class="audience-title">STUDENTS</h3>
+          <p class="audience-desc">For students who want to understand and use AI.</p>
+        </div>
+
+        <!-- 2. BEGINNERS -->
+        <div class="audience-card">
+          <div class="audience-icon" style="color: #38BDF8; background: rgba(56, 189, 248, 0.12); border-color: rgba(56, 189, 248, 0.3);">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+          </div>
+          <h3 class="audience-title">BEGINNERS</h3>
+          <p class="audience-desc">For learners starting their AI journey.</p>
+        </div>
+
+        <!-- 3. CREATORS -->
+        <div class="audience-card">
+          <div class="audience-icon" style="color: #EC4899; background: rgba(236, 72, 153, 0.12); border-color: rgba(236, 72, 153, 0.3);">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
+          </div>
+          <h3 class="audience-title">CREATORS</h3>
+          <p class="audience-desc">For people who want to build websites, apps and digital projects.</p>
+        </div>
+
+        <!-- 4. FUTURE BUILDERS -->
+        <div class="audience-card">
+          <div class="audience-icon" style="color: #10B981; background: rgba(16, 185, 129, 0.12); border-color: rgba(16, 185, 129, 0.3);">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/></svg>
+          </div>
+          <h3 class="audience-title">FUTURE BUILDERS</h3>
+          <p class="audience-desc">For students interested in AI, technology, automation and entrepreneurship.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       11. REQUIREMENTS (What Do You Need?)
+       ========================================================================= -->
+  <section class="requirements-section" id="requirements">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-badge">
+          <span class="section-badge-dot"></span>
+          <span>Prerequisites</span>
+        </div>
+        <h2 class="section-title">WHAT DO YOU NEED?</h2>
+        <p class="section-subtitle">
+          No heavy upfront hurdles. Just curiosity and modern web tools.
+        </p>
+      </div>
+
+      <div class="requirements-card-wrapper">
+        <div class="requirements-list-grid">
+          <div class="requirement-item">
+            <div class="req-check-icon">✓</div>
+            <span class="req-item-text">Smartphone or computer</span>
+          </div>
+          <div class="requirement-item">
+            <div class="req-check-icon">✓</div>
+            <span class="req-item-text">Internet connection</span>
+          </div>
+          <div class="requirement-item">
+            <div class="req-check-icon">✓</div>
+            <span class="req-item-text">Willingness to learn</span>
+          </div>
+          <div class="requirement-item">
+            <div class="req-check-icon">✓</div>
+            <span class="req-item-text">Curiosity and creativity</span>
+          </div>
+        </div>
+
+        <div class="requirements-highlight-callout">
+          <div class="highlight-badge-tag">NO ADVANCED AI KNOWLEDGE REQUIRED</div>
+          <p class="highlight-sub-note">
+            The course starts with accessible mental models. Basic computer literacy is helpful; coding concepts are introduced gradually with modern AI assistance.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       12. CERTIFICATE (Complete The Journey)
+       ========================================================================= -->
+  <section class="certificate-section" id="certificate">
+    <div class="container">
+      <div class="certificate-grid">
+        <!-- Content -->
+        <div class="certificate-content">
+          <div class="section-badge">
+            <span class="section-badge-dot"></span>
+            <span>Course Credential</span>
+          </div>
+          <h2 class="section-title">COMPLETE THE JOURNEY</h2>
+          <p class="section-subtitle" style="text-align: left; margin-bottom: 28px;">
+            Complete the course and required projects to become eligible for a NEXVION AI course certificate.
+          </p>
+          <a href="#enroll" class="btn btn-primary btn-lg btn-open-join" style="align-self: flex-start;">
+            <span>START YOUR JOURNEY</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+
+        <!-- Certificate Mockup Visual Card -->
+        <div class="certificate-preview-card">
+          <div class="cert-header">
+            <div class="cert-watermark">NEXVION ACADEMY • CREDENTIAL VERIFICATION</div>
+            <div class="cert-emblem-badge">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+            </div>
+          </div>
+
+          <h3 class="cert-title-display">CERTIFICATE OF COMPLETION</h3>
+          <div class="cert-sub-display">AI CREATOR CAPSTONE TRACK</div>
+
+          <div class="cert-body-holder">
+            <div class="cert-student-name">Student Builder</div>
+            <p class="cert-statement">
+              Has successfully fulfilled all curriculum requirements, practical assignments, and end-to-end AI project deployments across 10 structured modules.
+            </p>
+          </div>
+
+          <div class="cert-footer-row">
+            <span>ISSUED BY: NEXVION AI</span>
+            <span>VERIFICATION CODE: NX-2026-CERT</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       13. FAQ (8 Accordion Questions)
+       ========================================================================= -->
+  <section class="faq-section" id="faq">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-badge">
+          <span class="section-badge-dot"></span>
+          <span>Course FAQ</span>
+        </div>
+        <h2 class="section-title">FREQUENTLY ASKED QUESTIONS</h2>
+        <p class="section-subtitle">
+          Everything you need to know about the course experience, access, and projects.
+        </p>
+      </div>
+
+      <div class="faq-accordion-container">
+        <!-- Q1 -->
+        <div class="faq-item active">
+          <button class="faq-question-btn" aria-expanded="true">
+            <span>Who can join NEXVION AI?</span>
+            <span class="faq-icon-indicator">+</span>
+          </button>
+          <div class="faq-answer-panel">
+            <p class="faq-answer-text">
+              NEXVION AI is open to students, beginners, creators, and curious learners worldwide. No formal computer science degree or prerequisites are required to enroll.
+            </p>
+          </div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="faq-item">
+          <button class="faq-question-btn" aria-expanded="false">
+            <span>Is the course suitable for beginners?</span>
+            <span class="faq-icon-indicator">+</span>
+          </button>
+          <div class="faq-answer-panel">
+            <p class="faq-answer-text">
+              Yes, absolutely. The curriculum is specifically designed from the ground up to introduce foundational AI concepts before progressively ramping up into tools, coding, and building.
+            </p>
+          </div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="faq-item">
+          <button class="faq-question-btn" aria-expanded="false">
+            <span>Do I need programming experience?</span>
+            <span class="faq-icon-indicator">+</span>
+          </button>
+          <div class="faq-answer-panel">
+            <p class="faq-answer-text">
+              No prior programming experience is required. Module 05 specifically introduces coding with AI tools from scratch, teaching you how to read, guide, and debug code with modern assistants.
+            </p>
+          </div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="faq-item">
+          <button class="faq-question-btn" aria-expanded="false">
+            <span>Can I learn using my phone?</span>
+            <span class="faq-icon-indicator">+</span>
+          </button>
+          <div class="faq-answer-panel">
+            <p class="faq-answer-text">
+              You can watch video classes and review lesson materials on a phone or tablet. However, a laptop or desktop computer (Windows, Mac, or Chromebook) is recommended for building websites and applications.
+            </p>
+          </div>
+        </div>
+
+        <!-- Q5 -->
+        <div class="faq-item">
+          <button class="faq-question-btn" aria-expanded="false">
+            <span>How are the classes accessed?</span>
+            <span class="faq-icon-indicator">+</span>
+          </button>
+          <div class="faq-answer-panel">
+            <p class="faq-answer-text">
+              Classes are accessed online via our structured learning portal. Lessons are delivered as on-demand video classes with companion exercises and downloadable templates.
+            </p>
+          </div>
+        </div>
+
+        <!-- Q6 -->
+        <div class="faq-item">
+          <button class="faq-question-btn" aria-expanded="false">
+            <span>Can I watch classes again?</span>
+            <span class="faq-icon-indicator">+</span>
+          </button>
+          <div class="faq-answer-panel">
+            <p class="faq-answer-text">
+              Yes, students receive lifetime on-demand access to all modules, allowing you to re-watch lessons anytime and review materials whenever you want to refresh your memory.
+            </p>
+          </div>
+        </div>
+
+        <!-- Q7 -->
+        <div class="faq-item">
+          <button class="faq-question-btn" aria-expanded="false">
+            <span>Are practical projects included?</span>
+            <span class="faq-icon-indicator">+</span>
+          </button>
+          <div class="faq-answer-panel">
+            <p class="faq-answer-text">
+              Yes, practical projects form the core of the course. You will build AI chatbots, dynamic websites, productivity tools, automated pipelines, full-stack apps, and a final capstone project.
+            </p>
+          </div>
+        </div>
+
+        <!-- Q8 -->
+        <div class="faq-item">
+          <button class="faq-question-btn" aria-expanded="false">
+            <span>How do I receive the certificate?</span>
+            <span class="faq-icon-indicator">+</span>
+          </button>
+          <div class="faq-answer-panel">
+            <p class="faq-answer-text">
+              Upon successful completion of all required modules, tasks, and final capstone submission, you will receive a verifiable digital NEXVION AI Course Completion Certificate.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       14. FINAL CTA
+       ========================================================================= -->
+  <section class="final-cta-section" id="enroll">
+    <div class="container">
+      <div class="cta-banner-card">
+        <!-- Exact Official NEXVION Logo Emblem -->
+        <div class="cta-brand-emblem-wrap">
+          <img src="NEXVION_logo_design_20261005164702.jpg" alt="NEXVION Logo Emblem" class="cta-brand-emblem">
+        </div>
+
+        <h2 class="cta-title">READY TO BUILD WITH AI?</h2>
+        <p class="cta-description">
+          Start your journey from understanding AI to creating with it.
+        </p>
+
+        <div class="cta-btn-group">
+          <button class="btn btn-primary btn-lg btn-open-join" id="final-primary-cta">
+            <span>JOIN NEXVION AI</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+          <a href="#curriculum" class="btn btn-secondary btn-lg" id="final-secondary-cta">
+            <span>EXPLORE CURRICULUM</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       15. FOOTER (Exact Existing NEXVION Footer)
+       ========================================================================= -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-top-grid">
+        <!-- Col 1: Brand Info -->
+        <div class="footer-brand-col">
+          <a href="index.html" class="footer-logo-link">
+            <div class="footer-logo-img-wrap">
+              <img src="NEXVION_logo_design_20261005164702.jpg" alt="NEXVION AI Official Logo" class="footer-logo-img">
+            </div>
+            <span class="footer-brand-title">SYNTHETIC SYSTEMS ACADEMY</span>
+          </a>
+          <p class="footer-tagline">
+            Technical precision minimalism for compiler engineers & AI runtime architects.
+          </p>
+          <!-- Social links -->
+          <div class="footer-social-row">
+            <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="social-icon-btn" aria-label="GitHub">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+            </a>
+            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" class="social-icon-btn" aria-label="X (Twitter)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            </a>
+            <a href="https://discord.com" target="_blank" rel="noopener noreferrer" class="social-icon-btn" aria-label="Discord">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.894.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
+            </a>
+            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="social-icon-btn" aria-label="LinkedIn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.761-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Col 2: Navigation Links -->
+        <div>
+          <div class="footer-col-title">Navigation</div>
+          <ul class="footer-links-list">
+            <li class="footer-link-item"><a href="index.html">Home</a></li>
+            <li class="footer-link-item"><a href="course.html">Course</a></li>
+            <li class="footer-link-item"><a href="#roadmap">Learning Path</a></li>
+            <li class="footer-link-item"><a href="index.html#about">About</a></li>
+            <li class="footer-link-item"><a href="#faq">FAQ</a></li>
+            <li class="footer-link-item"><a href="#enroll" class="btn-open-join">Contact</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 3: Future Conceptual Routes -->
+        <div>
+          <div class="footer-col-title">Student Portal</div>
+          <ul class="footer-links-list">
+            <li class="footer-link-item"><a href="#login" class="btn-open-login">Student Login</a></li>
+            <li class="footer-link-item"><a href="#enroll" class="btn-open-join">Register / Apply</a></li>
+            <li class="footer-link-item"><a href="#curriculum">Course Curriculum</a></li>
+            <li class="footer-link-item"><a href="#login" class="btn-open-login">Student Dashboard</a></li>
+            <li class="footer-link-item"><a href="#login" class="btn-open-login">Admin Portal</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 4: Legal -->
+        <div>
+          <div class="footer-col-title">Legal &amp; Trust</div>
+          <ul class="footer-links-list">
+            <li class="footer-link-item"><a href="#">Privacy Policy</a></li>
+            <li class="footer-link-item"><a href="#">Terms &amp; Conditions</a></li>
+            <li class="footer-link-item"><a href="#">Honor Code</a></li>
+            <li class="footer-link-item"><a href="#">Security Overview</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Bottom Bar -->
+      <div class="footer-bottom-bar">
+        <div>
+          © 2026 Synthetic Systems Academy. All rights reserved.
+        </div>
+        <div style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-purple-light);">
+          Learn AI • Build With AI • Create the Future
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- =========================================================================
+       MODAL 1: JOIN COURSE / REGISTRATION
+       ========================================================================= -->
+  <div class="modal-overlay" id="modal-join" role="dialog" aria-modal="true" aria-labelledby="modal-join-title">
+    <div class="modal-card">
+      <button class="modal-close-btn" aria-label="Close modal">&times;</button>
+      
+      <div class="modal-brand-header">
+        <div class="modal-logo-img-wrap">
+          <img src="NEXVION_logo_design_20261005164702.jpg" alt="NEXVION Logo" class="nav-logo-img">
+        </div>
+        <div>
+          <h3 class="modal-title" id="modal-join-title">Join NEXVION AI</h3>
+          <div style="font-size: 0.75rem; color: var(--accent-purple-light); font-family: var(--font-mono);">INCLUSIVE COHORT 2026</div>
+        </div>
+      </div>
+
+      <p class="modal-subtitle">
+        Reserve your priority spot for the upcoming AI Builder cohort. Zero prior experience needed.
+      </p>
+
+      <form class="modal-form" id="join-course-form">
+        <div class="form-group">
+          <label class="form-label" for="join-name">Full Name</label>
+          <input type="text" id="join-name" class="form-input" placeholder="e.g. Alex Morgan" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="join-email">Email Address</label>
+          <input type="email" id="join-email" class="form-input" placeholder="you@domain.com" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="join-role">Your Current Background</label>
+          <select id="join-role" class="form-select">
+            <option value="student">High School / College Student</option>
+            <option value="beginner">Complete Beginner to Tech</option>
+            <option value="creator">Creator / Designer</option>
+            <option value="developer">Aspiring Developer / Builder</option>
+            <option value="other">Other Curious Learner</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="margin-top: 8px;">
+          <span>Submit Priority Application</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+
+        <p class="modal-conceptual-note">
+          🔒 Secure enrollment. Cohort orientation and onboarding access links will be sent directly to your email.
+        </p>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 2: STUDENT / ADMIN PORTAL LOGIN
+       ========================================================================= -->
+  <div class="modal-overlay" id="modal-login" role="dialog" aria-modal="true" aria-labelledby="modal-login-title">
+    <div class="modal-card">
+      <button class="modal-close-btn" aria-label="Close modal">&times;</button>
+      
+      <div class="modal-brand-header">
+        <div class="modal-logo-img-wrap">
+          <img src="NEXVION_logo_design_20261005164702.jpg" alt="NEXVION Logo" class="nav-logo-img">
+        </div>
+        <div>
+          <h3 class="modal-title" id="modal-login-title">NEXVION Portal</h3>
+          <div style="font-size: 0.75rem; color: var(--accent-purple-light); font-family: var(--font-mono);">STUDENT &amp; BUILDER ACCESS</div>
+        </div>
+      </div>
+
+      <p class="modal-subtitle">
+        Enter your credentials to access your course modules and project workspace.
+      </p>
+
+      <form class="modal-form" id="login-form">
+        <div class="form-group">
+          <label class="form-label" for="login-email">Student Email</label>
+          <input type="email" id="login-email" class="form-input" placeholder="student@nexvion.ai" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="login-password">Password</label>
+          <input type="password" id="login-password" class="form-input" placeholder="••••••••••••" required>
+        </div>
+
+        <div id="login-feedback" style="display: none; font-size: 0.8125rem; font-family: var(--font-mono); padding: 10px; border-radius: 6px; background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.25);"></div>
+
+        <button type="submit" class="btn btn-primary" style="margin-top: 8px;">
+          <span>Sign In to Learning Portal</span>
+        </button>
+
+        <p class="modal-conceptual-note">
+          New to NEXVION? <a href="register.html" style="color: var(--accent-purple-light); text-decoration: underline;">Register here</a>
+        </p>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       WAITLIST & NOTIFICATION MODAL
+       ========================================================================= -->
+  <div class="modal-overlay" id="modal-waitlist" role="dialog" aria-modal="true" aria-labelledby="modal-waitlist-title">
+    <div class="modal-card">
+      <button class="modal-close-btn modal-waitlist-close" aria-label="Close modal">&times;</button>
+      
+      <div class="modal-brand-header">
+        <div class="modal-logo-img-wrap">
+          <img src="NEXVION_logo_design_20261005164702.jpg" alt="NEXVION Logo" class="nav-logo-img">
+        </div>
+        <div>
+          <h3 class="modal-title" id="modal-waitlist-title">Cohort Waitlist</h3>
+          <div style="font-size: 0.75rem; color: #F43F5E; font-family: var(--font-mono); font-weight: 700;" id="waitlist-course-name">AI CREATOR (BATCH 01)</div>
+        </div>
+      </div>
+
+      <p class="modal-subtitle">
+        Active batch capacity (30 seats) is currently full or pre-opening. Reserve your priority spot to be automatically notified when new seats or cohorts unlock.
+      </p>
+
+      <form class="modal-form" id="waitlist-form">
+        <input type="hidden" id="waitlist-course-id" name="courseId" value="ai-creator">
+        <input type="hidden" id="waitlist-batch-id" name="batchId" value="creator-batch-01">
+
+        <div class="form-group">
+          <label class="form-label" for="waitlist-name">Your Full Name</label>
+          <input type="text" id="waitlist-name" class="form-input" placeholder="Enter your full name" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="waitlist-email">Email Address</label>
+          <input type="email" id="waitlist-email" class="form-input" placeholder="you@example.com" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="margin-top: 8px;">
+          <span>Secure My Waitlist Priority</span>
+        </button>
+
+        <p class="modal-conceptual-note">
+          🔒 Zero spam policy. We will only contact you regarding seat availability for this specific tier.
+        </p>
+      </form>
+    </div>
+  </div>
+
+  <!-- JavaScript Modules -->
+  <script src="js/app.js"></script>
+  <script src="js/course-tiers.js"></script>
+  <script src="js/motion.js?v=1.0"></script>
+</body>
+</html>

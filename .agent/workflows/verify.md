@@ -237,31 +237,12 @@ Gap closure plans created.
 ───────────────────────────────────────────────────────
 ```
 
-### If BLOCKED (status: blocked):
-
-Stop phase-state updates and report the blocker to the user:
-
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- GSD ► PHASE {N} VERIFICATION BLOCKED 🛑
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Verifier encountered a blocker:
-{blocker details}
-
-Verification cannot proceed until the blocker is resolved.
-
-───────────────────────────────────────────────────────
-```
-
-Do not update phase state or commit unverified changes.
-
 ---
 
 ## 6. Commit Verification
 
 ```bash
-git add .gsd/phases/{phase}/VERIFICATION.md .gsd/STATE.md .gsd/phases/{phase}/
+git add .gsd/phases/{phase}/VERIFICATION.md
 git commit -m "docs(phase-{N}): verification report"
 ```
 

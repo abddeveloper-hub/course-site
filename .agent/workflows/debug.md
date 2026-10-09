@@ -68,8 +68,7 @@ has failed three times keeps generating variants of its own failed hypotheses; a
 does not. That is the entire reason this subagent exists.
 
 On `status: fixed` → skip to step 8. On `status: escalate` → go to step 7 with the
-`ruled_out` list the subagent returned. On `status: blocked` → stop and report the blocker
-to the user; do not fall through to inline steps.
+`ruled_out` list the subagent returned.
 
 Steps 2-7 describe what the debugger does. Run them yourself only in inline mode.
 

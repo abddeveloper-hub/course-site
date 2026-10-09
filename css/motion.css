@@ -1,0 +1,593 @@
+/* ==========================================================================
+   NEXVION AI — MOTION & 3D DESIGN LAYER  (css/motion.css)
+   --------------------------------------------------------------------------
+   Shared across index.html, course.html, dashboard.html and register.html.
+   Everything here is additive: it layers depth, reveal motion and micro
+   interactions on top of the existing design system in style.css without
+   rewriting any existing rule.
+
+   Contents
+     1.  Extended tokens
+     2.  Aurora / depth background layers
+     3.  Cursor aurora
+     4.  Scroll reveal engine (opacity + translate + scale — no transform clash)
+     5.  3D tilt cards
+     6.  Magnetic buttons & sheen
+     7.  Depth accents (section titles, dividers, stat blocks)
+     8.  Social-proof carousel
+     9.  Focus / a11y polish
+     10. Reduced motion + fallbacks
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Extended tokens (additive — inherits everything from style.css)
+   -------------------------------------------------------------------------- */
+:root {
+  --nxv-persp: 1100px;
+  --nxv-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --nxv-ease-soft: cubic-bezier(0.22, 0.61, 0.36, 1);
+
+  --nxv-depth-1: 0 1px 0 rgba(255, 255, 255, 0.05) inset, 0 10px 30px rgba(0, 0, 0, 0.45);
+  --nxv-depth-2: 0 1px 0 rgba(255, 255, 255, 0.07) inset, 0 22px 50px rgba(0, 0, 0, 0.55);
+  --nxv-depth-3:
+    0 1px 0 rgba(255, 255, 255, 0.09) inset,
+    0 34px 70px rgba(0, 0, 0, 0.6),
+    0 0 46px rgba(124, 58, 237, 0.22);
+
+  --nxv-edge: linear-gradient(
+    140deg,
+    rgba(180, 155, 255, 0.55) 0%,
+    rgba(139, 92, 246, 0.18) 34%,
+    rgba(56, 189, 248, 0.3) 68%,
+    rgba(180, 155, 255, 0.42) 100%
+  );
+}
+
+/* --------------------------------------------------------------------------
+   2. Aurora / depth background layers
+   Injected by motion.js as <div class="nxv-aurora"> so a failed script
+   simply means no aurora — never a broken page.
+   -------------------------------------------------------------------------- */
+.nxv-aurora {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 1.6s var(--nxv-ease-out);
+}
+
+.nxv-aurora.nxv-aurora-in {
+  opacity: 1;
+}
+
+.nxv-aurora__blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+}
+
+.nxv-aurora__blob--violet {
+  top: -14vh;
+  left: 8vw;
+  width: 46vw;
+  height: 46vw;
+  background: radial-gradient(circle, rgba(124, 58, 237, 0.3) 0%, rgba(124, 58, 237, 0) 68%);
+  animation: nxvDrift A 26s var(--nxv-ease-soft) infinite alternate;
+}
+
+.nxv-aurora__blob--cyan {
+  top: 24vh;
+  right: -6vw;
+  width: 40vw;
+  height: 40vw;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.2) 0%, rgba(56, 189, 248, 0) 70%);
+  animation: nxvDrift B 32s var(--nxv-ease-soft) infinite alternate;
+}
+
+.nxv-aurora__blob--indigo {
+  bottom: -18vh;
+  left: 26vw;
+  width: 52vw;
+  height: 42vw;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.22) 0%, rgba(99, 102, 241, 0) 72%);
+  animation: nxvDrift C 38s var(--nxv-ease-soft) infinite alternate;
+}
+
+.nxv-aurora__grain {
+  position: absolute;
+  inset: -50%;
+  opacity: 0.03;
+  background-image:
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.5) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.5) 0 1px, transparent 1px 3px);
+  mix-blend-mode: overlay;
+}
+
+@keyframes nxvDrift {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to { transform: translate3d(6vw, 7vh, 0) scale(1.16); }
+}
+
+/* --------------------------------------------------------------------------
+   3. Cursor aurora — soft light that trails the pointer (fine pointers only)
+   -------------------------------------------------------------------------- */
+#nxv-cursor-aurora {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 520px;
+  height: 520px;
+  margin: -260px 0 0 -260px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0;
+  background: radial-gradient(
+    circle,
+    rgba(139, 92, 246, 0.14) 0%,
+    rgba(56, 189, 248, 0.08) 38%,
+    rgba(139, 92, 246, 0) 70%
+  );
+  will-change: transform, opacity;
+  transition: opacity 0.5s var(--nxv-ease-out);
+}
+
+#nxv-cursor-aurora.nxv-on {
+  opacity: 1;
+}
+
+@media (hover: none), (pointer: coarse) {
+  #nxv-cursor-aurora {
+    display: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   4. Scroll reveal engine
+   Uses the independent `translate` / `scale` / `filter` properties so it never
+   collides with the `transform` used by the 3D tilt below.
+   Attributes are only added by JS, so a failed script never hides content.
+   -------------------------------------------------------------------------- */
+[data-nxv-reveal] {
+  opacity: 1;
+  transition:
+    opacity 0.85s var(--nxv-ease-out),
+    translate 0.95s var(--nxv-ease-out),
+    scale 0.95s var(--nxv-ease-out),
+    filter 0.85s var(--nxv-ease-out);
+  transition-delay: var(--nxv-delay, 0ms);
+}
+
+[data-nxv-reveal='up'],
+[data-nxv-reveal='down'],
+[data-nxv-reveal='left'],
+[data-nxv-reveal='right'],
+[data-nxv-reveal='scale'],
+[data-nxv-reveal='blur'] {
+  translate: 0 0;
+  scale: 1;
+}
+
+[data-nxv-reveal].nxv-in {
+  opacity: 1;
+  translate: 0 0;
+  scale: 1;
+  filter: none;
+}
+
+/* Release the compositor hint once the element has landed. */
+[data-nxv-reveal].nxv-settled {
+  will-change: auto;
+}
+
+/* --------------------------------------------------------------------------
+   5. 3D tilt cards
+   motion.js adds `.nxv-tilt` and drives --nxv-rx / --nxv-ry / --nxv-tz.
+   `position` is deliberately never changed, so no existing absolutely
+   positioned child can break.
+   -------------------------------------------------------------------------- */
+.nxv-tilt {
+  transform: perspective(var(--nxv-persp)) rotateX(var(--nxv-rx, 0deg)) rotateY(var(--nxv-ry, 0deg))
+    translateZ(var(--nxv-tz, 0px));
+  transform-style: preserve-3d;
+  transition: transform 0.4s var(--nxv-ease-out), box-shadow 0.4s var(--nxv-ease-out),
+    border-color 0.4s var(--nxv-ease-out);
+}
+
+.nxv-tilt.nxv-tilt-live {
+  transition: transform 0.08s linear, box-shadow 0.4s var(--nxv-ease-out),
+    border-color 0.4s var(--nxv-ease-out);
+}
+
+.nxv-tilt.nxv-tilt-hover {
+  border-color: var(--border-hover);
+  box-shadow: var(--nxv-depth-3);
+}
+
+/* Children can be lifted out of the card plane for real parallax depth. */
+.nxv-tilt .nxv-layer-1 {
+  transform: translateZ(24px);
+}
+
+.nxv-tilt .nxv-layer-2 {
+  transform: translateZ(44px);
+}
+
+/* --------------------------------------------------------------------------
+   6. Magnetic buttons & sheen
+   -------------------------------------------------------------------------- */
+/* Keeps the magnetic follow swift while preserving the existing hover
+   transitions on background, border and shadow. */
+.nxv-magnetic {
+  transition:
+    transform 0.28s var(--nxv-ease-out),
+    box-shadow 0.3s var(--nxv-ease-out),
+    background-color 0.3s var(--nxv-ease-out),
+    border-color 0.3s var(--nxv-ease-out),
+    color 0.3s var(--nxv-ease-out);
+  will-change: transform;
+}
+
+.btn {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* Sweep-in sheen. Deliberately excludes .btn-primary, which already owns a
+   diagonal shimmer via style.css (.btn-primary::after). */
+.btn:not(.btn-primary)::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -140%;
+  width: 60%;
+  height: 100%;
+  z-index: -1;
+  background: linear-gradient(
+    100deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.28) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: skewX(-18deg);
+  transition: left 0.65s var(--nxv-ease-out);
+  pointer-events: none;
+}
+
+.btn:not(.btn-primary):hover::before,
+.btn:not(.btn-primary):focus-visible::before {
+  left: 160%;
+}
+
+/* --------------------------------------------------------------------------
+   7. Depth accents
+   -------------------------------------------------------------------------- */
+.section-title {
+  position: relative;
+}
+
+.nxv-title-underline {
+  display: block;
+  width: 64px;
+  height: 3px;
+  margin: 18px auto 0;
+  border-radius: 999px;
+  background: var(--nxv-edge);
+  background-size: 200% auto;
+  animation: nxvEdgeFlow 6s linear infinite;
+  box-shadow: 0 0 22px rgba(139, 92, 246, 0.5);
+}
+
+.nxv-title-underline--left {
+  margin-left: 0;
+}
+
+@keyframes nxvEdgeFlow {
+  to {
+    background-position: 200% center;
+  }
+}
+
+/* Animated counters used by the stat strips. */
+[data-nxv-count] {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Soft top glow used to separate major sections. */
+.nxv-section-glow {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: min(760px, 84%);
+  height: 1px;
+  transform: translateX(-50%);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(139, 92, 246, 0.55) 50%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   8. Social-proof carousel
+   -------------------------------------------------------------------------- */
+.nxv-carousel {
+  position: relative;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 8px 0 0;
+}
+
+.nxv-carousel__viewport {
+  perspective: 1600px;
+  overflow: hidden;
+  padding: 26px 0 34px;
+  mask-image: linear-gradient(90deg, transparent 0, #000 7%, #000 93%, transparent 100%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 7%, #000 93%, transparent 100%);
+}
+
+.nxv-carousel__track {
+  display: flex;
+  align-items: stretch;
+  gap: 24px;
+  transform-style: preserve-3d;
+  transition: transform 0.75s var(--nxv-ease-out);
+  will-change: transform;
+}
+
+.nxv-slide {
+  flex: 0 0 clamp(280px, 46%, 460px);
+  transform-style: preserve-3d;
+  transform: perspective(1400px) rotateY(var(--nxv-slide-ry, 0deg)) scale(var(--nxv-slide-s, 1))
+    translateZ(var(--nxv-slide-z, 0px));
+  opacity: var(--nxv-slide-o, 1);
+  transition: transform 0.75s var(--nxv-ease-out), opacity 0.6s var(--nxv-ease-out),
+    filter 0.6s var(--nxv-ease-out);
+  filter: saturate(var(--nxv-slide-sat, 1)) blur(var(--nxv-slide-blur, 0px));
+}
+
+.nxv-slide[aria-hidden='true'] {
+  cursor: pointer;
+}
+
+.nxv-quote {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  height: 100%;
+  padding: 30px 30px 26px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(160deg, rgba(24, 29, 46, 0.92) 0%, rgba(13, 16, 26, 0.94) 100%);
+  border: 1px solid var(--border-subtle);
+  backdrop-filter: blur(16px);
+  box-shadow: var(--nxv-depth-2);
+  position: relative;
+  overflow: hidden;
+}
+
+.nxv-quote::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: var(--nxv-edge);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.5s var(--nxv-ease-out);
+  pointer-events: none;
+}
+
+.nxv-slide.nxv-slide--active .nxv-quote::after {
+  opacity: 1;
+}
+
+.nxv-quote__mark {
+  font-family: var(--font-mono);
+  font-size: 2.6rem;
+  line-height: 0.6;
+  color: var(--accent-purple);
+  opacity: 0.55;
+}
+
+.nxv-quote__text {
+  font-size: 1.0625rem;
+  line-height: 1.68;
+  color: var(--text-secondary);
+  flex: 1;
+}
+
+.nxv-quote__meta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.nxv-quote__avatar {
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: #fff;
+  background: linear-gradient(135deg, var(--accent-violet) 0%, var(--accent-cyan) 100%);
+  box-shadow: 0 0 22px rgba(124, 58, 237, 0.4);
+}
+
+.nxv-quote__name {
+  font-weight: 700;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  line-height: 1.3;
+}
+
+.nxv-quote__role {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+
+.nxv-quote__tag {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent-purple-light);
+  background: rgba(139, 92, 246, 0.14);
+  border: 1px solid rgba(139, 92, 246, 0.32);
+  border-radius: 999px;
+  padding: 4px 10px;
+  white-space: nowrap;
+}
+
+.nxv-carousel__controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  margin-top: 6px;
+}
+
+.nxv-carousel__btn {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--text-secondary);
+  background: rgba(20, 24, 36, 0.9);
+  border: 1px solid var(--border-subtle);
+  transition: color 0.3s var(--nxv-ease-out), border-color 0.3s var(--nxv-ease-out),
+    transform 0.3s var(--nxv-ease-out), box-shadow 0.3s var(--nxv-ease-out);
+}
+
+.nxv-carousel__btn:hover {
+  color: var(--text-primary);
+  border-color: var(--border-active);
+  transform: translateY(-2px);
+  box-shadow: 0 0 26px rgba(139, 92, 246, 0.35);
+}
+
+.nxv-carousel__dots {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.nxv-dot {
+  width: 9px;
+  height: 9px;
+  padding: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+  transition: width 0.45s var(--nxv-ease-out), background 0.45s var(--nxv-ease-out);
+}
+
+.nxv-dot[aria-selected='true'] {
+  width: 30px;
+  background: var(--nxv-edge);
+  background-size: 200% auto;
+  animation: nxvEdgeFlow 5s linear infinite;
+}
+
+.nxv-carousel__note {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+
+/* No-JS fallback: without the engine the track is never transformed, so let it
+   scroll horizontally instead of clipping the remaining slides. */
+.nxv-carousel:not([data-nxv-carousel-ready]) .nxv-carousel__viewport {
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+}
+
+.nxv-carousel:not([data-nxv-carousel-ready]) .nxv-slide {
+  scroll-snap-align: center;
+}
+
+@media (max-width: 720px) {
+  .nxv-slide {
+    flex-basis: 82%;
+  }
+
+  .nxv-carousel__viewport {
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
+
+  .nxv-quote {
+    padding: 24px 22px 20px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   9. Focus / a11y polish
+   -------------------------------------------------------------------------- */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--accent-purple-light);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+.nxv-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* --------------------------------------------------------------------------
+   10. Reduced motion + fallbacks
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  [data-nxv-reveal] {
+    opacity: 1 !important;
+    translate: 0 0 !important;
+    scale: 1 !important;
+    filter: none !important;
+    transition: none !important;
+  }
+
+  .nxv-aurora__blob,
+  .nxv-title-underline,
+  .nxv-dot[aria-current='true'] {
+    animation: none !important;
+  }
+
+  .nxv-tilt {
+    transform: none !important;
+    transform-style: flat;
+  }
+
+  .nxv-carousel__track,
+  .nxv-slide {
+    transition: none !important;
+  }
+
+  .btn::before {
+    display: none;
+  }
+}

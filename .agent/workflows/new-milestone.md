@@ -101,53 +101,33 @@ If DECISIONS.md or JOURNAL.md contain entries from a previous milestone, reset t
 
 **PowerShell:**
 ```powershell
-# Only reset after confirming prior history is safely archived (or archive it first)
-$archiveDir = ".gsd/milestones/_archive"
+# Only reset if files are non-empty and no archive exists yet
 if ((Test-Path ".gsd/DECISIONS.md") -and (Get-Content ".gsd/DECISIONS.md" | Measure-Object -Line).Lines -gt 5) {
-    $archived = Get-ChildItem -Path ".gsd/milestones" -Filter "DECISIONS.md" -Recurse -ErrorAction SilentlyContinue
-    if (-not $archived) {
-        New-Item -ItemType Directory -Force $archiveDir | Out-Null
-        Copy-Item ".gsd/DECISIONS.md" "$archiveDir/DECISIONS.md"
-    }
     Set-Content ".gsd/DECISIONS.md" "# Decisions`n`n---`n"
 }
 if ((Test-Path ".gsd/JOURNAL.md") -and (Get-Content ".gsd/JOURNAL.md" | Measure-Object -Line).Lines -gt 5) {
-    $archivedJ = Get-ChildItem -Path ".gsd/milestones" -Filter "JOURNAL.md" -Recurse -ErrorAction SilentlyContinue
-    if (-not $archivedJ) {
-        New-Item -ItemType Directory -Force $archiveDir | Out-Null
-        Copy-Item ".gsd/JOURNAL.md" "$archiveDir/JOURNAL.md"
-    }
     Set-Content ".gsd/JOURNAL.md" "# Journal`n`n---`n"
 }
 ```
 
 **Bash:**
 ```bash
-archiveDir=".gsd/milestones/_archive"
 if [ -f ".gsd/DECISIONS.md" ] && [ "$(wc -l < .gsd/DECISIONS.md)" -gt 5 ]; then
-    if ! find .gsd/milestones -name "DECISIONS.md" 2>/dev/null | grep -q .; then
-        mkdir -p "$archiveDir"
-        cp .gsd/DECISIONS.md "$archiveDir/DECISIONS.md"
-    fi
     printf '# Decisions\n\n---\n' > .gsd/DECISIONS.md
 fi
 if [ -f ".gsd/JOURNAL.md" ] && [ "$(wc -l < .gsd/JOURNAL.md)" -gt 5 ]; then
-    if ! find .gsd/milestones -name "JOURNAL.md" 2>/dev/null | grep -q .; then
-        mkdir -p "$archiveDir"
-        cp .gsd/JOURNAL.md "$archiveDir/JOURNAL.md"
-    fi
     printf '# Journal\n\n---\n' > .gsd/JOURNAL.md
 fi
 ```
 
-> **Note:** Confirms history is archived (or archives to milestones) before resetting, avoiding accidental data loss. If running `/complete-milestone` first, files are already archived and reset.
+> **Note:** Only resets if files have grown beyond a header. If running `/complete-milestone` first, files are already archived and reset.
 
 ---
 
 ## 6. Commit
 
 ```bash
-git add .gsd/ROADMAP.md .gsd/STATE.md .gsd/DECISIONS.md .gsd/JOURNAL.md
+git add .gsd/ROADMAP.md .gsd/STATE.md
 git commit -m "docs: create milestone {name}"
 ```
 

@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NEXVION AI — Admin Sign In</title>
+  <meta name="description" content="NEXVION AI Administration Portal — Secure admin sign-in.">
+  <meta name="robots" content="noindex, nofollow">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/jpeg" href="/NEXVION_logo_design_20261005164702.jpg">
+
+  <!-- Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-base: #08090d;
+      --bg-surface: #0f1117;
+      --bg-elevated: #161923;
+      --bg-card: #1a1f2e;
+      --border: rgba(255,255,255,0.07);
+      --border-active: rgba(99,102,241,0.5);
+      --accent: #6366f1;
+      --accent-glow: rgba(99,102,241,0.25);
+      --accent-hover: #818cf8;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #475569;
+      --error: #f87171;
+      --error-bg: rgba(248,113,113,0.1);
+      --success: #34d399;
+      --font: 'Geist', 'Space Grotesk', system-ui, sans-serif;
+      --radius: 12px;
+      --radius-lg: 20px;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg-base);
+      color: var(--text-primary);
+      font-family: var(--font);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: -20%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 700px;
+      height: 700px;
+      background: radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    body::after {
+      content: '';
+      position: fixed;
+      bottom: -10%;
+      right: -10%;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(139,92,246,0.08) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .login-container {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .login-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 36px;
+      justify-content: center;
+    }
+    .login-brand img {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      object-fit: cover;
+    }
+    .login-brand-text { display: flex; flex-direction: column; }
+    .login-brand-name {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--text-primary);
+    }
+    .login-brand-sub {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .login-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 40px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 32px 64px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.04) inset;
+      animation: fadeSlideUp 0.4s ease both;
+    }
+
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .login-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+      letter-spacing: -0.02em;
+    }
+    .login-subtitle {
+      font-size: 13.5px;
+      color: var(--text-secondary);
+      margin-bottom: 32px;
+      line-height: 1.5;
+    }
+
+    .login-field { margin-bottom: 18px; }
+    .login-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .login-input-wrap { position: relative; }
+    .login-input {
+      width: 100%;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 13px 16px;
+      font-size: 14px;
+      font-family: var(--font);
+      color: var(--text-primary);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .login-input:focus {
+      border-color: var(--border-active);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+    .login-input::placeholder { color: var(--text-muted); }
+
+    .toggle-pw {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 13px;
+      padding: 4px;
+      transition: color 0.2s;
+    }
+    .toggle-pw:hover { color: var(--text-secondary); }
+
+    .login-error {
+      display: none;
+      background: var(--error-bg);
+      border: 1px solid rgba(248,113,113,0.25);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      font-size: 13px;
+      color: var(--error);
+      margin-bottom: 18px;
+      line-height: 1.5;
+      animation: shake 0.4s ease;
+    }
+    .login-error.visible { display: block; }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%  { transform: translateX(-6px); }
+      40%  { transform: translateX(6px); }
+      60%  { transform: translateX(-4px); }
+      80%  { transform: translateX(4px); }
+    }
+
+    .login-notice {
+      display: none;
+      background: rgba(99,102,241,0.08);
+      border: 1px solid rgba(99,102,241,0.2);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+    .login-notice.visible { display: block; }
+    .login-notice strong { color: var(--accent-hover); }
+
+    .login-btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 600;
+      font-family: var(--font);
+      cursor: pointer;
+      letter-spacing: 0.03em;
+      transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+      box-shadow: 0 4px 20px rgba(99,102,241,0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    .login-btn:hover:not(:disabled) {
+      opacity: 0.92;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 28px rgba(99,102,241,0.45);
+    }
+    .login-btn:active:not(:disabled) { transform: translateY(0); }
+    .login-btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+
+    .btn-spinner {
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: none;
+    }
+    .login-btn.loading .btn-spinner { display: block; }
+    .login-btn.loading .btn-text { opacity: 0.7; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .login-footer {
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .security-badges {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+    .sec-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      color: var(--text-muted);
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 4px 9px;
+    }
+
+    .dev-bypass-wrap {
+      display: none;
+      margin-top: 16px;
+      text-align: center;
+    }
+    .dev-bypass-wrap.visible { display: block; }
+    .dev-bypass-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-muted);
+      font-size: 12px;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-family: var(--font);
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .dev-bypass-btn:hover { border-color: var(--border-active); color: var(--text-secondary); }
+
+    @media (max-width: 480px) {
+      .login-card { padding: 28px 22px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-container">
+
+    <div class="login-brand">
+      <img src="/NEXVION_logo_design_20261005164702.jpg" alt="NEXVION AI">
+      <div class="login-brand-text">
+        <span class="login-brand-name">NEXVION AI</span>
+        <span class="login-brand-sub">Admin Operations</span>
+      </div>
+    </div>
+
+    <div class="login-card">
+      <h1 class="login-title">Sign in to continue</h1>
+      <p class="login-subtitle">Authorized personnel only. All sessions are audited and logged.</p>
+
+      <div class="login-notice" id="firebaseNotice">
+        <strong>&#9888; Firebase not configured.</strong> Running in local/demo mode.<br>
+        Add your Firebase credentials to <code>js/firebase-config.js</code> to enable real authentication.
+      </div>
+
+      <div class="login-error" id="loginError" role="alert" aria-live="assertive"></div>
+
+      <form id="loginForm" novalidate>
+        <div class="login-field">
+          <label class="login-label" for="loginEmail">Email address</label>
+          <div class="login-input-wrap">
+            <input
+              class="login-input"
+              id="loginEmail"
+              type="email"
+              name="email"
+              autocomplete="username"
+              placeholder="admin@nexvion.ai"
+              required
+              aria-required="true"
+            >
+          </div>
+        </div>
+
+        <div class="login-field">
+          <label class="login-label" for="loginPassword">Password</label>
+          <div class="login-input-wrap">
+            <input
+              class="login-input"
+              id="loginPassword"
+              type="password"
+              name="password"
+              autocomplete="current-password"
+              placeholder="Enter your password"
+              required
+              aria-required="true"
+            >
+            <button type="button" class="toggle-pw" id="togglePw" aria-label="Toggle password visibility">&#128065;</button>
+          </div>
+        </div>
+
+        <button type="submit" class="login-btn" id="loginBtn">
+          <div class="btn-spinner"></div>
+          <span class="btn-text">Sign In to Admin Portal</span>
+        </button>
+      </form>
+
+      <div class="dev-bypass-wrap" id="devBypassWrap">
+        <button class="dev-bypass-btn" id="devBypassBtn" type="button">
+          &#128295; Enter Portal (Dev/Demo Mode &mdash; no Firebase)
+        </button>
+      </div>
+
+      <div class="login-footer">
+        This portal is restricted to verified administrators.<br>
+        Unauthorized access attempts are recorded.
+        <div class="security-badges">
+          <span class="sec-badge">&#128274; Encrypted</span>
+          <span class="sec-badge">&#128202; Audited</span>
+          <span class="sec-badge">&#128336; Session-bound</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase SDK (compat — works without ES modules/bundlers) -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
+  <script>
+    (function () {
+      'use strict';
+
+      var FIREBASE_CONFIG = {
+        apiKey: "AIzaSyCT5ieblE-Uj_fvBfeodPackWJ38M_RuF4",
+        authDomain: "nexvion-ai.firebaseapp.com",
+        projectId: "nexvion-ai",
+        storageBucket: "nexvion-ai.firebasestorage.app",
+        messagingSenderId: "916097030104",
+        appId: "1:916097030104:web:e9b393b7fa8c89a84b84ad",
+        measurementId: "G-Q09E6TX5XJ"
+      };
+
+      var form       = document.getElementById('loginForm');
+      var emailInput = document.getElementById('loginEmail');
+      var pwInput    = document.getElementById('loginPassword');
+      var loginBtn   = document.getElementById('loginBtn');
+      var errorBox   = document.getElementById('loginError');
+      var toggleBtn  = document.getElementById('togglePw');
+      var notice     = document.getElementById('firebaseNotice');
+      var bypassWrap = document.getElementById('devBypassWrap');
+      var bypassBtn  = document.getElementById('devBypassBtn');
+
+      // Toggle password visibility
+      toggleBtn.addEventListener('click', function () {
+        var isPw = pwInput.type === 'password';
+        pwInput.type = isPw ? 'text' : 'password';
+        toggleBtn.innerHTML = isPw ? '&#128584;' : '&#128065;';
+      });
+
+      function showError(msg) {
+        errorBox.textContent = msg;
+        errorBox.classList.add('visible');
+        errorBox.style.animation = 'none';
+        requestAnimationFrame(function () { errorBox.style.animation = ''; });
+      }
+      function clearError() {
+        errorBox.textContent = '';
+        errorBox.classList.remove('visible');
+      }
+      function setLoading(on) {
+        loginBtn.disabled = on;
+        loginBtn.classList.toggle('loading', on);
+      }
+
+      function mapFirebaseError(code) {
+        var map = {
+          'auth/user-not-found':         'No admin account found for this email address.',
+          'auth/wrong-password':         'Incorrect password. Please try again.',
+          'auth/invalid-email':          'Please enter a valid email address.',
+          'auth/invalid-credential':     'Invalid email or password.',
+          'auth/too-many-requests':      'Too many failed attempts. Please wait and try again.',
+          'auth/user-disabled':          'This admin account has been disabled. Contact the system administrator.',
+          'auth/network-request-failed': 'Network error. Check your connection and try again.'
+        };
+        return map[code] || 'Sign-in failed. Please check your credentials.';
+      }
+
+      // Firebase initialization
+      var firebaseReady = false;
+      var auth = null;
+
+      try {
+        if (typeof firebase !== 'undefined' && firebase.initializeApp) {
+          firebase.initializeApp(FIREBASE_CONFIG);
+          auth = firebase.auth();
+          firebaseReady = true;
+
+          // If already signed in, skip login
+          auth.onAuthStateChanged(function (user) {
+            if (user) {
+              window.location.replace('/admin.html');
+            }
+          });
+        }
+      } catch (e) {
+        console.warn('[NexvionAuth] Firebase init failed:', e.message);
+        firebaseReady = false;
+      }
+
+      if (!firebaseReady) {
+        notice.classList.add('visible');
+        bypassWrap.classList.add('visible');
+      }
+
+      // Dev bypass for local/demo mode
+      bypassBtn.addEventListener('click', function () {
+        sessionStorage.setItem('nexvion_admin_auth', JSON.stringify({
+          mode: 'demo',
+          email: 'demo@nexvion.local',
+          displayName: 'Demo Admin',
+          role: 'Super Admin',
+          timestamp: Date.now()
+        }));
+        window.location.replace('/admin.html');
+      });
+
+      // Form submit
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        clearError();
+
+        var email    = emailInput.value.trim();
+        var password = pwInput.value;
+
+        if (!email)    { showError('Email address is required.'); emailInput.focus(); return; }
+        if (!password) { showError('Password is required.'); pwInput.focus(); return; }
+
+        if (!firebaseReady) {
+          showError('Firebase is not configured. Use the dev bypass button below to enter in demo mode.');
+          return;
+        }
+
+        setLoading(true);
+
+        auth.signInWithEmailAndPassword(email, password)
+          .then(function () {
+            // onAuthStateChanged will redirect
+          })
+          .catch(function (err) {
+            console.error('[NexvionAuth] Sign-in error:', err);
+            showError(mapFirebaseError(err.code));
+            setLoading(false);
+          });
+      });
+
+    })();
+  </script>
+</body>
+</html>
