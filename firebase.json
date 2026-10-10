@@ -3,11 +3,66 @@
     "public": ".",
     "ignore": [
       "firebase.json",
+      "firestore.rules",
+      "firestore.indexes.json",
+      "storage.rules",
+      ".env",
+      ".env.*",
+      ".gitignore",
+      "*.md",
       "**/.*",
       "**/node_modules/**",
-      "firestore.rules",
       "scratch/**",
-      "docs/**"
+      "docs/**",
+      "scripts/**",
+      "adapters/**",
+      "server.js",
+      "package.json",
+      "VERSION",
+      "model_capabilities.yaml"
+    ],
+    "cleanUrls": true,
+    "trailingSlash": false,
+    "headers": [
+      {
+        "source": "**/*.@(js|css|woff2|woff|ttf)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=86400, stale-while-revalidate=3600"
+          }
+        ]
+      },
+      {
+        "source": "**/*.@(jpg|jpeg|png|webp|svg|ico)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=604800"
+          }
+        ]
+      },
+      {
+        "source": "**/*.html",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, no-store, must-revalidate"
+          },
+          {
+            "key": "X-Content-Type-Options",
+            "value": "nosniff"
+          },
+          {
+            "key": "X-Frame-Options",
+            "value": "SAMEORIGIN"
+          },
+          {
+            "key": "Referrer-Policy",
+            "value": "strict-origin-when-cross-origin"
+          }
+        ]
+      }
     ],
     "rewrites": [
       {
@@ -17,6 +72,38 @@
       {
         "source": "/admin/login",
         "destination": "/admin-login.html"
+      },
+      {
+        "source": "/verify-certificate/**",
+        "destination": "/verify-certificate.html"
+      },
+      {
+        "source": "/course",
+        "destination": "/course.html"
+      },
+      {
+        "source": "/checkout",
+        "destination": "/checkout.html"
+      },
+      {
+        "source": "/register",
+        "destination": "/register.html"
+      },
+      {
+        "source": "/dashboard",
+        "destination": "/dashboard.html"
+      }
+    ],
+    "redirects": [
+      {
+        "source": "/home",
+        "destination": "/",
+        "type": 301
+      },
+      {
+        "source": "/login",
+        "destination": "/admin-login.html",
+        "type": 301
       }
     ]
   },

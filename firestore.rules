@@ -58,7 +58,7 @@ service cloud.firestore {
     }
 
     function isAnalyst() {
-      return isAuthenticated() && (isSuperAdmin() || getAdminRole() == 'Analyst' || isContentManager() || isStudentManager());
+      return isAuthenticated() && (isSuperAdmin() || getAdminRole() == 'Analyst' || isContentManager() || isStudentManager() || getAdminRole() == 'Communications Manager' || getAdminRole() == 'Support Manager');
     }
 
     function isAcademicDirector() {
@@ -286,8 +286,10 @@ service cloud.firestore {
     // -----------------------------------------------------------------------
     // Payments (Tuition & Billing Records)
     // -----------------------------------------------------------------------
+    // SECURITY: Strictly restricted to Finance Manager, Super Admin, and Owner only.
+    // Analyst role is explicitly DENIED — financial ledger access requires Finance role.
     match /payments/{paymentId} {
-      allow read: if isFinanceManager() || (isAuthenticated() && getAdminRole() == 'Analyst');
+      allow read: if isFinanceManager();
       allow create, update: if isFinanceManager();
       allow delete: if false;
     }

@@ -1,4 +1,24 @@
-node_modules/
+# Secret environment files — never commit these
 .env
+.env.local
+.env.production
+.env.staging
+.env.*.local
+
+# Template files are safe to commit (no real secrets)
+# .env.example ✓
+# .env.development ✓
+
+# Node modules
+node_modules/
+
+# OS
 .DS_Store
 Thumbs.db
+
+# IDE
+.vscode/settings.json
+
+# Logs
+*.log
+npm-debug.log*

@@ -1,7 +1,15 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
-const url = require('url');
+
+// Allowed CORS origins — localhost for dev, production domain in prod
+const ALLOWED_ORIGINS = [
+  'http://localhost:3000',
+  'http://127.0.0.1:3000',
+  'https://nexvion-ai.firebaseapp.com',
+  'https://nexvion-ai.web.app',
+  process.env.ALLOWED_ORIGIN
+].filter(Boolean);
 // Load environment variables from .env if present
 if (fs.existsSync(path.join(__dirname, '.env'))) {
   const envContent = fs.readFileSync(path.join(__dirname, '.env'), 'utf8');
@@ -252,11 +260,17 @@ const DEFAULT_SEED_SUPPORT_TICKETS = [
 ];
 DEFAULT_SEED_SUPPORT_TICKETS.forEach(t => SUPPORT_TICKETS_REGISTRY.set(t.id, JSON.parse(JSON.stringify(t))));
 
-function sendJson(res, statusCode, data) {
+function getCorsOrigin(reqOrigin) {
+  if (!reqOrigin) return ALLOWED_ORIGINS[0];
+  return ALLOWED_ORIGINS.includes(reqOrigin) ? reqOrigin : ALLOWED_ORIGINS[0];
+}
+
+function sendJson(res, statusCode, data, reqOrigin) {
   res.writeHead(statusCode, {
     'Content-Type': 'application/json; charset=utf-8',
     'Cache-Control': 'no-store, no-cache, must-revalidate',
-    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Origin': getCorsOrigin(reqOrigin),
+    'Vary': 'Origin',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-nexvion-signature, webhook-signature, x-admin-role'
   });
   res.end(JSON.stringify(data));
@@ -284,13 +298,17 @@ function parseJsonBody(req) {
 }
 
 const server = http.createServer((req, res) => {
-  const parsedUrl = url.parse(req.url, true);
+  // Use WHATWG URL API (no deprecated url.parse)
+  const parsedUrl = new URL(req.url, `http://${req.headers.host || '127.0.0.1:3000'}`);
+  parsedUrl.query = Object.fromEntries(parsedUrl.searchParams.entries());
   let pathname = decodeURIComponent(parsedUrl.pathname);
+  const reqOrigin = req.headers.origin || '';
 
   // Handle CORS preflight
   if (req.method === 'OPTIONS' && pathname.startsWith('/api/')) {
     res.writeHead(204, {
-      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Origin': getCorsOrigin(reqOrigin),
+      'Vary': 'Origin',
       'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-nexvion-signature, webhook-signature, x-admin-role'
     });
@@ -302,8 +320,11 @@ const server = http.createServer((req, res) => {
   if (pathname === '/api/firebase/config' && req.method === 'GET') {
     const requiredEnvVars = ['FIREBASE_API_KEY', 'FIREBASE_AUTH_DOMAIN', 'FIREBASE_PROJECT_ID', 'FIREBASE_STORAGE_BUCKET', 'FIREBASE_APP_ID'];
     const missing = requiredEnvVars.filter(k => !process.env[k]);
+    // NOTE: apiKey is intentionally included — it is a public browser key for Firebase SDK initialization.
+    // It is NOT a secret. Firebase security is enforced via Firestore Rules and Auth Claims, NOT this key.
     sendJson(res, 200, {
       configured: missing.length === 0,
+      apiKey: process.env.FIREBASE_API_KEY || 'AIzaSyCT5ieblE-Uj_fvBfeodPackWJ38M_RuF4',
       projectId: process.env.FIREBASE_PROJECT_ID || 'nexvion-ai',
       authDomain: process.env.FIREBASE_AUTH_DOMAIN || 'nexvion-ai.firebaseapp.com',
       storageBucket: process.env.FIREBASE_STORAGE_BUCKET || 'nexvion-ai.firebasestorage.app',
@@ -311,7 +332,7 @@ const server = http.createServer((req, res) => {
       appId: process.env.FIREBASE_APP_ID || '1:916097030104:web:e9b393b7fa8c89a84b84ad',
       measurementId: process.env.FIREBASE_MEASUREMENT_ID || 'G-Q09E6TX5XJ',
       missingVariables: missing
-    });
+    }, reqOrigin);
     return;
   }
 
@@ -327,7 +348,7 @@ const server = http.createServer((req, res) => {
         'auditLogs', 'settings'
       ],
       timestamp: new Date().toISOString()
-    });
+    }, reqOrigin);
     return;
   }
 
@@ -1808,10 +1829,17 @@ const server = http.createServer((req, res) => {
     const ext = path.extname(safePath).toLowerCase();
     const contentType = MIME_TYPES[ext] || 'application/octet-stream';
 
+    // Static assets: allow broad caching for fonts/images; no-cache for HTML/JS
+    const isStaticAsset = ['.woff', '.woff2', '.ttf', '.png', '.jpg', '.jpeg', '.webp', '.svg', '.ico'].includes(ext);
+    const cacheHeader = isStaticAsset
+      ? 'public, max-age=86400, stale-while-revalidate=3600'
+      : 'no-cache, no-store, must-revalidate';
+
     res.writeHead(200, {
       'Content-Type': contentType,
-      'Cache-Control': 'no-cache, no-store, must-revalidate',
-      'Access-Control-Allow-Origin': '*'
+      'Cache-Control': cacheHeader,
+      'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'SAMEORIGIN'
     });
 
     const fileStream = fs.createReadStream(safePath);
@@ -1819,6 +1847,8 @@ const server = http.createServer((req, res) => {
   });
 });
 
-server.listen(PORT, '127.0.0.1', () => {
-  console.log(`NEXVION AI Server running at http://127.0.0.1:${PORT}/`);
+const HOST = process.env.HOST || '127.0.0.1';
+server.listen(PORT, HOST, () => {
+  const env = process.env.NODE_ENV || 'development';
+  console.log(`NEXVION AI Server [${env}] running at http://${HOST}:${PORT}/`);
 });
