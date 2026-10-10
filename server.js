@@ -69,6 +69,10 @@ const SUPPORT_TICKETS_REGISTRY = new Map();
 const DEFAULT_SEED_SUPPORT_TICKETS = [];
 DEFAULT_SEED_SUPPORT_TICKETS.forEach(t => SUPPORT_TICKETS_REGISTRY.set(t.id, JSON.parse(JSON.stringify(t))));
 
+// Registered Students & Admissions Datastores
+const REGISTERED_STUDENTS_REGISTRY = new Map();
+const ENROLLMENTS_REGISTRY = new Map();
+
 function getCorsOrigin(reqOrigin) {
   if (!reqOrigin) return ALLOWED_ORIGINS[0];
   return ALLOWED_ORIGINS.includes(reqOrigin) ? reqOrigin : ALLOWED_ORIGINS[0];
@@ -431,6 +435,100 @@ const server = http.createServer((req, res) => {
       }));
 
     sendJson(res, 200, { userId, devices: userDevices });
+    return;
+  }
+
+  // =========================================================================
+  // Student Registration & Admissions Telemetry Endpoints
+  // =========================================================================
+  if ((pathname === '/api/register' || pathname === '/api/students/register') && req.method === 'POST') {
+    parseJsonBody(req).then(body => {
+      const student = body || {};
+      const studentId = student.studentId || `NX-2026-${Math.floor(10000 + Math.random() * 90000)}`;
+      const name = student.fullName || student.name || 'Registered Student';
+      const email = student.email;
+
+      if (!email) {
+        return sendJson(res, 400, { error: 'Email is required for student registration.' });
+      }
+
+      const cleanStudent = {
+        id: studentId,
+        name: name,
+        email: email,
+        phone: student.phone || '',
+        country: student.country || 'Global',
+        city: student.city || '',
+        educationLevel: student.educationLevel || '',
+        institution: student.institution || '',
+        course: student.course || '',
+        enrolledCourseId: student.enrolledCourseId || 'ai-foundations',
+        enrolledCourseTitle: student.enrolledCourseTitle || 'AI Foundations: Zero to AI Native',
+        tierId: student.tierId || 'ai-foundations',
+        tierName: student.tierName || 'AI Foundations',
+        batchId: '',
+        batchName: 'Unassigned',
+        enrollmentStatus: 'Pending',
+        progressPercent: 0,
+        paymentStatus: 'Not required',
+        certificateStatus: 'Not eligible',
+        joinDate: new Date().toISOString().split('T')[0],
+        lastActive: new Date().toISOString(),
+        internalNotesList: []
+      };
+
+      REGISTERED_STUDENTS_REGISTRY.set(email, cleanStudent);
+
+      const enrId = `enr-${studentId.replace(/^NX-/, '').replace(/[^a-zA-Z0-9]/g, '')}`;
+      const cleanEnr = {
+        id: enrId,
+        studentId: studentId,
+        studentName: name,
+        email: email,
+        courseId: cleanStudent.enrolledCourseId,
+        courseTitle: cleanStudent.enrolledCourseTitle,
+        tierId: cleanStudent.tierId,
+        tierName: cleanStudent.tierName,
+        batchId: '',
+        batchName: 'Unassigned',
+        status: 'Pending',
+        paymentStatus: 'Not required',
+        submittedAt: new Date().toISOString(),
+        history: [
+          {
+            status: 'Pending',
+            timestamp: new Date().toISOString(),
+            actionBy: 'Self Registered',
+            note: 'Application received via student registration portal.'
+          }
+        ]
+      };
+
+      ENROLLMENTS_REGISTRY.set(enrId, cleanEnr);
+
+      sendJson(res, 201, {
+        success: true,
+        message: 'Student registered successfully',
+        student: cleanStudent,
+        enrollment: cleanEnr
+      });
+    }).catch(err => {
+      sendJson(res, 400, { error: err.message });
+    });
+    return;
+  }
+
+  if (pathname === '/api/students' && req.method === 'GET') {
+    sendJson(res, 200, {
+      students: Array.from(REGISTERED_STUDENTS_REGISTRY.values())
+    });
+    return;
+  }
+
+  if (pathname === '/api/enrollments' && req.method === 'GET') {
+    sendJson(res, 200, {
+      enrollments: Array.from(ENROLLMENTS_REGISTRY.values())
+    });
     return;
   }
 

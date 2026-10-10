@@ -712,6 +712,7 @@
         };
       });
       this.initFirestore();
+      this.syncRegisteredStudents();
     }
 
     validateFirebaseConfig() {
@@ -1263,6 +1264,167 @@
       if (roleObj.name === 'Owner') return true;
       return roleObj.permissions.includes(permissionKey);
     }
+
+    syncRegisteredStudents() {
+      if (typeof window === 'undefined') return;
+      try {
+        const registeredUsers = [];
+
+        // 1. Check current logged-in student in localStorage
+        if (window.localStorage) {
+          const cur = window.localStorage.getItem('nexvion_current_user');
+          if (cur) {
+            try {
+              const parsed = JSON.parse(cur);
+              if (parsed && (parsed.email || parsed.fullName)) {
+                registeredUsers.push(parsed);
+              }
+            } catch (e) {}
+          }
+
+          // 2. Check registered users list in localStorage
+          const regList = window.localStorage.getItem('nexvion_registered_users');
+          if (regList) {
+            try {
+              const parsedList = JSON.parse(regList);
+              if (Array.isArray(parsedList)) {
+                parsedList.forEach(u => {
+                  if (u && (u.email || u.fullName) && !registeredUsers.some(r => r.email === u.email)) {
+                    registeredUsers.push(u);
+                  }
+                });
+              }
+            } catch (e) {}
+          }
+        }
+
+        let modified = false;
+        if (!Array.isArray(this.state.students)) this.state.students = [];
+        if (!Array.isArray(this.state.enrollments)) this.state.enrollments = [];
+
+        registeredUsers.forEach(u => {
+          const email = u.email || `${(u.fullName || 'student').toLowerCase().replace(/\s+/g, '.')}@synthetic.nexus`;
+          const studentId = u.studentId || u.userId || `NX-2026-${Math.floor(10000 + Math.random() * 90000)}`;
+          const name = u.fullName || u.name || 'Registered Student';
+          const targetCourseId = u.enrolledCourse || 'ai-foundations';
+          const targetCourseTitle = targetCourseId.includes('builder') ? 'AI Builder: Intelligent Application Engineering'
+            : targetCourseId.includes('creator') ? 'AI Creator: Multimodal Generative Systems'
+            : targetCourseId.includes('architect') ? 'AI Architect: Enterprise AI Systems'
+            : 'AI Foundations: Zero to AI Native';
+          const targetTierId = targetCourseId.includes('builder') ? 'ai-builder'
+            : targetCourseId.includes('creator') ? 'ai-creator'
+            : targetCourseId.includes('architect') ? 'ai-architect'
+            : 'ai-foundations';
+          const targetTierName = targetTierId === 'ai-builder' ? 'AI Builder'
+            : targetTierId === 'ai-creator' ? 'AI Creator'
+            : targetTierId === 'ai-architect' ? 'AI Architect'
+            : 'AI Foundations';
+
+          // Check if student exists in store
+          let existingStudent = this.state.students.find(s => s.email === email || s.id === studentId);
+          if (!existingStudent) {
+            existingStudent = {
+              id: studentId,
+              name: name,
+              email: email,
+              phone: u.phone || '',
+              country: u.country || 'Global',
+              city: u.city || '',
+              educationLevel: u.educationLevel || '',
+              institution: u.institution || '',
+              course: u.course || '',
+              enrolledCourseId: targetCourseId,
+              enrolledCourseTitle: targetCourseTitle,
+              tierId: targetTierId,
+              tierName: targetTierName,
+              batchId: '',
+              batchName: 'Unassigned',
+              enrollmentStatus: 'Pending',
+              progressPercent: 0,
+              paymentStatus: targetTierId === 'ai-foundations' ? 'Not required' : 'Pending',
+              certificateStatus: 'Not eligible',
+              joinDate: (u.createdAt ? u.createdAt.split('T')[0] : new Date().toISOString().split('T')[0]),
+              lastActive: u.createdAt || new Date().toISOString(),
+              internalNotesList: []
+            };
+            this.state.students.unshift(existingStudent);
+            modified = true;
+          }
+
+          // Check if enrollment exists in store
+          let existingEnr = this.state.enrollments.find(e => e.email === email || e.studentId === studentId);
+          if (!existingEnr) {
+            const enrId = `enr-${studentId.replace(/^NX-/, '').replace(/[^a-zA-Z0-9]/g, '')}`;
+            const newEnr = {
+              id: enrId,
+              studentId: studentId,
+              studentName: name,
+              email: email,
+              courseId: targetCourseId,
+              courseTitle: targetCourseTitle,
+              tierId: targetTierId,
+              tierName: targetTierName,
+              batchId: '',
+              batchName: 'Unassigned',
+              status: 'Pending',
+              paymentStatus: targetTierId === 'ai-foundations' ? 'Not required' : 'Pending',
+              submittedAt: u.createdAt || new Date().toISOString(),
+              history: [
+                {
+                  status: 'Pending',
+                  timestamp: u.createdAt || new Date().toISOString(),
+                  actionBy: 'Self Registered',
+                  note: 'Application received via student registration portal.'
+                }
+              ]
+            };
+            this.state.enrollments.unshift(newEnr);
+            modified = true;
+          }
+        });
+
+        if (modified) {
+          this.saveState();
+        }
+
+        // Asynchronously check backend API endpoints as well
+        if (typeof window !== 'undefined' && window.fetch) {
+          fetch('/api/students')
+            .then(res => res.ok ? res.json() : null)
+            .then(data => {
+              if (data && Array.isArray(data.students) && data.students.length > 0) {
+                let changed = false;
+                data.students.forEach(s => {
+                  if (!this.state.students.some(st => st.email === s.email || st.id === s.id)) {
+                    this.state.students.unshift(s);
+                    changed = true;
+                  }
+                });
+                if (changed) this.saveState();
+              }
+            })
+            .catch(() => {});
+
+          fetch('/api/enrollments')
+            .then(res => res.ok ? res.json() : null)
+            .then(data => {
+              if (data && Array.isArray(data.enrollments) && data.enrollments.length > 0) {
+                let changed = false;
+                data.enrollments.forEach(e => {
+                  if (!this.state.enrollments.some(en => en.email === e.email || en.id === e.id)) {
+                    this.state.enrollments.unshift(e);
+                    changed = true;
+                  }
+                });
+                if (changed) this.saveState();
+              }
+            })
+            .catch(() => {});
+        }
+      } catch (err) {
+        console.warn('Sync registered students note:', err);
+      }
+    }
   }
 
   const store = new ProductionDataStore();
@@ -1753,7 +1915,10 @@
 
   // --- studentRepository ---
   const studentRepository = {
-    findAll: async (options = {}) => store.queryDocs('students', options),
+    findAll: async (options = {}) => {
+      store.syncRegisteredStudents();
+      return store.queryDocs('students', options);
+    },
     findById: async (id) => store.getDoc('students', id),
     create: async (studentData) => {
       const clean = {
@@ -1951,7 +2116,10 @@
 
   // --- enrollmentRepository ---
   const enrollmentRepository = {
-    findAll: async (options = {}) => store.queryDocs('enrollments', options),
+    findAll: async (options = {}) => {
+      store.syncRegisteredStudents();
+      return store.queryDocs('enrollments', options);
+    },
     findById: async (id) => store.getDoc('enrollments', id),
     create: async (enrData) => {
       const actionAuthor = (typeof window !== 'undefined' && window.NexvionAuth && window.NexvionAuth.getDisplayName && window.NexvionAuth.getDisplayName()) || store.getCurrentRole();

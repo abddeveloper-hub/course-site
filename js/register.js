@@ -669,6 +669,85 @@
           createdAt: studentProfile.createdAt
         });
         localStorage.setItem('nexvion_registered_users', JSON.stringify(existingUsers));
+
+        // Immediately synchronize into Admin Portal state & database
+        const adminStorageKey = 'nexvion_admin_production_data_v10_pristine_clean';
+        const adminDataStr = localStorage.getItem(adminStorageKey);
+        if (adminDataStr) {
+          try {
+            const adminData = JSON.parse(adminDataStr);
+            if (!Array.isArray(adminData.students)) adminData.students = [];
+            if (!Array.isArray(adminData.enrollments)) adminData.enrollments = [];
+
+            // Add student if not already present
+            if (!adminData.students.some(s => s.email === studentProfile.email)) {
+              adminData.students.unshift({
+                id: studentProfile.studentId,
+                name: studentProfile.fullName,
+                email: studentProfile.email,
+                phone: studentProfile.phone || '',
+                country: studentProfile.country || 'Global',
+                city: studentProfile.city || '',
+                educationLevel: studentProfile.educationLevel || '',
+                institution: studentProfile.institution || '',
+                course: studentProfile.course || '',
+                enrolledCourseId: 'ai-foundations',
+                enrolledCourseTitle: 'AI Foundations: Zero to AI Native',
+                tierId: 'ai-foundations',
+                tierName: 'AI Foundations',
+                batchId: '',
+                batchName: 'Unassigned',
+                enrollmentStatus: 'Pending',
+                progressPercent: 0,
+                paymentStatus: 'Not required',
+                certificateStatus: 'Not eligible',
+                joinDate: new Date().toISOString().split('T')[0],
+                lastActive: new Date().toISOString(),
+                internalNotesList: []
+              });
+            }
+
+            // Add enrollment application if not already present
+            if (!adminData.enrollments.some(e => e.email === studentProfile.email)) {
+              adminData.enrollments.unshift({
+                id: `enr-${studentProfile.studentId.replace(/^NX-/, '').replace(/[^a-zA-Z0-9]/g, '')}`,
+                studentId: studentProfile.studentId,
+                studentName: studentProfile.fullName,
+                email: studentProfile.email,
+                courseId: 'ai-foundations',
+                courseTitle: 'AI Foundations: Zero to AI Native',
+                tierId: 'ai-foundations',
+                tierName: 'AI Foundations',
+                batchId: '',
+                batchName: 'Unassigned',
+                status: 'Pending',
+                paymentStatus: 'Not required',
+                submittedAt: new Date().toISOString(),
+                history: [
+                  {
+                    status: 'Pending',
+                    timestamp: new Date().toISOString(),
+                    actionBy: 'Self Registered',
+                    note: 'Application received via student registration portal.'
+                  }
+                ]
+              });
+            }
+
+            localStorage.setItem(adminStorageKey, JSON.stringify(adminData));
+          } catch (admErr) {
+            console.warn('Admin storage sync error:', admErr);
+          }
+        }
+
+        // Post to backend API endpoint to persist in server telemetry
+        if (typeof fetch === 'function') {
+          fetch('/api/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(studentProfile)
+          }).catch(() => {});
+        }
       } catch (err) {
         console.warn('LocalStorage save notice:', err);
       }
