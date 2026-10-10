@@ -3023,6 +3023,80 @@ p {
   .dashboard-main {
     padding: 20px 16px;
   }
+
+  /* --- Mobile GPU & Scroll Performance Engine --- */
+  html, body {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* 1. Eliminate fixed full-screen 100px+ blur convolutions */
+  body::after,
+  .ambient-bottom-glow,
+  .hero-ambient-orb,
+  .ai-core-glow {
+    display: none !important;
+  }
+
+  /* 2. Zero-lag solid/high-opacity glass surfaces without GPU backdrop-filter thrash */
+  .navbar {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: rgba(11, 14, 20, 0.96) !important;
+  }
+
+  .mobile-drawer {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: #0d111a !important;
+  }
+
+  .modal-overlay {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: rgba(5, 7, 12, 0.88) !important;
+  }
+
+  /* 3. High-performance mobile cards with crisp backgrounds and zero backdrop-filter */
+  .topic-card,
+  .audience-card,
+  .feature-item-card,
+  .why-bento-card,
+  .learn-card-6,
+  .project-card,
+  .roadmap-step-card,
+  .roadmap-apex-card,
+  .progression-step-card,
+  .tier-card,
+  .module-card,
+  .experience-card,
+  .exp-card,
+  .review-card,
+  .faq-item,
+  .stats-dashboard-card,
+  .live-session-hero-banner,
+  .current-course-card,
+  .continue-class-card,
+  .metric-card,
+  .register-card,
+  .trust-strip-hero,
+  .interactive-ai-terminal,
+  .ai-hologram-card,
+  .dash-section-box,
+  .dash-stat-card,
+  .consent-box,
+  .register-trust-box {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: #111522 !important;
+    transform: none !important;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45) !important;
+  }
+
+  .chip-floating,
+  .floating-chip,
+  .holo-sheen {
+    animation: none !important;
+  }
 }
 
 @media (max-width: 480px) {

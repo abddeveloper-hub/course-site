@@ -21,6 +21,11 @@
 
   var REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)');
   var FINE_POINTER = window.matchMedia('(hover: hover) and (pointer: fine)');
+  var IS_MOBILE = window.matchMedia('(max-width: 768px), (pointer: coarse)');
+
+  var isMobile = function () {
+    return IS_MOBILE.matches;
+  };
 
   /* Reveal targets — every card-ish block across all four pages. */
   var REVEAL_HEADERS =
@@ -101,7 +106,7 @@
      1. Aurora depth background
      ========================================================================= */
   function injectAurora() {
-    if (document.querySelector('.nxv-aurora') || isReduced()) return;
+    if (isMobile() || document.querySelector('.nxv-aurora') || isReduced()) return;
 
     var aurora = document.createElement('div');
     aurora.className = 'nxv-aurora';
@@ -180,6 +185,15 @@
   function tagRevealTargets(root) {
     var scope = root || document;
 
+    if (isMobile()) {
+      // Mobile performance fast-path: immediately unhide without delayed scroll stutters
+      scope.querySelectorAll('[data-nxv-reveal], ' + REVEAL_HEADERS + ', ' + REVEAL_CARDS).forEach(function (el) {
+        el.classList.add('nxv-in', 'nxv-settled');
+        el.removeAttribute('data-nxv-reveal');
+      });
+      return;
+    }
+
     // Explicit author opt-ins are respected as-is.
     scope.querySelectorAll('[data-nxv-reveal]').forEach(function (el) {
       if (!el.classList.contains('nxv-reveal-armed')) {
@@ -228,7 +242,10 @@
   }
 
   function initReveal() {
-    if (isReduced()) return;
+    if (isReduced() || isMobile()) {
+      tagRevealTargets(document);
+      return;
+    }
 
     if (!('IntersectionObserver' in window)) {
       return; // content stays visible; no motion
@@ -312,7 +329,7 @@
   }
 
   function tagTiltTargets(root) {
-    if (isReduced() || !FINE_POINTER.matches) return;
+    if (isReduced() || isMobile() || !FINE_POINTER.matches) return;
 
     (root || document).querySelectorAll(TILT_SELECTORS + ', [data-nxv-tilt]').forEach(function (el) {
       if (el.dataset.nxvTiltArmed === '1') return;
@@ -329,7 +346,7 @@
      5. Scroll parallax
      ========================================================================= */
   function initParallax() {
-    if (isReduced()) return;
+    if (isReduced() || isMobile()) return;
 
     var items = [];
 
@@ -378,7 +395,7 @@
      6. Magnetic buttons
      ========================================================================= */
   function initMagnetic() {
-    if (isReduced() || !FINE_POINTER.matches) return;
+    if (isReduced() || isMobile() || !FINE_POINTER.matches) return;
 
     document.querySelectorAll('.btn, .nxv-carousel__btn').forEach(function (el) {
       if (el.dataset.nxvMagnetic === '1') return;
@@ -473,12 +490,21 @@
         var abs = Math.abs(d);
         var visible = abs <= 2;
 
-        slide.style.setProperty('--nxv-slide-ry', Math.max(-32, Math.min(32, d * -13)).toFixed(2) + 'deg');
-        slide.style.setProperty('--nxv-slide-z', (-abs * 70).toFixed(0) + 'px');
-        slide.style.setProperty('--nxv-slide-s', (1 - Math.min(abs * 0.06, 0.2)).toFixed(3));
-        slide.style.setProperty('--nxv-slide-o', d === 0 ? '1' : abs === 1 ? '0.6' : '0.25');
-        slide.style.setProperty('--nxv-slide-blur', d === 0 ? '0px' : '2.5px');
-        slide.style.setProperty('--nxv-slide-sat', d === 0 ? '1' : '0.65');
+        if (isMobile()) {
+          slide.style.setProperty('--nxv-slide-ry', '0deg');
+          slide.style.setProperty('--nxv-slide-z', '0px');
+          slide.style.setProperty('--nxv-slide-s', abs === 0 ? '1' : '0.95');
+          slide.style.setProperty('--nxv-slide-o', abs === 0 ? '1' : '0.45');
+          slide.style.setProperty('--nxv-slide-blur', '0px');
+          slide.style.setProperty('--nxv-slide-sat', '1');
+        } else {
+          slide.style.setProperty('--nxv-slide-ry', Math.max(-32, Math.min(32, d * -13)).toFixed(2) + 'deg');
+          slide.style.setProperty('--nxv-slide-z', (-abs * 70).toFixed(0) + 'px');
+          slide.style.setProperty('--nxv-slide-s', (1 - Math.min(abs * 0.06, 0.2)).toFixed(3));
+          slide.style.setProperty('--nxv-slide-o', d === 0 ? '1' : abs === 1 ? '0.6' : '0.25');
+          slide.style.setProperty('--nxv-slide-blur', d === 0 ? '0px' : '2.5px');
+          slide.style.setProperty('--nxv-slide-sat', d === 0 ? '1' : '0.65');
+        }
 
         slide.classList.toggle('nxv-slide--active', d === 0);
         slide.setAttribute('aria-hidden', visible && d !== 0 ? 'true' : 'false');

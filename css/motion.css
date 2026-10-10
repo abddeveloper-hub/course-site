@@ -591,3 +591,68 @@
     display: none;
   }
 }
+
+/* --------------------------------------------------------------------------
+   11. Mobile High-Performance Profile (Zero-Lag Smooth Scrolling)
+   -------------------------------------------------------------------------- */
+@media (max-width: 768px), (pointer: coarse) {
+  /* 1. Eliminate heavy blurred background animations on mobile GPUs */
+  .nxv-aurora {
+    display: none !important;
+  }
+
+  .nxv-aurora__blob {
+    animation: none !important;
+    filter: none !important;
+  }
+
+  .nxv-aurora__grain {
+    display: none !important;
+  }
+
+  /* 2. Zero-lag instant scroll reveals without filter blur or staggered delay */
+  [data-nxv-reveal] {
+    opacity: 1 !important;
+    translate: 0 0 !important;
+    scale: 1 !important;
+    filter: none !important;
+    transition: opacity 0.15s ease !important;
+  }
+
+  [data-nxv-reveal='up']:not(.nxv-in),
+  [data-nxv-reveal='left']:not(.nxv-in),
+  [data-nxv-reveal='right']:not(.nxv-in),
+  [data-nxv-reveal='scale']:not(.nxv-in) {
+    opacity: 1 !important;
+    translate: 0 0 !important;
+    scale: 1 !important;
+    filter: none !important;
+  }
+
+  /* 3. Disable 3D tilt overhead and preserve-3d layers on mobile */
+  .nxv-tilt {
+    transform: none !important;
+    transform-style: flat !important;
+    transition: none !important;
+  }
+
+  /* 4. Disable heavy backdrop-filters on carousel slides & cards */
+  .nxv-slide {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: #111522 !important;
+    filter: none !important;
+    transform-style: flat !important;
+  }
+
+  .nxv-carousel__viewport {
+    mask-image: none !important;
+    -webkit-mask-image: none !important;
+  }
+
+  /* 5. Disable mouse-following cursor light */
+  #nxv-cursor-aurora {
+    display: none !important;
+  }
+}
+

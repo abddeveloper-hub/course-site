@@ -4574,4 +4574,40 @@ textarea.form-input:focus {
   line-height: 1.5;
 }
 
+/* ==========================================================================
+   MOBILE HARDWARE ACCELERATION & ZERO-LAG SCROLL PROFILE
+   ========================================================================== */
+@media (max-width: 768px), (pointer: coarse) {
+  body::after,
+  .register-bg-glow,
+  .ambient-bottom-glow {
+    display: none !important;
+  }
+
+  .navbar,
+  .register-navbar {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: rgba(11, 14, 20, 0.96) !important;
+  }
+
+  .checkout-card,
+  .auth-card-wrapper,
+  .dash-stat-card,
+  .roadmap-10-node,
+  .experience-card,
+  .course-curriculum-panel,
+  .chk-order-card {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: #111522 !important;
+  }
+
+  .mob-bottom-nav {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: rgba(11, 14, 20, 0.98) !important;
+  }
+}
+
 

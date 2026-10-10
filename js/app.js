@@ -71,7 +71,16 @@ function initNavbar() {
     });
   };
 
-  window.addEventListener('scroll', handleScroll, { passive: true });
+  let scrollTicking = false;
+  window.addEventListener('scroll', () => {
+    if (!scrollTicking) {
+      requestAnimationFrame(() => {
+        handleScroll();
+        scrollTicking = false;
+      });
+      scrollTicking = true;
+    }
+  }, { passive: true });
   handleScroll();
 }
 
@@ -85,6 +94,7 @@ function initParticleCanvas() {
   if (!ctx) return;
 
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const isMobile = window.matchMedia('(max-width: 768px), (pointer: coarse)').matches;
   const TINTS = {
     violet: [139, 92, 246],
     indigo: [99, 102, 241],
@@ -121,7 +131,7 @@ function initParticleCanvas() {
   };
 
   const seedAll = () => {
-    const target = width > 768 ? 58 : 26;
+    const target = isMobile ? 14 : width > 768 ? 58 : 26;
     particles = [];
     for (let i = 0; i < target; i++) particles.push(seedParticle());
   };
@@ -246,12 +256,16 @@ function initParticleCanvas() {
       ctx.beginPath();
       ctx.arc(p.sx, p.sy, p.size, 0, Math.PI * 2);
       ctx.fillStyle = `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${p.alpha.toFixed(3)})`;
-      ctx.shadowBlur = 10;
-      ctx.shadowColor = `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.45)`;
+      if (!isMobile) {
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.45)`;
+      }
       ctx.fill();
     }
 
-    ctx.shadowBlur = 0;
+    if (!isMobile) {
+      ctx.shadowBlur = 0;
+    }
   };
 
   if (reducedMotion) {
@@ -299,14 +313,32 @@ function initParticleCanvas() {
     }
   };
 
-  startLoop();
+  // Pause loop when canvas is out of viewport to save mobile CPU/GPU
+  let isCanvasInView = true;
+  if ('IntersectionObserver' in window) {
+    const canvasObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        isCanvasInView = entry.isIntersecting;
+        if (isCanvasInView && !document.hidden) {
+          startLoop();
+        } else {
+          stopLoop();
+        }
+      });
+    }, { threshold: 0.02 });
+    canvasObserver.observe(canvas);
+  } else {
+    startLoop();
+  }
 
-  window.addEventListener('pointermove', (e) => {
-    const rect = canvas.getBoundingClientRect();
-    if (!rect.width || !rect.height) return;
-    targetPointerRy = ((e.clientX - rect.left) / rect.width - 0.5) * 0.5;
-    targetPointerRx = ((e.clientY - rect.top) / rect.height - 0.5) * 0.32;
-  }, { passive: true });
+  if (!isMobile) {
+    window.addEventListener('pointermove', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
+      targetPointerRy = ((e.clientX - rect.left) / rect.width - 0.5) * 0.5;
+      targetPointerRx = ((e.clientY - rect.top) / rect.height - 0.5) * 0.32;
+    }, { passive: true });
+  }
 
   window.addEventListener('resize', () => {
     if (resize()) {
@@ -317,7 +349,7 @@ function initParticleCanvas() {
 
   // Pause the loop whenever the tab is hidden to save battery.
   document.addEventListener('visibilitychange', () => {
-    if (document.hidden) {
+    if (document.hidden || !isCanvasInView) {
       stopLoop();
     } else {
       startLoop();
@@ -771,8 +803,8 @@ function initHeroMotion() {
   const heroContent = document.getElementById('heroTextContent');
   if (!hero || !heroContent) return;
 
-  // Respect user preference for reduced motion
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  // Respect user preference for reduced motion or mobile/touch devices
+  if (window.matchMedia('(prefers-reduced-motion: reduce), (max-width: 768px), (pointer: coarse)').matches) return;
 
   const orb1 = heroContent.querySelector('.hero-ambient-orb.orb-1');
   const orb2 = heroContent.querySelector('.hero-ambient-orb.orb-2');
@@ -783,15 +815,6 @@ function initHeroMotion() {
   let currentY = 0;
   let isHovered = false;
   let rafId = null;
-
-  const onMouseMove = (e) => {
-    const rect = hero.getBoundingClientRect();
-    const x = e.clientX - rect.left - rect.width / 2;
-    const y = e.clientY - rect.top - rect.height / 2;
-    // Normalized subtle deflection (-5px to +5px)
-    mouseX = (x / (rect.width / 2)) * 6;
-    mouseY = (y / (rect.height / 2)) * 6;
-  };
 
   const update = () => {
     currentX += (mouseX - currentX) * 0.08;
@@ -808,17 +831,35 @@ function initHeroMotion() {
       if (orb2) {
         orb2.style.transform = `translate(${(currentX * 1.8).toFixed(1)}px, ${(currentY * 1.8).toFixed(1)}px)`;
       }
+      rafId = requestAnimationFrame(update);
     } else {
-      heroContent.style.transform = '';
-      if (orb1) orb1.style.transform = '';
-      if (orb2) orb2.style.transform = '';
+      if (Math.abs(currentX) > 0.04 || Math.abs(currentY) > 0.04) {
+        rafId = requestAnimationFrame(update);
+      } else {
+        heroContent.style.transform = '';
+        if (orb1) orb1.style.transform = '';
+        if (orb2) orb2.style.transform = '';
+        rafId = null;
+      }
     }
+  };
 
-    rafId = requestAnimationFrame(update);
+  const onMouseMove = (e) => {
+    const rect = hero.getBoundingClientRect();
+    const x = e.clientX - rect.left - rect.width / 2;
+    const y = e.clientY - rect.top - rect.height / 2;
+    mouseX = (x / (rect.width / 2)) * 6;
+    mouseY = (y / (rect.height / 2)) * 6;
+    if (!rafId) {
+      rafId = requestAnimationFrame(update);
+    }
   };
 
   hero.addEventListener('mouseenter', () => {
     isHovered = true;
+    if (!rafId) {
+      rafId = requestAnimationFrame(update);
+    }
   });
 
   hero.addEventListener('mousemove', onMouseMove, { passive: true });
@@ -828,8 +869,6 @@ function initHeroMotion() {
     mouseX = 0;
     mouseY = 0;
   });
-
-  rafId = requestAnimationFrame(update);
 }
 
 
