@@ -621,6 +621,8 @@ p {
   margin-bottom: 26px;
   box-shadow: 0 0 20px rgba(124, 58, 237, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(14px);
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .hero-pill-tag {
@@ -736,6 +738,7 @@ p {
   font-size: 0.8125rem;
   font-weight: 600;
   color: var(--text-muted);
+  flex-wrap: wrap;
 }
 
 .trust-item {
@@ -3019,5 +3022,62 @@ p {
 
   .dashboard-main {
     padding: 20px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-title {
+    font-size: 2.15rem;
+    line-height: 1.15;
+  }
+
+  .hero-pill-badge {
+    flex-wrap: wrap;
+    border-radius: var(--radius-md);
+    padding: 6px 10px;
+    gap: 6px;
+  }
+
+  .hero-pill-text {
+    font-size: 0.72rem;
+  }
+
+  .hero-cta-group {
+    flex-direction: column;
+    width: 100%;
+    gap: 12px;
+  }
+
+  .hero-cta-group .btn {
+    width: 100%;
+    justify-content: center;
+    box-sizing: border-box;
+  }
+
+  .hero-trust-bar {
+    gap: 10px;
+    font-size: 0.75rem;
+  }
+
+  .trust-divider {
+    display: none;
+  }
+
+  .ai-hologram-card {
+    padding: 16px 12px;
+  }
+
+  .neural-interface-box {
+    padding: 12px;
+  }
+
+  .neural-weights-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .mobile-drawer {
+    width: 85vw;
+    max-width: 300px;
   }
 }

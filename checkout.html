@@ -160,6 +160,73 @@
     @media (max-width: 900px) {
       .chk-grid {
         grid-template-columns: 1fr;
+        gap: 24px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .chk-header-inner {
+        padding: 0 16px;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      .chk-ssl-badge {
+        font-size: 0.7rem;
+        padding: 4px 10px;
+      }
+      .chk-main {
+        margin: 20px auto 40px;
+        padding: 0 16px;
+      }
+      .chk-card {
+        padding: 20px 16px;
+        border-radius: 14px;
+      }
+      .chk-tier-item {
+        padding: 14px 14px;
+        gap: 10px;
+      }
+      .chk-tier-info {
+        gap: 10px;
+      }
+      .chk-price-tag {
+        font-size: 0.85rem;
+        padding: 4px 8px;
+      }
+      .chk-btn {
+        width: 100% !important;
+        min-width: 0 !important;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .chk-header-inner {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .chk-ssl-badge {
+        width: 100%;
+        justify-content: center;
+        box-sizing: border-box;
+      }
+      .chk-card {
+        padding: 18px 12px;
+      }
+      .chk-tier-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+      .chk-tier-price-box {
+        width: 100%;
+        text-align: left;
+        padding-left: 28px;
+      }
+      .chk-section-title {
+        font-size: 1.15rem;
+      }
+      .chk-summary-box {
+        padding: 16px 12px;
       }
     }
 

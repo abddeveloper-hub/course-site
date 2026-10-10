@@ -3287,7 +3287,8 @@ textarea:focus-visible {
   .adm-breadcrumbs {
     font-size: 0.78rem;
   }
-  .adm-search-wrap {
+  .adm-search-wrap,
+  .adm-user-info {
     display: none;
   }
   .adm-modal {
