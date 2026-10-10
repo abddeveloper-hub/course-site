@@ -25,7 +25,7 @@ const DASHBOARD_DATA = {
     enrolledCourse: "AI FOUNDATIONS",
     level: "LEVEL 01 • BEGINNER",
     batch: "Batch 01",
-    status: "ACTIVE"
+    status: "ENROLLED • STARTING SOON"
   },
 
   // Active Enrolled Course Information
@@ -34,24 +34,24 @@ const DASHBOARD_DATA = {
     name: "AI FOUNDATIONS",
     level: "LEVEL 01 • BEGINNER",
     batch: "Batch 01",
-    status: "ACTIVE",
-    progress: 68,
-    completedClasses: 12,
+    status: "ENROLLED • STARTING SOON",
+    progress: 0,
+    completedClasses: 0,
     totalClasses: 20,
-    completedModules: 2,
+    completedModules: 0,
     totalModules: 5,
-    completedProjects: 1,
+    completedProjects: 0,
     totalProjects: 3
   },
 
   // Next Unfinished Class (Continue Learning)
   nextClass: {
-    moduleTag: "MODULE 03 • AI TOOLS",
-    title: "AI Research Tools",
-    description: "Learn how modern AI research tools can help you find, understand and organize information.",
-    type: "Lesson",
-    duration: "12 min",
-    videoUrlMock: "https://nexvion.ai/player/mock-m03-c03"
+    moduleTag: "ORIENTATION • GETTING STARTED",
+    title: "Cohort Orientation & Class Schedule",
+    description: "Classes have not started yet. Your cohort orientation schedule, live links, and learning environment will unlock here before Day 1.",
+    type: "Orientation",
+    duration: "Coming Soon",
+    videoUrlMock: ""
   },
 
   // Course Modules with Visual States: COMPLETED, IN PROGRESS, LOCKED
@@ -60,10 +60,10 @@ const DASHBOARD_DATA = {
       id: "mod-01",
       number: "01",
       title: "AI Fundamentals",
-      status: "completed",
-      badgeText: "COMPLETED",
-      progress: 100,
-      classesCount: "4 classes",
+      status: "active",
+      badgeText: "STARTING SOON",
+      progress: 0,
+      classesCount: "4 classes (Starting Soon)",
       locked: false,
       lockReason: ""
     },
@@ -71,83 +71,50 @@ const DASHBOARD_DATA = {
       id: "mod-02",
       number: "02",
       title: "Generative AI",
-      status: "completed",
-      badgeText: "COMPLETED",
-      progress: 100,
+      status: "locked",
+      badgeText: "UPCOMING",
+      progress: 0,
       classesCount: "4 classes",
-      locked: false,
-      lockReason: ""
+      locked: true,
+      lockReason: "Unlocks after completing Module 01."
     },
     {
       id: "mod-03",
       number: "03",
       title: "AI Tools",
-      status: "active",
-      badgeText: "IN PROGRESS",
-      progress: 60,
-      classesCount: "4 classes (3 completed)",
-      locked: false,
-      lockReason: ""
+      status: "locked",
+      badgeText: "UPCOMING",
+      progress: 0,
+      classesCount: "4 classes",
+      locked: true,
+      lockReason: "Unlocks after completing Module 02."
     },
     {
       id: "mod-04",
       number: "04",
       title: "Prompt Engineering",
       status: "locked",
-      badgeText: "LOCKED",
+      badgeText: "UPCOMING",
       progress: 0,
       classesCount: "4 classes",
       locked: true,
-      lockReason: "Complete the previous module (AI Tools) to unlock this content."
+      lockReason: "Unlocks after completing Module 03."
     },
     {
       id: "mod-05",
       number: "05",
       title: "AI for Students",
       status: "locked",
-      badgeText: "LOCKED",
+      badgeText: "UPCOMING",
       progress: 0,
       classesCount: "4 classes",
       locked: true,
-      lockReason: "Complete Module 04 (Prompt Engineering) to unlock this content."
+      lockReason: "Unlocks after completing Module 04."
     }
   ],
 
   // Recent Classes
-  recentClasses: [
-    {
-      id: "rc-1",
-      title: "What is Artificial Intelligence?",
-      module: "Module 01",
-      duration: "14 min",
-      status: "completed",
-      icon: "✓"
-    },
-    {
-      id: "rc-2",
-      title: "Introduction to Generative AI",
-      module: "Module 02",
-      duration: "18 min",
-      status: "completed",
-      icon: "✓"
-    },
-    {
-      id: "rc-3",
-      title: "Understanding AI Models",
-      module: "Module 02",
-      duration: "22 min",
-      status: "completed",
-      icon: "✓"
-    },
-    {
-      id: "rc-4",
-      title: "AI Research Tools",
-      module: "Module 03",
-      duration: "12 min",
-      status: "in-progress",
-      icon: "▶"
-    }
-  ],
+  recentClasses: [],
 
   // Student Hands-on Projects
   projects: [
@@ -155,10 +122,10 @@ const DASHBOARD_DATA = {
       id: "proj-1",
       title: "AI Research Assistant",
       description: "Build an automated research synthesizer that queries AI models to summarize and extract insights from academic articles.",
-      status: "IN PROGRESS",
-      statusBadge: "IN PROGRESS",
-      progress: 45,
-      actionText: "Open Project →",
+      status: "UPCOMING",
+      statusBadge: "STARTING SOON",
+      progress: 0,
+      actionText: "View Brief →",
       locked: false,
       pillColor: "var(--accent-purple-light)",
       pillBg: "rgba(139, 92, 246, 0.15)"
@@ -167,24 +134,25 @@ const DASHBOARD_DATA = {
       id: "proj-2",
       title: "AI Prompt Toolkit",
       description: "Curate, test, and benchmark 25+ domain-specific system prompts for student problem-solving and structured writing.",
-      status: "COMPLETED",
-      statusBadge: "COMPLETED",
-      progress: 100,
-      actionText: "Review Project ✓",
-      locked: false,
-      pillColor: "#10B981",
-      pillBg: "rgba(16, 185, 129, 0.15)"
+      status: "LOCKED",
+      statusBadge: "UPCOMING",
+      progress: 0,
+      actionText: "🔒 Locked",
+      locked: true,
+      lockReason: "Unlocks after completing Module 02.",
+      pillColor: "var(--text-muted)",
+      pillBg: "rgba(255, 255, 255, 0.06)"
     },
     {
       id: "proj-3",
       title: "Final AI Project",
       description: "Autonomous Multi-Step AI Student Agent: Your capstone graduation build integrating prompt workflows and AI APIs.",
       status: "LOCKED",
-      statusBadge: "LOCKED",
+      statusBadge: "UPCOMING",
       progress: 0,
       actionText: "🔒 Locked",
       locked: true,
-      lockReason: "Unlock by completing Module 05 and prerequisite projects.",
+      lockReason: "Capstone project unlocks towards the end of your cohort.",
       pillColor: "var(--text-muted)",
       pillBg: "rgba(255, 255, 255, 0.06)"
     }
@@ -221,12 +189,12 @@ const DASHBOARD_DATA = {
   // Upcoming Schedule (Up Next)
   upcoming: {
     nextClass: {
-      title: "AI Research Tools",
-      time: "Tomorrow"
+      title: "Cohort Orientation & Welcome",
+      time: "Date Coming Soon"
     },
     nextProject: {
-      title: "AI Research Assistant",
-      time: "Due in 4 days"
+      title: "Course Setup & Tool Access",
+      time: "Before Week 1"
     }
   },
 
@@ -235,12 +203,12 @@ const DASHBOARD_DATA = {
     title: "NEXVION AI Foundations Certificate",
     eligible: false,
     statusText: "NOT YET ELIGIBLE",
-    progress: 68,
-    description: "Complete the required course content and projects to become eligible for your NEXVION AI certificate.",
+    progress: 0,
+    description: "Complete the required course content and projects once classes start to become eligible for your NEXVION AI certificate.",
     requirements: [
-      { text: "Complete all 20 course lessons (12 / 20 completed)", done: false, count: "12 / 20" },
-      { text: "Complete all 5 course modules (2 / 5 completed)", done: false, count: "2 / 5" },
-      { text: "Submit all 3 student practical projects (1 / 3 completed)", done: false, count: "1 / 3" },
+      { text: "Complete all 20 course lessons (0 / 20 completed)", done: false, count: "0 / 20" },
+      { text: "Complete all 5 course modules (0 / 5 completed)", done: false, count: "0 / 5" },
+      { text: "Submit all 3 student practical projects (0 / 3 completed)", done: false, count: "0 / 3" },
       { text: "Pass the AI Foundations capstone review", done: false, count: "Pending" }
     ]
   },
@@ -249,21 +217,9 @@ const DASHBOARD_DATA = {
   notifications: [
     {
       id: 1,
-      title: "New class available: AI Research Tools is now unlocked!",
-      time: "10m ago",
+      title: "Enrollment confirmed: Welcome to NEXVION AI! Classes have not started yet.",
+      time: "Just now",
       unread: true
-    },
-    {
-      id: 2,
-      title: "New resource added: Prompt Engineering Playbook v2",
-      time: "2h ago",
-      unread: true
-    },
-    {
-      id: 3,
-      title: "Project deadline reminder: AI Research Assistant due in 4 days",
-      time: "Yesterday",
-      unread: false
     }
   ]
 };
@@ -495,10 +451,10 @@ function renderRecentClasses() {
 
   if (!DASHBOARD_DATA.recentClasses || DASHBOARD_DATA.recentClasses.length === 0) {
     container.innerHTML = `
-      <div class="empty-state-box">
-        <span class="empty-state-icon">🎥</span>
-        <span class="empty-state-title">NO RECENT CLASSES</span>
-        <span class="empty-state-desc">Your watched classes will be recorded here as you progress.</span>
+      <div class="empty-state-box" style="padding: 24px 16px; text-align: center;">
+        <span class="empty-state-icon" style="font-size: 1.6rem; display: block; margin-bottom: 6px;">🗓️</span>
+        <span class="empty-state-title" style="font-size: 0.8125rem; font-weight: 700; color: var(--neutral-obsidian); display: block; margin-bottom: 4px; letter-spacing: 0.03em;">CLASSES HAVE NOT STARTED YET</span>
+        <span class="empty-state-desc" style="font-size: 0.75rem; color: var(--text-muted); display: block; line-height: 1.4;">Live session links, class notes, and recordings will appear here once your cohort officially begins.</span>
       </div>
     `;
     return;
@@ -894,6 +850,10 @@ function closeAllDropdowns() {
  */
 function handleContinueClass() {
   const nxt = DASHBOARD_DATA.nextClass;
+  if (DASHBOARD_DATA.course.progress === 0 || nxt.duration === 'Coming Soon') {
+    showToast(`Classes have not started yet. Cohort orientation schedule will be announced soon!`);
+    return;
+  }
   showToast(`Resuming Lesson: "${nxt.title}" (${nxt.duration})`);
 }
 

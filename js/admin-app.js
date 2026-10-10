@@ -322,6 +322,32 @@
       }
     });
 
+    // Dynamic sidebar count badges: only show badge if count > 0, remove otherwise
+    try {
+      const counts = {
+        '/admin/enrollments': (Data.state && Data.state.enrollments && Data.state.enrollments.length) || 0,
+        '/admin/certificates': (Data.state && Data.state.certificates && Data.state.certificates.length) || 0,
+        '/admin/submissions': (Data.state && Data.state.submissions && Data.state.submissions.length) || 0,
+        '/admin/support': (Data.state && Data.state.supportTickets && Data.state.supportTickets.filter(t => t.status === 'Open').length) || 0
+      };
+      document.querySelectorAll('.adm-nav-item').forEach(el => {
+        const r = el.getAttribute('data-route');
+        if (counts[r] !== undefined) {
+          let b = el.querySelector('.adm-nav-badge');
+          if (counts[r] > 0) {
+            if (!b) {
+              b = document.createElement('span');
+              b.className = 'adm-nav-badge';
+              el.appendChild(b);
+            }
+            b.textContent = counts[r];
+          } else if (b && r !== '/admin/batches') {
+            b.remove();
+          }
+        }
+      });
+    } catch (e) {}
+
     // Update Breadcrumbs
     if (DOM.breadcrumbCurrent) {
       const parts = path.split('/').filter(Boolean);

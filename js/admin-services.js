@@ -29,7 +29,7 @@
 })(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  const STORAGE_KEY = 'nexvion_admin_production_data_v9_pristine_empty';
+  const STORAGE_KEY = 'nexvion_admin_production_data_v10_pristine_clean';
 
   // --------------------------------------------------------------------------
   // 1. DEFAULT PRODUCTION DATA MODELS
@@ -5397,12 +5397,12 @@
       const pendingEnrollments = enrollments.filter(e => e.status === 'Pending').length;
       const completedEnrollments = enrollments.filter(e => e.status === 'Completed').length;
       const activeCourses = courses.filter(c => c.status === 'Published').length || courses.length;
-      const openBatches = batches.filter(b => b.status === 'Open' || b.status === 'Enrolling').length || batches.length;
+      const openBatches = batches.filter(b => b.status === 'Open' || b.status === 'Enrolling').length;
       const waitlistedStudents = batches.reduce((sum, b) => sum + (Array.isArray(b.waitlist) ? b.waitlist.length : (b.waitlistCount || 0)), 0);
 
       const completionRatePercent = enrollments.length > 0
         ? Number(((completedEnrollments / enrollments.length) * 100).toFixed(1))
-        : 87.4;
+        : 0;
 
       // 2. Course Popularity
       const coursePopularity = courses.map(c => {
@@ -5412,7 +5412,7 @@
           courseTitle: c.title,
           tierName: c.tierName || 'Curriculum Track',
           enrollmentsCount: enrCount,
-          popularityScore: Math.min(100, Math.round(enrCount * 12.5 + 40))
+          popularityScore: enrCount > 0 ? Math.min(100, Math.round(enrCount * 12.5)) : 0
         };
       });
 
@@ -5438,7 +5438,7 @@
 
       // 4. Batch Capacity Utilization (Strict 30-Cap)
       const batchCapacityUtilization = batches.map(b => {
-        const filled = Array.isArray(b.students) ? b.students.length : (b.enrolledCount !== undefined ? b.enrolledCount : 18);
+        const filled = Array.isArray(b.students) ? b.students.length : (b.enrolledCount !== undefined ? b.enrolledCount : 0);
         const capacity = 30; // STRICT ARCHITECTURAL INVARIANT
         const waitlistCount = Array.isArray(b.waitlist) ? b.waitlist.length : (b.waitlistCount || 0);
         return {
@@ -5453,14 +5453,7 @@
       });
 
       // 5. Enrollment Trends (Weekly Aggregation)
-      const enrollmentTrends = [
-        { period: 'Week 1', foundations: 45, builder: 38, creator: 28, architect: 14 },
-        { period: 'Week 2', foundations: 62, builder: 48, creator: 34, architect: 18 },
-        { period: 'Week 3', foundations: 88, builder: 65, creator: 42, architect: 25 },
-        { period: 'Week 4', foundations: 110, builder: 82, creator: 55, architect: 32 },
-        { period: 'Week 5', foundations: 135, builder: 96, creator: 68, architect: 39 },
-        { period: 'Week 6', foundations: 154, builder: 115, creator: 81, architect: 45 }
-      ];
+      const enrollmentTrends = [];
 
       // 6. Project & Assignment Submissions
       const projectSubs = submissions.filter(s => s.type === 'Project');
@@ -5470,7 +5463,7 @@
         approved: projectSubs.filter(s => s.status === 'Approved' || (s.gradeScore >= 70)).length,
         reviewed: projectSubs.filter(s => s.status === 'Reviewed').length,
         pendingReview: projectSubs.filter(s => s.status === 'Submitted' || s.status === 'Pending review').length,
-        approvalRate: projectSubs.length > 0 ? Math.round((projectSubs.filter(s => s.status === 'Approved').length / projectSubs.length) * 100) : 92
+        approvalRate: projectSubs.length > 0 ? Math.round((projectSubs.filter(s => s.status === 'Approved').length / projectSubs.length) * 100) : 0
       };
       const assignmentSubmissions = {
         totalAssignments: assignmentSubs.length,
@@ -5550,7 +5543,7 @@
           openBatches,
           waitlistedStudents,
           completionRatePercent,
-          avgCourseSatisfaction: 4.92,
+          avgCourseSatisfaction: 0,
           supportVolume: supportVolume.totalTickets
         },
         enrollmentTrends,
@@ -5560,7 +5553,7 @@
         studentActivity: {
           activeCount: activeStudents,
           inactiveCount: totalStudents - activeStudents,
-          activeRatePercent: totalStudents > 0 ? Math.round((activeStudents / totalStudents) * 100) : 95
+          activeRatePercent: totalStudents > 0 ? Math.round((activeStudents / totalStudents) * 100) : 0
         },
         courseCompletion: {
           totalEnrolled: enrollments.length,
