@@ -36,7 +36,7 @@
         batchId: "foundations-batch-01",
         batchName: "Batch 01",
         capacity: 30,
-        enrolledCount: 18,
+        enrolledCount: 0,
         status: "open" // "open" | "few" | "full" | "coming_soon"
       },
       ctaType: "join_free",
@@ -64,8 +64,8 @@
         batchId: "builder-batch-01",
         batchName: "Batch 01",
         capacity: 30,
-        enrolledCount: 26, // <= 5 seats left triggers FEW SEATS state
-        status: "few"
+        enrolledCount: 0,
+        status: "open"
       },
       ctaType: "enroll",
       ctaText: "ENROLL NOW",
@@ -92,11 +92,11 @@
         batchId: "creator-batch-01",
         batchName: "Batch 01",
         capacity: 30,
-        enrolledCount: 30, // 30/30 seats filled triggers FULL state
-        status: "full"
+        enrolledCount: 0,
+        status: "open"
       },
-      ctaType: "waitlist",
-      ctaText: "JOIN WAITLIST",
+      ctaType: "enroll",
+      ctaText: "ENROLL NOW",
       targetTab: "tab-course-03"
     },
     {

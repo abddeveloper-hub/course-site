@@ -29,7 +29,7 @@
 })(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  const STORAGE_KEY = 'nexvion_admin_production_data_v5_fresh';
+  const STORAGE_KEY = 'nexvion_admin_production_data_v6_clean';
 
   // --------------------------------------------------------------------------
   // 1. DEFAULT PRODUCTION DATA MODELS
@@ -1006,98 +1006,7 @@
 
   const defaultSubmissions = [];
 
-  const defaultAnnouncements = [
-    {
-      id: 'anc-001',
-      title: 'Welcome to the 2026 Cohorts at NEXVION AI',
-      message: 'All students enrolled in Foundations, Builder, and Creator cohorts should verify access to their instructional links and calendar schedules.',
-      richContent: '### Welcome to the Frontier of Autonomous AI Engineering\n\nWe are thrilled to welcome all newly enrolled candidates to the **Q4 2026 Cohort Series**.\n\n#### Key Onboarding Checklist:\n1. Verify your GPU cluster workstation credentials.\n2. Complete Module 01 orientation before the live synchronous kickoff.\n3. Join your designated Discord and Slack private cohort channels.\n\n> "The best way to predict the future is to synthesize it." — NEXVION Faculty',
-      audience: 'All Students',
-      targetId: 'all',
-      targetName: 'Global Platform',
-      targetCourseId: '',
-      targetTierId: '',
-      targetBatchId: '',
-      priority: 'High',
-      status: 'Published',
-      publishedAt: '2026-10-01T10:00:00Z',
-      scheduledFor: null,
-      author: 'Dr. Evelyn Vance (Academic Director)',
-      estimatedRecipients: 1248
-    },
-    {
-      id: 'anc-002',
-      title: 'Batch 01 Builder Cohort: Scheduled Architecture Office Hours',
-      message: 'Marcus Chen will host an open debugging session on Thursday at 19:00 UTC covering streaming API connections and client reconnects.',
-      richContent: '### Architecture Deep Dive: HLS Video & Event Streaming\n\nInstructor **Marcus Chen** will conduct live office hours this Thursday at **19:00 UTC**.\n\n- **Topic:** Resilient SSE connections, token refreshing, and backoff jitter.\n- **Prerequisites:** Review Lesson 03 code repos before attending.\n- **Link:** Virtual Nexus Hall B',
-      audience: 'Specific Batch',
-      targetId: 'batch-bld-01',
-      targetName: 'Builder Cohort Prime',
-      targetCourseId: 'course-ai-builder',
-      targetTierId: 'tier-builder',
-      targetBatchId: 'batch-bld-01',
-      priority: 'Normal',
-      status: 'Published',
-      publishedAt: '2026-10-06T16:00:00Z',
-      scheduledFor: null,
-      author: 'Marcus Chen (Lead Instructor)',
-      estimatedRecipients: 26
-    },
-    {
-      id: 'anc-003',
-      title: 'Upcoming Scheduled Maintenance: Video Encoding Pipeline',
-      message: 'Video player transcoder updates will run on Sunday 02:00 UTC for 30 minutes. Stream playback may experience momentary pauses.',
-      richContent: '### Infrastructure Maintenance Advisory\n\nThe central transcoding cluster will undergo kernel patching on **Sunday at 02:00 UTC**.\n\n- Expected downtime: Under 15 minutes.\n- CDN-cached playback will remain accessible without degradation.\n- Live stream broadcasts will be disabled during this interval.',
-      audience: 'All Students',
-      targetId: 'all',
-      targetName: 'Global Platform',
-      targetCourseId: '',
-      targetTierId: '',
-      targetBatchId: '',
-      priority: 'Urgent',
-      status: 'Scheduled',
-      publishedAt: null,
-      scheduledFor: '2026-10-12T02:00:00Z',
-      author: 'System Operations Team',
-      estimatedRecipients: 1248
-    },
-    {
-      id: 'anc-004',
-      title: 'Draft: AI Creator Advanced Multi-Agent Framework Guidelines',
-      message: 'Preliminary draft for upcoming guidelines on multi-agent consensus protocols and LangGraph orchestration.',
-      richContent: '### Draft Specification: Autonomous Multi-Agent Workflows\n\n*Review pending by Academic Board.*\n\nThis guide establishes grading rubric benchmarks for agents with multi-turn reflective verification loops.',
-      audience: 'Specific Course',
-      targetId: 'course-ai-creator',
-      targetName: 'Autonomous Agent Engineering',
-      targetCourseId: 'course-ai-creator',
-      targetTierId: 'tier-creator',
-      targetBatchId: '',
-      priority: 'Normal',
-      status: 'Draft',
-      publishedAt: null,
-      scheduledFor: null,
-      author: 'DevOps & Curriculum Board',
-      estimatedRecipients: 290
-    },
-    {
-      id: 'anc-005',
-      title: 'Archived: Q3 2026 Summer Capstone Showcase Submissions Closed',
-      message: 'The submission window for the Q3 Capstone Showcase has concluded. All finalists have been contacted.',
-      richContent: '### Q3 Capstone Archive\n\nSubmissions are now closed. Archive preserved for historical reference and graduation audit compliance.',
-      audience: 'All Students',
-      targetId: 'all',
-      targetName: 'Global Platform',
-      targetCourseId: '',
-      targetTierId: '',
-      targetBatchId: '',
-      priority: 'Low',
-      status: 'Archived',
-      publishedAt: '2026-08-30T18:00:00Z',
-      scheduledFor: null,
-      author: 'Academic Registrar',
-      estimatedRecipients: 1120
-    }
-  ];
+  const defaultAnnouncements = [];
 
   const defaultNotifications = [];
 
@@ -1456,7 +1365,7 @@
       activeCourses: 4,
       openBatches: 7,
       waitlistedStudents: 0,
-      upcomingClasses: 12,
+      upcomingClasses: 0,
       pendingSupportRequests: 0,
       completionRatePercent: 0,
       avgCourseSatisfaction: 0

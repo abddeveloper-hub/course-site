@@ -4419,34 +4419,27 @@
   }
 
   function calculateAudienceReach(audience, courseId, tierId, batchId) {
+    const students = (Data && Data.state && Array.isArray(Data.state.students)) ? Data.state.students : [];
     if (audience === 'All Students' || audience === 'All Enrolled Students') {
-      return 1248;
+      return students.length;
     }
     if (audience === 'Faculty Only') {
-      return 14;
+      return (Data && Data.state && Array.isArray(Data.state.adminUsers)) ? Data.state.adminUsers.length : 0;
     }
     if (audience === 'Specific Batch' && batchId) {
-      if (batchId === 'batch-bld-01') return 26;
-      if (batchId === 'batch-fnd-01') return 28;
-      if (batchId === 'batch-crt-01') return 30;
-      if (batchId === 'batch-arc-01') return 18;
-      return 30;
+      if (Data && Data.state && Array.isArray(Data.state.batches)) {
+        const b = Data.state.batches.find(x => x.id === batchId);
+        return b ? (b.enrolledCount || 0) : 0;
+      }
+      return 0;
     }
     if (audience === 'Specific Tier' && tierId) {
-      if (tierId === 'tier-foundations') return 420;
-      if (tierId === 'tier-builder') return 384;
-      if (tierId === 'tier-creator') return 290;
-      if (tierId === 'tier-architect') return 154;
-      return 350;
+      return students.filter(s => s.tierId === tierId).length;
     }
     if (audience === 'Specific Course' && courseId) {
-      if (courseId === 'course-ai-foundations') return 420;
-      if (courseId === 'course-ai-builder') return 384;
-      if (courseId === 'course-ai-creator') return 290;
-      if (courseId === 'course-ai-architect') return 154;
-      return 380;
+      return students.filter(s => s.courseId === courseId).length;
     }
-    return 1248;
+    return students.length;
   }
 
   // --- ROUTE: ANNOUNCEMENTS DIRECTORY ---
