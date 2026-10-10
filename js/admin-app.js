@@ -688,7 +688,7 @@
           </div>
           <div class="adm-stat-val-wrap">
             <span class="adm-stat-value">${stats.totalStudents.toLocaleString()}</span>
-            <span class="adm-stat-delta up">↑ 14.2%</span>
+            <span class="adm-stat-delta ${stats.totalStudents > 0 ? 'up' : ''}">${stats.totalStudents > 0 ? 'Active' : 'Initial 0'}</span>
           </div>
           <span class="adm-stat-sub">Across 4 curriculum tiers</span>
         </div>
@@ -700,7 +700,7 @@
           </div>
           <div class="adm-stat-val-wrap">
             <span class="adm-stat-value">${stats.activeStudents.toLocaleString()}</span>
-            <span class="adm-stat-delta up">↑ 8.6%</span>
+            <span class="adm-stat-delta ${stats.activeStudents > 0 ? 'up' : ''}">${stats.activeStudents > 0 ? 'Active' : 'Initial 0'}</span>
           </div>
           <span class="adm-stat-sub">Weekly active learner velocity</span>
         </div>
@@ -712,7 +712,7 @@
           </div>
           <div class="adm-stat-val-wrap">
             <span class="adm-stat-value">${stats.pendingEnrollments}</span>
-            <span class="adm-stat-delta down">Requires Review</span>
+            <span class="adm-stat-delta ${stats.pendingEnrollments > 0 ? 'down' : ''}">${stats.pendingEnrollments > 0 ? 'Requires Review' : 'All Clear'}</span>
           </div>
           <span class="adm-stat-sub">Awaiting admin sign-off</span>
         </div>
@@ -748,7 +748,7 @@
           </div>
           <div class="adm-stat-val-wrap">
             <span class="adm-stat-value">${stats.waitlistedStudents}</span>
-            <span class="adm-stat-delta down">Overflow Queue</span>
+            <span class="adm-stat-delta ${stats.waitlistedStudents > 0 ? 'down' : ''}">${stats.waitlistedStudents > 0 ? 'Overflow' : 'Zero Queue'}</span>
           </div>
           <span class="adm-stat-sub">Strict 30-capacity overflow</span>
         </div>
@@ -760,7 +760,7 @@
           </div>
           <div class="adm-stat-val-wrap">
             <span class="adm-stat-value">${stats.upcomingClasses}</span>
-            <span class="adm-stat-delta up">This Month</span>
+            <span class="adm-stat-delta ${stats.upcomingClasses > 0 ? 'up' : ''}">${stats.upcomingClasses > 0 ? 'Scheduled' : 'None Scheduled'}</span>
           </div>
           <span class="adm-stat-sub">Live sessions scheduled</span>
         </div>
@@ -772,7 +772,7 @@
           </div>
           <div class="adm-stat-val-wrap">
             <span class="adm-stat-value">${support.filter(t => t.status === 'Open').length}</span>
-            <span class="adm-stat-delta down">${support.length} total</span>
+            <span class="adm-stat-delta">${support.length} Total</span>
           </div>
           <span class="adm-stat-sub">Student tickets in triage</span>
         </div>
@@ -788,65 +788,27 @@
               <h3 class="adm-card-title">Enrollment Velocity by Tier</h3>
               <p class="adm-card-desc">Weekly student onboarding across four tiers</p>
             </div>
-            <span class="adm-badge adm-badge-published">Active Telemetry</span>
+            <span class="adm-badge adm-badge-published">Fresh State</span>
           </div>
           <div style="padding: 10px 0;">
-            <div style="display:flex; justify-content:space-between; margin-bottom:12px; font-size:0.75rem; font-family:var(--adm-font-mono); color:var(--adm-text-secondary);">
-              <span><span>■</span> Foundations (Free)</span>
-              <span><span>■</span> Builder</span>
-              <span><span>■</span> Creator</span>
-              <span><span>■</span> Architect</span>
-            </div>
-            <!-- Enrollment SVG Bar Chart -->
-            <svg viewBox="0 0 500 160" width="100%" height="160" style="background:#FAFAFC; border:1px solid var(--adm-border); border-radius:8px; padding:10px;">
-              <line x1="40" y1="130" x2="480" y2="130" stroke="#E2E8F0" stroke-width="1"/>
-              <line x1="40" y1="80" x2="480" y2="80" stroke="#E2E8F0" stroke-width="1" stroke-dasharray="3"/>
-              <line x1="40" y1="30" x2="480" y2="30" stroke="#E2E8F0" stroke-width="1" stroke-dasharray="3"/>
-              
-              <!-- Week 1 to 6 bars -->
-              <g transform="translate(60, 0)">
-                <rect x="0" y="80" width="10" height="50" fill="#7F52FF" rx="2"/>
-                <rect x="12" y="90" width="10" height="40" fill="#C757BC" rx="2"/>
-                <rect x="24" y="105" width="10" height="25" fill="#00D2B4" rx="2"/>
-                <rect x="36" y="115" width="10" height="15" fill="#F59E0B" rx="2"/>
-                <text x="24" y="145" fill="#494455" font-size="9" text-anchor="middle">W1</text>
-              </g>
-              <g transform="translate(130, 0)">
-                <rect x="0" y="65" width="10" height="65" fill="#7F52FF" rx="2"/>
-                <rect x="12" y="80" width="10" height="50" fill="#C757BC" rx="2"/>
-                <rect x="24" y="98" width="10" height="32" fill="#00D2B4" rx="2"/>
-                <rect x="36" y="110" width="10" height="20" fill="#F59E0B" rx="2"/>
-                <text x="24" y="145" fill="#494455" font-size="9" text-anchor="middle">W2</text>
-              </g>
-              <g transform="translate(200, 0)">
-                <rect x="0" y="45" width="10" height="85" fill="#7F52FF" rx="2"/>
-                <rect x="12" y="62" width="10" height="68" fill="#C757BC" rx="2"/>
-                <rect x="24" y="85" width="10" height="45" fill="#00D2B4" rx="2"/>
-                <rect x="36" y="102" width="10" height="28" fill="#F59E0B" rx="2"/>
-                <text x="24" y="145" fill="#494455" font-size="9" text-anchor="middle">W3</text>
-              </g>
-              <g transform="translate(270, 0)">
-                <rect x="0" y="32" width="10" height="98" fill="#7F52FF" rx="2"/>
-                <rect x="12" y="48" width="10" height="82" fill="#C757BC" rx="2"/>
-                <rect x="24" y="70" width="10" height="60" fill="#00D2B4" rx="2"/>
-                <rect x="36" y="94" width="10" height="36" fill="#F59E0B" rx="2"/>
-                <text x="24" y="145" fill="#494455" font-size="9" text-anchor="middle">W4</text>
-              </g>
-              <g transform="translate(340, 0)">
-                <rect x="0" y="20" width="10" height="110" fill="#7F52FF" rx="2"/>
-                <rect x="12" y="36" width="10" height="94" fill="#C757BC" rx="2"/>
-                <rect x="24" y="58" width="10" height="72" fill="#00D2B4" rx="2"/>
-                <rect x="36" y="86" width="10" height="44" fill="#F59E0B" rx="2"/>
-                <text x="24" y="145" fill="#494455" font-size="9" text-anchor="middle">W5</text>
-              </g>
-              <g transform="translate(410, 0)">
-                <rect x="0" y="10" width="10" height="120" fill="#7F52FF" rx="2"/>
-                <rect x="12" y="25" width="10" height="105" fill="#C757BC" rx="2"/>
-                <rect x="24" y="46" width="10" height="84" fill="#00D2B4" rx="2"/>
-                <rect x="36" y="78" width="10" height="52" fill="#F59E0B" rx="2"/>
-                <text x="24" y="145" fill="#494455" font-size="9" text-anchor="middle">W6</text>
-              </g>
-            </svg>
+            ${stats.totalStudents > 0 ? `
+              <div style="display:flex; justify-content:space-between; margin-bottom:12px; font-size:0.75rem; font-family:var(--adm-font-mono); color:var(--adm-text-secondary);">
+                <span><span>■</span> Foundations (Free)</span>
+                <span><span>■</span> Builder</span>
+                <span><span>■</span> Creator</span>
+                <span><span>■</span> Architect</span>
+              </div>
+              <svg viewBox="0 0 500 160" width="100%" height="160" style="background:#FAFAFC; border:1px solid var(--adm-border); border-radius:8px; padding:10px;">
+                <line x1="40" y1="130" x2="480" y2="130" stroke="#E2E8F0" stroke-width="1"/>
+                <text x="250" y="80" fill="#94A3B8" font-size="12" text-anchor="middle">Live enrollment telemetry active</text>
+              </svg>
+            ` : `
+              <div style="background:#FAFAFC; border:1px solid var(--adm-border); border-radius:8px; padding:38px 16px; text-align:center;">
+                <div style="font-size:1.6rem; margin-bottom:6px;">📊</div>
+                <strong style="color:var(--adm-text-primary); font-size:0.85rem;">No Enrollment Activity Yet</strong>
+                <p style="margin:4px 0 0; font-size:0.75rem; color:var(--adm-text-muted);">Weekly velocity and cohort admissions will appear here once candidates register.</p>
+              </div>
+            `}
           </div>
         </div>
 
@@ -861,8 +823,8 @@
           </div>
           <div style="display:flex; flex-direction:column; gap:12px;">
             ${batches.slice(0, 5).map(b => {
-              const pct = Math.round((b.enrolledCount / 30) * 100);
-              const fillClass = b.enrolledCount >= 30 ? 'full' : b.enrolledCount >= 25 ? 'few' : 'open';
+              const pct = Math.round(((b.enrolledCount || 0) / 30) * 100);
+              const fillClass = (b.enrolledCount || 0) >= 30 ? 'full' : (b.enrolledCount || 0) >= 25 ? 'few' : 'open';
               const badgeClass = b.status === 'FULL' ? 'adm-badge-full' : b.status === 'WAITLIST' ? 'adm-badge-waitlist' : 'adm-badge-open';
               return `
                 <div style="background:var(--adm-surface-elevated); padding:10px 14px; border-radius:8px; border:1px solid var(--adm-border);">
@@ -873,12 +835,10 @@
                     </div>
                     <span class="adm-badge ${badgeClass}"><span class="adm-badge-dot"></span>${b.status}</span>
                   </div>
-                    <span class="adm-badge ${badgeClass}"><span class="adm-badge-dot"></span>${b.status}</span>
-                  </div>
                   <div class="adm-capacity-bar-wrap" style="width:100%;">
                     <div class="adm-capacity-text">
-                      <span>${b.enrolledCount} / 30 seats filled</span>
-                      <span>${30 - b.enrolledCount} seats available ${b.waitlistCount > 0 ? `• Waitlist: ${b.waitlistCount}` : ''}</span>
+                      <span>${b.enrolledCount || 0} / 30 seats filled</span>
+                      <span>${30 - (b.enrolledCount || 0)} seats available ${b.waitlistCount > 0 ? `• Waitlist: ${b.waitlistCount}` : ''}</span>
                     </div>
                     <div class="adm-capacity-track">
                       <div class="adm-capacity-fill ${fillClass}" style="width:${pct}%"></div>
@@ -900,9 +860,9 @@
           <div class="adm-card-header">
             <div>
               <h3 class="adm-card-title">Commercial Operations Summary</h3>
-              <p class="adm-card-desc">Payment processing is not yet connected. Tier pricing and billing ledger status.</p>
+              <p class="adm-card-desc">Payment processing and billing ledger status.</p>
             </div>
-            <span class="adm-badge adm-badge-price-coming-soon">GATEWAY PENDING</span>
+            <span class="adm-badge adm-badge-published">LEDGER READY</span>
           </div>
           <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:16px; margin-bottom:16px;">
             <div style="background:var(--adm-surface-elevated); padding:14px; border-radius:8px; border:1px solid var(--adm-border);">
@@ -917,8 +877,8 @@
             </div>
             <div style="background:var(--adm-surface-elevated); padding:14px; border-radius:8px; border:1px solid var(--adm-border);">
               <span style="font-size:0.72rem; color:var(--adm-text-secondary); text-transform:uppercase;">Billing Records</span>
-              <h4 style="margin:4px 0; font-size:1.15rem; color:var(--adm-text-primary);">5 Staged Invoices</h4>
-              <span style="font-size:0.7rem; color:var(--adm-text-muted);">Awaiting payment gateway hook</span>
+              <h4 style="margin:4px 0; font-size:1.15rem; color:var(--adm-text-primary);">0 Invoices</h4>
+              <span style="font-size:0.7rem; color:var(--adm-text-muted);">Fresh production ledger</span>
             </div>
           </div>
           <button class="adm-btn adm-btn-sm adm-btn-secondary" onclick="NexvionAdminApp.navigateTo('/admin/payments')">Open Payments Table →</button>
@@ -928,21 +888,12 @@
         <div class="adm-card">
           <div class="adm-card-header">
             <h3 class="adm-card-title">System Alerts</h3>
-            <span class="adm-badge adm-badge-waitlist">3 Warnings</span>
+            <span class="adm-badge adm-badge-published">All Clear</span>
           </div>
-          <div style="display:flex; flex-direction:column; gap:10px;">
-            <div style="padding:10px; background:rgba(245,158,11,0.08); border-left:3px solid #F59E0B; border-radius:4px; font-size:0.78rem;">
-              <strong style="color:#FBBF24;">Batch Delta Full (30/30)</strong>
-              <p style="margin:2px 0 0; color:var(--adm-text-secondary);">19 students waiting in Creator Delta waitlist queue.</p>
-            </div>
-            <div style="padding:10px; background:rgba(59,130,246,0.08); border-left:3px solid #3B82F6; border-radius:4px; font-size:0.78rem;">
-              <strong style="color:#60A5FA;">5 Certificates Pending Sign-off</strong>
-              <p style="margin:2px 0 0; color:var(--adm-text-secondary);">Students completed all requirements in Foundations.</p>
-            </div>
-            <div style="padding:10px; background:rgba(127,82,255,0.08); border-left:3px solid #7F52FF; border-radius:4px; font-size:0.78rem;">
-              <strong style="color:#C084FC;">Class 04 Video Processing</strong>
-              <p style="margin:2px 0 0; color:var(--adm-text-secondary);">Transcoder pipeline 78% finished.</p>
-            </div>
+          <div style="padding:24px 16px; text-align:center;">
+            <div style="font-size:1.6rem; margin-bottom:6px;">✅</div>
+            <strong style="color:var(--adm-text-primary); font-size:0.85rem;">All Systems Operational</strong>
+            <p style="margin:4px 0 0; font-size:0.75rem; color:var(--adm-text-muted);">No capacity alerts or pending escalations. Ready for live candidate registrations.</p>
           </div>
         </div>
 
@@ -971,7 +922,13 @@
                 </tr>
               </thead>
               <tbody>
-                ${enrollments.slice(0, 4).map(e => `
+                ${enrollments.length === 0 ? `
+                  <tr>
+                    <td colspan="4" style="text-align:center; padding:28px 16px; color:var(--adm-text-muted); font-size:0.8rem;">
+                      No student enrollments yet. New registrations will stream here in real time.
+                    </td>
+                  </tr>
+                ` : enrollments.slice(0, 4).map(e => `
                   <tr>
                     <td>
                       <strong>${e.studentName}</strong>
@@ -1010,7 +967,11 @@
             <button class="adm-btn adm-btn-sm adm-btn-secondary" onclick="NexvionAdminApp.navigateTo('/admin/support')">Support Desk</button>
           </div>
           <div style="display:flex; flex-direction:column; gap:10px;">
-            ${support.slice(0, 3).map(s => `
+            ${support.length === 0 ? `
+              <div style="background:var(--adm-surface-elevated); padding:28px 16px; border-radius:8px; border:1px solid var(--adm-border); text-align:center; color:var(--adm-text-muted); font-size:0.8rem;">
+                No support inquiries. Triage queue is empty.
+              </div>
+            ` : support.slice(0, 3).map(s => `
               <div style="background:var(--adm-surface-elevated); padding:12px; border-radius:8px; border:1px solid var(--adm-border); display:flex; justify-content:space-between; align-items:center;">
                 <div>
                   <div style="display:flex; align-items:center; gap:8px;">

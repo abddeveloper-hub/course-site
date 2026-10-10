@@ -29,7 +29,7 @@
 })(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  const STORAGE_KEY = 'nexvion_admin_production_data_v6_clean';
+  const STORAGE_KEY = 'nexvion_admin_production_data_v8_pristine';
 
   // --------------------------------------------------------------------------
   // 1. DEFAULT PRODUCTION DATA MODELS
@@ -285,10 +285,10 @@
       capacity: 30, // MAX 30 ALWAYS
       enrolledCount: 0,
       waitlistCount: 0,
-      status: 'OPEN', // OPEN | FULL | WAITLIST | UPCOMING | ACTIVE | COMPLETED | CANCELLED
+      status: 'OPEN',
       schedule: 'Tue & Thu • 18:00 - 19:30 UTC',
       roomPlaceholder: 'Virtual Nexus Hall A',
-      notes: 'Introductory cohort. All instructional materials unlocked.'
+      notes: 'Initial cohort. Maximum 30 students.'
     },
     {
       id: 'batch-fnd-02',
@@ -301,12 +301,12 @@
       endDate: '2026-11-28',
       instructor: 'Sarah Al-Mansoor',
       capacity: 30,
-      enrolledCount: 0, // 30 = FULL
+      enrolledCount: 0,
       waitlistCount: 0,
       status: 'OPEN',
       schedule: 'Mon & Wed • 16:00 - 17:30 UTC',
       roomPlaceholder: 'Virtual Nexus Hall B',
-      notes: 'Cohort reached 30-student capacity. Additional applicants on waitlist.'
+      notes: 'Cohort schedule confirmed. Maximum 30 students.'
     },
     {
       id: 'batch-bld-01',
@@ -324,7 +324,7 @@
       status: 'OPEN',
       schedule: 'Wed & Fri • 17:00 - 19:00 UTC',
       roomPlaceholder: 'Dev Studio 1',
-      notes: '4 seats remaining. Cohort filling steadily.'
+      notes: 'Cohort schedule confirmed. Maximum 30 students.'
     },
     {
       id: 'batch-bld-02',
@@ -342,7 +342,7 @@
       status: 'OPEN',
       schedule: 'Tue & Thu • 19:00 - 21:00 UTC',
       roomPlaceholder: 'Dev Studio 2',
-      notes: 'Full capacity reached. Waitlist active.'
+      notes: 'Cohort schedule confirmed. Maximum 30 students.'
     },
     {
       id: 'batch-crt-01',
@@ -360,7 +360,7 @@
       status: 'OPEN',
       schedule: 'Mon & Thu • 18:30 - 20:30 UTC',
       roomPlaceholder: 'Autonomous Lab Beta',
-      notes: 'Fully registered. Enrolled 30/30. Overflow applicants queued.'
+      notes: 'Cohort schedule confirmed. Maximum 30 students.'
     },
     {
       id: 'batch-crt-02',
@@ -378,7 +378,7 @@
       status: 'UPCOMING',
       schedule: 'Sat & Sun • 14:00 - 16:00 UTC',
       roomPlaceholder: 'Autonomous Lab Alpha',
-      notes: 'Winter cohort open for applicant registration.'
+      notes: 'Winter cohort open for registrations.'
     },
     {
       id: 'batch-arc-01',
@@ -396,43 +396,7 @@
       status: 'ACTIVE',
       schedule: 'Fri • 16:00 - 20:00 UTC (Executive Intensive)',
       roomPlaceholder: 'Executive Council Room',
-      notes: 'Only 2 seats remaining. Screening requirements in progress.'
-    },
-    {
-      id: 'batch-fnd-prev',
-      name: 'Foundations Cohort Pioneer',
-      courseId: 'ai-foundations',
-      courseTitle: 'AI Foundations: Zero to AI Native',
-      tierId: 'ai-foundations',
-      tierName: 'AI Foundations',
-      startDate: '2026-08-01',
-      endDate: '2026-08-28',
-      instructor: 'Dr. Evelyn Vance',
-      capacity: 30,
-      enrolledCount: 0,
-      waitlistCount: 0,
-      status: 'COMPLETED',
-      schedule: 'Tue & Thu • 18:00 - 19:30 UTC',
-      roomPlaceholder: 'Virtual Nexus Hall A',
-      notes: 'Completed alumni cohort. 28 students achieved certificates.'
-    },
-    {
-      id: 'batch-bld-cancelled',
-      name: 'Builder Experimental Cohort',
-      courseId: 'ai-builder',
-      courseTitle: 'AI Builder: Intelligent Application Engineering',
-      tierId: 'ai-builder',
-      tierName: 'AI Builder',
-      startDate: '2026-09-01',
-      endDate: '2026-10-01',
-      instructor: 'Marcus Chen',
-      capacity: 30,
-      enrolledCount: 0,
-      waitlistCount: 0,
-      status: 'CANCELLED',
-      schedule: 'Sun • 10:00 - 14:00 UTC',
-      roomPlaceholder: 'Dev Studio 3',
-      notes: 'Rescheduled into weekday evening slots by department request.'
+      notes: 'Executive cohort. Screening on application.'
     }
   ];
 
@@ -1838,6 +1802,18 @@
     loadState() {
       try {
         if (typeof window !== 'undefined' && window.localStorage) {
+          // Evict any legacy mock storage keys
+          try {
+            const keysToRemove = [];
+            for (let i = 0; i < window.localStorage.length; i++) {
+              const k = window.localStorage.key(i);
+              if (k && k.startsWith('nexvion_admin_production_data_') && k !== STORAGE_KEY) {
+                keysToRemove.push(k);
+              }
+            }
+            keysToRemove.forEach(k => window.localStorage.removeItem(k));
+          } catch (e) {}
+
           const cached = window.localStorage.getItem(STORAGE_KEY);
           if (cached) {
             const parsed = JSON.parse(cached);
@@ -1846,19 +1822,19 @@
                 b.capacity = 30;
                 if (b.enrolledCount > 30) b.enrolledCount = 30;
               });
-              if (!parsed.payments || parsed.payments.length < 12) {
+              if (!Array.isArray(parsed.payments)) {
                 parsed.payments = JSON.parse(JSON.stringify(defaultPayments));
               }
-              if (!parsed.certificates || parsed.certificates.length < 8) {
+              if (!Array.isArray(parsed.certificates)) {
                 parsed.certificates = JSON.parse(JSON.stringify(defaultCertificates));
               }
-              if (!parsed.adminUsers || parsed.adminUsers.length < 11) {
+              if (!Array.isArray(parsed.adminUsers)) {
                 parsed.adminUsers = JSON.parse(JSON.stringify(defaultAdminUsers));
               }
-              if (!parsed.roles || parsed.roles.length < 8) {
+              if (!Array.isArray(parsed.roles)) {
                 parsed.roles = JSON.parse(JSON.stringify(defaultRoles));
               }
-              if (!parsed.auditLogs || parsed.auditLogs.length < 12) {
+              if (!Array.isArray(parsed.auditLogs)) {
                 parsed.auditLogs = JSON.parse(JSON.stringify(defaultAuditLogs));
               }
               if (!parsed.settings || !parsed.settings.enrollmentRules || !parsed.settings.adminPreferences) {
