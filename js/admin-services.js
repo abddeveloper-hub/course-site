@@ -29,7 +29,7 @@
 })(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  const STORAGE_KEY = 'nexvion_admin_production_data_v8_pristine';
+  const STORAGE_KEY = 'nexvion_admin_production_data_v9_pristine_empty';
 
   // --------------------------------------------------------------------------
   // 1. DEFAULT PRODUCTION DATA MODELS
@@ -139,13 +139,13 @@
       instructor: 'Dr. Evelyn Vance & Faculty Team',
       coverImage: 'assets/course-foundations.jpg',
       duration: '4 Weeks',
-      modulesCount: 4,
-      classesCount: 12,
-      lessonsCount: 24,
-      projectsCount: 2,
-      assignmentsCount: 4,
-      totalEnrolled: 420,
-      activeBatchesCount: 2,
+      modulesCount: 0,
+      classesCount: 0,
+      lessonsCount: 0,
+      projectsCount: 0,
+      assignmentsCount: 0,
+      totalEnrolled: 0,
+      activeBatchesCount: 0,
       learningOutcomes: [
         'Understand foundational mechanics of LLMs, neural tokens, and transformers',
         'Master zero-shot, few-shot, and chain-of-thought prompt design',
@@ -154,8 +154,8 @@
       ],
       certificateRequirements: {
         minAttendancePercent: 80,
-        requiredProjects: 2,
-        requiredAssignments: 4,
+        requiredProjects: 0,
+        requiredAssignments: 0,
         passingGradePercent: 75
       },
       updatedAt: '2026-10-06T14:30:00Z'
@@ -175,13 +175,13 @@
       instructor: 'Marcus Chen & Sarah Al-Mansoor',
       coverImage: 'assets/course-builder.jpg',
       duration: '8 Weeks',
-      modulesCount: 6,
-      classesCount: 18,
-      lessonsCount: 36,
-      projectsCount: 4,
-      assignmentsCount: 6,
-      totalEnrolled: 384,
-      activeBatchesCount: 2,
+      modulesCount: 0,
+      classesCount: 0,
+      lessonsCount: 0,
+      projectsCount: 0,
+      assignmentsCount: 0,
+      totalEnrolled: 0,
+      activeBatchesCount: 0,
       learningOutcomes: [
         'Construct production-ready web interfaces with integrated AI capabilities',
         'Harness OpenAI, Claude, and local Ollama APIs with structured output schema',
@@ -190,8 +190,8 @@
       ],
       certificateRequirements: {
         minAttendancePercent: 85,
-        requiredProjects: 4,
-        requiredAssignments: 6,
+        requiredProjects: 0,
+        requiredAssignments: 0,
         passingGradePercent: 80
       },
       updatedAt: '2026-10-07T09:15:00Z'
@@ -211,13 +211,13 @@
       instructor: 'Elena Rostova & David K. Osei',
       coverImage: 'assets/course-creator.jpg',
       duration: '10 Weeks',
-      modulesCount: 8,
-      classesCount: 24,
-      lessonsCount: 48,
-      projectsCount: 5,
-      assignmentsCount: 8,
-      totalEnrolled: 290,
-      activeBatchesCount: 2,
+      modulesCount: 0,
+      classesCount: 0,
+      lessonsCount: 0,
+      projectsCount: 0,
+      assignmentsCount: 0,
+      totalEnrolled: 0,
+      activeBatchesCount: 0,
       learningOutcomes: [
         'Engineer vector search pipelines with chunking, reranking, and semantic hygiene',
         'Build multi-agent task execution flows with deterministic error recoveries',
@@ -226,8 +226,8 @@
       ],
       certificateRequirements: {
         minAttendancePercent: 85,
-        requiredProjects: 5,
-        requiredAssignments: 8,
+        requiredProjects: 0,
+        requiredAssignments: 0,
         passingGradePercent: 85
       },
       updatedAt: '2026-10-08T11:45:00Z'
@@ -247,13 +247,13 @@
       instructor: 'Chief AI Architect Dr. Kenneth Vance',
       coverImage: 'assets/course-architect.jpg',
       duration: '12 Weeks',
-      modulesCount: 10,
-      classesCount: 30,
-      lessonsCount: 60,
-      projectsCount: 6,
-      assignmentsCount: 10,
-      totalEnrolled: 154,
-      activeBatchesCount: 1,
+      modulesCount: 0,
+      classesCount: 0,
+      lessonsCount: 0,
+      projectsCount: 0,
+      assignmentsCount: 0,
+      totalEnrolled: 0,
+      activeBatchesCount: 0,
       learningOutcomes: [
         'Design resilient, scalable multi-tenant AI systems with robust fault tolerance',
         'Execute domain-specific adapter fine-tuning and benchmark performance matrices',
@@ -262,8 +262,8 @@
       ],
       certificateRequirements: {
         minAttendancePercent: 90,
-        requiredProjects: 6,
-        requiredAssignments: 10,
+        requiredProjects: 0,
+        requiredAssignments: 0,
         passingGradePercent: 90
       },
       updatedAt: '2026-10-08T16:20:00Z'
@@ -271,702 +271,26 @@
   ];
 
   // INVARIANT: Every batch capacity is strictly capped at 30.
-  const defaultBatches = [
-    {
-      id: 'batch-fnd-01',
-      name: 'Foundations Cohort Alpha',
-      courseId: 'ai-foundations',
-      courseTitle: 'AI Foundations: Zero to AI Native',
-      tierId: 'ai-foundations',
-      tierName: 'AI Foundations',
-      startDate: '2026-10-15',
-      endDate: '2026-11-12',
-      instructor: 'Dr. Evelyn Vance',
-      capacity: 30, // MAX 30 ALWAYS
-      enrolledCount: 0,
-      waitlistCount: 0,
-      status: 'OPEN',
-      schedule: 'Tue & Thu • 18:00 - 19:30 UTC',
-      roomPlaceholder: 'Virtual Nexus Hall A',
-      notes: 'Initial cohort. Maximum 30 students.'
-    },
-    {
-      id: 'batch-fnd-02',
-      name: 'Foundations Cohort Beta',
-      courseId: 'ai-foundations',
-      courseTitle: 'AI Foundations: Zero to AI Native',
-      tierId: 'ai-foundations',
-      tierName: 'AI Foundations',
-      startDate: '2026-11-01',
-      endDate: '2026-11-28',
-      instructor: 'Sarah Al-Mansoor',
-      capacity: 30,
-      enrolledCount: 0,
-      waitlistCount: 0,
-      status: 'OPEN',
-      schedule: 'Mon & Wed • 16:00 - 17:30 UTC',
-      roomPlaceholder: 'Virtual Nexus Hall B',
-      notes: 'Cohort schedule confirmed. Maximum 30 students.'
-    },
-    {
-      id: 'batch-bld-01',
-      name: 'Builder Cohort Prime',
-      courseId: 'ai-builder',
-      courseTitle: 'AI Builder: Intelligent Application Engineering',
-      tierId: 'ai-builder',
-      tierName: 'AI Builder',
-      startDate: '2026-10-20',
-      endDate: '2026-12-15',
-      instructor: 'Marcus Chen',
-      capacity: 30,
-      enrolledCount: 0,
-      waitlistCount: 0,
-      status: 'OPEN',
-      schedule: 'Wed & Fri • 17:00 - 19:00 UTC',
-      roomPlaceholder: 'Dev Studio 1',
-      notes: 'Cohort schedule confirmed. Maximum 30 students.'
-    },
-    {
-      id: 'batch-bld-02',
-      name: 'Builder Cohort Apex',
-      courseId: 'ai-builder',
-      courseTitle: 'AI Builder: Intelligent Application Engineering',
-      tierId: 'ai-builder',
-      tierName: 'AI Builder',
-      startDate: '2026-11-10',
-      endDate: '2027-01-05',
-      instructor: 'Marcus Chen',
-      capacity: 30,
-      enrolledCount: 0,
-      waitlistCount: 0,
-      status: 'OPEN',
-      schedule: 'Tue & Thu • 19:00 - 21:00 UTC',
-      roomPlaceholder: 'Dev Studio 2',
-      notes: 'Cohort schedule confirmed. Maximum 30 students.'
-    },
-    {
-      id: 'batch-crt-01',
-      name: 'Creator Cohort Delta',
-      courseId: 'ai-creator',
-      courseTitle: 'AI Creator: Autonomous Systems & Workflows',
-      tierId: 'ai-creator',
-      tierName: 'AI Creator',
-      startDate: '2026-10-25',
-      endDate: '2027-01-08',
-      instructor: 'Elena Rostova',
-      capacity: 30,
-      enrolledCount: 0,
-      waitlistCount: 0,
-      status: 'OPEN',
-      schedule: 'Mon & Thu • 18:30 - 20:30 UTC',
-      roomPlaceholder: 'Autonomous Lab Beta',
-      notes: 'Cohort schedule confirmed. Maximum 30 students.'
-    },
-    {
-      id: 'batch-crt-02',
-      name: 'Creator Cohort Omega',
-      courseId: 'ai-creator',
-      courseTitle: 'AI Creator: Autonomous Systems & Workflows',
-      tierId: 'ai-creator',
-      tierName: 'AI Creator',
-      startDate: '2026-12-01',
-      endDate: '2027-02-15',
-      instructor: 'David K. Osei',
-      capacity: 30,
-      enrolledCount: 0,
-      waitlistCount: 0,
-      status: 'UPCOMING',
-      schedule: 'Sat & Sun • 14:00 - 16:00 UTC',
-      roomPlaceholder: 'Autonomous Lab Alpha',
-      notes: 'Winter cohort open for registrations.'
-    },
-    {
-      id: 'batch-arc-01',
-      name: 'Architect Cohort Sovereign',
-      courseId: 'ai-architect',
-      courseTitle: 'AI Architect: Enterprise Intelligence Systems',
-      tierId: 'ai-architect',
-      tierName: 'AI Architect',
-      startDate: '2026-11-05',
-      endDate: '2027-01-28',
-      instructor: 'Dr. Kenneth Vance',
-      capacity: 30,
-      enrolledCount: 0,
-      waitlistCount: 0,
-      status: 'ACTIVE',
-      schedule: 'Fri • 16:00 - 20:00 UTC (Executive Intensive)',
-      roomPlaceholder: 'Executive Council Room',
-      notes: 'Executive cohort. Screening on application.'
-    }
-  ];
+  // Pristine Production State: Empty databases initialized for live entries.
+  const defaultBatches = [];
 
   const defaultStudents = [];
 
   const defaultEnrollments = [];
 
-  const defaultClasses = [
-    {
-      id: 'cls-301',
-      title: 'Class 01: Transformers, Tokens & Attention Mechanisms',
-      courseId: 'ai-foundations',
-      courseTitle: 'AI Foundations: Zero to AI Native',
-      moduleId: 'mod-fnd-01',
-      moduleTitle: 'Module 01: Foundations & Architecture',
-      instructor: 'Dr. Evelyn Vance',
-      duration: '75 min',
-      order: 1,
-      videoStatus: 'Ready',
-      resourcesCount: 3,
-      completionRequirement: 'Watch video + Complete Quiz 01',
-      visibility: 'Published',
-      status: 'Published',
-      scheduleDate: '2026-10-15 18:00 UTC'
-    },
-    {
-      id: 'cls-302',
-      title: 'Class 02: Advanced Prompt Framing & Chain-of-Thought',
-      courseId: 'ai-foundations',
-      courseTitle: 'AI Foundations: Zero to AI Native',
-      moduleId: 'mod-fnd-01',
-      moduleTitle: 'Module 01: Foundations & Architecture',
-      instructor: 'Dr. Evelyn Vance',
-      duration: '80 min',
-      order: 2,
-      videoStatus: 'Ready',
-      resourcesCount: 4,
-      completionRequirement: 'Submit Prompt Exercise',
-      visibility: 'Published',
-      status: 'Published',
-      scheduleDate: '2026-10-17 18:00 UTC'
-    },
-    {
-      id: 'cls-303',
-      title: 'Class 03: Constructing AI-Assisted Frontends with Streaming API',
-      courseId: 'ai-builder',
-      courseTitle: 'AI Builder: Intelligent Application Engineering',
-      moduleId: 'mod-bld-01',
-      moduleTitle: 'Module 01: Full-Stack AI Integration',
-      instructor: 'Marcus Chen',
-      duration: '90 min',
-      order: 1,
-      videoStatus: 'Ready',
-      resourcesCount: 5,
-      completionRequirement: 'Deploy Working SSE Streaming UI',
-      visibility: 'Published',
-      status: 'Published',
-      scheduleDate: '2026-10-20 17:00 UTC'
-    },
-    {
-      id: 'cls-304',
-      title: 'Class 04: Structured JSON Schema & Function Calling in LLMs',
-      courseId: 'ai-builder',
-      courseTitle: 'AI Builder: Intelligent Application Engineering',
-      moduleId: 'mod-bld-01',
-      moduleTitle: 'Module 01: Full-Stack AI Integration',
-      instructor: 'Marcus Chen',
-      duration: '85 min',
-      order: 2,
-      videoStatus: 'Ready',
-      resourcesCount: 2,
-      completionRequirement: 'Pass Type-Safety Test Suite',
-      visibility: 'Published',
-      status: 'Published',
-      scheduleDate: '2026-10-22 17:00 UTC'
-    },
-    {
-      id: 'cls-305',
-      title: 'Class 05: Vector Embeddings & Hybrid Search Pipelines',
-      courseId: 'ai-creator',
-      courseTitle: 'AI Creator: Autonomous Systems & Workflows',
-      moduleId: 'mod-crt-01',
-      moduleTitle: 'Module 01: Knowledge Retrieval & RAG',
-      instructor: 'Elena Rostova',
-      duration: '95 min',
-      order: 1,
-      videoStatus: 'Ready',
-      resourcesCount: 6,
-      completionRequirement: 'Benchmark Reciprocal Rank Fusion',
-      visibility: 'Published',
-      status: 'Published',
-      scheduleDate: '2026-10-25 18:30 UTC'
-    },
-    {
-      id: 'cls-306',
-      title: 'Class 06: Enterprise LoRA Fine-Tuning & Model Evaluation',
-      courseId: 'ai-architect',
-      courseTitle: 'AI Architect: Enterprise Intelligence Systems',
-      moduleId: 'mod-arc-01',
-      moduleTitle: 'Module 01: Specialized Model Runtimes',
-      instructor: 'Dr. Kenneth Vance',
-      duration: '120 min',
-      order: 1,
-      videoStatus: 'Ready',
-      resourcesCount: 4,
-      completionRequirement: 'Submit Weight Delta Benchmark',
-      visibility: 'Draft',
-      status: 'Draft',
-      scheduleDate: '2026-11-05 16:00 UTC'
-    }
-  ];
+  const defaultClasses = [];
 
-  const defaultModules = [
-    {
-      id: 'mod-fnd-01',
-      title: 'Module 01: Foundations & Architecture',
-      courseId: 'ai-foundations',
-      courseTitle: 'AI Foundations: Zero to AI Native',
-      order: 1,
-      classesCount: 3,
-      description: 'Understanding LLM inner workings, tokenization, embeddings, and context window mechanics.',
-      completionRequirement: '100% of classes completed',
-      status: 'Published'
-    },
-    {
-      id: 'mod-fnd-02',
-      title: 'Module 02: Prompt Engineering Mastery',
-      courseId: 'ai-foundations',
-      courseTitle: 'AI Foundations: Zero to AI Native',
-      order: 2,
-      classesCount: 3,
-      description: 'Zero-shot, few-shot, system persona design, and recursive prompt chains.',
-      completionRequirement: 'Submit Capstone Prompt Matrix',
-      status: 'Published'
-    },
-    {
-      id: 'mod-bld-01',
-      title: 'Module 01: Full-Stack AI Integration',
-      courseId: 'ai-builder',
-      courseTitle: 'AI Builder: Intelligent Application Engineering',
-      order: 1,
-      classesCount: 4,
-      description: 'Streaming token APIs, server-sent events, function calling and typed responses.',
-      completionRequirement: 'Deploy streaming application',
-      status: 'Published'
-    },
-    {
-      id: 'mod-crt-01',
-      title: 'Module 01: Knowledge Retrieval & RAG',
-      courseId: 'ai-creator',
-      courseTitle: 'AI Creator: Autonomous Systems & Workflows',
-      order: 1,
-      classesCount: 4,
-      description: 'Vector chunking, high-dimensional indexing, BM25 hybrid ranking, and guardrails.',
-      completionRequirement: 'Pass retrieval precision benchmark',
-      status: 'Published'
-    },
-    {
-      id: 'mod-arc-01',
-      title: 'Module 01: Specialized Model Runtimes',
-      courseId: 'ai-architect',
-      courseTitle: 'AI Architect: Enterprise Intelligence Systems',
-      order: 1,
-      classesCount: 5,
-      description: 'Quantization (AWQ, GGUF), SIMD compilation, enterprise security firewalls.',
-      completionRequirement: 'Complete runtime latency benchmark',
-      status: 'Published'
-    }
-  ];
+  const defaultModules = [];
 
-  const defaultLessons = [
-    {
-      id: 'lsn-401',
-      title: 'Lesson 1.1: What Happens When an LLM Receives a Prompt',
-      courseId: 'ai-foundations',
-      courseTitle: 'AI Foundations',
-      moduleId: 'mod-fnd-01',
-      duration: '22 min',
-      order: 1,
-      instructor: 'Dr. Evelyn Vance',
-      videoStatus: 'Ready',
-      resources: ['tokenization-guide.pdf', 'tokenizer-tool-link'],
-      completionRequirement: 'Watch to 90%',
-      visibility: 'Published',
-      status: 'Published'
-    },
-    {
-      id: 'lsn-402',
-      title: 'Lesson 1.2: Attention Weights & Next Token Probability',
-      courseId: 'ai-foundations',
-      courseTitle: 'AI Foundations',
-      moduleId: 'mod-fnd-01',
-      duration: '28 min',
-      order: 2,
-      instructor: 'Dr. Evelyn Vance',
-      videoStatus: 'Ready',
-      resources: ['attention-interactive.html'],
-      completionRequirement: 'Watch to 90%',
-      visibility: 'Published',
-      status: 'Published'
-    },
-    {
-      id: 'lsn-403',
-      title: 'Lesson 2.1: Structuring Responses with JSON Schema Enforcement',
-      courseId: 'ai-builder',
-      courseTitle: 'AI Builder',
-      moduleId: 'mod-bld-01',
-      duration: '35 min',
-      order: 1,
-      instructor: 'Marcus Chen',
-      videoStatus: 'Ready',
-      resources: ['schema-validator.ts', 'openapi-spec.json'],
-      completionRequirement: 'Run code sandbox',
-      visibility: 'Published',
-      status: 'Published'
-    },
-    {
-      id: 'lsn-404',
-      title: 'Lesson 2.2: Building an Infinite Context Chat Controller',
-      courseId: 'ai-builder',
-      courseTitle: 'AI Builder',
-      moduleId: 'mod-bld-01',
-      duration: '42 min',
-      order: 2,
-      instructor: 'Marcus Chen',
-      videoStatus: 'Ready',
-      resources: ['sliding-window-buffer.js'],
-      completionRequirement: 'Submit repository link',
-      visibility: 'Published',
-      status: 'Published'
-    }
-  ];
+  const defaultLessons = [];
 
-  const defaultVideos = [
-    {
-      id: 'vid-501',
-      title: 'Transformer Neural Mechanisms & Tokenization',
-      courseTitle: 'AI Foundations',
-      classTitle: 'Class 01: Transformers, Tokens & Attention',
-      duration: '01:14:22',
-      thumbnail: 'assets/video-thumb-01.jpg',
-      status: 'Ready',
-      resolution: '4K 2160p (HLS Adaptive)',
-      bitrate: '8500 kbps',
-      storagePlaceholder: 'gs://nexvion-media-archive/transcoded/v-501.m3u8',
-      visibility: 'Published',
-      uploadedAt: '2026-10-05T12:00:00Z'
-    },
-    {
-      id: 'vid-502',
-      title: 'Live Lab: Implementing Server-Sent Events with AI Streams',
-      courseTitle: 'AI Builder',
-      classTitle: 'Class 03: Constructing AI-Assisted Frontends',
-      duration: '01:28:40',
-      thumbnail: 'assets/video-thumb-02.jpg',
-      status: 'Ready',
-      resolution: '1080p 60fps',
-      bitrate: '5200 kbps',
-      storagePlaceholder: 'gs://nexvion-media-archive/transcoded/v-502.m3u8',
-      visibility: 'Published',
-      uploadedAt: '2026-10-06T14:15:00Z'
-    },
-    {
-      id: 'vid-503',
-      title: 'Architecting Hybrid Dense-Sparse Vector Search RAG',
-      courseTitle: 'AI Creator',
-      classTitle: 'Class 05: Vector Embeddings & Hybrid Search',
-      duration: '01:35:10',
-      thumbnail: 'assets/video-thumb-03.jpg',
-      status: 'Ready',
-      resolution: '1080p 60fps',
-      bitrate: '4800 kbps',
-      storagePlaceholder: 'gs://nexvion-raw-uploads/v-503-master.mp4',
-      visibility: 'Published',
-      uploadedAt: '2026-10-08T16:00:00Z'
-    },
-    {
-      id: 'vid-504',
-      title: 'Native SIMD Acceleration for AI Model Inferences',
-      courseTitle: 'AI Architect',
-      classTitle: 'Class 06: Specialized Model Runtimes',
-      duration: '02:02:15',
-      thumbnail: 'assets/video-thumb-04.jpg',
-      status: 'Ready',
-      resolution: '4K 2160p',
-      bitrate: '7200 kbps',
-      storagePlaceholder: 'gs://nexvion-staging/v-504.mp4',
-      visibility: 'Draft',
-      uploadedAt: '2026-10-08T20:00:00Z'
-    }
-  ];
+  const defaultVideos = [];
 
-  const defaultResources = [
-    {
-      id: 'res-601',
-      title: 'NEXVION Prompt Engineering Reference Manual (2026)',
-      type: 'PDF',
-      courseTitle: 'AI Foundations',
-      moduleTitle: 'Module 02: Prompt Engineering',
-      filePlaceholder: 'docs/nexvion-prompt-manual-v2.pdf',
-      size: '4.8 MB',
-      visibility: 'Public',
-      status: 'Active',
-      downloadCount: 842
-    },
-    {
-      id: 'res-602',
-      title: 'Full-Stack Next.js + AI SDK Starter Repository',
-      type: 'Template',
-      courseTitle: 'AI Builder',
-      moduleTitle: 'Module 01: Full-Stack AI Integration',
-      filePlaceholder: 'github.com/nexvion-academy/ai-sdk-starter',
-      size: 'Repository Starter',
-      visibility: 'Public',
-      status: 'Active',
-      downloadCount: 615
-    },
-    {
-      id: 'res-603',
-      title: 'Production RAG Vector Chunking Benchmarking Notebook',
-      type: 'Study material',
-      courseTitle: 'AI Creator',
-      moduleTitle: 'Module 01: Knowledge Retrieval & RAG',
-      filePlaceholder: 'notebooks/rag-chunking-benchmarks.ipynb',
-      size: '12.4 MB',
-      visibility: 'Enrolled Only',
-      status: 'Active',
-      downloadCount: 390
-    },
-    {
-      id: 'res-604',
-      title: 'Enterprise System Prompts & Guardrails Library',
-      type: 'Prompt library',
-      courseTitle: 'AI Builder',
-      moduleTitle: 'Module 02: System Prompts',
-      filePlaceholder: 'prompts/enterprise-guardrails.json',
-      size: '1.2 MB',
-      visibility: 'Public',
-      status: 'Active',
-      downloadCount: 920
-    },
-    {
-      id: 'res-605',
-      title: 'SIMD Compiler Vectorization Cheatsheet',
-      type: 'Document',
-      courseTitle: 'AI Architect',
-      moduleTitle: 'Module 01: Specialized Model Runtimes',
-      filePlaceholder: 'cheatsheets/simd-neon-avx512.pdf',
-      size: '2.1 MB',
-      visibility: 'Enrolled Only',
-      status: 'Active',
-      downloadCount: 145
-    }
-  ];
+  const defaultResources = [];
 
-  const defaultProjects = [
-    {
-      id: 'prj-701',
-      title: 'Capstone: Intelligent Automated Research Assistant',
-      courseId: 'ai-builder',
-      courseTitle: 'AI Builder',
-      tierId: 'ai-builder',
-      tierName: 'AI Builder',
-      moduleId: 'mod-bld-01',
-      moduleTitle: 'Module 01: Full-Stack AI Integration',
-      description: 'Build a multi-source research summarizer using streaming LLMs, web search extraction, and persistent note storage.',
-      instructions: '1. Create UI with modern dark mode.\n2. Connect streaming response endpoints with resilient SSE reconnects.\n3. Implement source citations and automated hallucination verification.\n4. Deploy on serverless architecture.',
-      dueDate: '2026-11-20',
-      isRequired: true,
-      submissionType: 'GitHub Repo + Deployed Live URL',
-      rubric: 'Architecture & System Design (30%), UI/UX Experience (25%), Token Efficiency (25%), Error Handling & Recovery (20%)',
-      status: 'Published',
-      completionRequirement: 'Passing grade >= 80% with faculty evaluation'
-    },
-    {
-      id: 'prj-702',
-      title: 'Autonomous Multi-Agent Workflow Engine',
-      courseId: 'ai-creator',
-      courseTitle: 'AI Creator',
-      tierId: 'ai-creator',
-      tierName: 'AI Creator',
-      moduleId: 'mod-crt-01',
-      moduleTitle: 'Module 01: Knowledge Retrieval & RAG',
-      description: 'Construct a supervisor-worker autonomous agent network that breaks down complex user objectives into atomic tasks.',
-      instructions: '1. Define typed state contracts between agents.\n2. Implement loop safety limits and recursion guards.\n3. Add structured telemetry export and decision tree visualization.',
-      dueDate: '2026-12-05',
-      isRequired: true,
-      submissionType: 'Code Archive + Video Demo Walkthrough',
-      rubric: 'System Resilience & Guards (35%), Tool Calling Accuracy (35%), Observability & Logging (30%)',
-      status: 'Published',
-      completionRequirement: 'Passing grade >= 85%'
-    },
-    {
-      id: 'prj-703',
-      title: 'Foundations AI Workflow Portfolio',
-      courseId: 'ai-foundations',
-      courseTitle: 'AI Foundations',
-      tierId: 'ai-foundations',
-      tierName: 'AI Foundations',
-      moduleId: 'mod-fnd-02',
-      moduleTitle: 'Module 02: Prompt Engineering & Guardrails',
-      description: 'Document 5 daily productivity automations built with state-of-the-art conversational and reasoning AI.',
-      instructions: 'Submit a comprehensive PDF portfolio outlining prompt templates, few-shot examples, test inputs, and before/after time savings metrics.',
-      dueDate: '2026-11-05',
-      isRequired: true,
-      submissionType: 'Portfolio Document (PDF)',
-      rubric: 'Depth of prompt design & guardrails (50%), Practical utility & measurement (50%)',
-      status: 'Published',
-      completionRequirement: 'Required for graduation certificate'
-    },
-    {
-      id: 'prj-704',
-      title: 'Enterprise Microservice Tool-Calling Architecture',
-      courseId: 'ai-architect',
-      courseTitle: 'AI Architect',
-      tierId: 'ai-architect',
-      tierName: 'AI Architect',
-      moduleId: 'mod-arc-01',
-      moduleTitle: 'Module 01: Specialized Model Runtimes',
-      description: 'Architect a secure, horizontally scalable function-calling microservice using OpenAPI schemas and strict input sanitation.',
-      instructions: '1. Build stateless gateway.\n2. Implement cryptographic token verification.\n3. Enforce sub-50ms schema validation per dispatch.',
-      dueDate: '2026-12-15',
-      isRequired: true,
-      submissionType: 'OpenAPI Specification + Docker Engine',
-      rubric: 'Interface Contract (40%), Security Guardrails (30%), Execution Latency (30%)',
-      status: 'Draft',
-      completionRequirement: 'Minimum 90% score with faculty architecture defense'
-    },
-    {
-      id: 'prj-705',
-      title: 'Semantic Retrieval-Augmented Generation Benchmarking',
-      courseId: 'ai-creator',
-      courseTitle: 'AI Creator',
-      tierId: 'ai-creator',
-      tierName: 'AI Creator',
-      moduleId: 'mod-crt-02',
-      moduleTitle: 'Module 02: Advanced Embeddings & Hybrid Search',
-      description: 'Evaluate dense vs sparse vector search indices across custom technical documentation collections.',
-      instructions: 'Provide benchmarking scripts, mean reciprocal rank (MRR) comparisons, and cost-per-query analysis.',
-      dueDate: '2026-11-28',
-      isRequired: false,
-      submissionType: 'Jupyter Notebook + Benchmark Report',
-      rubric: 'Test Coverage (40%), Analysis Rigor (40%), Documentation (20%)',
-      status: 'Open',
-      completionRequirement: 'Optional portfolio honors capstone'
-    },
-    {
-      id: 'prj-706',
-      title: 'High-Concurrency Realtime LLM Gateway',
-      courseId: 'ai-builder',
-      courseTitle: 'AI Builder',
-      tierId: 'ai-builder',
-      tierName: 'AI Builder',
-      moduleId: 'mod-bld-02',
-      moduleTitle: 'Module 02: Realtime Streaming & Sockets',
-      description: 'Construct a multi-tenant gateway that routes streaming completions across multiple provider fallback pools.',
-      instructions: '1. Handle provider outages automatically.\n2. Maintain consistent SSE framing for clients.\n3. Log token cost telemetry.',
-      dueDate: '2026-10-30',
-      isRequired: true,
-      submissionType: 'Production TypeScript Codebase',
-      rubric: 'Concurrency Limiters (35%), Telemetry Logging (35%), Resiliency (30%)',
-      status: 'Closed',
-      completionRequirement: 'Passing grade >= 80%'
-    }
-  ];
+  const defaultProjects = [];
 
-  const defaultAssignments = [
-    {
-      id: 'asg-801',
-      title: 'Assignment 01: Multi-Turn System Persona Prompt Tuning',
-      courseTitle: 'AI Foundations',
-      courseId: 'ai-foundations',
-      moduleId: 'mod-fnd-01',
-      moduleTitle: 'Module 01: Neural Foundations & Architecture',
-      instructions: 'Design a system persona that restricts conversational responses strictly to financial analysis syntax. Provide 5 test transcripts.',
-      dueDate: '2026-10-18',
-      submissionType: 'GitHub Repository',
-      isRequired: true,
-      reviewRequirements: 'Automated test suite pass & persona consistency under adversarial prompting',
-      points: 100,
-      totalSubmissions: 34,
-      pendingReviews: 5,
-      status: 'Open'
-    },
-    {
-      id: 'asg-802',
-      title: 'Assignment 02: Resilient Error Handling for Streamed LLM Responses',
-      courseTitle: 'AI Builder',
-      courseId: 'ai-builder',
-      moduleId: 'mod-bld-01',
-      moduleTitle: 'Module 01: Full-Stack AI Integration',
-      instructions: 'Handle mid-stream disconnection, 429 rate limit errors with exponential backoff, and partial JSON reconstruction in TypeScript.',
-      dueDate: '2026-10-24',
-      submissionType: 'Code Gist / Repo',
-      isRequired: true,
-      reviewRequirements: '429 backoff handling & stream buffer recovery verified against mock rate-limited endpoint',
-      points: 100,
-      totalSubmissions: 28,
-      pendingReviews: 6,
-      status: 'Open'
-    },
-    {
-      id: 'asg-803',
-      title: 'Assignment 03: Vector Chunk Boundary Optimization Experiment',
-      courseTitle: 'AI Creator',
-      courseId: 'ai-creator',
-      moduleId: 'mod-crt-01',
-      moduleTitle: 'Module 01: Knowledge Retrieval & RAG',
-      instructions: 'Compare recursive character splitter vs Markdown semantic splitter on a 100-page technical manual. Document chunk coherence.',
-      dueDate: '2026-10-30',
-      submissionType: 'Markdown + Benchmark JSON',
-      isRequired: true,
-      reviewRequirements: 'Side-by-side chunk split evaluation on sample corpus',
-      points: 100,
-      totalSubmissions: 21,
-      pendingReviews: 4,
-      status: 'Open'
-    },
-    {
-      id: 'asg-804',
-      title: 'Assignment 04: Structured JSON Schema Output Validation',
-      courseTitle: 'AI Foundations',
-      courseId: 'ai-foundations',
-      moduleId: 'mod-fnd-02',
-      moduleTitle: 'Module 02: Prompt Engineering & Guardrails',
-      instructions: 'Construct a Zod or Pydantic validation schema that enforces strict JSON response payloads without hallucinated keys.',
-      dueDate: '2026-11-02',
-      submissionType: 'Schema File + Test Cases',
-      isRequired: false,
-      reviewRequirements: 'Strict schema adherence across 10 sample inputs',
-      points: 100,
-      totalSubmissions: 16,
-      pendingReviews: 2,
-      status: 'Draft'
-    },
-    {
-      id: 'asg-805',
-      title: 'Assignment 05: Token Budget & Latency Optimization Pipeline',
-      courseTitle: 'AI Architect',
-      courseId: 'ai-architect',
-      moduleId: 'mod-arc-01',
-      moduleTitle: 'Module 01: Specialized Model Runtimes',
-      instructions: 'Implement context window sliding and token compression heuristics to minimize token budget across lengthy transcripts.',
-      dueDate: '2026-11-12',
-      submissionType: 'Performance Benchmark Suite',
-      isRequired: true,
-      reviewRequirements: 'Sub-200ms Time-To-First-Token in local test harness',
-      points: 100,
-      totalSubmissions: 12,
-      pendingReviews: 1,
-      status: 'Closed'
-    },
-    {
-      id: 'asg-806',
-      title: 'Assignment 06: Multi-Tool Function Calling Sandbox',
-      courseTitle: 'AI Builder',
-      courseId: 'ai-builder',
-      moduleId: 'mod-bld-02',
-      moduleTitle: 'Module 02: Realtime Streaming & Sockets',
-      instructions: 'Implement a client application that accepts model function call requests, executes local sandbox calculations, and submits results.',
-      dueDate: '2026-11-18',
-      submissionType: 'Live API Endpoint',
-      isRequired: true,
-      reviewRequirements: 'Pass 5 sequential tool execution challenges',
-      points: 100,
-      totalSubmissions: 18,
-      pendingReviews: 3,
-      status: 'Published'
-    }
-  ];
+  const defaultAssignments = [];
 
   const defaultSubmissions = [];
 
@@ -1327,7 +651,7 @@
       activeStudents: 0,
       pendingEnrollments: 0,
       activeCourses: 4,
-      openBatches: 7,
+      openBatches: 0,
       waitlistedStudents: 0,
       upcomingClasses: 0,
       pendingSupportRequests: 0,
@@ -1343,15 +667,7 @@
       { tier: 'AI Creator (Paid)', count: 0, percent: 0, color: '#00D2B4' },
       { tier: 'AI Architect (Premium)', count: 0, percent: 0, color: '#F59E0B' }
     ],
-    batchCapacityUtilization: [
-      { batch: 'Foundations Alpha', filled: 0, capacity: 30, percent: 0, status: 'OPEN' },
-      { batch: 'Foundations Beta', filled: 0, capacity: 30, percent: 0, status: 'OPEN' },
-      { batch: 'Builder Prime', filled: 0, capacity: 30, percent: 0, status: 'OPEN' },
-      { batch: 'Builder Apex', filled: 0, capacity: 30, percent: 0, status: 'OPEN' },
-      { batch: 'Creator Delta', filled: 0, capacity: 30, percent: 0, status: 'OPEN' },
-      { batch: 'Creator Omega', filled: 0, capacity: 30, percent: 0, status: 'OPEN' },
-      { batch: 'Architect Sovereign', filled: 0, capacity: 30, percent: 0, status: 'OPEN' }
-    ]
+    batchCapacityUtilization: []
   };
 
   // --------------------------------------------------------------------------
@@ -1807,7 +1123,7 @@
             const keysToRemove = [];
             for (let i = 0; i < window.localStorage.length; i++) {
               const k = window.localStorage.key(i);
-              if (k && k.startsWith('nexvion_admin_production_data_') && k !== STORAGE_KEY) {
+              if (k && (k.startsWith('nexvion_admin_production_data_') || k.startsWith('nexvion_admin_data_')) && k !== STORAGE_KEY) {
                 keysToRemove.push(k);
               }
             }
@@ -1817,16 +1133,32 @@
           const cached = window.localStorage.getItem(STORAGE_KEY);
           if (cached) {
             const parsed = JSON.parse(cached);
-            if (parsed.tiers && parsed.tiers.length === 4 && parsed.batches) {
+            if (parsed.tiers && parsed.tiers.length === 4 && Array.isArray(parsed.batches)) {
               parsed.batches.forEach(b => {
                 b.capacity = 30;
                 if (b.enrolledCount > 30) b.enrolledCount = 30;
               });
+              if (!Array.isArray(parsed.batches)) parsed.batches = [];
+              if (!Array.isArray(parsed.classes)) parsed.classes = [];
+              if (!Array.isArray(parsed.modules)) parsed.modules = [];
+              if (!Array.isArray(parsed.lessons)) parsed.lessons = [];
+              if (!Array.isArray(parsed.videos)) parsed.videos = [];
+              if (!Array.isArray(parsed.resources)) parsed.resources = [];
+              if (!Array.isArray(parsed.projects)) parsed.projects = [];
+              if (!Array.isArray(parsed.assignments)) parsed.assignments = [];
+              if (!Array.isArray(parsed.students)) parsed.students = [];
+              if (!Array.isArray(parsed.enrollments)) parsed.enrollments = [];
+              if (!Array.isArray(parsed.submissions)) parsed.submissions = [];
+              if (!Array.isArray(parsed.announcements)) parsed.announcements = [];
+              if (!Array.isArray(parsed.notifications)) parsed.notifications = [];
               if (!Array.isArray(parsed.payments)) {
                 parsed.payments = JSON.parse(JSON.stringify(defaultPayments));
               }
               if (!Array.isArray(parsed.certificates)) {
                 parsed.certificates = JSON.parse(JSON.stringify(defaultCertificates));
+              }
+              if (!Array.isArray(parsed.supportTickets)) {
+                parsed.supportTickets = JSON.parse(JSON.stringify(defaultSupportTickets));
               }
               if (!Array.isArray(parsed.adminUsers)) {
                 parsed.adminUsers = JSON.parse(JSON.stringify(defaultAdminUsers));
@@ -1839,6 +1171,9 @@
               }
               if (!parsed.settings || !parsed.settings.enrollmentRules || !parsed.settings.adminPreferences) {
                 parsed.settings = JSON.parse(JSON.stringify(defaultSettings));
+              }
+              if (!parsed.analytics || !parsed.analytics.overview) {
+                parsed.analytics = JSON.parse(JSON.stringify(defaultAnalytics));
               }
               if (!parsed.fileMetadata) {
                 parsed.fileMetadata = [];

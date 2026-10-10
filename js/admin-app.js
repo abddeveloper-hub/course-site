@@ -822,7 +822,13 @@
             <button class="adm-btn adm-btn-sm adm-btn-secondary" onclick="NexvionAdminApp.navigateTo('/admin/batches')">View All</button>
           </div>
           <div style="display:flex; flex-direction:column; gap:12px;">
-            ${batches.slice(0, 5).map(b => {
+            ${batches.length === 0 ? `
+              <div style="background:#FAFAFC; border:1px solid var(--adm-border); border-radius:8px; padding:38px 16px; text-align:center;">
+                <div style="font-size:1.6rem; margin-bottom:6px;">🏛️</div>
+                <strong style="color:var(--adm-text-primary); font-size:0.85rem;">No Active Cohorts Configured</strong>
+                <p style="margin:4px 0 0; font-size:0.75rem; color:var(--adm-text-muted);">Cohorts will appear here once created in the Batches section.</p>
+              </div>
+            ` : batches.slice(0, 5).map(b => {
               const pct = Math.round(((b.enrolledCount || 0) / 30) * 100);
               const fillClass = (b.enrolledCount || 0) >= 30 ? 'full' : (b.enrolledCount || 0) >= 25 ? 'few' : 'open';
               const badgeClass = b.status === 'FULL' ? 'adm-badge-full' : b.status === 'WAITLIST' ? 'adm-badge-waitlist' : 'adm-badge-open';
@@ -1315,7 +1321,7 @@
             </tr>
           </thead>
           <tbody>
-            ${batches.map(b => {
+            ${batches.length > 0 ? batches.map(b => {
               const seatsLeft = 30 - b.enrolledCount;
               const fillClass = b.enrolledCount >= 30 ? 'full' : b.enrolledCount >= 25 ? 'few' : 'open';
               const pct = Math.round((b.enrolledCount / 30) * 100);
@@ -1368,7 +1374,19 @@
                   </td>
                 </tr>
               `;
-            }).join('')}
+            }).join('') : `
+              <tr>
+                <td colspan="7" style="padding:0;">
+                  ${AdminComponents.EmptyState({
+                    icon: '🏛️',
+                    title: 'No cohorts configured',
+                    message: 'Get started by creating your first 30-capacity cohort batch.',
+                    actionText: '+ Create New Batch',
+                    onAction: 'NexvionAdminApp.openCreateBatchModal'
+                  })}
+                </td>
+              </tr>
+            `}
           </tbody>
         </table>
       </div>

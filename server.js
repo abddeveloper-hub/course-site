@@ -1493,7 +1493,7 @@ const server = http.createServer((req, res) => {
       pendingEnrollments: 0,
       completedEnrollments: 0,
       activeCourses: 4,
-      openBatches: 7,
+      openBatches: 0,
       waitlistedStudents: 0,
       completionRatePercent: 0,
       avgCourseSatisfaction: 0,
@@ -1514,15 +1514,7 @@ const server = http.createServer((req, res) => {
       { tier: 'AI Architect (Premium)', count: 0, percent: 0, color: '#F59E0B' }
     ];
 
-    const batchCapacityUtilization = [
-      { batch: 'Foundations Alpha', filled: 0, capacity: 30, percent: 0, status: 'OPEN' },
-      { batch: 'Foundations Beta', filled: 0, capacity: 30, percent: 0, status: 'OPEN' },
-      { batch: 'Builder Prime', filled: 0, capacity: 30, percent: 0, status: 'OPEN' },
-      { batch: 'Builder Apex', filled: 0, capacity: 30, percent: 0, status: 'OPEN' },
-      { batch: 'Creator Delta', filled: 0, capacity: 30, percent: 0, status: 'OPEN' },
-      { batch: 'Creator Omega', filled: 0, capacity: 30, percent: 0, status: 'OPEN' },
-      { batch: 'Architect Sovereign', filled: 0, capacity: 30, percent: 0, status: 'OPEN' }
-    ];
+    const batchCapacityUtilization = [];
 
     const supportVolume = {
       totalTickets: ticketsList.length,
