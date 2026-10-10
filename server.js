@@ -62,202 +62,11 @@ const PROCESSED_NOTIFICATION_IDEMPOTENCY = new Set();
 
 // Phase 15 Secure Certificate Issuance & Public Verification Datastores
 const CERTIFICATES_REGISTRY = new Map();
-const DEFAULT_SEED_CERTIFICATES = [
-  {
-    id: 'cert-8001',
-    verificationId: 'NEX-FND-2026-0042',
-    studentId: 'stu-106',
-    studentName: 'Rohan Mehra',
-    studentEmail: 'rohan.mehra@ai-craft.in',
-    courseTitle: 'AI Foundations: Zero to AI Native',
-    courseId: 'course-ai-foundations',
-    tierName: 'AI Foundations',
-    tierId: 'tier-foundations',
-    batchName: 'Foundations Cohort Alpha',
-    batchId: 'batch-alpha-2026',
-    completionPercentage: 100,
-    eligibilityStatus: 'Requirements Satisfied',
-    status: 'Issued',
-    issueDate: '2026-10-05',
-    grade: 'Distinction (98%)',
-    signatory: 'Dr. Evelyn Vance & Dr. Kenneth Vance',
-    issuingOrganization: 'NEXVION AI Academy',
-    verificationUrl: '/verify-certificate/NEX-FND-2026-0042',
-    requirements: {
-      courseCompletion: { met: true, label: 'Course Progress', detail: '100% curriculum lessons completed' },
-      classCompletion: { met: true, label: 'Required Classes', detail: '8 / 8 mandatory interactive live classes attended' },
-      projectCompletion: { met: true, label: 'Capstone Project', detail: 'Foundations Capstone passed with 98% score' },
-      assignmentCompletion: { met: true, label: 'Assignment Completion', detail: '4 / 4 lab assignments evaluated and passed' },
-      paymentCompletion: { met: true, label: 'Tuition Clearance', detail: 'Tuition Cleared (Free Tier / Sponsored)' },
-      manualApproval: { met: true, label: 'Directorate Approval', detail: 'Signed off by Academic Director on 2026-10-04' }
-    },
-    internalNotes: [
-      { text: 'Academic audit verified complete attendance & top-percentile submission.', author: 'Academic Directorate', date: '2026-10-04T10:00:00Z' }
-    ]
-  },
-  {
-    id: 'cert-8002',
-    verificationId: 'NEX-FND-2026-0043 (Unissued)',
-    studentId: 'stu-102',
-    studentName: 'Amara Valen',
-    studentEmail: 'amara.valen@domain.org',
-    courseTitle: 'AI Foundations: Zero to AI Native',
-    courseId: 'course-ai-foundations',
-    tierName: 'AI Foundations',
-    tierId: 'tier-foundations',
-    batchName: 'Foundations Cohort Alpha',
-    batchId: 'batch-alpha-2026',
-    completionPercentage: 95,
-    eligibilityStatus: 'Awaiting Directorate Sign-off',
-    status: 'Pending approval',
-    issueDate: 'Pending Generation',
-    grade: 'First Class (88%)',
-    signatory: 'Academic Directorate',
-    issuingOrganization: 'NEXVION AI Academy',
-    requirements: {
-      courseCompletion: { met: true, label: 'Course Progress', detail: '95% modules and lessons completed' },
-      classCompletion: { met: true, label: 'Required Classes', detail: '8 / 8 live classes attended' },
-      projectCompletion: { met: true, label: 'Capstone Project', detail: 'Capstone submitted and approved by mentor' },
-      assignmentCompletion: { met: true, label: 'Assignment Completion', detail: '4 / 4 assignments submitted' },
-      paymentCompletion: { met: true, label: 'Tuition Clearance', detail: 'Tuition Cleared (Free Tier / Sponsored)' },
-      manualApproval: { met: false, label: 'Directorate Approval', detail: 'Pending final review and signature from Academic Directorate' }
-    },
-    internalNotes: [
-      { text: 'Submission scored 88%. Ready for directorate approval sign-off.', author: 'Marcus Chen', date: '2026-10-07T14:10:00Z' }
-    ]
-  }
-];
+const DEFAULT_SEED_CERTIFICATES = [];
 DEFAULT_SEED_CERTIFICATES.forEach(c => CERTIFICATES_REGISTRY.set(c.id, JSON.parse(JSON.stringify(c))));
 
 const SUPPORT_TICKETS_REGISTRY = new Map();
-const DEFAULT_SEED_SUPPORT_TICKETS = [
-  {
-    id: 'tic-901',
-    ticketRef: 'SUP-2026-0312',
-    studentId: 'stu-103',
-    studentName: 'Julian Mercer',
-    studentEmail: 'julian.m@matrix-sys.io',
-    subject: 'Inquiry regarding Waitlist Queue Position for Creator Cohort Delta',
-    category: 'Enrollment',
-    priority: 'High',
-    status: 'Open',
-    assignedAdmin: 'Sarah Al-Mansoor',
-    createdAt: '2026-10-08T09:15:00Z',
-    lastUpdated: '2026-10-08T14:30:00Z',
-    messages: [
-      {
-        id: 'msg-901-1',
-        sender: 'Julian Mercer',
-        senderEmail: 'julian.m@matrix-sys.io',
-        isStaff: false,
-        timestamp: '2026-10-08T09:15:00Z',
-        text: 'Hi NEXVION Support team, I submitted enrollment for Creator Cohort Delta and noticed it says waitlisted. Could you clarify when the next batch slot opens up?'
-      },
-      {
-        id: 'msg-901-2',
-        sender: 'Sarah Al-Mansoor (Student Manager)',
-        senderEmail: 'sarah.m@nexvion.ai',
-        isStaff: true,
-        timestamp: '2026-10-08T14:30:00Z',
-        text: 'Hello Julian! The Creator Cohort Delta has reached its maximum strict capacity of 30 students. You are currently in waitlist spot #1. If any registered participant defers, your seat will activate immediately.'
-      }
-    ],
-    internalNotes: [
-      {
-        id: 'not-901-1',
-        text: 'Top candidate for next batch if capacity expands or cancellation occurs.',
-        author: 'Sarah Al-Mansoor',
-        createdAt: '2026-10-08T14:35:00Z'
-      }
-    ],
-    attachments: [],
-    resolutionDetails: null
-  },
-  {
-    id: 'tic-902',
-    ticketRef: 'SUP-2026-0313',
-    studentId: 'stu-105',
-    studentName: 'Soraya Chen',
-    studentEmail: 's.chen@quantum-ai.dev',
-    subject: 'Corporate Purchase Order Processing Status',
-    category: 'Payment',
-    priority: 'Normal',
-    status: 'In progress',
-    assignedAdmin: 'Elena Finance Team',
-    createdAt: '2026-10-08T11:00:00Z',
-    lastUpdated: '2026-10-08T15:20:00Z',
-    messages: [
-      {
-        id: 'msg-902-1',
-        sender: 'Soraya Chen',
-        senderEmail: 's.chen@quantum-ai.dev',
-        isStaff: false,
-        timestamp: '2026-10-08T11:00:00Z',
-        text: 'Please confirm receipt of our company sponsorship authorization documents.'
-      }
-    ],
-    internalNotes: [
-      {
-        id: 'not-902-1',
-        text: 'Awaiting verification from finance accounts team.',
-        author: 'Elena Finance Team',
-        createdAt: '2026-10-08T15:20:00Z'
-      }
-    ],
-    attachments: [
-      {
-        id: 'att-902-1',
-        fileName: 'corporate_po_auth.pdf',
-        fileUrl: 'https://storage.nexvion.ai/support/tic-902/corporate_po_auth.pdf',
-        fileSize: 245800,
-        uploadedAt: '2026-10-08T11:00:00Z'
-      }
-    ],
-    resolutionDetails: null
-  },
-  {
-    id: 'tic-903',
-    ticketRef: 'SUP-2026-0314',
-    studentId: 'stu-101',
-    studentName: 'Zackary Thorne',
-    studentEmail: 'z.thorne@synthetic.nexus',
-    subject: 'Video Player Buffering on Class 03 Stream',
-    category: 'Technical issue',
-    priority: 'Low',
-    status: 'Waiting for student',
-    assignedAdmin: 'DevOps Support',
-    createdAt: '2026-10-07T18:40:00Z',
-    lastUpdated: '2026-10-08T10:12:00Z',
-    messages: [
-      {
-        id: 'msg-903-1',
-        sender: 'Zackary Thorne',
-        senderEmail: 'z.thorne@synthetic.nexus',
-        isStaff: false,
-        timestamp: '2026-10-07T18:40:00Z',
-        text: 'The 4K stream on Class 03 had slight frame drops on Chrome.'
-      },
-      {
-        id: 'msg-903-2',
-        sender: 'DevOps Support',
-        senderEmail: 'devops@nexvion.ai',
-        isStaff: true,
-        timestamp: '2026-10-08T10:12:00Z',
-        text: 'We refreshed the HLS CDN manifest. Please let us know if adaptive 1080p fallback works smoothly on your end.'
-      }
-    ],
-    internalNotes: [
-      {
-        id: 'not-903-1',
-        text: 'CDN cache purged for Class 03.',
-        author: 'DevOps Support',
-        createdAt: '2026-10-08T10:15:00Z'
-      }
-    ],
-    attachments: [],
-    resolutionDetails: null
-  }
-];
+const DEFAULT_SEED_SUPPORT_TICKETS = [];
 DEFAULT_SEED_SUPPORT_TICKETS.forEach(t => SUPPORT_TICKETS_REGISTRY.set(t.id, JSON.parse(JSON.stringify(t))));
 
 function getCorsOrigin(reqOrigin) {
@@ -1679,40 +1488,40 @@ const server = http.createServer((req, res) => {
     const certsList = Array.from(CERTIFICATES_REGISTRY.values());
 
     const overview = {
-      totalStudents: 1248,
-      activeStudents: 934,
-      pendingEnrollments: 18,
-      completedEnrollments: 210,
+      totalStudents: 0,
+      activeStudents: 0,
+      pendingEnrollments: 0,
+      completedEnrollments: 0,
       activeCourses: 4,
       openBatches: 7,
-      waitlistedStudents: 42,
-      completionRatePercent: 87.4,
-      avgCourseSatisfaction: 4.92,
+      waitlistedStudents: 0,
+      completionRatePercent: 0,
+      avgCourseSatisfaction: 0,
       supportVolume: ticketsList.length
     };
 
     const coursePopularity = [
-      { courseId: 'course-ai-foundations', courseTitle: 'AI Foundations: Zero to AI Native', enrollmentsCount: 420, popularityScore: 92 },
-      { courseId: 'course-ai-builder', courseTitle: 'AI Builder: Intelligent Application Engineering', enrollmentsCount: 384, popularityScore: 88 },
-      { courseId: 'course-ai-creator', courseTitle: 'AI Creator: Multimodal Generative Systems', enrollmentsCount: 290, popularityScore: 76 },
-      { courseId: 'course-ai-architect', courseTitle: 'AI Architect: Enterprise AI Systems', enrollmentsCount: 154, popularityScore: 65 }
+      { courseId: 'course-ai-foundations', courseTitle: 'AI Foundations: Zero to AI Native', enrollmentsCount: 0, popularityScore: 0 },
+      { courseId: 'course-ai-builder', courseTitle: 'AI Builder: Intelligent Application Engineering', enrollmentsCount: 0, popularityScore: 0 },
+      { courseId: 'course-ai-creator', courseTitle: 'AI Creator: Multimodal Generative Systems', enrollmentsCount: 0, popularityScore: 0 },
+      { courseId: 'course-ai-architect', courseTitle: 'AI Architect: Enterprise AI Systems', enrollmentsCount: 0, popularityScore: 0 }
     ];
 
     const tierDistribution = [
-      { tier: 'AI Foundations (Free)', count: 420, percent: 33.6, color: '#7F52FF' },
-      { tier: 'AI Builder (Paid)', count: 384, percent: 30.8, color: '#C757BC' },
-      { tier: 'AI Creator (Paid)', count: 290, percent: 23.2, color: '#00D2B4' },
-      { tier: 'AI Architect (Premium)', count: 154, percent: 12.4, color: '#F59E0B' }
+      { tier: 'AI Foundations (Free)', count: 0, percent: 0, color: '#7F52FF' },
+      { tier: 'AI Builder (Paid)', count: 0, percent: 0, color: '#C757BC' },
+      { tier: 'AI Creator (Paid)', count: 0, percent: 0, color: '#00D2B4' },
+      { tier: 'AI Architect (Premium)', count: 0, percent: 0, color: '#F59E0B' }
     ];
 
     const batchCapacityUtilization = [
-      { batch: 'Foundations Alpha', filled: 18, capacity: 30, percent: 60, status: 'OPEN' },
-      { batch: 'Foundations Beta', filled: 30, capacity: 30, percent: 100, status: 'FULL' },
-      { batch: 'Builder Prime', filled: 26, capacity: 30, percent: 86.6, status: 'OPEN' },
-      { batch: 'Builder Apex', filled: 30, capacity: 30, percent: 100, status: 'FULL' },
-      { batch: 'Creator Delta', filled: 30, capacity: 30, percent: 100, status: 'FULL' },
-      { batch: 'Creator Omega', filled: 12, capacity: 30, percent: 40, status: 'OPEN' },
-      { batch: 'Architect Sovereign', filled: 28, capacity: 30, percent: 93.3, status: 'OPEN' }
+      { batch: 'Foundations Alpha', filled: 0, capacity: 30, percent: 0, status: 'OPEN' },
+      { batch: 'Foundations Beta', filled: 0, capacity: 30, percent: 0, status: 'OPEN' },
+      { batch: 'Builder Prime', filled: 0, capacity: 30, percent: 0, status: 'OPEN' },
+      { batch: 'Builder Apex', filled: 0, capacity: 30, percent: 0, status: 'OPEN' },
+      { batch: 'Creator Delta', filled: 0, capacity: 30, percent: 0, status: 'OPEN' },
+      { batch: 'Creator Omega', filled: 0, capacity: 30, percent: 0, status: 'OPEN' },
+      { batch: 'Architect Sovereign', filled: 0, capacity: 30, percent: 0, status: 'OPEN' }
     ];
 
     const supportVolume = {
@@ -1722,24 +1531,17 @@ const server = http.createServer((req, res) => {
       waitingForStudent: ticketsList.filter(t => t.status === 'Waiting for student').length,
       resolved: ticketsList.filter(t => t.status === 'Resolved').length,
       closed: ticketsList.filter(t => t.status === 'Closed').length,
-      byCategory: {
-        enrollment: ticketsList.filter(t => (t.category || '').toLowerCase() === 'enrollment').length,
-        courseAccess: ticketsList.filter(t => (t.category || '').toLowerCase() === 'course access').length,
-        payment: ticketsList.filter(t => (t.category || '').toLowerCase() === 'payment').length,
-        technicalIssue: ticketsList.filter(t => (t.category || '').toLowerCase() === 'technical issue').length,
-        certificate: ticketsList.filter(t => (t.category || '').toLowerCase() === 'certificate').length,
-        generalQuestion: ticketsList.filter(t => (t.category || '').toLowerCase() === 'general question').length
-      }
+      byCategory: {}
     };
 
     const paymentSummary = canAccessFinancials ? {
       restricted: false,
-      totalRevenue: 28450,
+      totalRevenue: 0,
       currency: 'USD',
-      totalTransactions: 12,
-      paidCount: 8,
-      pendingCount: 2,
-      refundedCount: 1
+      totalTransactions: 0,
+      paidCount: 0,
+      pendingCount: 0,
+      refundedCount: 0
     } : {
       restricted: true,
       message: 'Financial ledger restricted. Requires Finance Manager role.',
