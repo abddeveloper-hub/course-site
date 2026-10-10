@@ -1777,6 +1777,8 @@ const server = http.createServer((req, res) => {
     pathname = '/design-system.html';
   } else if (pathname === '/waitlist' || pathname === '/waitlist.html') {
     pathname = '/course.html';
+  } else if (pathname === '/admin/login' || pathname === '/admin-login' || pathname === '/admin-login.html') {
+    pathname = '/admin-login.html';
   } else if (pathname.startsWith('/admin/') && path.extname(pathname)) {
     // Strip /admin prefix for static assets requested relatively from /admin/* pages
     const stripped = pathname.replace(/^\/admin/, '');
@@ -1787,8 +1789,8 @@ const server = http.createServer((req, res) => {
   } else if (pathname === '/admin' || pathname === '/admin.html' || (pathname.startsWith('/admin/') && !path.extname(pathname))) {
     pathname = '/admin.html';
   } else if (pathname === '/login') {
-    pathname = '/index.html';
-  } else if (pathname === '/' || pathname === '') {
+    pathname = '/admin-login.html';
+  } else if (pathname === '/' || pathname === '' || pathname === '/home') {
     pathname = '/index.html';
   }
 
