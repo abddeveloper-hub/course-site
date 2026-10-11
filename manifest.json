@@ -20,5 +20,21 @@
       "sizes": "512x512",
       "type": "image/png"
     }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshots/home.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "NEXVION AI Course homepage"
+    },
+    {
+      "src": "screenshots/courses.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Explore NEXVION courses"
+    }
   ]
 }

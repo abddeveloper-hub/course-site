@@ -43,12 +43,13 @@
       --radius-lg: 20px;
     }
 
-    html, body {
-      height: 100%;
+    html {
+      min-height: 100%;
       background: var(--bg-base);
       color: var(--text-primary);
       font-family: var(--font);
       -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
     }
 
     body {
@@ -56,9 +57,15 @@
       align-items: center;
       justify-content: center;
       min-height: 100vh;
+      min-height: 100dvh;
       padding: 24px;
       position: relative;
-      overflow: hidden;
+      background: var(--bg-base);
+      color: var(--text-primary);
+      font-family: var(--font);
+      -webkit-font-smoothing: antialiased;
+      overflow-y: auto;
+      overflow-x: hidden;
     }
 
     body::before {

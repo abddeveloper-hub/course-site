@@ -1,4 +1,3 @@
-
 {
   "id": "/course-site/",
   "name": "NEXVION AI Course",
@@ -7,9 +6,9 @@
   "start_url": "/course-site/",
   "scope": "/course-site/",
   "display": "standalone",
+  "orientation": "portrait",
   "theme_color": "#101827",
   "background_color": "#101827",
-  "categories": ["education"],
   "icons": [
     {
       "src": "icons/icon-192.png",
@@ -20,6 +19,22 @@
       "src": "icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshots/home.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "NEXVION AI Course homepage"
+    },
+    {
+      "src": "screenshots/courses.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Explore NEXVION courses"
     }
   ]
 }

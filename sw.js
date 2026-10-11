@@ -1,45 +1,75 @@
-
-const CACHE_NAME = "nexvion-cache-v1";
-
-const APP_FILES = [
-  "/course-site/",
-  "/course-site/index.html"
+// NEXVION AI Course — Service Worker
+const CACHE_NAME = 'nexvion-ai-v1';
+const PRECACHE_ASSETS = [
+  './',
+  './index.html',
+  './course.html',
+  './register.html',
+  './dashboard.html',
+  './checkout.html',
+  './manifest.json',
+  './manifest.webmanifest',
+  './css/style.css',
+  './css/synthetic-systems.css',
+  './css/motion.css',
+  './js/app.js',
+  './icons/icon-192.png',
+  './icons/icon-512.png',
+  './screenshots/home.png',
+  './screenshots/courses.png'
 ];
 
-self.addEventListener("install", (event) => {
+self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) =>
-      cache.addAll(APP_FILES)
-    )
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(PRECACHE_ASSETS).catch((err) => {
+        console.warn('[SW] Precache asset fetch failure:', err);
+      });
+    }).then(() => self.skipWaiting())
   );
-  self.skipWaiting();
 });
 
-self.addEventListener("activate", (event) => {
+self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(
-        keys
-          .filter((key) => key !== CACHE_NAME)
-          .map((key) => caches.delete(key))
-      )
-    )
+    caches.keys().then((keys) => {
+      return Promise.all(
+        keys.map((key) => {
+          if (key !== CACHE_NAME) {
+            return caches.delete(key);
+          }
+        })
+      );
+    }).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
-self.addEventListener("fetch", (event) => {
-  if (event.request.method !== "GET") return;
+self.addEventListener('fetch', (event) => {
+  const req = event.request;
+  // Only handle GET requests and http/https schemes
+  if (req.method !== 'GET' || !req.url.startsWith('http')) return;
 
-  const url = new URL(event.request.url);
+  // API calls & webhook transactions always go straight to network
+  if (req.url.includes('/api/')) {
+    event.respondWith(fetch(req));
+    return;
+  }
 
-  if (url.origin !== self.location.origin) return;
-
+  // Stale-while-revalidate for static assets, network-first for navigation
   event.respondWith(
-    fetch(event.request).catch(() =>
-      caches.match(event.request).then((cached) =>
-        cached || caches.match("/course-site/")
-      )
-    )
+    caches.match(req).then((cachedResponse) => {
+      const fetchPromise = fetch(req)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const responseToCache = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(req, responseToCache);
+            });
+          }
+          return networkResponse;
+        })
+        .catch(() => cachedResponse);
+
+      return cachedResponse || fetchPromise;
+    })
   );
 });
