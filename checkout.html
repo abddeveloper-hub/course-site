@@ -2,7 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+  <meta name="theme-color" content="#101827">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
   <title>Tuition Checkout &amp; Payment Gateway | NEXVION AI</title>
 
   <!-- SEO & Meta Tags -->
@@ -14,7 +22,7 @@
   <meta property="og:title" content="Tuition Checkout &amp; Payment Gateway | NEXVION AI">
   <meta property="og:description" content="Secure bursar checkout with trusted server-side payment verification.">
   <meta property="og:type" content="website">
-  <meta property="og:image" content="NEXVION_logo_design_20261005164702.jpg">
+  <meta property="og:image" content="Linocut_app_icon_logo_design_20261011091421.jpg">
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -44,8 +52,8 @@
     }
 
     body.checkout-body {
-      background-color: var(--chk-bg);
-      color: var(--chk-text);
+      background-color: var(--chk-bg) !important;
+      color: var(--chk-text) !important;
       font-family: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
       min-height: 100vh;
       margin: 0;
@@ -53,6 +61,22 @@
       flex-direction: column;
       position: relative;
       overflow-x: hidden;
+    }
+
+    body.checkout-body h1,
+    body.checkout-body h2,
+    body.checkout-body h3,
+    body.checkout-body h4,
+    body.checkout-body h5,
+    body.checkout-body h6,
+    body.checkout-body .chk-section-title,
+    body.checkout-body .chk-brand-title {
+      color: #FFFFFF !important;
+    }
+
+    body.checkout-body p,
+    body.checkout-body .chk-section-desc {
+      color: #94A3B8 !important;
     }
 
     .chk-bg-grid {
@@ -76,6 +100,12 @@
       filter: blur(80px);
       pointer-events: none;
       z-index: 0;
+    }
+
+    @media (max-width: 768px) {
+      .chk-bg-glow {
+        display: none !important;
+      }
     }
 
     .chk-header {
@@ -561,7 +591,7 @@
   <header class="chk-header">
     <div class="chk-header-inner">
       <a href="index.html" class="chk-brand" aria-label="NEXVION AI Academy Home">
-        <img src="NEXVION_logo_design_20261005164702.jpg" alt="NEXVION AI Logo">
+        <img src="Linocut_app_icon_logo_design_20261011091421.jpg" alt="NEXVION AI Logo">
         <div>
           <div class="chk-brand-title">NEXVION AI</div>
           <div class="chk-brand-sub">Bursar &amp; Payment Gateway</div>

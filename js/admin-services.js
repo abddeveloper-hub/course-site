@@ -580,7 +580,7 @@
     platform: {
       platformName: 'NEXVION AI',
       portalTitle: 'NEXVION AI Administration Portal',
-      logoUrl: 'NEXVION_logo_design_20261005164702.jpg',
+      logoUrl: 'Linocut_app_icon_logo_design_20261011091421.jpg',
       defaultTimezone: 'UTC',
       dateFormat: 'YYYY-MM-DD HH:mm UTC',
       maintenanceMode: false

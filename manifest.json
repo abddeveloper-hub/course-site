@@ -1,0 +1,24 @@
+{
+  "id": "/course-site/",
+  "name": "NEXVION AI Course",
+  "short_name": "NEXVION",
+  "description": "Learn artificial intelligence with NEXVION AI Course.",
+  "start_url": "/course-site/",
+  "scope": "/course-site/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#101827",
+  "background_color": "#101827",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

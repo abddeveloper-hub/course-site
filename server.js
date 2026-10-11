@@ -31,6 +31,7 @@ const MIME_TYPES = {
   '.css': 'text/css; charset=utf-8',
   '.js': 'application/javascript; charset=utf-8',
   '.json': 'application/json; charset=utf-8',
+  '.webmanifest': 'application/manifest+json; charset=utf-8',
   '.jpg': 'image/jpeg',
   '.jpeg': 'image/jpeg',
   '.png': 'image/png',
@@ -72,6 +73,14 @@ DEFAULT_SEED_SUPPORT_TICKETS.forEach(t => SUPPORT_TICKETS_REGISTRY.set(t.id, JSO
 // Registered Students & Admissions Datastores
 const REGISTERED_STUDENTS_REGISTRY = new Map();
 const ENROLLMENTS_REGISTRY = new Map();
+
+// Course & Cohort Capacity Datastore (Configurable by Administrator)
+const COURSE_CAPACITY_REGISTRY = new Map([
+  ['ai-foundations', { id: 'ai-foundations', title: 'AI Foundations: Zero to AI Native', maxCapacity: 30 }],
+  ['ai-builder', { id: 'ai-builder', title: 'AI Builder: Intelligent Application Engineering', maxCapacity: 30 }],
+  ['ai-creator', { id: 'ai-creator', title: 'AI Creator: Autonomous Systems & Workflows', maxCapacity: 30 }],
+  ['ai-architect', { id: 'ai-architect', title: 'AI Architect: Enterprise Intelligence Systems', maxCapacity: 30 }]
+]);
 
 function getCorsOrigin(reqOrigin) {
   if (!reqOrigin) return ALLOWED_ORIGINS[0];
@@ -186,6 +195,26 @@ const server = http.createServer((req, res) => {
       const tierConfig = TIER_PRICES_REGISTRY[tierId];
       if (!tierConfig) {
         return sendJson(res, 404, { error: `Tier "${tierId}" not found` });
+      }
+
+      // Check if course capacity is reached
+      const requestedCourseId = courseId || tierId;
+      const courseCap = COURSE_CAPACITY_REGISTRY.get(requestedCourseId) || { maxCapacity: 30, title: requestedCourseId };
+      let enrolledCountInCourse = 0;
+      for (const s of REGISTERED_STUDENTS_REGISTRY.values()) {
+        if ((s.enrolledCourseId || s.tierId) === requestedCourseId && s.enrollmentStatus !== 'Cancelled') {
+          enrolledCountInCourse++;
+        }
+      }
+      if (enrolledCountInCourse >= courseCap.maxCapacity) {
+        return sendJson(res, 409, {
+          success: false,
+          error: `Course '${courseCap.title || requestedCourseId}' has reached its maximum capacity of ${courseCap.maxCapacity} students (${enrolledCountInCourse}/${courseCap.maxCapacity} filled). Enrollment is closed.`,
+          courseId: requestedCourseId,
+          maxCapacity: courseCap.maxCapacity,
+          enrolledCount: enrolledCountInCourse,
+          isFull: true
+        });
       }
 
       // Free tier: Foundations
@@ -1684,6 +1713,18 @@ const server = http.createServer((req, res) => {
     pathname = '/admin-login.html';
   } else if (pathname === '/' || pathname === '' || pathname === '/home') {
     pathname = '/index.html';
+  } else if (pathname === '/course-site' || pathname === '/course-site/') {
+    pathname = '/index.html';
+  } else if (pathname.startsWith('/course-site/')) {
+    const stripped = pathname.replace(/^\/course-site/, '');
+    const candidatePath = path.normalize(path.join(BASE_DIR, stripped));
+    if (fs.existsSync(candidatePath)) {
+      pathname = stripped;
+    } else if (fs.existsSync(candidatePath + '.html')) {
+      pathname = stripped + '.html';
+    } else {
+      pathname = stripped;
+    }
   }
 
   const safePath = path.normalize(path.join(BASE_DIR, pathname));

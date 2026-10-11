@@ -36,6 +36,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 11. Hero Text Interactive Parallax Micro-Motion
   initHeroMotion();
+
+  // 12. PWA Service Worker Registration for APK / Offline Support
+  initPwaServiceWorker();
 });
 
 /* --------------------------------------------------------------------------
@@ -870,5 +873,21 @@ function initHeroMotion() {
     mouseY = 0;
   });
 }
+
+/* --------------------------------------------------------------------------
+   12. PWA Service Worker Registration
+   -------------------------------------------------------------------------- */
+function initPwaServiceWorker() {
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      // Respect both root deployment and subpath deployments (/course-site/)
+      const swPath = window.location.pathname.startsWith('/course-site') ? '/course-site/sw.js' : 'sw.js';
+      navigator.serviceWorker.register(swPath).catch((err) => {
+        console.warn('PWA service worker registration skipped:', err);
+      });
+    });
+  }
+}
+
 
 

@@ -7564,7 +7564,7 @@
   async function renderLoginView() {
     DOM.content.innerHTML = `
       <div style="max-width: 460px; margin: 40px auto; padding: 32px; background: var(--adm-surface-card); border: 1px solid var(--adm-border); border-radius: var(--adm-radius-lg); box-shadow: var(--adm-shadow-lg); text-align: center;">
-        <img src="NEXVION_logo_design_20261005164702.jpg" alt="NEXVION AI" style="width: 52px; height: 52px; border-radius: 12px; margin-bottom: 16px; border: 1px solid var(--adm-border);">
+        <img src="Linocut_app_icon_logo_design_20261011091421.jpg" alt="NEXVION AI" style="width: 52px; height: 52px; border-radius: 12px; margin-bottom: 16px; border: 1px solid var(--adm-border);">
         <h2 style="color:var(--adm-text-primary); margin: 0 0 6px 0; font-size: 1.5rem;">NEXVION AI Admin Portal</h2>
         <p style="color: var(--adm-text-secondary); font-size: 0.84rem; margin: 0 0 20px 0;">Administrative Access & Staff Sign In</p>
         

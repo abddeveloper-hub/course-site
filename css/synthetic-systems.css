@@ -2171,6 +2171,20 @@ p, .hero-lead, .card-desc, .project-card-desc, .faq-answer {
   gap: 12px;
 }
 
+@media (max-width: 640px) {
+  .course-card-actions {
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+  }
+  .course-card-actions .btn {
+    width: 100%;
+    justify-content: center;
+    box-sizing: border-box;
+  }
+}
+
+
 .continue-class-card {
   background: #FAFAFC;
   border: 1px solid var(--border-hairline);
@@ -2978,11 +2992,35 @@ textarea.form-input:focus {
   }
 
   .dashboard-sidebar {
-    display: none;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    bottom: 0 !important;
+    width: 280px !important;
+    max-width: 85vw !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    z-index: 1002 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    background: #FFFFFF !important;
+    border-right: 1px solid var(--border-hairline) !important;
+    transform: translateX(-100%) !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.28s !important;
+    box-shadow: 0 0 35px rgba(0, 0, 0, 0.18) !important;
+    box-sizing: border-box !important;
+  }
+
+  .dashboard-sidebar.active {
+    transform: translateX(0) !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
   }
 
   .sidebar-toggle-btn {
-    display: flex;
+    display: flex !important;
   }
 }
 
@@ -2992,6 +3030,7 @@ textarea.form-input:focus {
   .progression-ladder-grid,
   .dash-progress-metrics-grid,
   .learn-grid-6,
+  .topics-grid,
   .roadmap-10-grid,
   .form-row,
   .form-grid-row,
@@ -3000,7 +3039,16 @@ textarea.form-input:focus {
   }
 
   .dashboard-main {
-    padding: 20px 16px;
+    padding: 20px 16px calc(76px + env(safe-area-inset-bottom, 0px)) 16px !important;
+  }
+
+  .register-card-grid {
+    display: flex !important;
+    flex-direction: column-reverse !important;
+  }
+
+  .register-brand-panel .journey-timeline {
+    display: none !important;
   }
 
   .register-form-panel {
@@ -3036,8 +3084,8 @@ textarea.form-input:focus {
     gap: 12px;
   }
 
-  .register-nav-actions .register-nav-link:not(:first-child) {
-    display: none;
+  .register-nav-actions .register-nav-link {
+    display: none !important;
   }
 }
 
@@ -3265,6 +3313,13 @@ textarea.form-input:focus {
   gap: 20px;
 }
 
+@media (max-width: 900px) {
+  .learn-grid-6,
+  .topics-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
 .learn-card-6 {
   background: #FFFFFF;
   border: 1px solid var(--border-hairline);
@@ -3332,6 +3387,20 @@ textarea.form-input:focus {
   gap: 20px;
 }
 
+@media (max-width: 900px) {
+  .experience-grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+}
+
+@media (max-width: 580px) {
+  .experience-grid-4 {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+}
+
 .experience-card {
   background: #FFFFFF;
   border: 1px solid var(--border-hairline);
@@ -3380,6 +3449,13 @@ textarea.form-input:focus {
   align-items: center;
 }
 
+@media (max-width: 900px) {
+  .certificate-grid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+}
+
 .certificate-content h2 {
   margin-bottom: 14px;
 }
@@ -3401,6 +3477,8 @@ textarea.form-input:focus {
   margin-bottom: 24px;
   padding-bottom: 16px;
   border-bottom: 1px solid var(--border-hairline);
+  position: relative;
+  overflow: hidden;
 }
 
 .cert-emblem-badge {
@@ -3466,7 +3544,10 @@ textarea.form-input:focus {
   position: absolute;
   right: -10px;
   bottom: -10px;
-  font-size: 110px;
+  font-size: clamp(24px, 5vw, 42px);
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
   color: var(--neutral-obsidian);
   opacity: 0.03;
   pointer-events: none;
@@ -3491,6 +3572,13 @@ textarea.form-input:focus {
   grid-template-columns: repeat(2, 1fr);
   gap: 18px;
   margin-bottom: 24px;
+}
+
+@media (max-width: 680px) {
+  .requirements-list-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
 }
 
 .requirement-item {
@@ -3549,6 +3637,15 @@ textarea.form-input:focus {
 /* --- COURSE.HTML: MOBILE COMPARISON --- */
 .mobile-comparison-cards {
   display: none;
+}
+
+@media (max-width: 768px) {
+  .comparison-table-wrapper {
+    display: none !important;
+  }
+  .mobile-comparison-cards {
+    display: block !important;
+  }
 }
 
 .mobile-comp-card {
@@ -3631,7 +3728,7 @@ textarea.form-input:focus {
 
 .dash-projects-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
   gap: 20px;
 }
 
@@ -4586,27 +4683,28 @@ textarea.form-input:focus {
 
   .navbar,
   .register-navbar {
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    background: rgba(11, 14, 20, 0.96) !important;
+    background: rgba(250, 248, 254, 0.94) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    backdrop-filter: blur(16px) !important;
+    border-bottom: 1px solid rgba(122, 116, 135, 0.15) !important;
   }
 
-  .checkout-card,
   .auth-card-wrapper,
   .dash-stat-card,
   .roadmap-10-node,
   .experience-card,
-  .course-curriculum-panel,
-  .chk-order-card {
+  .course-curriculum-panel {
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
-    background: #111522 !important;
+    background: #FFFFFF !important;
+    border: 1px solid rgba(122, 116, 135, 0.16) !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04) !important;
   }
 
-  .mob-bottom-nav {
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    background: rgba(11, 14, 20, 0.98) !important;
+  .mobile-bottom-nav {
+    background: #FFFFFF !important;
+    border-top: 1px solid rgba(122, 116, 135, 0.16) !important;
+    padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px)) !important;
   }
 }
 
