@@ -25,3 +25,6 @@ npm-debug.log*
 
 # Temporary scratch and audit scripts
 scratch/
+decompressedTemplate/
+*.zip
+
