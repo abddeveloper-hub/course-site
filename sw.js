@@ -16,7 +16,8 @@ const PRECACHE_ASSETS = [
   './icons/icon-192.png',
   './icons/icon-512.png',
   './screenshots/home.png',
-  './screenshots/courses.png'
+  './screenshots/courses.png',
+  './screenshots/home-mobile.png'
 ];
 
 self.addEventListener('install', (event) => {

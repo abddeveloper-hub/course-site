@@ -9,6 +9,7 @@
   "orientation": "portrait",
   "theme_color": "#101827",
   "background_color": "#101827",
+  "categories": ["education"],
   "icons": [
     {
       "src": "icons/icon-192.png",
@@ -22,6 +23,13 @@
     }
   ],
   "screenshots": [
+    {
+      "src": "screenshots/home-mobile.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "NEXVION AI Course on mobile"
+    },
     {
       "src": "screenshots/home.png",
       "sizes": "1280x720",
