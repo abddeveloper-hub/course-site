@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">NEXVION AI Course</string>
+    <string name="title_activity_main">NEXVION AI Course</string>
+    <string name="package_name">com.nexvion.course</string>
+    <string name="custom_url_scheme">com.nexvion.course</string>
+</resources>

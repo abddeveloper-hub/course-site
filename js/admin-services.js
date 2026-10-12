@@ -885,14 +885,36 @@
             if (remoteDocs.length > 0) {
               if (collectionName === 'settings') {
                 this.state.settings = { ...this.state.settings, ...remoteDocs[0] };
+              } else if (collectionName === 'students') {
+                const merged = [...remoteDocs];
+                (Array.isArray(this.state.students) ? this.state.students : []).forEach(localSt => {
+                  if (!merged.some(m => (m.id && localSt.id && m.id === localSt.id) || (m.email && localSt.email && m.email.toLowerCase() === localSt.email.toLowerCase()))) {
+                    merged.push(localSt);
+                  }
+                });
+                this.state.students = merged;
+              } else if (collectionName === 'enrollments') {
+                const merged = [...remoteDocs];
+                (Array.isArray(this.state.enrollments) ? this.state.enrollments : []).forEach(localEn => {
+                  if (!merged.some(m => (m.id && localEn.id && m.id === localEn.id) || (m.email && localEn.email && m.email.toLowerCase() === localEn.email.toLowerCase()))) {
+                    merged.push(localEn);
+                  }
+                });
+                this.state.enrollments = merged;
               } else {
                 this.state[collectionName] = remoteDocs;
               }
               this.saveState();
             }
 
-            results = remoteDocs;
-            totalCount = snap.size;
+            if (collectionName === 'students' || collectionName === 'enrollments') {
+              results = Array.isArray(this.state[collectionName]) && this.state[collectionName].length > 0
+                ? [...this.state[collectionName]]
+                : remoteDocs;
+            } else {
+              results = remoteDocs;
+            }
+            totalCount = results.length;
             this.setRepositorySuccess(collectionName, results.length === 0);
             break;
           } catch (err) {
@@ -965,12 +987,27 @@
         }
       }
 
+      // Ensure student records always have both name and fullName, id and studentId
+      if (collectionName === 'students' && Array.isArray(results)) {
+        results.forEach(s => {
+          s.name = s.name || s.fullName || (s.email ? s.email.split('@')[0] : 'Registered Student');
+          s.fullName = s.fullName || s.name;
+          s.id = s.id || s.studentId || ('NX-2026-' + Math.floor(10000 + Math.random() * 90000));
+          s.studentId = s.studentId || s.id;
+        });
+      } else if (collectionName === 'enrollments' && Array.isArray(results)) {
+        results.forEach(e => {
+          e.studentName = e.studentName || e.fullName || e.name || 'Applicant';
+          e.courseTitle = e.courseTitle || 'AI Foundations: Zero to AI Native';
+        });
+      }
+
       const out = JSON.parse(JSON.stringify(results));
       out.pagination = {
         page: Number(options.page) || 1,
         limit: Number(options.limit) || results.length,
-        total: totalCount,
-        hasMore: options.limit ? totalCount > (Number(options.page) || 1) * Number(options.limit) : false
+        total: totalCount || results.length,
+        hasMore: options.limit ? (totalCount || results.length) > (Number(options.page) || 1) * Number(options.limit) : false
       };
       return out;
     }
@@ -1265,7 +1302,7 @@
       return roleObj.permissions.includes(permissionKey);
     }
 
-    syncRegisteredStudents() {
+    async syncRegisteredStudents() {
       if (typeof window === 'undefined') return;
       try {
         const registeredUsers = [];
@@ -1276,7 +1313,7 @@
           if (cur) {
             try {
               const parsed = JSON.parse(cur);
-              if (parsed && (parsed.email || parsed.fullName)) {
+              if (parsed && (parsed.email || parsed.fullName || parsed.name)) {
                 registeredUsers.push(parsed);
               }
             } catch (e) {}
@@ -1289,7 +1326,7 @@
               const parsedList = JSON.parse(regList);
               if (Array.isArray(parsedList)) {
                 parsedList.forEach(u => {
-                  if (u && (u.email || u.fullName) && !registeredUsers.some(r => r.email === u.email)) {
+                  if (u && (u.email || u.fullName || u.name) && !registeredUsers.some(r => r.email === u.email)) {
                     registeredUsers.push(u);
                   }
                 });
@@ -1298,15 +1335,69 @@
           }
         }
 
+        // 3. Check Firebase Auth current user if available
+        if (typeof window !== 'undefined' && window.firebase && window.firebase.auth) {
+          try {
+            const fbCur = window.firebase.auth().currentUser;
+            if (fbCur && fbCur.email && !registeredUsers.some(r => r.email === fbCur.email)) {
+              registeredUsers.push({
+                studentId: `NX-2026-${Math.floor(10000 + Math.random() * 90000)}`,
+                userId: fbCur.uid,
+                email: fbCur.email,
+                fullName: fbCur.displayName || fbCur.email.split('@')[0],
+                name: fbCur.displayName || fbCur.email.split('@')[0],
+                createdAt: new Date().toISOString()
+              });
+            }
+          } catch (e) {}
+        }
+
+        // 4. Asynchronously fetch backend telemetry from server.js
+        if (typeof window !== 'undefined' && window.fetch) {
+          try {
+            const stuRes = await Promise.race([
+              fetch('/api/students'),
+              new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 1500))
+            ]);
+            if (stuRes && stuRes.ok) {
+              const data = await stuRes.json();
+              if (data && Array.isArray(data.students)) {
+                data.students.forEach(s => {
+                  if (s && (s.email || s.name || s.fullName) && !registeredUsers.some(r => r.email === s.email)) {
+                    registeredUsers.push(s);
+                  }
+                });
+              }
+            }
+          } catch (e) {}
+
+          try {
+            const enrRes = await Promise.race([
+              fetch('/api/enrollments'),
+              new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 1500))
+            ]);
+            if (enrRes && enrRes.ok) {
+              const data = await enrRes.json();
+              if (data && Array.isArray(data.enrollments) && Array.isArray(this.state.enrollments)) {
+                data.enrollments.forEach(en => {
+                  if (en && (en.email || en.id) && !this.state.enrollments.some(e => e.id === en.id || e.email === en.email)) {
+                    this.state.enrollments.unshift(en);
+                  }
+                });
+              }
+            }
+          } catch (e) {}
+        }
+
         let modified = false;
         if (!Array.isArray(this.state.students)) this.state.students = [];
         if (!Array.isArray(this.state.enrollments)) this.state.enrollments = [];
 
         registeredUsers.forEach(u => {
-          const email = u.email || `${(u.fullName || 'student').toLowerCase().replace(/\s+/g, '.')}@synthetic.nexus`;
-          const studentId = u.studentId || u.userId || `NX-2026-${Math.floor(10000 + Math.random() * 90000)}`;
-          const name = u.fullName || u.name || 'Registered Student';
-          const targetCourseId = u.enrolledCourse || 'ai-foundations';
+          const email = u.email || `${(u.fullName || u.name || 'student').toLowerCase().replace(/\s+/g, '.')}@synthetic.nexus`;
+          const studentId = u.studentId || u.id || u.userId || `NX-2026-${Math.floor(10000 + Math.random() * 90000)}`;
+          const name = u.name || u.fullName || (u.email ? u.email.split('@')[0] : 'Registered Student');
+          const targetCourseId = u.enrolledCourseId || u.enrolledCourse || 'ai-foundations';
           const targetCourseTitle = targetCourseId.includes('builder') ? 'AI Builder: Intelligent Application Engineering'
             : targetCourseId.includes('creator') ? 'AI Creator: Multimodal Generative Systems'
             : targetCourseId.includes('architect') ? 'AI Architect: Enterprise AI Systems'
@@ -1321,11 +1412,13 @@
             : 'AI Foundations';
 
           // Check if student exists in store
-          let existingStudent = this.state.students.find(s => s.email === email || s.id === studentId);
+          let existingStudent = this.state.students.find(s => (s.id && s.id === studentId) || (s.email && email && s.email.toLowerCase() === email.toLowerCase()));
           if (!existingStudent) {
             existingStudent = {
               id: studentId,
+              studentId: studentId,
               name: name,
+              fullName: name,
               email: email,
               phone: u.phone || '',
               country: u.country || 'Global',
@@ -1337,24 +1430,31 @@
               enrolledCourseTitle: targetCourseTitle,
               tierId: targetTierId,
               tierName: targetTierName,
-              batchId: '',
-              batchName: 'Unassigned',
-              enrollmentStatus: 'Pending',
-              progressPercent: 0,
-              paymentStatus: targetTierId === 'ai-foundations' ? 'Not required' : 'Pending',
-              certificateStatus: 'Not eligible',
-              joinDate: (u.createdAt ? u.createdAt.split('T')[0] : new Date().toISOString().split('T')[0]),
-              lastActive: u.createdAt || new Date().toISOString(),
-              internalNotesList: []
+              batchId: u.batchId || '',
+              batchName: u.batchName || 'Unassigned',
+              enrollmentStatus: u.enrollmentStatus || 'Pending',
+              progressPercent: u.progressPercent || 0,
+              paymentStatus: u.paymentStatus || (targetTierId === 'ai-foundations' ? 'Not required' : 'Pending'),
+              certificateStatus: u.certificateStatus || 'Not eligible',
+              joinDate: (u.createdAt ? u.createdAt.split('T')[0] : (u.joinDate || new Date().toISOString().split('T')[0])),
+              lastActive: u.createdAt || u.lastActive || new Date().toISOString(),
+              internalNotesList: u.internalNotesList || []
             };
             this.state.students.unshift(existingStudent);
             modified = true;
+          } else {
+            // Ensure both name and fullName are always non-empty
+            if (!existingStudent.name || existingStudent.name === 'Registered Student') {
+              existingStudent.name = name;
+              existingStudent.fullName = name;
+              modified = true;
+            }
           }
 
           // Check if enrollment exists in store
-          let existingEnr = this.state.enrollments.find(e => e.email === email || e.studentId === studentId);
+          let existingEnr = this.state.enrollments.find(e => (e.studentId && e.studentId === studentId) || (e.email && email && e.email.toLowerCase() === email.toLowerCase()));
           if (!existingEnr) {
-            const enrId = `enr-${studentId.replace(/^NX-/, '').replace(/[^a-zA-Z0-9]/g, '')}`;
+            const enrId = u.enrollmentId || `enr-${studentId.replace(/^NX-/, '').replace(/[^a-zA-Z0-9]/g, '')}`;
             const newEnr = {
               id: enrId,
               studentId: studentId,
@@ -1364,10 +1464,10 @@
               courseTitle: targetCourseTitle,
               tierId: targetTierId,
               tierName: targetTierName,
-              batchId: '',
-              batchName: 'Unassigned',
-              status: 'Pending',
-              paymentStatus: targetTierId === 'ai-foundations' ? 'Not required' : 'Pending',
+              batchId: u.batchId || '',
+              batchName: u.batchName || 'Unassigned',
+              status: u.enrollmentStatus || 'Pending',
+              paymentStatus: u.paymentStatus || (targetTierId === 'ai-foundations' ? 'Not required' : 'Pending'),
               submittedAt: u.createdAt || new Date().toISOString(),
               history: [
                 {
@@ -1380,46 +1480,16 @@
             };
             this.state.enrollments.unshift(newEnr);
             modified = true;
+          } else {
+            if (!existingEnr.studentName || existingEnr.studentName === 'Registered Student') {
+              existingEnr.studentName = name;
+              modified = true;
+            }
           }
         });
 
         if (modified) {
           this.saveState();
-        }
-
-        // Asynchronously check backend API endpoints as well
-        if (typeof window !== 'undefined' && window.fetch) {
-          fetch('/api/students')
-            .then(res => res.ok ? res.json() : null)
-            .then(data => {
-              if (data && Array.isArray(data.students) && data.students.length > 0) {
-                let changed = false;
-                data.students.forEach(s => {
-                  if (!this.state.students.some(st => st.email === s.email || st.id === s.id)) {
-                    this.state.students.unshift(s);
-                    changed = true;
-                  }
-                });
-                if (changed) this.saveState();
-              }
-            })
-            .catch(() => {});
-
-          fetch('/api/enrollments')
-            .then(res => res.ok ? res.json() : null)
-            .then(data => {
-              if (data && Array.isArray(data.enrollments) && data.enrollments.length > 0) {
-                let changed = false;
-                data.enrollments.forEach(e => {
-                  if (!this.state.enrollments.some(en => en.email === e.email || en.id === e.id)) {
-                    this.state.enrollments.unshift(e);
-                    changed = true;
-                  }
-                });
-                if (changed) this.saveState();
-              }
-            })
-            .catch(() => {});
         }
       } catch (err) {
         console.warn('Sync registered students note:', err);
@@ -1916,7 +1986,7 @@
   // --- studentRepository ---
   const studentRepository = {
     findAll: async (options = {}) => {
-      store.syncRegisteredStudents();
+      await store.syncRegisteredStudents();
       return store.queryDocs('students', options);
     },
     findById: async (id) => store.getDoc('students', id),
@@ -2117,7 +2187,7 @@
   // --- enrollmentRepository ---
   const enrollmentRepository = {
     findAll: async (options = {}) => {
-      store.syncRegisteredStudents();
+      await store.syncRegisteredStudents();
       return store.queryDocs('enrollments', options);
     },
     findById: async (id) => store.getDoc('enrollments', id),

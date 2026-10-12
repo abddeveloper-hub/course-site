@@ -74,6 +74,30 @@ DEFAULT_SEED_SUPPORT_TICKETS.forEach(t => SUPPORT_TICKETS_REGISTRY.set(t.id, JSO
 const REGISTERED_STUDENTS_REGISTRY = new Map();
 const ENROLLMENTS_REGISTRY = new Map();
 
+const STUDENTS_FILE = path.join(__dirname, 'scratch', 'registered_students_data.json');
+try {
+  if (fs.existsSync(STUDENTS_FILE)) {
+    const data = JSON.parse(fs.readFileSync(STUDENTS_FILE, 'utf8'));
+    if (Array.isArray(data.students)) {
+      data.students.forEach(s => REGISTERED_STUDENTS_REGISTRY.set(s.email, s));
+    }
+    if (Array.isArray(data.enrollments)) {
+      data.enrollments.forEach(e => ENROLLMENTS_REGISTRY.set(e.id, e));
+    }
+  }
+} catch (e) {}
+
+function persistStudentsToDisk() {
+  try {
+    const dir = path.dirname(STUDENTS_FILE);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(STUDENTS_FILE, JSON.stringify({
+      students: Array.from(REGISTERED_STUDENTS_REGISTRY.values()),
+      enrollments: Array.from(ENROLLMENTS_REGISTRY.values())
+    }, null, 2));
+  } catch (e) {}
+}
+
 // Course & Cohort Capacity Datastore (Configurable by Administrator)
 const COURSE_CAPACITY_REGISTRY = new Map([
   ['ai-foundations', { id: 'ai-foundations', title: 'AI Foundations: Zero to AI Native', maxCapacity: 30 }],
@@ -483,7 +507,9 @@ const server = http.createServer((req, res) => {
 
       const cleanStudent = {
         id: studentId,
+        studentId: studentId,
         name: name,
+        fullName: name,
         email: email,
         phone: student.phone || '',
         country: student.country || 'Global',
@@ -534,6 +560,7 @@ const server = http.createServer((req, res) => {
       };
 
       ENROLLMENTS_REGISTRY.set(enrId, cleanEnr);
+      persistStudentsToDisk();
 
       sendJson(res, 201, {
         success: true,

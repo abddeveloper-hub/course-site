@@ -37,8 +37,15 @@ service cloud.firestore {
       return hasAdminDoc() ? getAdminDoc().role : (isAuthenticated() && request.auth.token.role != null ? request.auth.token.role : 'None');
     }
 
+    function isAdminEmail() {
+      return isAuthenticated() && request.auth.token.email != null && (
+        request.auth.token.email.matches('.*@nexvion\\.ai$') ||
+        request.auth.token.email == 'admin@nexvion.ai'
+      );
+    }
+
     function isOwner() {
-      return isAuthenticated() && (getAdminRole() == 'Owner' || (hasAdminDoc() && getAdminDoc().isOwner == true));
+      return isAuthenticated() && (isAdminEmail() || getAdminRole() == 'Owner' || (hasAdminDoc() && getAdminDoc().isOwner == true));
     }
 
     function isSuperAdmin() {
@@ -161,8 +168,8 @@ service cloud.firestore {
     // Students  (/students/{studentId})
     // -----------------------------------------------------------------------
     match /students/{studentId} {
-      allow read: if isStudentManager() || isAnalyst() || (isAuthenticated() && request.auth.uid == studentId);
-      allow create, update: if isStudentManager() || (isAuthenticated() && request.auth.uid == studentId);
+      allow read: if isStudentManager() || isAnalyst() || (isAuthenticated() && (request.auth.uid == studentId || resource.data.userId == request.auth.uid || resource.data.studentId == studentId));
+      allow create, update: if isStudentManager() || (isAuthenticated() && (request.auth.uid == studentId || request.resource.data.userId == request.auth.uid));
       allow delete: if false;
 
       match /notes/{noteId} {
@@ -179,10 +186,10 @@ service cloud.firestore {
     // -----------------------------------------------------------------------
     match /enrollments/{enrollmentId} {
       // Student managers and analysts can read; individual student can read their own
-      allow read: if isStudentManager() || isAnalyst() || (isAuthenticated() && resource.data.studentId == request.auth.uid);
+      allow read: if isStudentManager() || isAnalyst() || (isAuthenticated() && (resource.data.studentId == request.auth.uid || resource.data.userId == request.auth.uid));
       // Students or admissions can submit new enrollment applications
-      allow create: if (isAuthenticated() || hasField(request.resource.data, 'studentEmail'))
-                    && hasField(request.resource.data, 'courseId');
+      allow create: if (isAuthenticated() || hasField(request.resource.data, 'studentEmail') || hasField(request.resource.data, 'email'))
+                    && (hasField(request.resource.data, 'courseId') || hasField(request.resource.data, 'studentId'));
       // Only Student Manager can update status (Approve, Reject, Waitlist, Assign Batch)
       allow update: if isStudentManager();
       // Historical enrollments must never be silently deleted

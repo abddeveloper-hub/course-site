@@ -28,3 +28,9 @@ scratch/
 decompressedTemplate/
 *.zip
 
+# Firebase cache
+.firebase/
+
+# IDE
+.idea/
+

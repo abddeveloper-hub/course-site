@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+  <meta name="theme-color" content="#08090d">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <base href="/">
+  <title>NEXVION AI — Admin Operations Portal</title>
+
+  <!-- SEO & Meta Tags -->
+  <meta name="description" content="NEXVION AI Administration Portal. Full operational control over courses, tiers, 30-student cohorts, content, enrollments, analytics, and platform governance.">
+  <meta name="keywords" content="NEXVION AI, Admin Portal, AI Education Platform, Cohort Management, Learning Operations">
+  <meta name="author" content="NEXVION AI">
+  <meta name="robots" content="noindex, nofollow">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/jpeg" href="/Linocut_app_icon_logo_design_20261011091421.jpg">
+
+  <!-- Typography: Space Grotesk, Geist, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="/css/style.css?v=2.0">
+  <link rel="stylesheet" href="/css/synthetic-systems.css?v=2.0">
+  <link rel="stylesheet" href="/css/motion.css?v=2.0">
+  <link rel="stylesheet" href="/css/admin.css?v=2.0">
+</head>
+<body class="admin-body">
+
+  <!-- =========================================================================
+       AUTH LOADING OVERLAY — hidden by admin-auth.js after auth check passes
+       ========================================================================= -->
+  <div id="authLoadingOverlay" style="
+    position: fixed; inset: 0; z-index: 99999;
+    background: #08090d;
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 16px;
+  ">
+    <div style="
+      width: 36px; height: 36px;
+      border: 3px solid rgba(99,102,241,0.2);
+      border-top-color: #6366f1;
+      border-radius: 50%;
+      animation: nexAuthSpin 0.8s linear infinite;
+    "></div>
+    <p style="color: #475569; font-size: 13px; font-family: system-ui, sans-serif; letter-spacing: 0.05em;">Verifying session&hellip;</p>
+    <style>@keyframes nexAuthSpin { to { transform: rotate(360deg); } }</style>
+  </div>
+  <a href="#admContentHost" class="adm-skip-link">Skip to main content</a>
+
+
+  <!-- =========================================================================
+       MAIN ADMIN SHELL LAYOUT
+       ========================================================================= -->
+  <div class="adm-layout">
+
+    <!-- Mobile Drawer Backdrop Overlay -->
+    <div class="adm-backdrop" id="admBackdrop" aria-hidden="true"></div>
+
+    <!-- =======================================================================
+         1. PERSISTENT DESKTOP & MOBILE SIDEBAR
+         ======================================================================= -->
+    <aside class="adm-sidebar" id="admSidebar" aria-label="Administrative Navigation">
+      
+      <!-- Brand Header -->
+      <a href="/admin/overview" class="adm-sidebar-brand" onclick="event.preventDefault(); NexvionAdminApp.navigateTo('/admin/overview')">
+        <img src="/Linocut_app_icon_logo_design_20261011091421.jpg" alt="NEXVION AI Emblem" class="adm-brand-logo">
+        <div class="adm-brand-titles">
+          <span class="adm-brand-name">SYNTHETIC SYSTEMS</span>
+          <span class="adm-brand-sub">ADMIN OPERATIONS</span>
+        </div>
+      </a>
+
+      <!-- Navigation Hierarchy -->
+      <nav class="adm-sidebar-nav" aria-label="Main Navigation">
+        
+        <!-- SECTION: OVERVIEW -->
+        <div class="adm-nav-group">
+          <div class="adm-nav-group-title">Overview</div>
+          <a class="adm-nav-item active" data-route="/admin/overview" href="/admin/overview">
+            <span class="adm-nav-icon">📊</span>
+            <span class="adm-nav-label">Dashboard</span>
+          </a>
+        </div>
+
+        <!-- SECTION: LEARNING MANAGEMENT -->
+        <div class="adm-nav-group">
+          <div class="adm-nav-group-title">Learning Management</div>
+          <a class="adm-nav-item" data-route="/admin/courses" href="/admin/courses">
+            <span class="adm-nav-icon">📚</span>
+            <span class="adm-nav-label">Courses</span>
+          </a>
+          <a class="adm-nav-item" data-route="/admin/tiers" href="/admin/tiers">
+            <span class="adm-nav-icon">💎</span>
+            <span class="adm-nav-label">Tiers</span>
+          </a>
+          <a class="adm-nav-item" data-route="/admin/batches" href="/admin/batches">
+            <span class="adm-nav-icon">🏛️</span>
+            <span class="adm-nav-label">Batches</span>
+            <span class="adm-nav-badge" title="Maximum 30 capacity per batch">Cap 30</span>
+          </a>
+          <a class="adm-nav-item" data-route="/admin/classes" href="/admin/classes">
+            <span class="adm-nav-icon">📡</span>
+            <span class="adm-nav-label">Classes</span>
+          </a>
+          <a class="adm-nav-item" data-route="/admin/modules" href="/admin/modules">
+            <span class="adm-nav-icon">🧱</span>
+            <span class="adm-nav-label">Modules</span>
+          </a>
+          <a class="adm-nav-item" data-route="/admin/lessons" href="/admin/lessons">
+            <span class="adm-nav-icon">📖</span>
+            <span class="adm-nav-label">Lessons</span>
+          </a>
+          <a class="adm-nav-item" data-route="/admin/videos" href="/admin/videos">
+            <span class="adm-nav-icon">🎥</span>
+            <span class="adm-nav-label">Videos</span>
+          </a>
+          <a class="adm-nav-item" data-route="/admin/resources" href="/admin/resources">
+            <span class="adm-nav-icon">📁</span>
+            <span class="adm-nav-label">Resources</span>
+          </a>
+          <a class="adm-nav-item" data-route="/admin/projects" href="/admin/projects">
+            <span class="adm-nav-icon">🛠️</span>
+            <span class="adm-nav-label">Projects</span>
+          </a>
+          <a class="adm-nav-item" data-route="/admin/assignments" href="/admin/assignments">
+            <span class="adm-nav-icon">📝</span>
+            <span class="adm-nav-label">Assignments</span>
+          </a>
+        </div>
+
+        <!-- SECTION: STUDENT MANAGEMENT -->
+        <div class="adm-nav-group">
+          <div class="adm-nav-group-title">Student Management</div>
+          <a class="adm-nav-item" data-route="/admin/students" href="/admin/students">
+            <span class="adm-nav-icon">👥</span>
+            <span class="adm-nav-label">Students</span>
+          </a>
+          <a class="adm-nav-item" data-route="/admin/enrollments" href="/admin/enrollments">
+            <span class="adm-nav-icon">📋</span>
+            <span class="adm-nav-label">Enrollments</span>
+          </a>
+          <a class="adm-nav-item" data-route="/admin/certificates" href="/admin/certificates">
+            <span class="adm-nav-icon">🎓</span>
+            <span class="adm-nav-label">Certificates</span>
+          </a>
+          <a class="adm-nav-item" data-route="/admin/submissions" href="/admin/submissions">
+            <span class="adm-nav-icon">📥</span>
+            <span class="adm-nav-label">Submissions</span>
+          </a>
+        </div>
+
+        <!-- SECTION: COMMUNICATION -->
+        <div class="adm-nav-group">
+          <div class="adm-nav-group-title">Communication</div>
+          <a class="adm-nav-item" data-route="/admin/announcements" href="/admin/announcements">
+            <span class="adm-nav-icon">📢</span>
+            <span class="adm-nav-label">Announcements</span>
+          </a>
+          <a class="adm-nav-item" data-route="/admin/notifications" href="/admin/notifications">
+            <span class="adm-nav-icon">⚡</span>
+            <span class="adm-nav-label">Notifications</span>
+          </a>
+          <a class="adm-nav-item" data-route="/admin/support" href="/admin/support">
+            <span class="adm-nav-icon">🎫</span>
+            <span class="adm-nav-label">Support</span>
+          </a>
+        </div>
+
+        <!-- SECTION: BUSINESS -->
+        <div class="adm-nav-group">
+          <div class="adm-nav-group-title">Business</div>
+          <a class="adm-nav-item" data-route="/admin/payments" href="/admin/payments">
+            <span class="adm-nav-icon">💳</span>
+            <span class="adm-nav-label">Payments</span>
+          </a>
+        </div>
+
+        <!-- SECTION: INSIGHTS -->
+        <div class="adm-nav-group">
+          <div class="adm-nav-group-title">Insights</div>
+          <a class="adm-nav-item" data-route="/admin/analytics" href="/admin/analytics">
+            <span class="adm-nav-icon">📈</span>
+            <span class="adm-nav-label">Analytics</span>
+          </a>
+        </div>
+
+        <!-- SECTION: SYSTEM -->
+        <div class="adm-nav-group">
+          <div class="adm-nav-group-title">System Governance</div>
+          <a class="adm-nav-item" data-route="/admin/admins" href="/admin/admins">
+            <span class="adm-nav-icon">👤</span>
+            <span class="adm-nav-label">Admins</span>
+          </a>
+          <a class="adm-nav-item" data-route="/admin/roles" href="/admin/roles">
+            <span class="adm-nav-icon">🛡️</span>
+            <span class="adm-nav-label">Roles & Permissions</span>
+          </a>
+          <a class="adm-nav-item" data-route="/admin/audit-logs" href="/admin/audit-logs">
+            <span class="adm-nav-icon">📜</span>
+            <span class="adm-nav-label">Audit Logs</span>
+          </a>
+          <a class="adm-nav-item" data-route="/admin/settings" href="/admin/settings">
+            <span class="adm-nav-icon">⚙️</span>
+            <span class="adm-nav-label">Settings</span>
+          </a>
+        </div>
+
+      </nav>
+
+      <!-- Sidebar Collapse Trigger -->
+      <div class="adm-sidebar-footer">
+        <button class="adm-collapse-btn" id="admCollapseBtn" title="Toggle Sidebar Width">
+          <span>⇥</span>
+          <span class="adm-collapse-label">Collapse Menu</span>
+        </button>
+      </div>
+
+    </aside>
+
+    <!-- =======================================================================
+         2. MAIN CONTENT WRAPPER
+         ======================================================================= -->
+    <div class="adm-main-wrap">
+
+      <!-- TOPBAR NAVIGATION -->
+      <header class="adm-topbar">
+        
+        <div class="adm-topbar-left">
+          <button class="adm-mobile-toggle" id="admMobileToggle" aria-label="Open mobile navigation">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+          
+          <nav class="adm-breadcrumbs" aria-label="Breadcrumb">
+            <a href="/admin/overview" class="adm-breadcrumb-item" onclick="event.preventDefault(); NexvionAdminApp.navigateTo('/admin/overview')">NEXVION Admin</a>
+            <span class="adm-breadcrumb-sep">/</span>
+            <span class="adm-breadcrumb-current" id="breadcrumbCurrent">Overview</span>
+          </nav>
+        </div>
+
+        <div class="adm-topbar-right">
+          
+          <!-- Search Field -->
+          <div class="adm-search-wrap">
+            <svg class="adm-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" class="adm-search-input" placeholder="Search commands (⌘K)..." onkeydown="if(event.key==='Enter'){NexvionAdminApp.showToast('Global Search', 'Filtering: ' + this.value, 'info');}">
+          </div>
+
+          <!-- Active Role Switcher -->
+          <div class="adm-role-picker" title="Switch active role context">
+            <span class="adm-role-label">Active Role:</span>
+            <select class="adm-role-select" id="admRoleSelect">
+              <option value="Owner">Owner</option>
+              <option value="Super Admin" selected>Super Admin</option>
+              <option value="Content Manager">Content Manager</option>
+              <option value="Student Manager">Student Manager</option>
+              <option value="Finance Manager">Finance Manager</option>
+              <option value="Communications Manager">Communications Manager</option>
+              <option value="Support Manager">Support Manager</option>
+              <option value="Analyst">Analyst</option>
+            </select>
+          </div>
+
+          <!-- Notification Bell -->
+          <button class="adm-icon-btn" onclick="NexvionAdminApp.navigateTo('/admin/notifications')" title="Recent Dispatches">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <span class="adm-btn-badge"></span>
+          </button>
+
+          <!-- Admin Profile Avatar (populated by admin-auth.js) -->
+          <div class="adm-user-profile" onclick="NexvionAdminApp.navigateTo('/admin/admins')" title="View admin profile">
+            <div class="adm-user-avatar" id="admUserAvatar">AD</div>
+            <div class="adm-user-info">
+              <span class="adm-user-name" id="admCurrentUserName">Admin</span>
+              <span class="adm-user-role" id="admCurrentUserEmail" style="font-size:10px;opacity:0.7;">Loading&hellip;</span>
+            </div>
+          </div>
+
+          <!-- Demo mode badge -->
+          <span id="admDemoBadge" style="display:none;background:rgba(251,191,36,0.15);border:1px solid rgba(251,191,36,0.3);color:#fbbf24;font-size:10px;font-weight:600;padding:3px 8px;border-radius:5px;letter-spacing:0.05em;">DEMO</span>
+
+          <!-- Logout Button -->
+          <button
+            class="adm-icon-btn"
+            id="admLogoutBtn"
+            title="Sign out"
+            aria-label="Sign out"
+            onclick="if(confirm('Sign out of NEXVION Admin?')) { window.NexvionAuth && window.NexvionAuth.logout(); }"
+            style="color: var(--adm-danger, #f87171);"
+          >
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+              <polyline points="16 17 21 12 16 7"/>
+              <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+          </button>
+
+        </div>
+
+      </header>
+
+      <!-- DYNAMIC ROUTE VIEW CONTAINER -->
+      <main class="adm-view-content" id="admContentHost" role="main">
+        <!-- Content will be injected dynamically by admin-app.js -->
+        <div class="adm-state-box">
+          <div class="adm-spinner"></div>
+          <h3 class="adm-state-title">Loading NEXVION AI Telemetry...</h3>
+          <p class="adm-state-desc">Initializing operational repositories and cohort telemetry.</p>
+        </div>
+      </main>
+
+    </div>
+
+  </div>
+
+  <!-- =========================================================================
+       REUSABLE MODAL COMPONENT
+       ========================================================================= -->
+  <div class="adm-modal-backdrop" id="admModalBackdrop" role="dialog" aria-modal="true" aria-labelledby="admModalTitle">
+    <div class="adm-modal">
+      <div class="adm-modal-header">
+        <h3 class="adm-modal-title" id="admModalTitle">Dialog Title</h3>
+        <button class="adm-modal-close" id="admModalCloseBtn" aria-label="Close dialog">&times;</button>
+      </div>
+      <div class="adm-modal-body" id="admModalBody"></div>
+      <div class="adm-modal-footer" id="admModalFooter"></div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       REUSABLE SIDE DRAWER COMPONENT
+       ========================================================================= -->
+  <div class="adm-drawer-backdrop" id="admDrawerBackdrop" role="dialog" aria-modal="true" aria-labelledby="admDrawerTitle">
+    <aside class="adm-drawer">
+      <div class="adm-drawer-header">
+        <h3 class="adm-modal-title" id="admDrawerTitle">Drawer Title</h3>
+        <button class="adm-modal-close" id="admDrawerCloseBtn" aria-label="Close drawer">&times;</button>
+      </div>
+      <div class="adm-drawer-body" id="admDrawerBody"></div>
+    </aside>
+  </div>
+
+  <!-- =========================================================================
+       TOAST CONTAINER
+       ========================================================================= -->
+  <div class="adm-toast-container" id="admToastContainer" aria-live="polite"></div>
+
+  <!-- =========================================================================
+       CORE SCRIPTS
+       ========================================================================= -->
+
+  <!-- Firebase SDK (compat — no bundler required) -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+
+  <!-- Auth Guard: runs FIRST — redirects to login if unauthenticated -->
+  <script src="/js/admin-auth.js"></script>
+
+  <!-- Service & Application layers -->
+  <script src="/js/admin-services.js"></script>
+  <script src="/js/admin-app.js"></script>
+
+</body>
+</html>

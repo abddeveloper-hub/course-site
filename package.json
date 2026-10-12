@@ -7,7 +7,19 @@
     "start": "node server.js",
     "dev": "node server.js"
   },
-  "keywords": ["ai", "education", "landing-page", "nexvion"],
+  "keywords": [
+    "ai",
+    "education",
+    "landing-page",
+    "nexvion"
+  ],
   "author": "NEXVION AI",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@capacitor/android": "^8.5.3",
+    "@capacitor/core": "^8.5.3"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.5.3"
+  }
 }

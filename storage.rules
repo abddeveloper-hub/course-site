@@ -22,26 +22,24 @@ service firebase.storage {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
-    function hasAdminRole() {
-      return isAuthenticated() && (
-        request.auth.token.role in ['Owner', 'Super Admin', 'Content Manager', 'Student Manager'] ||
-        firestore.exists(/databases/(default)/documents/adminUsers/$(request.auth.uid))
+    function isAdminEmail() {
+      return isAuthenticated() && request.auth.token.email != null && (
+        request.auth.token.email.matches('.*@nexvion\\.ai$') ||
+        request.auth.token.email == 'admin@nexvion.ai'
       );
     }
 
     function isContentAdmin() {
       return isAuthenticated() && (
-        request.auth.token.role in ['Owner', 'Super Admin', 'Content Manager'] ||
-        (firestore.exists(/databases/(default)/documents/adminUsers/$(request.auth.uid)) &&
-         firestore.get(/databases/(default)/documents/adminUsers/$(request.auth.uid)).data.role in ['Owner', 'Super Admin', 'Content Manager'])
+        isAdminEmail() ||
+        (request.auth.token.role != null && request.auth.token.role in ['Owner', 'Super Admin', 'Content Manager'])
       );
     }
 
     function isStudentManager() {
       return isAuthenticated() && (
-        request.auth.token.role in ['Owner', 'Super Admin', 'Student Manager'] ||
-        (firestore.exists(/databases/(default)/documents/adminUsers/$(request.auth.uid)) &&
-         firestore.get(/databases/(default)/documents/adminUsers/$(request.auth.uid)).data.role in ['Owner', 'Super Admin', 'Student Manager'])
+        isAdminEmail() ||
+        (request.auth.token.role != null && request.auth.token.role in ['Owner', 'Super Admin', 'Student Manager'])
       );
     }
 

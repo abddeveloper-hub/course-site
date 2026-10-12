@@ -1432,11 +1432,15 @@
     // Filter students
     let filtered = students.filter(s => {
       const q = state.searchTerm.toLowerCase().trim();
+      const sName = (s.name || s.fullName || '').toLowerCase();
+      const sEmail = (s.email || '').toLowerCase();
+      const sId = (s.id || s.studentId || '').toLowerCase();
+      const sCourse = (s.enrolledCourseTitle || '').toLowerCase();
       const matchQ = !q || 
-        s.name.toLowerCase().includes(q) || 
-        s.email.toLowerCase().includes(q) || 
-        s.id.toLowerCase().includes(q) ||
-        (s.enrolledCourseTitle && s.enrolledCourseTitle.toLowerCase().includes(q));
+        sName.includes(q) || 
+        sEmail.includes(q) || 
+        sId.includes(q) ||
+        sCourse.includes(q);
 
       const matchTier = state.tierFilter === 'ALL' || s.tierId === state.tierFilter;
       const matchBatch = state.batchFilter === 'ALL' || s.batchId === state.batchFilter;
@@ -1449,14 +1453,16 @@
 
     // Sort students
     filtered.sort((a, b) => {
+      const aName = a.name || a.fullName || '';
+      const bName = b.name || b.fullName || '';
       switch (state.sortBy) {
-        case 'name-asc': return a.name.localeCompare(b.name);
-        case 'name-desc': return b.name.localeCompare(a.name);
+        case 'name-asc': return aName.localeCompare(bName);
+        case 'name-desc': return bName.localeCompare(aName);
         case 'progress-desc': return (b.progressPercent || 0) - (a.progressPercent || 0);
         case 'progress-asc': return (a.progressPercent || 0) - (b.progressPercent || 0);
         case 'last-active': return new Date(b.lastActive || 0) - new Date(a.lastActive || 0);
         case 'joined-desc': return new Date(b.joinDate || 0) - new Date(a.joinDate || 0);
-        default: return a.name.localeCompare(b.name);
+        default: return aName.localeCompare(bName);
       }
     });
 
@@ -1563,17 +1569,19 @@
           </thead>
           <tbody>
             ${paginated.length > 0 ? paginated.map(s => {
-              const initials = s.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+              const displayName = s.name || s.fullName || (s.email ? s.email.split('@')[0] : 'Registered Learner');
+              const displayId = (s.id || s.studentId || 'NX-STUDENT').toUpperCase();
+              const initials = (displayName.trim().split(/\s+/).map(n => n[0]).join('').slice(0, 2) || 'ST').toUpperCase();
               return `
                 <tr>
                   <td>
                     <div class="adm-student-cell">
                       <div class="adm-student-avatar">${initials}</div>
                       <div>
-                        <a href="/admin/students/${s.id}" onclick="event.preventDefault(); NexvionAdminApp.navigateTo('/admin/students/${s.id}')" style="color:var(--adm-text-primary); font-weight:700; text-decoration:none; display:block;">
-                          ${s.name}
+                        <a href="/admin/students/${s.id || s.studentId}" onclick="event.preventDefault(); NexvionAdminApp.navigateTo('/admin/students/${s.id || s.studentId}')" style="color:var(--adm-text-primary); font-weight:700; text-decoration:none; display:block;">
+                          ${displayName}
                         </a>
-                        <span style="font-family:var(--adm-font-mono); font-size:0.68rem; color:var(--adm-text-muted);">${s.id.toUpperCase()}</span>
+                        <span style="font-family:var(--adm-font-mono); font-size:0.68rem; color:var(--adm-text-muted);">${displayId}</span>
                       </div>
                     </div>
                   </td>
@@ -1701,7 +1709,8 @@
     const batch = student.batchId ? await Data.getBatchById(student.batchId) : null;
 
     const currentTab = AppState.activeStudentTab || 'overview';
-    const initials = student.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+    const detailDisplayName = student.name || student.fullName || (student.email ? student.email.split('@')[0] : 'Learner');
+    const initials = (detailDisplayName.trim().split(/\s+/).map(n => n[0]).join('').slice(0, 2) || 'ST').toUpperCase();
 
     // Render Tab Header
     const tabsList = [
@@ -1728,13 +1737,13 @@
             </button>
             <span class="adm-badge adm-badge-published">${student.studentStatus || 'Active'}</span>
             ${AdminComponents.StatusBadge({ status: student.enrollmentStatus || 'Enrolled' })}
-            <span style="font-family:var(--adm-font-mono); font-size:0.72rem; color:var(--adm-text-muted);">ID: ${student.id.toUpperCase()}</span>
+            <span style="font-family:var(--adm-font-mono); font-size:0.72rem; color:var(--adm-text-muted);">ID: ${(student.id || student.studentId || '').toUpperCase()}</span>
           </div>
           <div style="display:flex; align-items:center; gap:16px;">
             <div class="adm-student-avatar adm-student-avatar-lg">${initials}</div>
             <div>
-              <h1 class="adm-page-title" style="margin:0 0 2px 0;">${student.name}</h1>
-              <p class="adm-page-desc">${student.email} • Enrolled in <strong>${student.enrolledCourseTitle}</strong> (${student.tierName})</p>
+              <h1 class="adm-page-title" style="margin:0 0 2px 0;">${detailDisplayName}</h1>
+              <p class="adm-page-desc">${student.email} • Enrolled in <strong>${student.enrolledCourseTitle || 'AI Course'}</strong> (${student.tierName || 'AI Foundations'})</p>
             </div>
           </div>
         </div>
@@ -2448,16 +2457,16 @@
               return `
                 <tr>
                   <td>
-                    <strong style="font-family:var(--adm-font-mono); font-size:0.75rem;">${e.id.toUpperCase()}</strong>
+                    <strong style="font-family:var(--adm-font-mono); font-size:0.75rem;">${(e.id || '').toUpperCase()}</strong>
                   </td>
                   <td>
-                    <a href="/admin/students/${e.studentId}" onclick="event.preventDefault(); NexvionAdminApp.navigateTo('/admin/students/${e.studentId}')" style="color:var(--adm-text-primary); font-weight:700; text-decoration:none;">
-                      ${e.studentName}
+                    <a href="/admin/students/${e.studentId || e.id}" onclick="event.preventDefault(); NexvionAdminApp.navigateTo('/admin/students/${e.studentId || e.id}')" style="color:var(--adm-text-primary); font-weight:700; text-decoration:none;">
+                      ${e.studentName || e.fullName || e.name || 'Applicant'}
                     </a>
-                    <div style="font-size:0.7rem; color:var(--adm-text-muted); font-family:var(--adm-font-mono);">${e.email}</div>
+                    <div style="font-size:0.7rem; color:var(--adm-text-muted); font-family:var(--adm-font-mono);">${e.email || ''}</div>
                   </td>
                   <td>
-                    <div>${e.courseTitle.split(':')[0]}</div>
+                    <div>${(e.courseTitle || 'AI Foundations').split(':')[0]}</div>
                     <div style="font-size:0.72rem; color:var(--adm-tertiary);">${e.tierName || 'Curriculum Tier'}</div>
                   </td>
                   <td>

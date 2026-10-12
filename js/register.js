@@ -595,9 +595,20 @@
     });
   });
 
+  // Firebase configuration
+  const FIREBASE_CONFIG = {
+    apiKey: "AIzaSyCT5ieblE-Uj_fvBfeodPackWJ38M_RuF4",
+    authDomain: "nexvion-ai.firebaseapp.com",
+    projectId: "nexvion-ai",
+    storageBucket: "nexvion-ai.firebasestorage.app",
+    messagingSenderId: "916097030104",
+    appId: "1:916097030104:web:e9b393b7fa8c89a84b84ad",
+    measurementId: "G-Q09E6TX5XJ"
+  };
+
   // --- FINAL FORM SUBMISSION & SUCCESS VIEW ---
   if (form) {
-    form.addEventListener('submit', function (e) {
+    form.addEventListener('submit', async function (e) {
       e.preventDefault();
 
       if (!validateStep4()) {
@@ -616,129 +627,181 @@
         `;
       }
 
-      // Generate a structured student user profile (Firebase-ready schema)
+      // 1. Firebase Authentication Account Creation & Display Name Synchronization
+      let fbUser = null;
+      let fbDb = null;
+
+      try {
+        if (typeof firebase !== 'undefined' && firebase.initializeApp) {
+          let app;
+          try {
+            app = firebase.app();
+          } catch (noApp) {
+            app = firebase.initializeApp(FIREBASE_CONFIG);
+          }
+          const auth = app.auth ? app.auth() : firebase.auth();
+          if (app.firestore) fbDb = app.firestore();
+          else if (firebase.firestore) fbDb = firebase.firestore();
+
+          // Attempt account creation with Firebase Auth
+          try {
+            const userCred = await auth.createUserWithEmailAndPassword(formData.email, formData.password);
+            fbUser = userCred.user;
+          } catch (createErr) {
+            if (createErr.code === 'auth/email-already-in-use') {
+              try {
+                const signInCred = await auth.signInWithEmailAndPassword(formData.email, formData.password);
+                fbUser = signInCred.user;
+              } catch (signInErr) {
+                console.warn('Firebase email in use, sign-in notice:', signInErr.message);
+              }
+            } else {
+              console.warn('Firebase createUser notice:', createErr.message);
+            }
+          }
+
+          // CRITICAL: Set Display Name in Firebase Authentication!
+          // Guarantees student's registered name is visible in Firebase Auth Console & currentUser.displayName
+          if (fbUser && fbUser.updateProfile) {
+            try {
+              await fbUser.updateProfile({
+                displayName: formData.fullName
+              });
+            } catch (upErr) {
+              console.warn('Firebase updateProfile notice:', upErr.message);
+            }
+          }
+        }
+      } catch (fbInitErr) {
+        console.warn('Firebase auth initialization notice:', fbInitErr.message);
+      }
+
+      // 2. Generate a structured student user profile (Firebase-ready schema)
       const randomIdSuffix = Math.floor(10000 + Math.random() * 90000);
       const studentId = `NX-2026-${randomIdSuffix}`;
-      const generatedUserId = `nx_usr_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
+      const generatedUserId = fbUser ? fbUser.uid : `nx_usr_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
 
       const studentProfile = {
-        userId: generatedUserId,
+        id: studentId,
         studentId: studentId,
+        userId: generatedUserId,
+        name: formData.fullName,
         fullName: formData.fullName,
         email: formData.email,
-        phone: formData.phone,
-        dateOfBirth: formData.dateOfBirth,
-        country: formData.country,
-        state: formData.state,
-        city: formData.city,
-        educationLevel: formData.educationLevel,
-        institution: formData.institution,
-        course: formData.course,
-        yearOfStudy: formData.yearOfStudy,
-        background: formData.background,
-        aiExperience: formData.aiExperience,
+        phone: formData.phone || '',
+        dateOfBirth: formData.dateOfBirth || '',
+        country: formData.country || 'Global',
+        state: formData.state || '',
+        city: formData.city || '',
+        educationLevel: formData.educationLevel || '',
+        institution: formData.institution || '',
+        course: formData.course || '',
+        yearOfStudy: formData.yearOfStudy || '',
+        background: formData.background || '',
+        aiExperience: formData.aiExperience || 'Complete Beginner',
         interests: [...formData.interests],
-        learningGoal: formData.learningGoal,
-        referralSource: formData.referralSource,
+        learningGoal: formData.learningGoal || '',
+        referralSource: formData.referralSource || '',
         projectGoal: formData.projectGoal || '',
-        role: 'student', // Default unchangeable role
+        enrolledCourseId: 'ai-foundations',
+        enrolledCourseTitle: 'AI Foundations: Zero to AI Native',
+        tierId: 'ai-foundations',
+        tierName: 'AI Foundations',
+        batchId: '',
+        batchName: 'Unassigned',
+        enrollmentStatus: 'Pending',
+        progressPercent: 0,
+        paymentStatus: 'Not required',
+        certificateStatus: 'Not eligible',
+        role: 'student',
         createdAt: new Date().toISOString(),
-        profilePhoto: null
+        joinDate: new Date().toISOString().split('T')[0],
+        lastActive: new Date().toISOString(),
+        internalNotesList: []
       };
 
-      // In accordance with security best practices, passwords are NOT stored in the exported student profile.
-      // Separate authentication object prepared for future Firebase Auth integration:
-      const authCredentialReference = {
+      const enrId = `enr-${studentId.replace(/^NX-/, '').replace(/[^a-zA-Z0-9]/g, '')}`;
+      const enrollmentRecord = {
+        id: enrId,
+        studentId: studentId,
+        studentName: formData.fullName,
         email: formData.email,
-        authProvider: 'firebase_ready_password_hash',
-        verified: false,
-        lastLogin: new Date().toISOString()
+        courseId: 'ai-foundations',
+        courseTitle: 'AI Foundations: Zero to AI Native',
+        tierId: 'ai-foundations',
+        tierName: 'AI Foundations',
+        batchId: '',
+        batchName: 'Unassigned',
+        status: 'Pending',
+        paymentStatus: 'Not required',
+        submittedAt: new Date().toISOString(),
+        history: [
+          {
+            status: 'Pending',
+            timestamp: new Date().toISOString(),
+            actionBy: 'Self Registered',
+            note: 'Application received via student registration portal.'
+          }
+        ]
       };
 
-      // Save locally to persist student session in browser
+      // 3. Persist to Cloud Firestore (if reachable)
+      if (fbDb) {
+        try {
+          await fbDb.collection('students').doc(studentId).set(studentProfile, { merge: true });
+        } catch (fsErr) {
+          console.warn('Firestore student write notice:', fsErr.message);
+        }
+        try {
+          await fbDb.collection('enrollments').doc(enrId).set(enrollmentRecord, { merge: true });
+        } catch (fsEnrErr) {
+          console.warn('Firestore enrollment write notice:', fsEnrErr.message);
+        }
+      }
+
+      // 4. Save locally to persist student session in browser
       try {
         localStorage.setItem('nexvion_current_user', JSON.stringify(studentProfile));
-        localStorage.setItem('nexvion_auth_ref', JSON.stringify(authCredentialReference));
 
         // Maintain array of all registrations
         const existingUsers = JSON.parse(localStorage.getItem('nexvion_registered_users') || '[]');
-        existingUsers.push({
-          studentId: studentProfile.studentId,
-          email: studentProfile.email,
-          fullName: studentProfile.fullName,
-          createdAt: studentProfile.createdAt
-        });
-        localStorage.setItem('nexvion_registered_users', JSON.stringify(existingUsers));
-
-        // Immediately synchronize into Admin Portal state & database
-        const adminStorageKey = 'nexvion_admin_production_data_v10_pristine_clean';
-        const adminDataStr = localStorage.getItem(adminStorageKey);
-        if (adminDataStr) {
-          try {
-            const adminData = JSON.parse(adminDataStr);
-            if (!Array.isArray(adminData.students)) adminData.students = [];
-            if (!Array.isArray(adminData.enrollments)) adminData.enrollments = [];
-
-            // Add student if not already present
-            if (!adminData.students.some(s => s.email === studentProfile.email)) {
-              adminData.students.unshift({
-                id: studentProfile.studentId,
-                name: studentProfile.fullName,
-                email: studentProfile.email,
-                phone: studentProfile.phone || '',
-                country: studentProfile.country || 'Global',
-                city: studentProfile.city || '',
-                educationLevel: studentProfile.educationLevel || '',
-                institution: studentProfile.institution || '',
-                course: studentProfile.course || '',
-                enrolledCourseId: 'ai-foundations',
-                enrolledCourseTitle: 'AI Foundations: Zero to AI Native',
-                tierId: 'ai-foundations',
-                tierName: 'AI Foundations',
-                batchId: '',
-                batchName: 'Unassigned',
-                enrollmentStatus: 'Pending',
-                progressPercent: 0,
-                paymentStatus: 'Not required',
-                certificateStatus: 'Not eligible',
-                joinDate: new Date().toISOString().split('T')[0],
-                lastActive: new Date().toISOString(),
-                internalNotesList: []
-              });
-            }
-
-            // Add enrollment application if not already present
-            if (!adminData.enrollments.some(e => e.email === studentProfile.email)) {
-              adminData.enrollments.unshift({
-                id: `enr-${studentProfile.studentId.replace(/^NX-/, '').replace(/[^a-zA-Z0-9]/g, '')}`,
-                studentId: studentProfile.studentId,
-                studentName: studentProfile.fullName,
-                email: studentProfile.email,
-                courseId: 'ai-foundations',
-                courseTitle: 'AI Foundations: Zero to AI Native',
-                tierId: 'ai-foundations',
-                tierName: 'AI Foundations',
-                batchId: '',
-                batchName: 'Unassigned',
-                status: 'Pending',
-                paymentStatus: 'Not required',
-                submittedAt: new Date().toISOString(),
-                history: [
-                  {
-                    status: 'Pending',
-                    timestamp: new Date().toISOString(),
-                    actionBy: 'Self Registered',
-                    note: 'Application received via student registration portal.'
-                  }
-                ]
-              });
-            }
-
-            localStorage.setItem(adminStorageKey, JSON.stringify(adminData));
-          } catch (admErr) {
-            console.warn('Admin storage sync error:', admErr);
-          }
+        if (!existingUsers.some(u => u.email === studentProfile.email)) {
+          existingUsers.push({
+            id: studentProfile.id,
+            studentId: studentProfile.studentId,
+            userId: studentProfile.userId,
+            name: studentProfile.name,
+            fullName: studentProfile.fullName,
+            email: studentProfile.email,
+            createdAt: studentProfile.createdAt
+          });
+          localStorage.setItem('nexvion_registered_users', JSON.stringify(existingUsers));
         }
+
+        // Immediately synchronize into Admin Portal state & database (ensure key exists!)
+        const adminStorageKey = 'nexvion_admin_production_data_v10_pristine_clean';
+        let adminData = null;
+        try {
+          const adminDataStr = localStorage.getItem(adminStorageKey);
+          adminData = adminDataStr ? JSON.parse(adminDataStr) : {};
+        } catch (admParseErr) {
+          adminData = {};
+        }
+        if (!adminData || typeof adminData !== 'object') adminData = {};
+        if (!Array.isArray(adminData.students)) adminData.students = [];
+        if (!Array.isArray(adminData.enrollments)) adminData.enrollments = [];
+
+        // Add student if not already present
+        if (!adminData.students.some(s => s.email === studentProfile.email || s.id === studentProfile.id)) {
+          adminData.students.unshift(studentProfile);
+        }
+
+        // Add enrollment application if not already present
+        if (!adminData.enrollments.some(e => e.email === studentProfile.email || e.id === enrollmentRecord.id)) {
+          adminData.enrollments.unshift(enrollmentRecord);
+        }
+
+        localStorage.setItem(adminStorageKey, JSON.stringify(adminData));
 
         // Post to backend API endpoint to persist in server telemetry
         if (typeof fetch === 'function') {
@@ -752,7 +815,7 @@
         console.warn('LocalStorage save notice:', err);
       }
 
-      // Simulate smooth network handshake (600ms)
+      // Simulate smooth network handshake
       setTimeout(function () {
         // Hide stepper and form
         const stepper = document.getElementById('register-stepper');

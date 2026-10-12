@@ -1,0 +1,16 @@
+{
+  "appId": "com.nexvion.course",
+  "appName": "NEXVION AI Course",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "server": {
+    "url": "https://nexvion-ai.web.app",
+    "cleartext": true,
+    "androidScheme": "https"
+  },
+  "android": {
+    "allowMixedContent": true,
+    "captureInput": true,
+    "webContentsDebuggingEnabled": false
+  }
+}

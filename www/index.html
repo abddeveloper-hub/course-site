@@ -1,0 +1,1434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+  <meta name="theme-color" content="#101827">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
+  <title>NEXVION AI — Master AI. Build Intelligent Systems. Shape the Future.</title>
+  
+  <!-- SEO & Meta Tags -->
+  <meta name="description" content="NEXVION AI is the premier practical AI academy for ambitious students. Master neural fundamentals, prompt engineering, AI coding, and autonomous agents through hands-on capstone projects.">
+  <meta name="keywords" content="NEXVION AI, learn AI, generative AI, AI for students, prompt engineering, build with AI, AI tools, AI agents, Cursor AI, Claude 3.7">
+  <meta name="author" content="NEXVION AI">
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content="NEXVION AI — Master AI. Build Intelligent Systems.">
+  <meta property="og:description" content="A practical AI learning experience for students who want to understand AI, master modern AI tools, and build real-world projects.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="Linocut_app_icon_logo_design_20261011091421.jpg">
+  
+  <!-- Fonts: Space Grotesk, Geist, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/style.css?v=6.0">
+  <link rel="stylesheet" href="css/synthetic-systems.css?v=2.0">
+  <link rel="stylesheet" href="css/motion.css?v=2.0">
+</head>
+<body>
+
+  <!-- Background Ambient Glow Layer -->
+  <div class="ambient-bottom-glow" aria-hidden="true"></div>
+
+  <!-- =========================================================================
+       1. NAVIGATION BAR
+       ========================================================================= -->
+  <header class="navbar" id="navbar">
+    <div class="container nav-container">
+      <!-- Brand Logo -->
+      <a href="#hero" class="nav-brand" id="nav-brand-logo" aria-label="Synthetic Systems Academy Home">
+        <div class="nav-logo-wrap">
+          <img src="Linocut_app_icon_logo_design_20261011091421.jpg" alt="Synthetic Systems Academy Logo" class="nav-logo-img">
+        </div>
+        <div class="brand-text">
+          <span class="brand-name">SYNTHETIC SYSTEMS</span>
+          <span class="brand-tag">ACADEMY // SPEC-2026</span>
+        </div>
+      </a>
+
+      <!-- Desktop Nav Links -->
+      <nav aria-label="Main Navigation">
+        <ul class="nav-links">
+          <li><a href="#hero" class="nav-link active">Home</a></li>
+          <li><a href="design-system.html" class="nav-link" style="color: var(--primary); font-weight: 600;"><span class="ssa-dot" style="display:inline-block; vertical-align:middle; margin-right:4px; background:var(--primary); width:6px; height:6px; border-radius:50%;"></span>Design System</a></li>
+          <li><a href="course.html" class="nav-link">4 Tiers</a></li>
+          <li><a href="#curriculum" class="nav-link">Curriculum</a></li>
+          <li><a href="#roadmap" class="nav-link">Roadmap</a></li>
+          <li><a href="#projects" class="nav-link">Projects</a></li>
+          <li><a href="#about" class="nav-link">About</a></li>
+          <li><a href="#faq" class="nav-link">FAQ</a></li>
+        </ul>
+      </nav>
+
+      <!-- Right CTAs -->
+      <div class="nav-actions">
+        <a href="dashboard.html" class="btn-nav-login" id="nav-login-btn">Student Portal</a>
+        <a href="register.html" class="btn btn-primary btn-sm" id="nav-cta-btn">
+          <span>Join Free Tier</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+      </div>
+
+      <!-- Mobile Hamburger Button -->
+      <button class="mobile-nav-toggle" id="mobile-toggle" aria-label="Open mobile menu" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Mobile Drawer -->
+  <div class="drawer-backdrop" id="drawer-backdrop"></div>
+  <aside class="mobile-drawer" id="mobile-drawer" aria-label="Mobile navigation">
+    <div>
+      <div class="drawer-header">
+        <div class="nav-logo-wrap">
+          <img src="Linocut_app_icon_logo_design_20261011091421.jpg" alt="NEXVION AI Official Logo" class="nav-logo-img">
+        </div>
+        <div class="brand-text">
+          <span class="brand-name">SYNTHETIC SYSTEMS</span>
+          <span class="brand-tag">ACADEMY // SPEC-2026</span>
+        </div>
+      </div>
+      <ul class="drawer-links">
+        <li><a href="#hero" class="drawer-link">Home</a></li>
+        <li><a href="design-system.html" class="drawer-link" style="color: var(--primary); font-weight: 600;">Design System Spec</a></li>
+        <li><a href="course.html" class="drawer-link">4 Course Tiers</a></li>
+        <li><a href="#curriculum" class="drawer-link">Curriculum</a></li>
+        <li><a href="#roadmap" class="drawer-link">Roadmap</a></li>
+        <li><a href="#projects" class="drawer-link">Projects</a></li>
+        <li><a href="#about" class="drawer-link">About Academy</a></li>
+        <li><a href="#faq" class="drawer-link">FAQ</a></li>
+      </ul>
+    </div>
+    <div class="drawer-actions">
+      <a href="dashboard.html" class="btn btn-secondary" style="width: 100%; text-align: center;">Student Portal</a>
+      <a href="register.html" class="btn btn-primary" style="width: 100%; text-align: center;">Join Free Tier</a>
+    </div>
+  </aside>
+
+  <!-- =========================================================================
+       2. HERO SECTION
+       ========================================================================= -->
+  <section class="hero" id="hero">
+    <canvas id="ambient-canvas"></canvas>
+    <div class="container">
+      <div class="hero-grid">
+        <!-- Hero Text -->
+        <div class="hero-content" id="heroTextContent">
+          <div class="hero-ambient-orb orb-1" aria-hidden="true"></div>
+          <div class="hero-ambient-orb orb-2" aria-hidden="true"></div>
+
+          <div class="hero-pill-badge">
+            <span class="hero-pill-tag">SYNTHETIC SYSTEMS</span>
+            <span class="hero-pill-text">Compiler Engineering &amp; AI Runtime Architecture</span>
+            <span class="badge-shimmer-sparkle" aria-hidden="true">✦</span>
+          </div>
+
+          <h1 class="hero-title">
+            <span class="hero-title-line line-1">Synthetic Systems.</span>
+            <span class="hero-title-line line-2">
+              <span class="static-build-text">Build </span><span id="heroTypewriterText" class="hero-typed-text">AI Compilers.</span><span class="typing-cursor" aria-hidden="true">|</span>
+            </span>
+            <span class="hero-title-line line-3">Zero Cognitive Bloat.</span>
+          </h1>
+
+          <p class="hero-description">
+            Calibrated for compiler engineers, AI runtime architects, and high-performance Kotlin systems programmers. Master AST lowering, tensor vectorization, zero-allocation coroutines, and bare-metal native execution.
+          </p>
+
+          <div class="hero-cta-group">
+            <a href="register.html" class="btn btn-primary btn-lg" id="hero-primary-cta">
+              <span>Start Free Experience</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+            <a href="design-system.html" class="btn btn-secondary btn-lg" id="hero-secondary-cta">
+              <span>Design System Spec</span>
+            </a>
+          </div>
+
+          <!-- Trust Badges -->
+          <div class="hero-trust-bar">
+            <div class="trust-item">
+              <span class="trust-dot"></span>
+              <span>Kotlin Systems &amp; LLVM</span>
+            </div>
+            <span class="trust-divider">•</span>
+            <div class="trust-item">
+              <span class="trust-dot"></span>
+              <span>AVX-512 &amp; SIMD Kernels</span>
+            </div>
+            <span class="trust-divider">•</span>
+            <div class="trust-item">
+              <span class="trust-dot"></span>
+              <span>Zero-Allocation Concurrency</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hero Right Side: Interactive AI Studio Cockpit -->
+        <div class="hero-visual-wrapper" data-nxv-parallax="0.08">
+          <!-- Floating Status Chip Top -->
+          <div class="floating-chip chip-top">
+            <div class="chip-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="12 6 12 12 16 14"/></svg>
+            </div>
+            <div class="chip-content">
+              <span class="chip-title">Multi-Core SIMD Pipeline</span>
+              <span class="chip-sub">Vectorized IR Lowering</span>
+            </div>
+          </div>
+
+          <!-- Main Futuristic Studio Card -->
+          <div class="ai-hologram-card">
+            <!-- Studio Header Bar -->
+            <div class="card-header-bar">
+              <div class="telemetry-node">
+                <span class="status-pulse"></span>
+                <div>
+                  <div class="telemetry-title">SYNTHETIC RUNTIME v4.2</div>
+                  <div class="telemetry-meta">ACTIVE COMPILER PIPELINE • KOTLIN 2.1 &amp; LLVM 18</div>
+                </div>
+              </div>
+              <div class="card-badge-status" id="telemetry-latency">0.42ms latency</div>
+            </div>
+
+            <!-- Neural Prompt & Stream Console -->
+            <div class="neural-interface-box">
+              <div class="prompt-simulator">
+                <div class="simulator-label">
+                  <span>INPUT DIRECTIVE</span>
+                  <span>STUDENT WORKBENCH</span>
+                </div>
+                <div class="simulator-prompt-bubble" id="simulator-prompt-text">
+                  Construct autonomous AI agent with memory & tool calling
+                </div>
+              </div>
+
+              <div class="simulator-label">
+                <span>NEURAL STREAM OUTPUT</span>
+                <span>TOKENS / SEC: 128</span>
+              </div>
+              <div class="neural-stream-output">
+                <pre class="stream-tokens" id="stream-tokens-text"></pre><span class="cursor-blink"></span>
+              </div>
+            </div>
+
+            <!-- Telemetry Metrics Strip -->
+            <div class="neural-weights-grid">
+              <div class="neural-node-stat">
+                <div class="node-stat-val">100%</div>
+                <div class="node-stat-lbl">Hands-on</div>
+              </div>
+              <div class="neural-node-stat">
+                <div class="node-stat-val">8 Steps</div>
+                <div class="node-stat-lbl">Roadmap</div>
+              </div>
+              <div class="neural-node-stat">
+                <div class="node-stat-val">6+</div>
+                <div class="node-stat-lbl">Capstones</div>
+              </div>
+              <div class="neural-node-stat">
+                <div class="node-stat-val">Zero</div>
+                <div class="node-stat-lbl">Prereqs</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Floating Status Chip Bottom -->
+          <div class="floating-chip chip-bottom">
+            <div class="chip-icon" style="color: #38BDF8; background: rgba(56, 189, 248, 0.15); border-color: rgba(56, 189, 248, 0.3);">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            </div>
+            <div class="chip-content">
+              <span class="chip-title">Modern AI Coding Stack</span>
+              <span class="chip-sub">Claude 3.7 • Cursor • LangChain</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       3. TECH STACK INFINITE MARQUEE
+       ========================================================================= -->
+  <section class="marquee-section">
+    <div class="marquee-label">Engineered For High-Velocity Compiler Diagnostics &amp; AI Systems Programming</div>
+    <div class="marquee-track-wrap">
+      <div class="marquee-track">
+        <div class="marquee-item">⚡ Kotlin 2.1 Native</div>
+        <div class="marquee-item">⚙️ LLVM 18.1 Optimizer</div>
+        <div class="marquee-item">🧠 AVX-512 SIMD Kernels</div>
+        <div class="marquee-item">🔥 CUDA &amp; TensorCore</div>
+        <div class="marquee-item">📦 Coroutines &amp; Concurrency</div>
+        <div class="marquee-item">🏎️ Zero-GC Off-Heap Allocator</div>
+        <div class="marquee-item">🌐 WebAssembly (WASM) Target</div>
+        <div class="marquee-item">🛡️ SSA Intermediate Representation</div>
+        <div class="marquee-item">⚡ Fused Kernel Dispatch</div>
+        <!-- Duplicated for seamless infinite loop -->
+        <div class="marquee-item">⚡ Kotlin 2.1 Native</div>
+        <div class="marquee-item">⚙️ LLVM 18.1 Optimizer</div>
+        <div class="marquee-item">🧠 AVX-512 SIMD Kernels</div>
+        <div class="marquee-item">🔥 CUDA &amp; TensorCore</div>
+        <div class="marquee-item">📦 Coroutines &amp; Concurrency</div>
+        <div class="marquee-item">🏎️ Zero-GC Off-Heap Allocator</div>
+        <div class="marquee-item">🌐 WebAssembly (WASM) Target</div>
+        <div class="marquee-item">🛡️ SSA Intermediate Representation</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       4. 4 TIERS SHOWCASE (NEW VISUAL COMPONENT ON HOME)
+       ========================================================================= -->
+  <section class="topics-section" id="tiers-preview" style="background: transparent;">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-badge">
+          <span class="section-badge-dot"></span>
+          <span>4 Progressive Learning Levels</span>
+        </div>
+        <h2 class="section-title">A Structured Path For Every Ambition</h2>
+        <p class="section-subtitle">
+          Whether you are taking your very first step or preparing for autonomous engineering, choose the tier engineered for your goals. Strictly limited to 30 seats per cohort.
+        </p>
+      </div>
+
+      <div class="course-tier-grid">
+        <!-- Tier 1: Free -->
+        <div class="tier-card featured">
+          <div>
+            <span class="tier-badge">LEVEL 01 • FREE</span>
+            <h3 class="tier-name">AI Foundations</h3>
+            <p class="topic-desc">Understand how AI works from ground zero. Master prompt engineering, AI research, and daily workflow accelerators.</p>
+            <div class="tier-price-box">
+              <span class="tier-price-amount">FREE</span>
+            </div>
+            <div class="tier-capacity-pill">
+              <span class="trust-dot"></span>
+              <span>0/30 Seats Filled • 30 Remaining</span>
+            </div>
+            <ul class="tier-features-list">
+              <li>AI & LLM Mental Models</li>
+              <li>Generative AI & Image Tools</li>
+              <li>Essential Prompt Engineering</li>
+              <li>AI for Students & Research</li>
+              <li>Foundations Learner Pass</li>
+            </ul>
+          </div>
+          <a href="register.html" class="btn btn-primary" style="width: 100%; text-align: center;">Join Free Tier →</a>
+        </div>
+
+        <!-- Tier 2: AI Builder -->
+        <div class="tier-card">
+          <div>
+            <span class="tier-badge">LEVEL 02 • BEGINNER → INTERMEDIATE</span>
+            <h3 class="tier-name">AI Builder</h3>
+            <p class="topic-desc">Move beyond using AI and start coding with it. Build intelligent websites, interactive apps, and practical web software.</p>
+            <div class="tier-price-box">
+              <span class="tier-price-amount">Cohort Access</span>
+            </div>
+            <div class="tier-capacity-pill">
+              <span class="trust-dot" style="background: var(--accent-cyan-light); box-shadow: 0 0 8px var(--accent-cyan-light);"></span>
+              <span>Batch 01 Opening Soon</span>
+            </div>
+            <ul class="tier-features-list">
+              <li>Advanced Prompt Architectures</li>
+              <li>AI-Assisted Coding with Cursor</li>
+              <li>Web Development with AI Tools</li>
+              <li>Connecting REST APIs & Webhooks</li>
+              <li>3 Deployable Web Projects</li>
+            </ul>
+          </div>
+          <a href="course.html" class="btn btn-secondary" style="width: 100%; text-align: center;">View Tier Details</a>
+        </div>
+
+        <!-- Tier 3: AI Creator -->
+        <div class="tier-card">
+          <div>
+            <span class="tier-badge">LEVEL 03 • INTERMEDIATE → ADVANCED</span>
+            <h3 class="tier-name">AI Creator</h3>
+            <p class="topic-desc">Construct full-stack AI applications, vector search retrieval (RAG), and multi-agent automated background systems.</p>
+            <div class="tier-price-box">
+              <span class="tier-price-amount">Cohort Access</span>
+            </div>
+            <div class="tier-capacity-pill">
+              <span class="trust-dot"></span>
+              <span>Waitlist Available</span>
+            </div>
+            <ul class="tier-features-list">
+              <li>Autonomous AI Agents</li>
+              <li>RAG Knowledge Bases & Vector Stores</li>
+              <li>Workflow Automation Pipelines</li>
+              <li>Full-Stack Software Architecture</li>
+              <li>Verified AI Creator Certificate</li>
+            </ul>
+          </div>
+          <a href="course.html" class="btn btn-secondary" style="width: 100%; text-align: center;">View Tier Details</a>
+        </div>
+
+        <!-- Tier 4: AI Architect -->
+        <div class="tier-card">
+          <div>
+            <span class="tier-badge">LEVEL 04 • FRONTIER</span>
+            <h3 class="tier-name">AI Architect</h3>
+            <p class="topic-desc">Enterprise system design, custom model fine-tuning, latency optimization, and production multi-agent deployment.</p>
+            <div class="tier-price-box">
+              <span class="tier-price-amount">Frontier Access</span>
+            </div>
+            <div class="tier-capacity-pill">
+              <span class="trust-dot" style="background: #F59E0B; box-shadow: 0 0 8px #F59E0B;"></span>
+              <span>Application Review</span>
+            </div>
+            <ul class="tier-features-list">
+              <li>Frontier Model Fine-Tuning</li>
+              <li>Multi-Agent Consensus Graphs</li>
+              <li>vLLM & Local Model Serving</li>
+              <li>Enterprise AI Security & Guards</li>
+              <li>1-on-1 Capstone Mentorship</li>
+            </ul>
+          </div>
+          <a href="course.html" class="btn btn-secondary" style="width: 100%; text-align: center;">View Tier Details</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       5. CORE METHODOLOGY (UNDERSTAND • EXPLORE • BUILD)
+       ========================================================================= -->
+  <section class="course-intro" id="methodology">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-badge">
+          <span class="section-badge-dot"></span>
+          <span>Core Pedagogy</span>
+        </div>
+        <h2 class="section-title">From AI Beginner to AI Creator</h2>
+        <p class="section-subtitle">
+          NEXVION takes students through a proven, compounding framework that bridges the gap between passive curiosity and engineering confidence.
+        </p>
+      </div>
+
+      <div class="intro-cards-grid">
+        <!-- 01 Understand -->
+        <div class="intro-card" id="intro-card-understand">
+          <div class="intro-card-header">
+            <span class="intro-step-num">01</span>
+            <div class="intro-icon-wrap">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            </div>
+          </div>
+          <h3 class="intro-card-title">Understand</h3>
+          <p class="intro-card-desc">
+            Learn the core mechanics of AI, tokens, embeddings, neural weights, and large language models without complex mathematical hurdles.
+          </p>
+          <div class="intro-card-footer">
+            <span>Foundational Mastery</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+        </div>
+
+        <!-- 02 Explore -->
+        <div class="intro-card" id="intro-card-explore">
+          <div class="intro-card-header">
+            <span class="intro-step-num">02</span>
+            <div class="intro-icon-wrap" style="color: #38BDF8; background: rgba(56, 189, 248, 0.12); border-color: rgba(56, 189, 248, 0.3);">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+            </div>
+          </div>
+          <h3 class="intro-card-title">Explore</h3>
+          <p class="intro-card-desc">
+            Discover cutting-edge tools: Claude 3.7, Cursor, ChatGPT, Perplexity, and API tools. Learn to augment thinking, research, and coding workflows.
+          </p>
+          <div class="intro-card-footer" style="color: #38BDF8;">
+            <span>Tool Proficiency</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+        </div>
+
+        <!-- 03 Build -->
+        <div class="intro-card" id="intro-card-build">
+          <div class="intro-card-header">
+            <span class="intro-step-num">03</span>
+            <div class="intro-icon-wrap" style="color: #10B981; background: rgba(16, 185, 129, 0.12); border-color: rgba(16, 185, 129, 0.3);">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+            </div>
+          </div>
+          <h3 class="intro-card-title">Build</h3>
+          <p class="intro-card-desc">
+            Construct real software. Deploy live websites, custom assistants, and autonomous agent workflows that build a standout portfolio.
+          </p>
+          <div class="intro-card-footer" style="color: #10B981;">
+            <span>Portfolio Deliverables</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       6. COMPREHENSIVE CURRICULUM (10 TOPICS)
+       ========================================================================= -->
+  <section class="topics-section" id="curriculum">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-badge">
+          <span class="section-badge-dot"></span>
+          <span>Comprehensive Syllabus</span>
+        </div>
+        <h2 class="section-title">Everything You Need to Build With AI</h2>
+        <p class="section-subtitle">
+          Designed with industry engineers to equip students with practical skills that matter in the real world.
+        </p>
+      </div>
+
+      <div class="topics-grid">
+        <div class="topic-card">
+          <div class="topic-icon-wrap">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 7h10"/><path d="M7 12h10"/><path d="M7 17h6"/></svg>
+          </div>
+          <h3 class="topic-title">AI Fundamentals</h3>
+          <p class="topic-desc">Understanding tokens, weights, context windows, and modern neural architectures.</p>
+          <span class="topic-tag">Foundations</span>
+        </div>
+
+        <div class="topic-card">
+          <div class="topic-icon-wrap">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+          </div>
+          <h3 class="topic-title">Generative AI</h3>
+          <p class="topic-desc">Harnessing LLMs, multimodal reasoning, vision models, and generative diffusion tools.</p>
+          <span class="topic-tag">GenAI Core</span>
+        </div>
+
+        <div class="topic-card">
+          <div class="topic-icon-wrap">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+          </div>
+          <h3 class="topic-title">Prompt Engineering</h3>
+          <p class="topic-desc">Mastering few-shot prompts, chain-of-thought, system prompts, and structured JSON output.</p>
+          <span class="topic-tag">Techniques</span>
+        </div>
+
+        <div class="topic-card">
+          <div class="topic-icon-wrap">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+          </div>
+          <h3 class="topic-title">AI Productivity Stack</h3>
+          <p class="topic-desc">Accelerating academic research, literature synthesis, and structured report drafting.</p>
+          <span class="topic-tag">Productivity</span>
+        </div>
+
+        <div class="topic-card">
+          <div class="topic-icon-wrap">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          </div>
+          <h3 class="topic-title">AI + Coding</h3>
+          <p class="topic-desc">Accelerating development with Cursor AI, GitHub Copilot, and intelligent code refactoring.</p>
+          <span class="topic-tag">Development</span>
+        </div>
+
+        <div class="topic-card">
+          <div class="topic-icon-wrap">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          </div>
+          <h3 class="topic-title">Websites with AI</h3>
+          <p class="topic-desc">Building responsive modern web applications leveraging generative code and UI tools.</p>
+          <span class="topic-tag">Web Craft</span>
+        </div>
+
+        <div class="topic-card">
+          <div class="topic-icon-wrap">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+          </div>
+          <h3 class="topic-title">Apps with AI</h3>
+          <p class="topic-desc">Connecting LLM APIs, vector stores, and streaming endpoints into dynamic applications.</p>
+          <span class="topic-tag">Applications</span>
+        </div>
+
+        <div class="topic-card">
+          <div class="topic-icon-wrap">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          </div>
+          <h3 class="topic-title">AI Automation</h3>
+          <p class="topic-desc">Automating tedious processes, document ingestion, webhook events, and email triggers.</p>
+          <span class="topic-tag">Workflows</span>
+        </div>
+
+        <div class="topic-card">
+          <div class="topic-icon-wrap">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+          </div>
+          <h3 class="topic-title">Autonomous Agents</h3>
+          <p class="topic-desc">Building autonomous agents capable of web browsing, reasoning, memory, and tool execution.</p>
+          <span class="topic-tag">Autonomous</span>
+        </div>
+
+        <div class="topic-card">
+          <div class="topic-icon-wrap">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          </div>
+          <h3 class="topic-title">Capstone Projects</h3>
+          <p class="topic-desc">Shipping verified portfolio deliverables that prove real engineering capability.</p>
+          <span class="topic-tag">Portfolio</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       7. ROADMAP SECTION (8 PROGRESSIVE PHASES)
+       ========================================================================= -->
+  <section class="roadmap-section" id="roadmap">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-badge">
+          <span class="section-badge-dot"></span>
+          <span>Structured Journey</span>
+        </div>
+        <h2 class="section-title">Your 8-Phase Path to AI Creator</h2>
+        <p class="section-subtitle">
+          A deliberate step-by-step curriculum that takes you from fundamental curiosity to verified mastery.
+        </p>
+      </div>
+
+      <div class="roadmap-nodes-container">
+        <!-- 01 -->
+        <div class="roadmap-step-card">
+          <div class="step-card-header">
+            <span class="step-number-badge">01</span>
+            <span class="step-level-tag">Phase 1</span>
+          </div>
+          <h3 class="step-title">AI Fundamentals</h3>
+          <p class="step-desc">Master how tokens, embeddings, weights, and LLM attention mechanisms operate.</p>
+          <div class="step-milestone-pill">
+            <span class="trust-dot"></span>
+            <span>Foundations verified</span>
+          </div>
+        </div>
+
+        <!-- 02 -->
+        <div class="roadmap-step-card">
+          <div class="step-card-header">
+            <span class="step-number-badge">02</span>
+            <span class="step-level-tag">Phase 1</span>
+          </div>
+          <h3 class="step-title">Modern AI Tools</h3>
+          <p class="step-desc">Unlock advanced AI tooling for accelerated research, reasoning, and productivity.</p>
+          <div class="step-milestone-pill">
+            <span class="trust-dot"></span>
+            <span>Workflow configured</span>
+          </div>
+        </div>
+
+        <!-- 03 -->
+        <div class="roadmap-step-card">
+          <div class="step-card-header">
+            <span class="step-number-badge">03</span>
+            <span class="step-level-tag">Phase 2</span>
+          </div>
+          <h3 class="step-title">Prompt Engineering</h3>
+          <p class="step-desc">Learn few-shot prompting, system architecture, and structured JSON outputs.</p>
+          <div class="step-milestone-pill">
+            <span class="trust-dot"></span>
+            <span>Prompt master</span>
+          </div>
+        </div>
+
+        <!-- 04 -->
+        <div class="roadmap-step-card">
+          <div class="step-card-header">
+            <span class="step-number-badge">04</span>
+            <span class="step-level-tag">Phase 2</span>
+          </div>
+          <h3 class="step-title">AI + Coding</h3>
+          <p class="step-desc">Write, refactor, and debug modern code using AI pair-programming environments.</p>
+          <div class="step-milestone-pill">
+            <span class="trust-dot"></span>
+            <span>Code fluent</span>
+          </div>
+        </div>
+
+        <!-- 05 -->
+        <div class="roadmap-step-card">
+          <div class="step-card-header">
+            <span class="step-number-badge">05</span>
+            <span class="step-level-tag">Phase 3</span>
+          </div>
+          <h3 class="step-title">Build Websites</h3>
+          <p class="step-desc">Design and deploy high-performance modern websites leveraging AI generators.</p>
+          <div class="step-milestone-pill">
+            <span class="trust-dot"></span>
+            <span>First website live</span>
+          </div>
+        </div>
+
+        <!-- 06 -->
+        <div class="roadmap-step-card">
+          <div class="step-card-header">
+            <span class="step-number-badge">06</span>
+            <span class="step-level-tag">Phase 3</span>
+          </div>
+          <h3 class="step-title">Build AI Apps</h3>
+          <p class="step-desc">Develop full-stack interactive applications powered by streaming LLM APIs.</p>
+          <div class="step-milestone-pill">
+            <span class="trust-dot"></span>
+            <span>App deployed</span>
+          </div>
+        </div>
+
+        <!-- 07 -->
+        <div class="roadmap-step-card">
+          <div class="step-card-header">
+            <span class="step-number-badge">07</span>
+            <span class="step-level-tag">Phase 4</span>
+          </div>
+          <h3 class="step-title">Autonomous Agents</h3>
+          <p class="step-desc">Orchestrate multi-agent autonomous tasks that execute complex workflows unattended.</p>
+          <div class="step-milestone-pill">
+            <span class="trust-dot"></span>
+            <span>Agent operational</span>
+          </div>
+        </div>
+
+        <!-- 08 -->
+        <div class="roadmap-step-card">
+          <div class="step-card-header">
+            <span class="step-number-badge">08</span>
+            <span class="step-level-tag">Phase 4</span>
+          </div>
+          <h3 class="step-title">Capstone Portfolio</h3>
+          <p class="step-desc">Ship a comprehensive end-to-end AI project solving a real problem for users.</p>
+          <div class="step-milestone-pill">
+            <span class="trust-dot"></span>
+            <span>Capstone certified</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Apex Culmination Milestone -->
+      <div class="roadmap-apex-container">
+        <div class="roadmap-apex-card">
+          <div class="apex-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <span>CULMINATION MILESTONE</span>
+          </div>
+          <h3 class="apex-title">GRADUATE AS AN AI CREATOR</h3>
+          <p class="apex-desc">
+            You possess the technical confidence, practical tool fluency, and project portfolio to build software, automate workflows, and launch real AI solutions.
+          </p>
+          <a href="register.html" class="btn btn-primary btn-lg">Begin Free Journey Now →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       8. INSIDE THE COURSE & INTERACTIVE VIDEO PREVIEW
+       ========================================================================= -->
+  <section class="inside-course-section" id="inside-course">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-badge">
+          <span class="section-badge-dot"></span>
+          <span>Hands-On Pedagogy</span>
+        </div>
+        <h2 class="section-title">Learn by Doing, Not Reading Slides</h2>
+        <p class="section-subtitle">
+          NEXVION focuses strictly on active project-building and practical mastery rather than passive, dry lecture notes.
+        </p>
+      </div>
+
+      <div class="inside-course-grid">
+        <div class="features-list">
+          <div class="feature-item-card">
+            <div class="feature-item-icon">🎥</div>
+            <div>
+              <h3 class="feature-item-title">On-Demand Cinema Classes</h3>
+              <p class="feature-item-desc">Structured, concise lessons students can watch at their own pace, designed with crystal-clear screen recordings and actionable code walkthroughs.</p>
+            </div>
+          </div>
+
+          <div class="feature-item-card">
+            <div class="feature-item-icon">⚡</div>
+            <div>
+              <h3 class="feature-item-title">Interactive Laboratory Tasks</h3>
+              <p class="feature-item-desc">Apply concepts immediately after each module through bite-sized coding drills, prompt experiments, and interactive exercises.</p>
+            </div>
+          </div>
+
+          <div class="feature-item-card">
+            <div class="feature-item-icon">🚀</div>
+            <div>
+              <h3 class="feature-item-title">Production Capstones</h3>
+              <p class="feature-item-desc">Build useful, production-ready projects as you learn — from custom AI chatbots to autonomous web agents you can demo proudly.</p>
+            </div>
+          </div>
+
+          <div class="feature-item-card">
+            <div class="feature-item-icon">📚</div>
+            <div>
+              <h3 class="feature-item-title">Curated Blueprints & Prompts</h3>
+              <p class="feature-item-desc">Access reference notes, starter repositories, tool cheat-sheets, and curated API libraries to reuse in your own work.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Video Lesson Mockup -->
+        <div class="course-mockup-wrapper">
+          <div class="mockup-window-bar">
+            <div class="mockup-dots">
+              <span class="mockup-dot red"></span>
+              <span class="mockup-dot yellow"></span>
+              <span class="mockup-dot green"></span>
+            </div>
+            <div class="mockup-title">nexvion-player // Module 04: Autonomous Agent Pipeline</div>
+            <div style="font-size: 0.6875rem; color: #10B981; font-family: var(--font-mono);">● HD 4K</div>
+          </div>
+
+          <div class="mockup-video-screen">
+            <div class="video-lesson-badge">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              <span>Lesson 4.2: Building an Autonomous Agent with Claude & LangChain</span>
+            </div>
+
+            <div class="video-center-content">
+              <div class="video-play-btn-circle" title="Play Video Preview">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+              </div>
+              <div class="video-active-title">Live Code Along Session</div>
+              <div class="video-active-sub">Step-by-step agent architecture implementation</div>
+            </div>
+
+            <div class="video-scrub-bar">
+              <div class="scrub-timeline">
+                <div class="scrub-progress"></div>
+              </div>
+              <div class="scrub-info">
+                <span>14:28 / 28:50</span>
+                <span>Speed: 1.0x • English Subtitles</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="mockup-bottom-panel">
+            <div class="mockup-tabs">
+              <span class="mockup-tab active" data-tab="code">Lesson Code</span>
+              <span class="mockup-tab" data-tab="prompt">Prompt Blueprint</span>
+              <span class="mockup-tab" data-tab="terminal">Terminal Output</span>
+              <span class="mockup-tab" data-tab="notes">Notes</span>
+            </div>
+            <div class="mockup-code-snippet" id="mockup-code-display">
+<span class="code-keyword">import</span> { NexvionAgent } <span class="code-keyword">from</span> <span class="code-str">'@nexvion/ai'</span>;
+
+<span class="code-comment">// Initialize hands-on student agent</span>
+<span class="code-keyword">const</span> builderAgent = <span class="code-keyword">new</span> <span class="code-fn">NexvionAgent</span>({
+  model: <span class="code-str">'claude-3-7-sonnet'</span>,
+  tools: [<span class="code-str">'web_search'</span>, <span class="code-str">'terminal'</span>],
+  temperature: <span class="code-keyword">0.2</span>
+});
+
+<span class="code-keyword">await</span> builderAgent.<span class="code-fn">execute</span>(<span class="code-str">'Build student AI portfolio'</span>);
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       9. REAL PROJECTS SHOWCASE
+       ========================================================================= -->
+  <section class="projects-section" id="projects">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-badge">
+          <span class="section-badge-dot"></span>
+          <span>Hands-on Portfolio</span>
+        </div>
+        <h2 class="section-title">What Will You Build?</h2>
+        <p class="section-subtitle">
+          Graduate with tangible, working software that demonstrates practical mastery in modern artificial intelligence.
+        </p>
+      </div>
+
+      <div class="projects-grid">
+        <!-- 1 -->
+        <div class="project-card">
+          <div class="project-preview-header">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </div>
+          <div class="project-body">
+            <h3 class="project-title">Custom AI Chatbot</h3>
+            <p class="project-desc">Create custom conversational agents with context memory, custom personas, and retrieval-augmented reasoning.</p>
+            <div class="project-tech-stack">
+              <span class="tech-tag">Next.js</span>
+              <span class="tech-tag">OpenAI API</span>
+              <span class="tech-tag">Vector Store</span>
+            </div>
+            <a href="register.html" class="project-footer-link">Build This Project →</a>
+          </div>
+        </div>
+
+        <!-- 2 -->
+        <div class="project-card">
+          <div class="project-preview-header">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          </div>
+          <div class="project-body">
+            <h3 class="project-title">AI-Powered Web App</h3>
+            <p class="project-desc">Build a responsive, modern web application featuring real-time generative UI and smart content synthesis.</p>
+            <div class="project-tech-stack">
+              <span class="tech-tag">HTML5/CSS3</span>
+              <span class="tech-tag">Cursor</span>
+              <span class="tech-tag">Vercel</span>
+            </div>
+            <a href="register.html" class="project-footer-link">Build This Project →</a>
+          </div>
+        </div>
+
+        <!-- 3 -->
+        <div class="project-card">
+          <div class="project-preview-header">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          </div>
+          <div class="project-body">
+            <h3 class="project-title">AI Research Copilot</h3>
+            <p class="project-desc">Develop smart assistants that summarize complex research papers, organize notes, and draft structured briefs.</p>
+            <div class="project-tech-stack">
+              <span class="tech-tag">Python</span>
+              <span class="tech-tag">Claude 3.7</span>
+              <span class="tech-tag">FastAPI</span>
+            </div>
+            <a href="register.html" class="project-footer-link">Build This Project →</a>
+          </div>
+        </div>
+
+        <!-- 4 -->
+        <div class="project-card">
+          <div class="project-preview-header">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          </div>
+          <div class="project-body">
+            <h3 class="project-title">Workflow Automations</h3>
+            <p class="project-desc">Engineered multi-step pipelines that connect external APIs, web scrapers, and databases into automated workflows.</p>
+            <div class="project-tech-stack">
+              <span class="tech-tag">Webhooks</span>
+              <span class="tech-tag">Node.js</span>
+              <span class="tech-tag">REST APIs</span>
+            </div>
+            <a href="register.html" class="project-footer-link">Build This Project →</a>
+          </div>
+        </div>
+
+        <!-- 5 -->
+        <div class="project-card">
+          <div class="project-preview-header">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/></svg>
+          </div>
+          <div class="project-body">
+            <h3 class="project-title">Autonomous Agent</h3>
+            <p class="project-desc">An autonomous desktop or web companion capable of answering questions, browsing, and executing multi-step scripts.</p>
+            <div class="project-tech-stack">
+              <span class="tech-tag">LangChain</span>
+              <span class="tech-tag">Tool-Calling</span>
+              <span class="tech-tag">CLI</span>
+            </div>
+            <a href="register.html" class="project-footer-link">Build This Project →</a>
+          </div>
+        </div>
+
+        <!-- 6 -->
+        <div class="project-card">
+          <div class="project-preview-header">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          </div>
+          <div class="project-body">
+            <h3 class="project-title">Full-Stack RAG System</h3>
+            <p class="project-desc">Complete knowledge retrieval system with vector embeddings, semantic search, and streaming conversational citations.</p>
+            <div class="project-tech-stack">
+              <span class="tech-tag">Pinecone</span>
+              <span class="tech-tag">Next.js</span>
+              <span class="tech-tag">Tailored LLM</span>
+            </div>
+            <a href="register.html" class="project-footer-link">Build This Project →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       10. TARGET PERSONAS & WHY NEXVION
+       ========================================================================= -->
+  <section class="audience-section" id="audience">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-badge">
+          <span class="section-badge-dot"></span>
+          <span>Target Audience</span>
+        </div>
+        <h2 class="section-title">Built for Curious Minds</h2>
+        <p class="section-subtitle">
+          Whether you are just discovering AI or eager to build the next generation of software, NEXVION meets you where you are.
+        </p>
+      </div>
+
+      <div class="audience-grid">
+        <div class="audience-card">
+          <div class="audience-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+          </div>
+          <h3 class="audience-title">Students</h3>
+          <p class="audience-desc">Gain skills that make you stand out in academia, admissions, and modern internship opportunities.</p>
+        </div>
+
+        <div class="audience-card">
+          <div class="audience-icon" style="color: #38BDF8; background: rgba(56, 189, 248, 0.12); border-color: rgba(56, 189, 248, 0.3);">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+          </div>
+          <h3 class="audience-title">Beginners</h3>
+          <p class="audience-desc">Start from ground zero without complex mathematical or programming prerequisites through structured paths.</p>
+        </div>
+
+        <div class="audience-card">
+          <div class="audience-icon" style="color: #EC4899; background: rgba(236, 72, 153, 0.12); border-color: rgba(236, 72, 153, 0.3);">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/></svg>
+          </div>
+          <h3 class="audience-title">Creators</h3>
+          <p class="audience-desc">Turn creative concepts, writing, design, and ideas into interactive websites and digital tools.</p>
+        </div>
+
+        <div class="audience-card">
+          <div class="audience-icon" style="color: #10B981; background: rgba(16, 185, 129, 0.12); border-color: rgba(16, 185, 129, 0.3);">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/></svg>
+          </div>
+          <h3 class="audience-title">Future Builders</h3>
+          <p class="audience-desc">Explore AI, engineering, intelligent automation, and startup prototyping to build tech solutions.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       11. ABOUT NEXVION (FEATURING OFFICIAL NEXVION LOGO CORE)
+       ========================================================================= -->
+  <section class="about-section" id="about">
+    <div class="container">
+      <div class="about-grid">
+        <div class="about-logo-showcase" aria-label="NEXVION AI Core Visual">
+          <div class="ai-core-container">
+            <div class="ai-core-glow"></div>
+
+            <div class="ai-core-ring ring-outer-orbit core-ring-spin-ccw">
+              <svg class="ring-svg" viewBox="0 0 500 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="250" cy="250" r="236" stroke="rgba(139, 92, 246, 0.22)" stroke-width="1.5" stroke-dasharray="4 8" />
+                <circle cx="250" cy="250" r="246" stroke="rgba(255, 255, 255, 0.05)" stroke-width="1" />
+                <line x1="250" y1="4" x2="250" y2="16" stroke="rgba(167, 139, 250, 0.6)" stroke-width="2" />
+                <line x1="250" y1="484" x2="250" y2="496" stroke="rgba(167, 139, 250, 0.6)" stroke-width="2" />
+                <line x1="4" y1="250" x2="16" y2="250" stroke="rgba(167, 139, 250, 0.6)" stroke-width="2" />
+                <line x1="484" y1="250" x2="496" y2="250" stroke="rgba(167, 139, 250, 0.6)" stroke-width="2" />
+                <circle cx="250" cy="14" r="3.5" fill="#C4B5FD" />
+                <circle cx="486" cy="250" r="3.5" fill="#38BDF8" />
+                <circle cx="250" cy="486" r="3.5" fill="#C4B5FD" />
+                <circle cx="14" cy="250" r="3.5" fill="#38BDF8" />
+              </svg>
+            </div>
+
+            <div class="ai-core-ring ring-particle-orbit core-ring-spin-cw">
+              <svg class="ring-svg" viewBox="0 0 500 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="250" cy="250" r="200" stroke="rgba(139, 92, 246, 0.35)" stroke-width="1.5" stroke-dasharray="80 35 120 45" />
+                <circle cx="250" cy="50" r="5" fill="#8B5CF6" />
+                <circle cx="450" cy="250" r="4.5" fill="#38BDF8" />
+                <circle cx="250" cy="450" r="5" fill="#A855F7" />
+                <circle cx="50" cy="250" r="4.5" fill="#38BDF8" />
+              </svg>
+            </div>
+
+            <div class="ai-core-pole-label pole-top">NEXVION</div>
+            <div class="ai-core-pole-label pole-right">AI CORE</div>
+            <div class="ai-core-pole-label pole-bottom">CREATION</div>
+            <div class="ai-core-pole-label pole-left">KNOWLEDGE</div>
+
+            <div class="ai-core-inner-disc">
+              <div class="ai-core-logo-anchor">
+                <img src="Linocut_app_icon_logo_design_20261011091421.jpg" alt="Official NEXVION Logo" class="ai-core-official-logo">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="about-content">
+          <div class="section-badge">
+            <span class="section-badge-dot"></span>
+            <span>Our Mission</span>
+          </div>
+
+          <h2 class="about-heading">Making AI Mastery Accessible to Every Student</h2>
+
+          <p class="about-lead">
+            NEXVION aims to make modern AI knowledge accessible, practical, and useful for students—helping them move from simply using AI to understanding it and building with it.
+          </p>
+
+          <p class="about-body-text">
+            We believe the greatest shift of our generation is happening right now. Students who learn to harness AI tools and construct intelligent software today will be the architects of tomorrow’s technology. NEXVION bridges the gap between superficial curiosity and engineering empowerment.
+          </p>
+
+          <div class="about-pillars-row">
+            <div class="about-pillar-item">
+              <div class="about-pillar-title">Empowerment</div>
+              <div class="about-pillar-sub">From consumer to creator</div>
+            </div>
+            <div class="about-pillar-item">
+              <div class="about-pillar-title">Practicality</div>
+              <div class="about-pillar-sub">Real skills, real projects</div>
+            </div>
+            <div class="about-pillar-item">
+              <div class="about-pillar-title">Clarity</div>
+              <div class="about-pillar-sub">No hype, honest guidance</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       12. TESTIMONIALS & SOCIAL PROOF CAROUSEL
+       ========================================================================= -->
+  <section class="testimonials-section" id="testimonials">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-badge">
+          <span class="section-badge-dot"></span>
+          <span>Cohort Spotlight</span>
+        </div>
+        <h2 class="section-title">What Students Say</h2>
+        <p class="section-subtitle">
+          Real voices from the NEXVION community — and an honest look at what the founding cohort is building right now.
+        </p>
+      </div>
+
+      <div class="nxv-carousel" data-nxv-carousel role="group" aria-roledescription="carousel" tabindex="0">
+        <div class="nxv-carousel__viewport">
+          <div class="nxv-carousel__track">
+            <article class="nxv-slide" role="group" aria-roledescription="slide">
+              <div class="nxv-quote">
+                <span class="nxv-quote__mark" aria-hidden="true">&ldquo;</span>
+                <p class="nxv-quote__text">
+                  I arrived knowing nothing about prompts. By the end of the foundations track I had built my own study assistant and was confidently wiring it into real coursework.
+                </p>
+                <div class="nxv-quote__meta">
+                  <span class="nxv-quote__avatar" aria-hidden="true">AK</span>
+                  <div>
+                    <div class="nxv-quote__name">Ayesha K.</div>
+                    <div class="nxv-quote__role">AI Foundations &middot; Cohort 01</div>
+                  </div>
+                  <span class="nxv-quote__tag">Verified Student</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="nxv-slide" role="group" aria-roledescription="slide">
+              <div class="nxv-quote">
+                <span class="nxv-quote__mark" aria-hidden="true">&ldquo;</span>
+                <p class="nxv-quote__text">
+                  The project-first structure is what sold me. Every module ends with something you can actually show someone, not just notes you never reopen.
+                </p>
+                <div class="nxv-quote__meta">
+                  <span class="nxv-quote__avatar" aria-hidden="true">DR</span>
+                  <div>
+                    <div class="nxv-quote__name">Daniel R.</div>
+                    <div class="nxv-quote__role">AI Builder &middot; Cohort 01</div>
+                  </div>
+                  <span class="nxv-quote__tag">Verified Student</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="nxv-slide" role="group" aria-roledescription="slide">
+              <div class="nxv-quote">
+                <span class="nxv-quote__mark" aria-hidden="true">&ldquo;</span>
+                <p class="nxv-quote__text">
+                  I came in with zero coding background and genuinely feared that part. The step-by-step agent modules made the whole thing feel approachable instead of intimidating.
+                </p>
+                <div class="nxv-quote__meta">
+                  <span class="nxv-quote__avatar" aria-hidden="true">MS</span>
+                  <div>
+                    <div class="nxv-quote__name">Mira S.</div>
+                    <div class="nxv-quote__role">Beginner Track &middot; Cohort 01</div>
+                  </div>
+                  <span class="nxv-quote__tag">Verified Student</span>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <div class="nxv-carousel__controls">
+          <button class="nxv-carousel__btn" type="button" data-nxv-prev aria-label="Previous testimonial">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <div class="nxv-carousel__dots"></div>
+          <button class="nxv-carousel__btn" type="button" data-nxv-next aria-label="Next testimonial">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       13. FAQ ACCORDION
+       ========================================================================= -->
+  <section class="faq-section" id="faq">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-badge">
+          <span class="section-badge-dot"></span>
+          <span>Clear Answers</span>
+        </div>
+        <h2 class="section-title">Frequently Asked Questions</h2>
+        <p class="section-subtitle">
+          Everything you need to know about the course tiers, prerequisites, and learning experience.
+        </p>
+      </div>
+
+      <div class="faq-accordion-container">
+        <div class="faq-item active">
+          <button class="faq-question-btn" aria-expanded="true">
+            <span>Who can join the course?</span>
+            <span class="faq-icon-indicator">+</span>
+          </button>
+          <div class="faq-answer-panel">
+            <p class="faq-answer-text">
+              The course is open to all students, beginners, creators, and curious learners interested in understanding and building with artificial intelligence. No specialized degree is needed.
+            </p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question-btn" aria-expanded="false">
+            <span>Is this suitable for complete beginners?</span>
+            <span class="faq-icon-indicator">+</span>
+          </button>
+          <div class="faq-answer-panel">
+            <p class="faq-answer-text">
+              Yes, absolutely. The Level 01 AI Foundations tier is 100% Free and begins with intuitive fundamentals before gradually introducing AI tools, coding environments, and project building.
+            </p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question-btn" aria-expanded="false">
+            <span>Do I need prior coding experience?</span>
+            <span class="faq-icon-indicator">+</span>
+          </button>
+          <div class="faq-answer-panel">
+            <p class="faq-answer-text">
+              No prior programming experience is required. We teach you how to write prompts, utilize modern AI coding assistants (like Cursor), and construct scripts step-by-step from scratch.
+            </p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question-btn" aria-expanded="false">
+            <span>Why is there a limit of 30 seats per cohort?</span>
+            <span class="faq-icon-indicator">+</span>
+          </button>
+          <div class="faq-answer-panel">
+            <p class="faq-answer-text">
+              To guarantee individual code reviews, hands-on lab support, and personalized mentorship, each cohort strictly limits batch capacity to 30 enrolled students.
+            </p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question-btn" aria-expanded="false">
+            <span>Will students receive a verifiable certificate?</span>
+            <span class="faq-icon-indicator">+</span>
+          </button>
+          <div class="faq-answer-panel">
+            <p class="faq-answer-text">
+              Upon successful completion of all curriculum milestones and final project submission, students receive a verifiable NEXVION AI Creator Course Completion Certificate.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       14. FINAL CTA BANNER
+       ========================================================================= -->
+  <section class="final-cta-section" id="enroll">
+    <div class="container">
+      <div class="cta-banner-card">
+        <div class="cta-brand-emblem-wrap" data-nxv-parallax="0.3">
+          <img src="Linocut_app_icon_logo_design_20261011091421.jpg" alt="NEXVION Logo Emblem" class="cta-brand-emblem">
+        </div>
+
+        <h2 class="cta-title">Your AI Journey Starts Today.</h2>
+        <p class="cta-description">
+          Master the tools. Build the skills. Create something real. Join the next generation of AI builders with NEXVION.
+        </p>
+
+        <div class="cta-btn-group">
+          <a href="register.html" class="btn btn-primary btn-lg" id="final-primary-cta">
+            <span>Join Level 01 Free Tier →</span>
+          </a>
+          <a href="course.html" class="btn btn-secondary btn-lg" id="final-secondary-cta">
+            <span>Compare All 4 Tiers</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       15. FOOTER
+       ========================================================================= -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-top-grid">
+        <div class="footer-brand-col">
+          <a href="#hero" class="footer-logo-link">
+            <div class="footer-logo-img-wrap">
+              <img src="Linocut_app_icon_logo_design_20261011091421.jpg" alt="NEXVION AI Official Logo" class="footer-logo-img">
+            </div>
+            <span class="footer-brand-title">NEXVION AI</span>
+          </a>
+          <p class="footer-tagline">
+            Practical AI learning for the next generation of builders.
+          </p>
+          <div class="footer-social-row">
+            <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="social-icon-btn" aria-label="GitHub">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+            </a>
+            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" class="social-icon-btn" aria-label="X">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            </a>
+            <a href="https://discord.com" target="_blank" rel="noopener noreferrer" class="social-icon-btn" aria-label="Discord">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.894.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028z"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div>
+          <div class="footer-col-title">Navigation</div>
+          <ul class="footer-links-list">
+            <li class="footer-link-item"><a href="#hero">Home</a></li>
+            <li class="footer-link-item"><a href="course.html">4 Course Tiers</a></li>
+            <li class="footer-link-item"><a href="#curriculum">Curriculum</a></li>
+            <li class="footer-link-item"><a href="#roadmap">Learning Roadmap</a></li>
+            <li class="footer-link-item"><a href="#projects">Student Projects</a></li>
+            <li class="footer-link-item"><a href="#about">About NEXVION</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="footer-col-title">Student Portal</div>
+          <ul class="footer-links-list">
+            <li class="footer-link-item"><a href="dashboard.html">Learner Cockpit</a></li>
+            <li class="footer-link-item"><a href="register.html">Apply / Register</a></li>
+            <li class="footer-link-item"><a href="course.html#curriculum-breakdown">Syllabus Breakdown</a></li>
+            <li class="footer-link-item"><a href="#faq">Admissions FAQ</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="footer-col-title">Trust & Transparency</div>
+          <ul class="footer-links-list">
+            <li class="footer-link-item"><a href="#">Privacy Policy</a></li>
+            <li class="footer-link-item"><a href="#">Terms & Conditions</a></li>
+            <li class="footer-link-item"><a href="#">Honor Code</a></li>
+            <li class="footer-link-item"><a href="#">30-Seat Cohort Policy</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom-bar">
+        <div>© 2026 NEXVION AI. All rights reserved.</div>
+        <div style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-purple-light);">
+          Understand AI • Build With AI • Shape The Frontier
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/app.js?v=6.0"></script>
+  <script src="js/motion.js?v=2.0"></script>
+
+  <!-- Typewriter Engine -->
+  <script>
+    (function () {
+      function initHeroTypewriter() {
+        var textEl = document.getElementById('heroTypewriterText');
+        if (!textEl) return;
+
+        var phrases = [
+          "With AI.",
+          "Intelligent Apps.",
+          "Autonomous Agents.",
+          "Modern Websites.",
+          "Production Systems."
+        ];
+
+        var phraseIndex = 0;
+        var charIndex = phrases[0].length;
+        var isDeleting = false;
+
+        function tick() {
+          var currentPhrase = phrases[phraseIndex];
+
+          if (isDeleting) {
+            charIndex--;
+            textEl.textContent = currentPhrase.substring(0, charIndex);
+          } else {
+            charIndex++;
+            textEl.textContent = currentPhrase.substring(0, charIndex);
+          }
+
+          var speed = isDeleting ? 38 : 75;
+
+          if (!isDeleting && charIndex === currentPhrase.length) {
+            speed = 2200;
+            isDeleting = true;
+          } else if (isDeleting && charIndex === 0) {
+            isDeleting = false;
+            phraseIndex = (phraseIndex + 1) % phrases.length;
+            speed = 350;
+          }
+
+          setTimeout(tick, speed);
+        }
+
+        setTimeout(function () {
+          isDeleting = true;
+          tick();
+        }, 2200);
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initHeroTypewriter);
+      } else {
+        initHeroTypewriter();
+      }
+    })();
+  </script>
+</body>
+</html>
