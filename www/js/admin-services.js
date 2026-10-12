@@ -284,7 +284,44 @@
 
   const defaultLessons = [];
 
-  const defaultVideos = [];
+  const defaultVideos = [
+    {
+      id: 'vid-101',
+      title: 'Neural Networks & Transformer Foundations',
+      courseId: 'ai-foundations',
+      courseTitle: 'AI Foundations',
+      classTitle: 'Class 01: Core Architecture',
+      duration: '28:15',
+      videoType: 'youtube',
+      youtubeId: 'aircAruvnKk',
+      youtubeUrl: 'https://www.youtube.com/watch?v=aircAruvnKk',
+      thumbnailUrl: 'https://img.youtube.com/vi/aircAruvnKk/hqdefault.jpg',
+      embedUrl: 'https://www.youtube-nocookie.com/embed/aircAruvnKk',
+      resolution: '1080p HD',
+      bitrate: 'YouTube Stream',
+      status: 'Ready',
+      visibility: 'Published',
+      uploadedAt: '2026-10-10T10:00:00Z'
+    },
+    {
+      id: 'vid-102',
+      title: 'Agentic AI Architecture: Tool Use & ReAct Loops',
+      courseId: 'ai-builder',
+      courseTitle: 'AI Builder',
+      classTitle: 'Class 02: Tool Orchestration',
+      duration: '35:40',
+      videoType: 'youtube',
+      youtubeId: 'sal78ACtGTc',
+      youtubeUrl: 'https://www.youtube.com/watch?v=sal78ACtGTc',
+      thumbnailUrl: 'https://img.youtube.com/vi/sal78ACtGTc/hqdefault.jpg',
+      embedUrl: 'https://www.youtube-nocookie.com/embed/sal78ACtGTc',
+      resolution: '1080p HD',
+      bitrate: 'YouTube Stream',
+      status: 'Ready',
+      visibility: 'Published',
+      uploadedAt: '2026-10-11T12:00:00Z'
+    }
+  ];
 
   const defaultResources = [];
 
@@ -896,9 +933,21 @@
               } else if (collectionName === 'enrollments') {
                 const merged = [...remoteDocs];
                 (Array.isArray(this.state.enrollments) ? this.state.enrollments : []).forEach(localEn => {
-                  if (!merged.some(m => (m.id && localEn.id && m.id === localEn.id) || (m.email && localEn.email && m.email.toLowerCase() === localEn.email.toLowerCase()))) {
+                  const existing = merged.find(m => (m.id && localEn.id && m.id === localEn.id) || (m.email && localEn.email && m.email.toLowerCase() === localEn.email.toLowerCase()));
+                  if (!existing) {
                     merged.push(localEn);
+                  } else {
+                    if (!existing.batchId && localEn.batchId) {
+                      existing.batchId = localEn.batchId;
+                      existing.batchName = localEn.batchName;
+                    }
+                    if (existing.batchId && existing.status === 'Approved') {
+                      existing.status = 'Enrolled';
+                    }
                   }
+                });
+                merged.forEach(en => {
+                  if (en.batchId && en.status === 'Approved') en.status = 'Enrolled';
                 });
                 this.state.enrollments = merged;
               } else {
@@ -1352,6 +1401,55 @@
           } catch (e) {}
         }
 
+        // 3b. Fetch all registered students & enrollments directly from Cloud Firestore
+        if (typeof window !== 'undefined' && window.firebase && window.firebase.firestore) {
+          try {
+            const db = window.firebase.firestore();
+            const studentsSnap = await Promise.race([
+              db.collection('students').get(),
+              new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 4000))
+            ]);
+            if (studentsSnap && studentsSnap.docs) {
+              studentsSnap.forEach(doc => {
+                const s = doc.data();
+                if (s && (s.email || s.name || s.fullName)) {
+                  if (!registeredUsers.some(r => (s.email && r.email && r.email.toLowerCase() === s.email.toLowerCase()) || (s.studentId && r.studentId === s.studentId))) {
+                    registeredUsers.push(s);
+                  }
+                }
+              });
+            }
+
+            const enrSnap = await Promise.race([
+              db.collection('enrollments').get(),
+              new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 4000))
+            ]);
+            if (enrSnap && enrSnap.docs && Array.isArray(this.state.enrollments)) {
+              enrSnap.forEach(doc => {
+                const en = doc.data();
+                if (en && (en.id || en.email)) {
+                  const existingIdx = this.state.enrollments.findIndex(e => e.id === en.id || (en.email && e.email && e.email.toLowerCase() === en.email.toLowerCase()));
+                  if (existingIdx === -1) {
+                    if (en.batchId && en.status === 'Approved') en.status = 'Enrolled';
+                    this.state.enrollments.unshift(en);
+                  } else {
+                    const local = this.state.enrollments[existingIdx];
+                    this.state.enrollments[existingIdx] = {
+                      ...local,
+                      ...en,
+                      batchId: en.batchId || local.batchId,
+                      batchName: en.batchName || local.batchName,
+                      status: (en.batchId || local.batchId) && (en.status === 'Approved' || local.status === 'Enrolled') ? 'Enrolled' : (en.status || local.status)
+                    };
+                  }
+                }
+              });
+            }
+          } catch (fsErr) {
+            console.warn('[AdminServices] Firestore students fetch notice:', fsErr.message);
+          }
+        }
+
         // 4. Asynchronously fetch backend telemetry from server.js
         if (typeof window !== 'undefined' && window.fetch) {
           try {
@@ -1487,6 +1585,25 @@
             }
           }
         });
+
+        // Promote any approved enrollments with an assigned batch to Enrolled
+        if (Array.isArray(this.state.enrollments)) {
+          this.state.enrollments.forEach(en => {
+            if (en.batchId && en.batchId !== '' && en.batchId !== 'Unassigned' && en.status === 'Approved') {
+              en.status = 'Enrolled';
+              modified = true;
+              const stu = this.state.students.find(s => s.id === en.studentId || (s.email && en.email && s.email.toLowerCase() === en.email.toLowerCase()));
+              if (stu) {
+                stu.batchId = en.batchId;
+                stu.batchName = en.batchName;
+                stu.batch = en.batchName;
+                stu.enrollmentStatus = 'Enrolled';
+                this.persistDoc('students', stu.id, stu);
+              }
+              this.persistDoc('enrollments', en.id, en);
+            }
+          });
+        }
 
         if (modified) {
           this.saveState();
@@ -2350,20 +2467,23 @@
 
       enr.batchId = targetBatch.id;
       enr.batchName = targetBatch.name;
+      enr.status = 'Enrolled';
       enr.updatedBy = actionAuthor;
       enr.updatedAt = nowIso;
       enr.history = enr.history || [];
       enr.history.push({
-        status: enr.status,
+        status: 'Enrolled',
         timestamp: nowIso,
         actionBy: actionAuthor,
-        note: `Assigned to cohort ${targetBatch.name}`
+        note: `Assigned to cohort ${targetBatch.name} and enrolled`
       });
 
-      const student = store.state.students.find(s => s.id === enr.studentId);
+      const student = store.state.students.find(s => s.id === enr.studentId || (s.email && enr.email && s.email.toLowerCase() === enr.email.toLowerCase()));
       if (student) {
         student.batchId = targetBatch.id;
         student.batchName = targetBatch.name;
+        student.batch = targetBatch.name;
+        student.enrollmentStatus = 'Enrolled';
         store.persistDoc('students', student.id, student);
       }
 

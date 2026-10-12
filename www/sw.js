@@ -1,32 +1,25 @@
-// NEXVION AI Course — Service Worker
-const CACHE_NAME = 'nexvion-ai-v1';
+// NEXVION AI Course — Service Worker (v3 - auto-sync enabled)
+const CACHE_NAME = 'nexvion-ai-v3';
 const PRECACHE_ASSETS = [
-  './',
-  './index.html',
-  './course.html',
-  './register.html',
-  './dashboard.html',
-  './checkout.html',
   './manifest.json',
   './manifest.webmanifest',
   './css/style.css',
   './css/synthetic-systems.css',
   './css/motion.css',
   './js/app.js',
+  './js/cloud-sync.js',
   './icons/icon-192.png',
-  './icons/icon-512.png',
-  './screenshots/home.png',
-  './screenshots/courses.png',
-  './screenshots/home-mobile.png'
+  './icons/icon-512.png'
 ];
 
 self.addEventListener('install', (event) => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(PRECACHE_ASSETS).catch((err) => {
         console.warn('[SW] Precache asset fetch failure:', err);
       });
-    }).then(() => self.skipWaiting())
+    })
   );
 });
 
@@ -36,6 +29,7 @@ self.addEventListener('activate', (event) => {
       return Promise.all(
         keys.map((key) => {
           if (key !== CACHE_NAME) {
+            console.log('[SW] Deleting legacy cache:', key);
             return caches.delete(key);
           }
         })
@@ -46,25 +40,37 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   const req = event.request;
-  // Only handle GET requests and http/https schemes
   if (req.method !== 'GET' || !req.url.startsWith('http')) return;
 
-  // API calls & webhook transactions always go straight to network
-  if (req.url.includes('/api/')) {
-    event.respondWith(fetch(req));
+  // API calls & Firebase/Firestore always bypass Service Worker
+  if (req.url.includes('/api/') || req.url.includes('firestore.googleapis.com') || req.url.includes('firebase')) {
     return;
   }
 
-  // Stale-while-revalidate for static assets, network-first for navigation
+  // HTML / Navigation pages: STRICT NETWORK-FIRST to ensure latest cloud-sync code runs
+  if (req.mode === 'navigate' || req.destination === 'document' || (req.headers.get('accept') && req.headers.get('accept').includes('text/html'))) {
+    event.respondWith(
+      fetch(req)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const clone = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(req, clone));
+          }
+          return networkResponse;
+        })
+        .catch(() => caches.match(req))
+    );
+    return;
+  }
+
+  // Static assets: Stale-While-Revalidate
   event.respondWith(
     caches.match(req).then((cachedResponse) => {
       const fetchPromise = fetch(req)
         .then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
-            const responseToCache = networkResponse.clone();
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(req, responseToCache);
-            });
+            const clone = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(req, clone));
           }
           return networkResponse;
         })

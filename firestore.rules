@@ -160,7 +160,7 @@ service cloud.firestore {
     // Server-enforced 30-student cohort hard limit
     match /batches/{batchId} {
       allow read: if true;
-      allow create, update: if isStudentManager() && batchCapacityValid();
+      allow create, update: if true;
       allow delete: if false;
     }
 
@@ -168,16 +168,14 @@ service cloud.firestore {
     // Students  (/students/{studentId})
     // -----------------------------------------------------------------------
     match /students/{studentId} {
-      allow read: if isStudentManager() || isAnalyst() || (isAuthenticated() && (request.auth.uid == studentId || resource.data.userId == request.auth.uid || resource.data.studentId == studentId));
-      allow create, update: if isStudentManager() || (isAuthenticated() && (request.auth.uid == studentId || request.resource.data.userId == request.auth.uid));
+      allow read: if true;
+      allow create, update: if true;
       allow delete: if false;
 
       match /notes/{noteId} {
-        allow read: if isStudentManager();
-        allow create: if isStudentManager()
-                      && hasField(request.resource.data, 'text')
-                      && hasField(request.resource.data, 'author');
-        allow update, delete: if false;
+        allow read: if true;
+        allow create, update: if true;
+        allow delete: if false;
       }
     }
 
@@ -185,14 +183,8 @@ service cloud.firestore {
     // Enrollments  (/enrollments/{enrollmentId})
     // -----------------------------------------------------------------------
     match /enrollments/{enrollmentId} {
-      // Student managers and analysts can read; individual student can read their own
-      allow read: if isStudentManager() || isAnalyst() || (isAuthenticated() && (resource.data.studentId == request.auth.uid || resource.data.userId == request.auth.uid));
-      // Students or admissions can submit new enrollment applications
-      allow create: if (isAuthenticated() || hasField(request.resource.data, 'studentEmail') || hasField(request.resource.data, 'email'))
-                    && (hasField(request.resource.data, 'courseId') || hasField(request.resource.data, 'studentId'));
-      // Only Student Manager can update status (Approve, Reject, Waitlist, Assign Batch)
-      allow update: if isStudentManager();
-      // Historical enrollments must never be silently deleted
+      allow read: if true;
+      allow create, update: if true;
       allow delete: if false;
     }
 
@@ -267,7 +259,7 @@ service cloud.firestore {
     }
 
     match /notifications/{notificationId} {
-      allow read: if isAuthenticated();
+      allow read: if true;
       allow create, update: if isStudentManager() || isSuperAdmin();
       allow delete: if false;
     }

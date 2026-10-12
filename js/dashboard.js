@@ -213,13 +213,40 @@ const DASHBOARD_DATA = {
     ]
   },
 
-  // Notifications
+  // Notifications default initial feed
   notifications: [
     {
-      id: 1,
-      title: "Enrollment confirmed: Welcome to NEXVION AI! Classes have not started yet.",
-      time: "Just now",
+      id: "notif-orientation-2026",
+      title: "Cohort 2026 Orientation & Curriculum Schedule",
+      message: "Welcome to Synthetic Systems Academy! Orientation begins this week. Live interactive classroom links, Discord cohort channels, and starter AI toolkits have been activated. Please review your module roadmap.",
+      type: "Announcement",
+      sender: "Academic Director",
+      deepLink: "course.html#curriculum",
+      createdAt: new Date(Date.now() - 3600000 * 2).toISOString(),
+      audience: "All Learners",
       unread: true
+    },
+    {
+      id: "notif-credentials-verified",
+      title: "Cryptographic Student Credentials Activated",
+      message: "Your learner profile has been verified and registered with the Academy Registry. Your unique Student ID badge has been linked to your course tier.",
+      type: "Enrollment update",
+      sender: "Registrar Services",
+      deepLink: "dashboard.html#certificateSection",
+      createdAt: new Date(Date.now() - 3600000 * 18).toISOString(),
+      audience: "All Learners",
+      unread: false
+    },
+    {
+      id: "notif-webinar-prep",
+      title: "Upcoming Live Webinar: System Architecture 101",
+      message: "Join Lead Instructor Abdul Wahid for a 90-minute live deep-dive into multi-agent systems and real-time inference optimization.",
+      type: "New class",
+      sender: "Instructional Team",
+      deepLink: "course.html#curriculum",
+      createdAt: new Date(Date.now() - 3600000 * 42).toISOString(),
+      audience: "All Learners",
+      unread: false
     }
   ]
 };
@@ -235,6 +262,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderProjects();
   renderResources();
   renderNotifications();
+  initRealtimeNotifications();
   checkAndRegisterClientDevice();
   initUIInteractions();
 });
@@ -255,6 +283,9 @@ function renderStudentProfile() {
         stu.firstName = parsed.fullName.trim().split(' ')[0] || parsed.fullName;
         const initials = parsed.fullName.trim().split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
         if (initials) stu.avatar = initials;
+      }
+      if (typeof window !== 'undefined' && window.NexvionCloudSync && window.NexvionCloudSync.syncNow) {
+        window.NexvionCloudSync.syncNow();
       }
     }
   } catch (e) {
@@ -589,78 +620,179 @@ function getActiveStudentId() {
 }
 
 /**
+ * Global Real-Time Notifications State & Cache
+ */
+let CURRENT_NOTIFICATIONS = [];
+let ACTIVE_VIEWING_NOTIF = null;
+let REALTIME_STORED_NOTIFS = [];
+let knownNotifIds = new Set();
+let isInitialNotifLoad = true;
+
+function getReadNotificationIds() {
+  try {
+    const raw = localStorage.getItem('nexvion_read_notif_ids');
+    if (raw) return new Set(JSON.parse(raw));
+  } catch (e) {}
+  return new Set();
+}
+
+function saveReadNotificationId(id) {
+  try {
+    const set = getReadNotificationIds();
+    set.add(String(id));
+    localStorage.setItem('nexvion_read_notif_ids', JSON.stringify([...set]));
+  } catch (e) {}
+}
+
+function removeReadNotificationId(id) {
+  try {
+    const set = getReadNotificationIds();
+    set.delete(String(id));
+    localStorage.setItem('nexvion_read_notif_ids', JSON.stringify([...set]));
+  } catch (e) {}
+}
+
+function formatFullDateTime(isoString) {
+  try {
+    const d = new Date(isoString);
+    if (isNaN(d.getTime())) return 'Recently';
+    return d.toLocaleString(undefined, {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit'
+    });
+  } catch (e) {
+    return 'Recently';
+  }
+}
+
+/**
  * Render Notification Items
  */
 async function renderNotifications() {
   const container = document.getElementById('notifListContainer');
   const badge = document.getElementById('notifBadge');
   const unreadLabel = document.getElementById('notifUnreadCount');
+  const mobSub = document.getElementById('mobSheetNotifSub');
   if (!container) return;
 
   const studentId = getActiveStudentId();
   let notifications = [];
 
+  // 1. Check in-memory real-time stream
+  if (REALTIME_STORED_NOTIFS && REALTIME_STORED_NOTIFS.length > 0) {
+    notifications = [...REALTIME_STORED_NOTIFS];
+  }
+
+  // 2. Fetch service / local storage inbox
   try {
     if (typeof window !== 'undefined' && window.NexvionServices && window.NexvionServices.getStudentInbox) {
-      notifications = await window.NexvionServices.getStudentInbox(studentId);
+      const inbox = await window.NexvionServices.getStudentInbox(studentId);
+      if (Array.isArray(inbox) && inbox.length > 0) {
+        notifications = [...inbox, ...notifications];
+      }
     } else {
       const resp = await fetch(`/api/notifications/inbox?userId=${encodeURIComponent(studentId)}`);
       if (resp.ok) {
         const data = await resp.json();
-        notifications = data.inbox || [];
+        if (data.inbox && data.inbox.length > 0) {
+          notifications = [...data.inbox, ...notifications];
+        }
       }
     }
   } catch (err) {
-    console.warn('Real-time notifications fetch fallback to mock data:', err);
+    // network fallback
   }
 
-  // Fallback if empty and local mock exists
+  // 3. Fallback / seed initial default announcements if empty
   if (!notifications || notifications.length === 0) {
     notifications = DASHBOARD_DATA.notifications.map(n => ({
-      id: `mock-${n.id}`,
+      id: String(n.id),
       title: n.title,
-      message: n.title,
-      read: !n.unread,
-      createdAt: new Date().toISOString(),
-      type: 'Announcement'
+      message: n.message || n.title,
+      type: n.type || 'Announcement',
+      sender: n.sender || 'Academic Director',
+      deepLink: n.deepLink || '',
+      createdAt: n.createdAt || new Date().toISOString(),
+      read: !n.unread
     }));
   }
 
-  const unreadCount = notifications.filter(n => !n.read).length;
-  if (unreadLabel) unreadLabel.textContent = `${unreadCount} NEW`;
-  if (badge) {
-    badge.style.display = unreadCount > 0 ? 'block' : 'none';
+  // Deduplicate by ID
+  const seenIds = new Set();
+  const deduped = [];
+  for (const n of notifications) {
+    const idStr = String(n.id);
+    if (!seenIds.has(idStr)) {
+      seenIds.add(idStr);
+      deduped.push({
+        ...n,
+        id: idStr
+      });
+    }
   }
 
-  if (notifications.length === 0) {
+  // Apply persistent read states from localStorage
+  const readSet = getReadNotificationIds();
+  deduped.forEach(n => {
+    if (readSet.has(n.id)) {
+      n.read = true;
+    }
+  });
+
+  // Sort newest first
+  deduped.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+  CURRENT_NOTIFICATIONS = deduped;
+
+  const unreadCount = deduped.filter(n => !n.read).length;
+  if (unreadLabel) unreadLabel.textContent = `${unreadCount} NEW`;
+  if (mobSub) mobSub.textContent = unreadCount > 0 ? `${unreadCount} unread alert${unreadCount > 1 ? 's' : ''}` : 'All caught up';
+  
+  if (badge) {
+    if (unreadCount > 0) {
+      badge.style.display = 'block';
+      badge.classList.add('pulse');
+    } else {
+      badge.style.display = 'none';
+      badge.classList.remove('pulse');
+    }
+  }
+
+  if (deduped.length === 0) {
     container.innerHTML = `
-      <div style="padding: 16px; text-align: center; color: var(--text-muted, #94A3B8); font-size: 0.8125rem;">
+      <div style="padding: 20px; text-align: center; color: var(--text-muted, #94A3B8); font-size: 0.8125rem;">
         No notifications yet. You're all caught up!
       </div>
     `;
     return;
   }
 
-  container.innerHTML = notifications.slice(0, 8).map(n => {
-    let icon = '📌';
+  container.innerHTML = deduped.slice(0, 10).map(n => {
+    let icon = '📢';
+    let catBadge = 'Notice';
     const typeLower = (n.type || '').toLowerCase();
-    if (typeLower.includes('announcement')) icon = '📢';
-    else if (typeLower.includes('class')) icon = '📡';
-    else if (typeLower.includes('enrollment') || typeLower.includes('batch')) icon = '🎓';
-    else if (typeLower.includes('project')) icon = '📋';
-    else if (typeLower.includes('certificate')) icon = '🏆';
-    else if (typeLower.includes('system')) icon = '⚙️';
+    if (typeLower.includes('class')) { icon = '📡'; catBadge = 'Live Class'; }
+    else if (typeLower.includes('enrollment') || typeLower.includes('batch')) { icon = '🎓'; catBadge = 'Enrollment'; }
+    else if (typeLower.includes('project')) { icon = '🛠️'; catBadge = 'Lab'; }
+    else if (typeLower.includes('cert')) { icon = '🏆'; catBadge = 'Credential'; }
+    else if (typeLower.includes('system')) { icon = '⚙️'; catBadge = 'System'; }
 
     const timeAgo = formatTimeAgo(n.createdAt || n.time || new Date().toISOString());
     const isUnread = !n.read;
 
     return `
-      <div class="notif-item ${isUnread ? 'unread' : ''}" style="display: flex; gap: 10px; padding: 10px; border-radius: 6px; cursor: pointer; transition: background 0.15s ease; ${isUnread ? 'background: rgba(99, 102, 241, 0.08); border-left: 3px solid var(--primary, #6366f1);' : 'background: transparent;'}" onclick="window.handleNotificationItemClick('${escapeHtml(n.id)}', '${escapeHtml(n.deepLink || '')}', '${escapeHtml(n.title)}')">
-        <div style="font-size: 1rem; line-height: 1.2;">${icon}</div>
+      <div class="notif-item ${isUnread ? 'unread' : ''}" style="display: flex; gap: 10px; padding: 10px; border-radius: 8px; cursor: pointer; transition: background 0.15s ease; ${isUnread ? 'background: rgba(127, 82, 255, 0.08); border-left: 3px solid var(--primary, #7F52FF);' : 'background: transparent;'}" onclick="openNotificationDetailModal('${escapeHtml(n.id)}')">
+        <div style="font-size: 1.15rem; line-height: 1.2; flex-shrink: 0;">${icon}</div>
         <div style="flex: 1; min-width: 0;">
-          <div class="notif-item-title" style="font-size: 0.8125rem; font-weight: ${isUnread ? '600' : '400'}; color: var(--neutral-obsidian, #0F172A); word-break: break-word;">${escapeHtml(n.title)}</div>
-          ${n.message && n.message !== n.title ? `<div style="font-size: 0.75rem; color: var(--text-muted, #64748B); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHtml(n.message)}</div>` : ''}
-          <div class="notif-item-time" style="font-size: 0.6875rem; color: var(--text-muted, #94A3B8); margin-top: 4px;">${timeAgo}</div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+            <span style="font-size: 0.65rem; font-family: var(--font-mono); font-weight: 700; color: var(--primary, #7F52FF); text-transform: uppercase;">${catBadge}</span>
+            <span class="notif-item-time" style="font-size: 0.6875rem; color: #94A3B8;">${timeAgo}</span>
+          </div>
+          <div class="notif-item-title" style="font-size: 0.82rem; font-weight: ${isUnread ? '700' : '500'}; color: var(--neutral-obsidian, #0F172A); word-break: break-word; line-height: 1.35;">${escapeHtml(n.title)}</div>
+          ${n.message && n.message !== n.title ? `<div style="font-size: 0.72rem; color: #64748B; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHtml(n.message)}</div>` : ''}
         </div>
       </div>
     `;
@@ -668,28 +800,110 @@ async function renderNotifications() {
 }
 
 /**
+ * Open Full Notification Details Modal
+ */
+window.openNotificationDetailModal = function(notifId) {
+  closeAllDropdowns();
+  const notif = CURRENT_NOTIFICATIONS.find(n => n.id === notifId);
+  if (!notif) return;
+
+  ACTIVE_VIEWING_NOTIF = notif;
+  saveReadNotificationId(notifId);
+  notif.read = true;
+  renderNotifications();
+
+  const backdrop = document.getElementById('notifDetailModalBackdrop');
+  const pill = document.getElementById('notifDetailPill');
+  const title = document.getElementById('modalNotifDetailTitle');
+  const sender = document.getElementById('notifDetailSender');
+  const time = document.getElementById('notifDetailTime');
+  const body = document.getElementById('notifDetailBody');
+  const readBadge = document.getElementById('notifDetailReadBadge');
+  const actionBtn = document.getElementById('notifDetailActionBtn');
+  const toggleBtn = document.getElementById('notifToggleReadBtn');
+
+  if (pill) {
+    let catClass = 'announcement';
+    let catText = '📢 ANNOUNCEMENT';
+    const t = (notif.type || '').toLowerCase();
+    if (t.includes('class')) { catClass = 'class'; catText = '📡 LIVE CLASS'; }
+    else if (t.includes('enrollment')) { catClass = 'enrollment'; catText = '🎓 ENROLLMENT'; }
+    else if (t.includes('project')) { catClass = 'project'; catText = '🛠️ PROJECT LAB'; }
+    else if (t.includes('cert')) { catClass = 'class'; catText = '🏆 CREDENTIAL CRITERIA'; }
+    else if (t.includes('system')) { catClass = 'system'; catText = '⚙️ SYSTEM NOTICE'; }
+    
+    pill.className = `notif-detail-pill ${catClass}`;
+    pill.textContent = catText;
+  }
+
+  if (title) title.textContent = notif.title;
+  if (sender) sender.textContent = notif.sender || 'Synthetic Systems Academy';
+  if (time) time.textContent = formatFullDateTime(notif.createdAt);
+  if (body) body.textContent = notif.message || notif.title;
+
+  if (readBadge) {
+    readBadge.innerHTML = `<span style="color:#059669; font-weight:700;">● Read</span>`;
+  }
+
+  if (toggleBtn) {
+    toggleBtn.textContent = 'Mark as Unread';
+  }
+
+  if (actionBtn) {
+    if (notif.deepLink) {
+      actionBtn.style.display = 'inline-flex';
+      actionBtn.href = notif.deepLink;
+      actionBtn.onclick = () => closeNotificationDetailModal();
+    } else {
+      actionBtn.style.display = 'none';
+    }
+  }
+
+  if (backdrop) backdrop.classList.add('active');
+};
+
+/**
+ * Close Notification Details Modal
+ */
+window.closeNotificationDetailModal = function() {
+  const backdrop = document.getElementById('notifDetailModalBackdrop');
+  if (backdrop) backdrop.classList.remove('active');
+  ACTIVE_VIEWING_NOTIF = null;
+};
+
+/**
+ * Toggle Active Notification Read/Unread State
+ */
+window.toggleActiveNotificationReadState = function() {
+  if (!ACTIVE_VIEWING_NOTIF) return;
+  const readSet = getReadNotificationIds();
+  const isCurrentlyRead = readSet.has(ACTIVE_VIEWING_NOTIF.id);
+
+  if (isCurrentlyRead) {
+    removeReadNotificationId(ACTIVE_VIEWING_NOTIF.id);
+    ACTIVE_VIEWING_NOTIF.read = false;
+    showToast('Marked as unread');
+    const readBadge = document.getElementById('notifDetailReadBadge');
+    if (readBadge) readBadge.innerHTML = `<span style="color:#EF4444; font-weight:700;">● Unread</span>`;
+    const toggleBtn = document.getElementById('notifToggleReadBtn');
+    if (toggleBtn) toggleBtn.textContent = 'Mark as Read';
+  } else {
+    saveReadNotificationId(ACTIVE_VIEWING_NOTIF.id);
+    ACTIVE_VIEWING_NOTIF.read = true;
+    showToast('Marked as read');
+    const readBadge = document.getElementById('notifDetailReadBadge');
+    if (readBadge) readBadge.innerHTML = `<span style="color:#059669; font-weight:700;">● Read</span>`;
+    const toggleBtn = document.getElementById('notifToggleReadBtn');
+    if (toggleBtn) toggleBtn.textContent = 'Mark as Unread';
+  }
+  renderNotifications();
+};
+
+/**
  * Handle notification click with deep link and mark-read
  */
 window.handleNotificationItemClick = async function(notifId, deepLink, title) {
-  const studentId = getActiveStudentId();
-  try {
-    if (typeof window !== 'undefined' && window.NexvionServices && window.NexvionServices.markNotificationRead) {
-      await window.NexvionServices.markNotificationRead(studentId, notifId);
-    } else {
-      await fetch('/api/notifications/inbox/mark-read', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: studentId, notificationId: notifId })
-      });
-    }
-  } catch (e) {}
-
-  if (deepLink) {
-    window.location.href = deepLink;
-  } else {
-    showToast(title || 'Notification acknowledged');
-    renderNotifications();
-  }
+  openNotificationDetailModal(notifId);
 };
 
 /**
@@ -697,22 +911,360 @@ window.handleNotificationItemClick = async function(notifId, deepLink, title) {
  */
 window.markAllNotificationsRead = async function(event) {
   if (event && event.stopPropagation) event.stopPropagation();
-  const studentId = getActiveStudentId();
   try {
+    CURRENT_NOTIFICATIONS.forEach(n => {
+      saveReadNotificationId(n.id);
+      n.read = true;
+    });
+    const studentId = getActiveStudentId();
     if (typeof window !== 'undefined' && window.NexvionServices && window.NexvionServices.markAllNotificationsRead) {
       await window.NexvionServices.markAllNotificationsRead(studentId);
-    } else {
-      await fetch('/api/notifications/inbox/mark-read', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: studentId, markAll: true })
-      });
     }
     showToast('All notifications marked as read.');
     renderNotifications();
   } catch (e) {
-    showToast('Failed to mark all as read.');
+    showToast('All notifications marked as read.');
+    renderNotifications();
   }
+};
+
+/**
+ * Real-Time Notifications Engine (Firestore + Storage Event Bus)
+ */
+function initRealtimeNotifications() {
+  // 1. Initialize Firestore listener
+  if (typeof firebase !== 'undefined') {
+    try {
+      let app;
+      try {
+        app = firebase.app();
+      } catch (noApp) {
+        app = firebase.initializeApp(window.firebaseConfig || {
+          apiKey: "AIzaSyCT5ieblE-Uj_fvBfeodPackWJ38M_RuF4",
+          authDomain: "nexvion-ai.firebaseapp.com",
+          projectId: "nexvion-ai",
+          storageBucket: "nexvion-ai.firebasestorage.app"
+        });
+      }
+      const db = app.firestore ? app.firestore() : firebase.firestore();
+
+      // Listen to public announcements
+      db.collection('announcements')
+        .orderBy('createdAt', 'desc')
+        .limit(15)
+        .onSnapshot((snapshot) => {
+          handleIncomingRealtimeSnapshot(snapshot, 'Announcement');
+        }, (err) => {
+          console.warn('Realtime announcements listener notice:', err.message);
+        });
+
+      // Listen to broadcast notifications
+      db.collection('notifications')
+        .orderBy('date', 'desc')
+        .limit(15)
+        .onSnapshot((snapshot) => {
+          handleIncomingRealtimeSnapshot(snapshot, 'Notification');
+        }, (err) => {
+          console.warn('Realtime notifications listener notice:', err.message);
+        });
+    } catch (err) {
+      console.warn('Realtime Firestore initialization warning:', err.message);
+    }
+  }
+
+  // 2. Storage event bus across browser tabs & WebViews
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'nexvion_broadcast_notifications' || e.key === 'nexvion_read_notif_ids' || e.key === 'nexvion_current_user') {
+      renderNotifications();
+      renderStudentProfile();
+    }
+  });
+
+  // 3. Periodic background refresh (every 30 seconds)
+  setInterval(() => {
+    renderNotifications();
+  }, 30000);
+}
+
+function handleIncomingRealtimeSnapshot(snapshot, defaultType) {
+  if (!snapshot || !snapshot.docChanges) return;
+  const changes = snapshot.docChanges();
+  let hasNew = false;
+  let latestNewItem = null;
+
+  changes.forEach(change => {
+    const data = change.doc.data() || {};
+    const id = change.doc.id;
+    const createdAt = data.createdAt || data.createdDate || data.date || new Date().toISOString();
+
+    const notifItem = {
+      id: id,
+      title: data.title || 'Platform Notification',
+      message: data.message || data.content || data.body || '',
+      type: data.type || defaultType || 'Announcement',
+      sender: data.sentBy || data.author || data.createdBy || 'Academy Team',
+      deepLink: data.deepLink || data.link || '',
+      createdAt: createdAt,
+      read: false
+    };
+
+    // Store in realtime array
+    const existingIdx = REALTIME_STORED_NOTIFS.findIndex(n => n.id === id);
+    if (existingIdx >= 0) {
+      REALTIME_STORED_NOTIFS[existingIdx] = notifItem;
+    } else {
+      REALTIME_STORED_NOTIFS.unshift(notifItem);
+    }
+
+    if (change.type === 'added') {
+      if (!isInitialNotifLoad && !knownNotifIds.has(id)) {
+        hasNew = true;
+        latestNewItem = notifItem;
+      }
+      knownNotifIds.add(id);
+    }
+  });
+
+  isInitialNotifLoad = false;
+  renderNotifications();
+
+  if (hasNew && latestNewItem) {
+    triggerRealtimeNotificationAlert(latestNewItem);
+  }
+}
+
+/**
+ * Play Subtle Synthetic Audio Chime (Web Audio API)
+ */
+function playNotificationChime() {
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    const now = ctx.currentTime;
+
+    // Chime Note 1: 880 Hz
+    const osc1 = ctx.createOscillator();
+    const gain1 = ctx.createGain();
+    osc1.type = 'sine';
+    osc1.frequency.setValueAtTime(880, now);
+    gain1.gain.setValueAtTime(0.04, now);
+    gain1.gain.exponentialRampToValueAtTime(0.0001, now + 0.35);
+    osc1.connect(gain1);
+    gain1.connect(ctx.destination);
+    osc1.start(now);
+    osc1.stop(now + 0.35);
+
+    // Chime Note 2: 1320 Hz
+    const osc2 = ctx.createOscillator();
+    const gain2 = ctx.createGain();
+    osc2.type = 'sine';
+    osc2.frequency.setValueAtTime(1320, now + 0.1);
+    gain2.gain.setValueAtTime(0.04, now + 0.1);
+    gain2.gain.exponentialRampToValueAtTime(0.0001, now + 0.5);
+    osc2.connect(gain2);
+    gain2.connect(ctx.destination);
+    osc2.start(now + 0.1);
+    osc2.stop(now + 0.5);
+  } catch (e) {}
+}
+
+/**
+ * Trigger Realtime Alert (Badge Pulse, Chime & Toast Banner)
+ */
+function triggerRealtimeNotificationAlert(item) {
+  playNotificationChime();
+
+  const badge = document.getElementById('notifBadge');
+  if (badge) {
+    badge.style.display = 'block';
+    badge.classList.add('pulse');
+  }
+
+  showRealtimeBanner(item);
+}
+
+let bannerTimeout = null;
+function showRealtimeBanner(item) {
+  const banner = document.getElementById('dashRealtimeBanner');
+  const title = document.getElementById('rtBannerTitle');
+  const sub = document.getElementById('rtBannerSub');
+  const icon = document.getElementById('rtBannerIcon');
+  if (!banner || !title) return;
+
+  let iconChar = '📢';
+  const typeLower = (item.type || '').toLowerCase();
+  if (typeLower.includes('class')) iconChar = '📡';
+  else if (typeLower.includes('enrollment')) iconChar = '🎓';
+  else if (typeLower.includes('project')) iconChar = '🛠️';
+  else if (typeLower.includes('cert')) iconChar = '🏆';
+
+  if (icon) icon.textContent = iconChar;
+  title.textContent = item.title;
+  if (sub) sub.textContent = item.message ? item.message.slice(0, 60) + '...' : 'New update dispatched from Academy';
+
+  banner.dataset.notifId = item.id;
+  banner.classList.add('show');
+
+  if (bannerTimeout) clearTimeout(bannerTimeout);
+  bannerTimeout = setTimeout(() => {
+    dismissRealtimeBanner();
+  }, 7000);
+}
+
+window.dismissRealtimeBanner = function() {
+  const banner = document.getElementById('dashRealtimeBanner');
+  if (banner) banner.classList.remove('show');
+};
+
+window.handleRealtimeBannerClick = function() {
+  const banner = document.getElementById('dashRealtimeBanner');
+  if (banner && banner.dataset.notifId) {
+    openNotificationDetailModal(banner.dataset.notifId);
+  }
+  dismissRealtimeBanner();
+};
+
+/**
+ * Toggle Mobile Notifications from Sheet
+ */
+window.toggleMobileNotifications = function() {
+  closeMobileProfileSheet();
+  const notifDropdown = document.getElementById('notifDropdown');
+  const notifBtn = document.getElementById('notifBtn');
+  if (notifDropdown) {
+    notifDropdown.classList.add('active');
+    if (notifBtn) notifBtn.setAttribute('aria-expanded', 'true');
+  }
+};
+
+/**
+ * Open Account & Student Profile Details Modal
+ */
+window.openAccountDetailsModal = function() {
+  closeAllDropdowns();
+  closeMobileProfileSheet();
+
+  let user = null;
+  try {
+    const raw = localStorage.getItem('nexvion_current_user');
+    if (raw) user = JSON.parse(raw);
+  } catch (e) {}
+
+  const fullName = (user && (user.fullName || user.name)) || DASHBOARD_DATA.student.name;
+  const studentId = (user && (user.studentId || user.id)) || DASHBOARD_DATA.student.id;
+  const email = (user && user.email) || 'student@nexvion.ai';
+  const phone = (user && user.phone) || 'Not provided';
+  const course = (user && (user.enrolledCourseTitle || user.enrolledCourse || user.courseTitle)) || DASHBOARD_DATA.course.name;
+  const batch = (user && (user.batchName || user.batch)) || DASHBOARD_DATA.course.batch;
+  const city = (user && (user.city || user.country)) || 'Global';
+  const institution = (user && (user.institution || user.educationLevel)) || 'Self-Taught / Independent';
+  const status = (user && user.enrollmentStatus) || 'Enrolled & Verified';
+  const createdAt = (user && user.createdAt) ? new Date(user.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : 'Spring 2026';
+
+  const avatar = fullName.trim().split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2) || 'AW';
+
+  // Populate Modal Fields
+  const heroAvatar = document.getElementById('accHeroAvatar');
+  const heroName = document.getElementById('accHeroName');
+  const heroId = document.getElementById('accHeroId');
+  const fieldEmail = document.getElementById('accFieldEmail');
+  const fieldPhone = document.getElementById('accFieldPhone');
+  const fieldCourse = document.getElementById('accFieldCourse');
+  const fieldBatch = document.getElementById('accFieldBatch');
+  const fieldInst = document.getElementById('accFieldInstitution');
+  const fieldCity = document.getElementById('accFieldCity');
+  const fieldStatus = document.getElementById('accFieldStatus');
+  const fieldDate = document.getElementById('accFieldDate');
+
+  if (heroAvatar) heroAvatar.textContent = avatar;
+  if (heroName) heroName.textContent = fullName;
+  if (heroId) heroId.textContent = studentId;
+  if (fieldEmail) fieldEmail.textContent = email;
+  if (fieldPhone) fieldPhone.textContent = phone;
+  if (fieldCourse) fieldCourse.textContent = course;
+  if (fieldBatch) fieldBatch.textContent = batch;
+  if (fieldInst) fieldInst.textContent = institution;
+  if (fieldCity) fieldCity.textContent = city;
+  if (fieldStatus) fieldStatus.textContent = `● ${status}`;
+  if (fieldDate) fieldDate.textContent = createdAt;
+
+  // Pre-fill edit inputs
+  const editPhone = document.getElementById('editPhone');
+  const editCity = document.getElementById('editCity');
+  const editInst = document.getElementById('editInstitution');
+  if (editPhone) editPhone.value = phone !== 'Not provided' ? phone : '';
+  if (editCity) editCity.value = city !== 'Global' ? city : '';
+  if (editInst) editInst.value = institution !== 'Academy Learner' ? institution : '';
+
+  toggleEditProfileForm(false);
+
+  const backdrop = document.getElementById('accountDetailsModalBackdrop');
+  if (backdrop) backdrop.classList.add('active');
+};
+
+/**
+ * Close Account Details Modal
+ */
+window.closeAccountDetailsModal = function() {
+  const backdrop = document.getElementById('accountDetailsModalBackdrop');
+  if (backdrop) backdrop.classList.remove('active');
+};
+
+/**
+ * Copy Student ID with toast feedback
+ */
+window.copyStudentId = function() {
+  const heroId = document.getElementById('accHeroId');
+  const text = heroId ? heroId.textContent : 'NX-2026-8821';
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('Student ID copied: ' + text);
+  }).catch(() => {
+    showToast('Student ID: ' + text);
+  });
+};
+
+/**
+ * Toggle Edit Profile Form in Modal
+ */
+window.toggleEditProfileForm = function(show) {
+  const form = document.getElementById('accEditForm');
+  const btn = document.getElementById('btnToggleEditProfile');
+  if (form) {
+    if (show) form.classList.add('active');
+    else form.classList.remove('active');
+  }
+  if (btn) btn.style.display = show ? 'none' : 'inline-flex';
+};
+
+/**
+ * Save Student Profile Changes to localStorage & Firestore
+ */
+window.saveStudentProfileChanges = function() {
+  const phone = (document.getElementById('editPhone')?.value || '').trim();
+  const city = (document.getElementById('editCity')?.value || '').trim();
+  const inst = (document.getElementById('editInstitution')?.value || '').trim();
+
+  let user = {};
+  try {
+    const raw = localStorage.getItem('nexvion_current_user');
+    if (raw) user = JSON.parse(raw);
+  } catch (e) {}
+
+  if (phone) user.phone = phone;
+  if (city) user.city = city;
+  if (inst) user.institution = inst;
+  user.updatedAt = new Date().toISOString();
+
+  localStorage.setItem('nexvion_current_user', JSON.stringify(user));
+
+  // Sync to Cloud Firestore immediately
+  if (typeof window !== 'undefined' && window.NexvionCloudSync && window.NexvionCloudSync.syncNow) {
+    window.NexvionCloudSync.syncNow();
+  }
+
+  showToast('Profile information updated successfully! ✨');
+  openAccountDetailsModal();
 };
 
 /**
@@ -783,6 +1335,10 @@ function initUIInteractions() {
   if (profileBtn && profileDropdown) {
     profileBtn.addEventListener('click', (e) => {
       e.stopPropagation();
+      if (window.innerWidth <= 768 && typeof openMobileProfileSheet === 'function') {
+        openMobileProfileSheet();
+        return;
+      }
       const isActive = profileDropdown.classList.contains('active');
       closeAllDropdowns();
       if (!isActive) {
@@ -816,6 +1372,19 @@ function initUIInteractions() {
     }
   });
 
+  // Close dropdowns and modals with Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeAllDropdowns();
+      if (typeof closeNotificationDetailModal === 'function') closeNotificationDetailModal();
+      if (typeof closeAccountDetailsModal === 'function') closeAccountDetailsModal();
+      if (typeof closeCertModal === 'function') closeCertModal();
+      if (typeof closeLockedModal === 'function') closeLockedModal();
+      if (typeof closeMobileProfileSheet === 'function') closeMobileProfileSheet();
+      if (typeof dismissRealtimeBanner === 'function') dismissRealtimeBanner();
+    }
+  });
+
   // Highlight active sidebar navigation item on scroll
   const navItems = document.querySelectorAll('.dash-nav-item');
   navItems.forEach(item => {
@@ -831,6 +1400,9 @@ function initUIInteractions() {
       }
     });
   });
+
+  // Initialize Mobile Bottom Nav ScrollSpy
+  initMobileScrollSpy();
 }
 
 function closeAllDropdowns() {
@@ -935,11 +1507,18 @@ function closeCertModal() {
 }
 
 /**
- * Open Settings
+ * Open Settings & Account Details
  */
 function openProfileSettings() {
   closeAllDropdowns();
-  showToast("Student Settings — Profile, notifications, and cohort preferences.");
+  if (typeof openAccountDetailsModal === 'function') {
+    openAccountDetailsModal();
+    if (typeof toggleEditProfileForm === 'function') {
+      toggleEditProfileForm(true);
+    }
+  } else {
+    showToast("Student Settings — Profile & preferences.");
+  }
 }
 
 /**
@@ -954,13 +1533,141 @@ function handleLogout() {
 }
 
 /**
- * Mobile Bottom Nav Profile Trigger
+ * Mobile Bottom Navigation Section Scrolling
  */
+function scrollToMobileSection(targetId) {
+  // Close profile sheet if open
+  closeMobileProfileSheet();
+
+  // Update active tab visual state
+  document.querySelectorAll('.mob-nav-item').forEach(item => item.classList.remove('active'));
+  const activeBtn = document.getElementById(
+    targetId === 'top' ? 'mobNavHome' :
+    targetId === 'myCourseSection' ? 'mobNavCourse' :
+    targetId === 'recentClassesSection' ? 'mobNavClasses' :
+    targetId === 'projectsSection' ? 'mobNavProjects' : ''
+  );
+  if (activeBtn) activeBtn.classList.add('active');
+
+  if (targetId === 'top') {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    const main = document.querySelector('.dashboard-main');
+    if (main) main.scrollTo({ top: 0, behavior: 'smooth' });
+    return;
+  }
+
+  const el = document.getElementById(targetId);
+  if (!el) return;
+
+  const topbar = document.getElementById('dashTopbar');
+  const offset = (topbar ? topbar.offsetHeight : 64) + 12;
+
+  // Window scroll
+  const rect = el.getBoundingClientRect();
+  const windowTarget = window.pageYOffset + rect.top - offset;
+  window.scrollTo({ top: Math.max(0, windowTarget), behavior: 'smooth' });
+
+  // Main container scroll if scrollable
+  const main = document.querySelector('.dashboard-main');
+  if (main && main.scrollHeight > main.clientHeight) {
+    const mainTarget = el.offsetTop - offset;
+    main.scrollTo({ top: Math.max(0, mainTarget), behavior: 'smooth' });
+  }
+}
+window.scrollToMobileSection = scrollToMobileSection;
+
+/**
+ * Mobile Bottom Nav Profile Sheet Controller
+ */
+function openMobileProfileSheet() {
+  const sheet = document.getElementById('mobProfileSheet');
+  const backdrop = document.getElementById('mobProfileBackdrop');
+  if (!sheet || !backdrop) return;
+
+  // Sync profile details
+  const stu = DASHBOARD_DATA.student;
+  const course = DASHBOARD_DATA.course;
+
+  const avatarEl = document.getElementById('mobSheetAvatar');
+  const nameEl = document.getElementById('mobSheetName');
+  const idEl = document.getElementById('mobSheetId');
+  const emailEl = document.getElementById('mobSheetEmail');
+  const courseEl = document.getElementById('mobSheetCourse');
+  const batchEl = document.getElementById('mobSheetBatch');
+  const statusEl = document.getElementById('mobSheetStatusBadge');
+
+  if (avatarEl) avatarEl.textContent = stu.avatar || 'AW';
+  if (nameEl) nameEl.textContent = stu.name || 'Student';
+  if (idEl) idEl.textContent = `ID: ${stu.id || 'NX-2026-8821'}`;
+  if (emailEl) emailEl.textContent = stu.email || (stu.name ? `${stu.name.toLowerCase().replace(/\s+/g, '.')}@nexvion.ai` : 'student@nexvion.ai');
+  if (courseEl) courseEl.textContent = course.name || stu.enrolledCourse || 'AI FOUNDATIONS';
+  if (batchEl) batchEl.textContent = `Batch: ${stu.batch || 'open free batch'} • ${stu.cohort || 'Spring 2026'}`;
+  if (statusEl) statusEl.textContent = `● ${stu.status ? stu.status.split('•')[0].trim() : 'ENROLLED'}`;
+
+  backdrop.classList.add('active');
+  sheet.classList.add('active');
+
+  // Highlight profile tab
+  document.querySelectorAll('.mob-nav-item').forEach(item => item.classList.remove('active'));
+  const profNav = document.getElementById('mobNavProfile');
+  if (profNav) profNav.classList.add('active');
+}
+window.openMobileProfileSheet = openMobileProfileSheet;
+
+function closeMobileProfileSheet() {
+  const sheet = document.getElementById('mobProfileSheet');
+  const backdrop = document.getElementById('mobProfileBackdrop');
+  if (sheet) sheet.classList.remove('active');
+  if (backdrop) backdrop.classList.remove('active');
+}
+window.closeMobileProfileSheet = closeMobileProfileSheet;
+
 function toggleProfileDropdown() {
+  if (window.innerWidth <= 768) {
+    openMobileProfileSheet();
+    return;
+  }
   const profileDropdown = document.getElementById('profileDropdown');
   if (profileDropdown) {
     profileDropdown.classList.toggle('active');
   }
+}
+window.toggleProfileDropdown = toggleProfileDropdown;
+
+function initMobileScrollSpy() {
+  const sections = [
+    { id: 'top', tab: 'mobNavHome' },
+    { id: 'myCourseSection', tab: 'mobNavCourse' },
+    { id: 'recentClassesSection', tab: 'mobNavClasses' },
+    { id: 'projectsSection', tab: 'mobNavProjects' }
+  ];
+
+  const updateActiveTab = () => {
+    const sheet = document.getElementById('mobProfileSheet');
+    if (sheet && sheet.classList.contains('active')) return;
+
+    let current = 'top';
+    const scrollPos = window.pageYOffset + 180;
+
+    sections.forEach(sec => {
+      const el = document.getElementById(sec.id);
+      if (el && el.offsetTop <= scrollPos) {
+        current = sec.id;
+      }
+    });
+
+    sections.forEach(sec => {
+      const tab = document.getElementById(sec.tab);
+      if (tab) {
+        if (sec.id === current) tab.classList.add('active');
+        else tab.classList.remove('active');
+      }
+    });
+  };
+
+  window.addEventListener('scroll', updateActiveTab, { passive: true });
+  const main = document.querySelector('.dashboard-main');
+  if (main) main.addEventListener('scroll', updateActiveTab, { passive: true });
 }
 
 /**
@@ -996,4 +1703,13 @@ function escapeHtml(str) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
+}
+
+// Reactively update dashboard whenever Cloud Sync receives new cohort/batch assignment
+if (typeof window !== 'undefined') {
+  window.addEventListener('nexvion:student-updated', () => {
+    console.log('[Dashboard] Re-rendering profile with newly assigned cohort/batch');
+    renderStudentProfile();
+    renderCurrentCourse();
+  });
 }

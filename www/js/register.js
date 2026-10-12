@@ -950,6 +950,11 @@
         successView.classList.add('active');
       }
 
+      // Trigger cloud sync if not synced yet
+      if (typeof window !== 'undefined' && window.NexvionCloudSync && window.NexvionCloudSync.syncNow) {
+        window.NexvionCloudSync.syncNow();
+      }
+
       return true; // Already registered!
     } catch (err) {
       console.warn('Error reading existing registration:', err);

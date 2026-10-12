@@ -118,6 +118,12 @@
         <div class="dash-nav-subhead">ACCOUNT</div>
         <ul class="dash-nav-menu">
           <li>
+            <a href="javascript:void(0)" class="dash-nav-item" id="btnSidebarAccount" onclick="openAccountDetailsModal()">
+              <span class="dash-nav-icon" aria-hidden="true">👤</span>
+              <span>Account Details</span>
+            </a>
+          </li>
+          <li>
             <a href="javascript:void(0)" class="dash-nav-item" id="btnSidebarSettings" onclick="openProfileSettings()">
               <span class="dash-nav-icon" aria-hidden="true">⚙</span>
               <span>Settings</span>
@@ -192,13 +198,13 @@
 
             <!-- Profile Dropdown Menu -->
             <div class="profile-dropdown-menu" id="profileDropdown" role="menu">
-              <a href="javascript:void(0)" class="profile-menu-item" onclick="showToast('Profile: Abdul Wahid (Student ID #NX-8821)')" role="menuitem">
+              <a href="javascript:void(0)" class="profile-menu-item" onclick="openAccountDetailsModal()" role="menuitem">
                 <span aria-hidden="true">👤</span>
-                <span>My Profile</span>
+                <span>My Account & Details</span>
               </a>
               <a href="javascript:void(0)" class="profile-menu-item" onclick="openProfileSettings()" role="menuitem">
                 <span aria-hidden="true">⚙</span>
-                <span>Settings</span>
+                <span>Settings & Preferences</span>
               </a>
               <a href="javascript:void(0)" class="profile-menu-item" onclick="handleLogout()" role="menuitem" style="color: #F87171;">
                 <span aria-hidden="true">🚪</span>
@@ -262,7 +268,7 @@
                   <polygon points="5 3 19 12 5 21 5 3"></polygon>
                 </svg>
               </button>
-              <a href="course.html#modules" class="btn btn-secondary" id="btnViewCourse">
+              <a href="course.html#curriculum" class="btn btn-secondary" id="btnViewCourse">
                 <span>VIEW COURSE</span>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <line x1="7" y1="17" x2="17" y2="7"></line>
@@ -496,40 +502,130 @@
        17. MOBILE BOTTOM NAVIGATION (Home, Course, Classes, Projects, Profile)
        ========================================================================= -->
   <nav class="mobile-bottom-nav" aria-label="Mobile Navigation">
-    <a href="#top" class="mob-nav-item active" id="mobNavHome">
+    <button type="button" class="mob-nav-item active" id="mobNavHome" data-target="top" onclick="scrollToMobileSection('top')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
       </svg>
       <span>Home</span>
-    </a>
-    <a href="#myCourseSection" class="mob-nav-item" id="mobNavCourse">
+    </button>
+    <button type="button" class="mob-nav-item" id="mobNavCourse" data-target="myCourseSection" onclick="scrollToMobileSection('myCourseSection')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
         <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
       </svg>
       <span>Course</span>
-    </a>
-    <a href="#recentClassesSection" class="mob-nav-item" id="mobNavClasses">
+    </button>
+    <button type="button" class="mob-nav-item" id="mobNavClasses" data-target="recentClassesSection" onclick="scrollToMobileSection('recentClassesSection')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <polygon points="5 3 19 12 5 21 5 3"></polygon>
       </svg>
       <span>Classes</span>
-    </a>
-    <a href="#projectsSection" class="mob-nav-item" id="mobNavProjects">
+    </button>
+    <button type="button" class="mob-nav-item" id="mobNavProjects" data-target="projectsSection" onclick="scrollToMobileSection('projectsSection')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
         <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
       </svg>
       <span>Projects</span>
-    </a>
-    <a href="javascript:void(0)" class="mob-nav-item" id="mobNavProfile" onclick="toggleProfileDropdown()">
+    </button>
+    <button type="button" class="mob-nav-item" id="mobNavProfile" onclick="openMobileProfileSheet()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
         <circle cx="12" cy="7" r="4"></circle>
       </svg>
       <span>Profile</span>
-    </a>
+    </button>
   </nav>
+
+  <!-- =========================================================================
+       MODAL: MOBILE PROFILE BOTTOM SHEET
+       ========================================================================= -->
+  <div class="mob-profile-backdrop" id="mobProfileBackdrop" onclick="closeMobileProfileSheet()" aria-hidden="true"></div>
+  <div class="mob-profile-sheet" id="mobProfileSheet" role="dialog" aria-modal="true" aria-labelledby="mobSheetName">
+    <div class="mob-sheet-handle"></div>
+    <div class="mob-sheet-header">
+      <div class="mob-profile-avatar" id="mobSheetAvatar">AW</div>
+      <div class="mob-profile-info">
+        <h3 class="mob-profile-name" id="mobSheetName">Abdul Wahid</h3>
+        <div class="mob-profile-meta">
+          <span class="mob-profile-id" id="mobSheetId">ID: NX-2026-8821</span>
+          <span class="mob-profile-badge">● VERIFIED</span>
+        </div>
+        <div class="mob-profile-email" id="mobSheetEmail" style="font-size:0.75rem; color:#6B7280; font-family:var(--font-mono); margin-top:2px;"></div>
+      </div>
+      <button class="mob-sheet-close" onclick="closeMobileProfileSheet()" aria-label="Close profile">&times;</button>
+    </div>
+
+    <div class="mob-sheet-body">
+      <!-- Cohort & Enrollment Status Box -->
+      <div class="mob-sheet-card">
+        <div class="mob-card-label">ENROLLED COHORT & COURSE</div>
+        <div class="mob-card-value" id="mobSheetCourse">AI FOUNDATIONS</div>
+        <div class="mob-card-sub" id="mobSheetBatch">Batch: open free batch • Spring 2026</div>
+        <div style="margin-top:8px; display:flex; align-items:center; gap:8px;">
+          <span class="cbadge-tier" style="font-size:0.68rem; padding:2px 8px;" id="mobSheetStatusBadge">● ENROLLED</span>
+          <span style="font-size:0.72rem; color:#6B7280;">Ready for Day 1</span>
+        </div>
+      </div>
+
+      <!-- Quick Actions List -->
+      <div class="mob-menu-list">
+        <button type="button" class="mob-menu-btn" onclick="closeMobileProfileSheet(); openAccountDetailsModal();">
+          <span class="mob-menu-icon">👤</span>
+          <div class="mob-menu-text">
+            <strong>My Account & Profile Details</strong>
+            <span>View & edit student credentials & records</span>
+          </div>
+          <span class="mob-menu-arrow">›</span>
+        </button>
+
+        <button type="button" class="mob-menu-btn" onclick="closeMobileProfileSheet(); toggleMobileNotifications();">
+          <span class="mob-menu-icon">🔔</span>
+          <div class="mob-menu-text">
+            <strong>Notifications & Announcements</strong>
+            <span id="mobSheetNotifSub">Real-time alerts & updates</span>
+          </div>
+          <span class="mob-menu-arrow">›</span>
+        </button>
+
+        <a href="course.html#curriculum" class="mob-menu-btn" onclick="closeMobileProfileSheet()">
+          <span class="mob-menu-icon">📚</span>
+          <div class="mob-menu-text">
+            <strong>Full Curriculum & Syllabus</strong>
+            <span>Explore all modules, topics & assignments</span>
+          </div>
+          <span class="mob-menu-arrow">›</span>
+        </a>
+
+        <button type="button" class="mob-menu-btn" onclick="closeMobileProfileSheet(); openCertModal();">
+          <span class="mob-menu-icon">🏆</span>
+          <div class="mob-menu-text">
+            <strong>Certificate Criteria</strong>
+            <span>Check graduation & credential requirements</span>
+          </div>
+          <span class="mob-menu-arrow">›</span>
+        </button>
+
+        <button type="button" class="mob-menu-btn" onclick="closeMobileProfileSheet(); openProfileSettings();">
+          <span class="mob-menu-icon">⚙️</span>
+          <div class="mob-menu-text">
+            <strong>Account Settings</strong>
+            <span>Notifications & preferences</span>
+          </div>
+          <span class="mob-menu-arrow">›</span>
+        </button>
+
+        <button type="button" class="mob-menu-btn logout" onclick="closeMobileProfileSheet(); handleLogout();">
+          <span class="mob-menu-icon">🚪</span>
+          <div class="mob-menu-text">
+            <strong>Log Out</strong>
+            <span>Sign out of this student session</span>
+          </div>
+          <span class="mob-menu-arrow">›</span>
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- =========================================================================
        MODAL 1: CERTIFICATE REQUIREMENTS MODAL
@@ -580,12 +676,180 @@
   </div>
 
   <!-- =========================================================================
+       REAL-TIME NOTIFICATION BANNER
+       ========================================================================= -->
+  <div class="dash-realtime-banner" id="dashRealtimeBanner" role="alert" aria-live="assertive">
+    <div class="rt-banner-icon" id="rtBannerIcon">🔔</div>
+    <div class="rt-banner-content">
+      <div class="rt-banner-title" id="rtBannerTitle">New Announcement</div>
+      <div class="rt-banner-sub" id="rtBannerSub">Just dispatched from Academy</div>
+    </div>
+    <button type="button" class="rt-banner-btn" id="rtBannerActionBtn" onclick="handleRealtimeBannerClick()">View</button>
+    <button type="button" class="rt-banner-close" onclick="dismissRealtimeBanner()" aria-label="Close notification">&times;</button>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 3: ACCOUNT & STUDENT PROFILE DETAILS
+       ========================================================================= -->
+  <div class="dash-modal-backdrop" id="accountDetailsModalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalAccountTitle">
+    <div class="dash-modal-box account-details-box">
+      <button class="dash-modal-close" onclick="closeAccountDetailsModal()" aria-label="Close modal">✕</button>
+      <div class="modal-header-tag" style="color: var(--primary);">STUDENT RECORD & CREDENTIALS</div>
+      <h3 class="modal-title" id="modalAccountTitle" style="margin-bottom: 16px;">Account Details</h3>
+      
+      <!-- Profile Hero Card -->
+      <div class="acc-hero-card">
+        <div class="acc-hero-avatar" id="accHeroAvatar">AW</div>
+        <div class="acc-hero-info">
+          <h4 class="acc-hero-name" id="accHeroName">Abdul Wahid</h4>
+          <div class="acc-hero-meta">
+            <span class="acc-id-pill">
+              <span>ID:</span>
+              <strong id="accHeroId">NX-2026-8821</strong>
+              <button type="button" class="acc-copy-btn" onclick="copyStudentId()" title="Copy Student ID">📋 Copy</button>
+            </span>
+            <span class="acc-badge-verified">● VERIFIED LEARNER</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Details Field Grid -->
+      <div class="acc-grid">
+        <div class="acc-field-item">
+          <span class="acc-field-label">Email Address</span>
+          <span class="acc-field-value" id="accFieldEmail">student@example.com</span>
+        </div>
+        <div class="acc-field-item">
+          <span class="acc-field-label">Phone Number</span>
+          <span class="acc-field-value" id="accFieldPhone">Not provided</span>
+        </div>
+        <div class="acc-field-item">
+          <span class="acc-field-label">Enrolled Course</span>
+          <span class="acc-field-value" id="accFieldCourse">AI Foundations: Zero to AI Native</span>
+        </div>
+        <div class="acc-field-item">
+          <span class="acc-field-label">Assigned Batch</span>
+          <span class="acc-field-value" id="accFieldBatch">open free batch • Spring 2026</span>
+        </div>
+        <div class="acc-field-item">
+          <span class="acc-field-label">Institution / College</span>
+          <span class="acc-field-value" id="accFieldInstitution">Academy Learner</span>
+        </div>
+        <div class="acc-field-item">
+          <span class="acc-field-label">Location / City</span>
+          <span class="acc-field-value" id="accFieldCity">Global</span>
+        </div>
+        <div class="acc-field-item">
+          <span class="acc-field-label">Enrollment Status</span>
+          <span class="acc-field-value" id="accFieldStatus" style="color:#059669;">● Enrolled (Active)</span>
+        </div>
+        <div class="acc-field-item">
+          <span class="acc-field-label">Registration Date</span>
+          <span class="acc-field-value" id="accFieldDate">Spring 2026</span>
+        </div>
+      </div>
+
+      <!-- Course Progress Card -->
+      <div class="acc-progress-box">
+        <div class="acc-progress-header">
+          <strong style="color:var(--neutral-obsidian);">Academic Completion Rate</strong>
+          <span id="accProgressText" style="font-family:var(--font-mono); font-weight:700; color:var(--primary);">65%</span>
+        </div>
+        <div class="acc-progress-bar-bg">
+          <div class="acc-progress-bar-fill" id="accProgressBarFill" style="width: 65%;"></div>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-top:8px; font-size:0.75rem; color:#64748B;">
+          <span id="accClassesCount">0 of 20 Classes Attended</span>
+          <span id="accCertStatus">Certification In-Progress</span>
+        </div>
+      </div>
+
+      <!-- Quick Edit Profile Form (collapsible) -->
+      <div class="acc-edit-form" id="accEditForm">
+        <h5 style="margin:0 0 12px; font-size:0.9rem; font-weight:700;">Edit Profile Information</h5>
+        <div class="acc-form-group">
+          <label class="acc-form-label" for="editPhone">Phone Number</label>
+          <input type="text" id="editPhone" class="acc-form-input" placeholder="+92 300 1234567">
+        </div>
+        <div class="acc-form-group">
+          <label class="acc-form-label" for="editCity">City / Location</label>
+          <input type="text" id="editCity" class="acc-form-input" placeholder="e.g. Karachi, Pakistan">
+        </div>
+        <div class="acc-form-group">
+          <label class="acc-form-label" for="editInstitution">Institution / University</label>
+          <input type="text" id="editInstitution" class="acc-form-input" placeholder="e.g. FAST-NUCES">
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:12px;">
+          <button type="button" class="btn btn-secondary" onclick="toggleEditProfileForm(false)" style="padding:6px 12px; font-size:0.8rem;">Cancel</button>
+          <button type="button" class="btn btn-primary" onclick="saveStudentProfileChanges()" style="padding:6px 14px; font-size:0.8rem;">Save Changes</button>
+        </div>
+      </div>
+
+      <!-- Modal Footer Action Buttons -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px; flex-wrap: wrap; gap: 10px;">
+        <button type="button" class="btn btn-secondary" id="btnToggleEditProfile" onclick="toggleEditProfileForm(true)" style="font-size:0.85rem; padding:8px 14px;">
+          <span>✏️ Edit Profile</span>
+        </button>
+        <div style="display: flex; gap: 8px;">
+          <button type="button" class="btn btn-secondary" onclick="closeAccountDetailsModal()" style="font-size:0.85rem; padding:8px 14px;">Close</button>
+          <button type="button" class="btn btn-primary" onclick="closeAccountDetailsModal(); window.location.href='course.html#curriculum';" style="font-size:0.85rem; padding:8px 16px;">
+            <span>Go to Curriculum ↗</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 4: NOTIFICATION / ANNOUNCEMENT FULL DETAILS
+       ========================================================================= -->
+  <div class="dash-modal-backdrop" id="notifDetailModalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalNotifDetailTitle">
+    <div class="dash-modal-box notif-details-box">
+      <button class="dash-modal-close" onclick="closeNotificationDetailModal()" aria-label="Close modal">✕</button>
+      
+      <div class="notif-detail-pill announcement" id="notifDetailPill">📢 ANNOUNCEMENT</div>
+      <h3 class="notif-detail-title" id="modalNotifDetailTitle">Notification Title</h3>
+      
+      <div class="notif-meta-strip">
+        <div><span>From: </span><strong id="notifDetailSender">Academy Dispatcher</strong></div>
+        <div><span>Date: </span><span id="notifDetailTime">Just now</span></div>
+        <div id="notifDetailReadBadge"><span style="color:#059669; font-weight:700;">● Read</span></div>
+      </div>
+
+      <div class="notif-detail-body" id="notifDetailBody">
+        Notification content details will appear here.
+      </div>
+
+      <!-- Action Buttons -->
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <button type="button" class="btn btn-secondary" id="notifToggleReadBtn" onclick="toggleActiveNotificationReadState()" style="font-size:0.82rem; padding:7px 12px;">
+          Mark as Unread
+        </button>
+        <div style="display: flex; gap: 8px;">
+          <button type="button" class="btn btn-secondary" onclick="closeNotificationDetailModal()" style="font-size:0.82rem; padding:7px 12px;">Close</button>
+          <a href="javascript:void(0)" class="btn btn-primary" id="notifDetailActionBtn" style="font-size:0.82rem; padding:7px 14px; text-decoration:none; display:none;">
+            <span id="notifDetailActionLabel">Open Resource ↗</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
        FLOATING TOAST NOTIFICATION
        ========================================================================= -->
   <div class="dash-toast" id="dashToast" role="status" aria-live="polite">
     <span id="toastIcon">✨</span>
     <span id="toastMessage">Class launched!</span>
   </div>
+
+  <!-- Firebase SDK (compat — auto-sync enabled) -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+  <!-- Automatic Cloud Sync for Mobile & Offline Registrations -->
+  <script src="js/cloud-sync.js?v=1.0"></script>
 
   <!-- Dashboard Client Logic & Structured Mock Data Architecture -->
   <script src="js/dashboard.js"></script>

@@ -245,7 +245,7 @@
   // --------------------------------------------------------------------------
   function parseCurrentPath() {
     let path = window.location.pathname;
-    if (window.location.hash && window.location.hash.startsWith('#/admin')) {
+    if (window.location.hash && (window.location.hash.startsWith('#/admin') || window.location.hash.startsWith('#/'))) {
       path = window.location.hash.slice(1);
     }
     if (path === '/admin' || path === '/admin/' || path === '/admin.html') {
@@ -263,7 +263,15 @@
     }
 
     if (pushHistory) {
-      window.history.pushState(null, '', path);
+      const isStaticOrLocal = window.location.pathname.endsWith('.html') ||
+                              window.location.hostname === '127.0.0.1' ||
+                              window.location.hostname === 'localhost' ||
+                              window.location.protocol === 'file:';
+      if (isStaticOrLocal) {
+        window.history.pushState(null, '', '#' + path);
+      } else {
+        window.history.pushState(null, '', path);
+      }
     }
 
     AppState.currentRoute = path;
@@ -379,7 +387,7 @@
     }, 4500);
   }
 
-  function openModal(title, bodyHtml, footerHtml) {
+  function openModal(title, bodyHtml, footerHtml, customClass = '') {
     DOM.modalTitle.textContent = title;
     DOM.modalBody.innerHTML = bodyHtml;
     DOM.modalFooter.innerHTML = footerHtml || `
@@ -387,11 +395,18 @@
     `;
     const cancelBtn = DOM.modalFooter.querySelector('#modalCancelBtn');
     if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+    const modalBox = DOM.modalBackdrop ? DOM.modalBackdrop.querySelector('.adm-modal') : null;
+    if (modalBox) {
+      modalBox.className = 'adm-modal' + (customClass ? ' ' + customClass : '');
+    }
     DOM.modalBackdrop.classList.add('active');
   }
 
   function closeModal() {
     DOM.modalBackdrop.classList.remove('active');
+    const modalBox = DOM.modalBackdrop ? DOM.modalBackdrop.querySelector('.adm-modal') : null;
+    if (modalBox) modalBox.className = 'adm-modal';
+    if (DOM.modalBody) DOM.modalBody.innerHTML = '';
   }
 
   function openDrawer(title, bodyHtml) {
@@ -2503,7 +2518,7 @@
                       ` : ''}
 
                       ${e.status === 'Approved' ? `
-                        <button class="adm-btn adm-btn-sm adm-btn-primary" onclick="NexvionAdminApp.workflowAssignBatchModal('${e.id}')">Assign Batch</button>
+                        <button class="adm-btn adm-btn-sm ${e.batchId ? 'adm-btn-secondary' : 'adm-btn-primary'}" onclick="NexvionAdminApp.workflowAssignBatchModal('${e.id}')">${e.batchId ? 'Reassign' : 'Assign Batch'}</button>
                         <button class="adm-btn adm-btn-sm adm-btn-secondary" onclick="NexvionAdminApp.workflowMoveToWaitlist('${e.id}')">Waitlist</button>
                       ` : ''}
 
@@ -3138,11 +3153,23 @@
             if (v.status === 'Processing') statusBadgeClass = 'adm-badge-processing';
             if (v.status === 'Failed') statusBadgeClass = 'adm-badge-failed';
 
-            return `
+              const isYouTube = v.videoType === 'youtube' || !!v.youtubeId;
+              const ytId = v.youtubeId || NexvionAdminApp.extractYouTubeId(v.youtubeUrl || v.hlsManifestUrl);
+              const thumbUrl = v.thumbnailUrl || (ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : '');
+
+              return `
               <div class="adm-video-card">
                 <div class="adm-video-thumb-wrap">
-                  <span class="adm-video-play-icon" onclick="NexvionAdminApp.previewVideoModal('${v.id}')" style="cursor:pointer;">▶</span>
-                  <span class="adm-badge ${statusBadgeClass}" style="position:absolute; top:10px; right:10px;">
+                  ${thumbUrl ? `
+                    <img src="${thumbUrl}" alt="${v.title}" class="adm-video-thumb-img" onerror="this.style.display='none'">
+                  ` : ''}
+                  ${isYouTube ? `
+                    <span class="adm-video-source-badge youtube">▶ YouTube</span>
+                  ` : `
+                    <span class="adm-video-source-badge hls">⚡ Master File</span>
+                  `}
+                  <span class="adm-video-play-icon" onclick="NexvionAdminApp.previewVideoModal('${v.id}')" style="cursor:pointer;" title="Play & Preview Video">▶</span>
+                  <span class="adm-badge ${statusBadgeClass}" style="position:absolute; top:10px; right:10px; z-index:2;">
                     ${v.status || 'Ready'}
                   </span>
                   <span class="adm-video-duration-pill">${v.duration || '00:00'}</span>
@@ -3151,13 +3178,17 @@
                   <div style="font-size:0.72rem; color:var(--adm-tertiary); font-family:var(--adm-font-mono); margin-bottom:4px;">
                     ${v.courseTitle || 'Curriculum'} • ${v.classTitle || 'Lecture'}
                   </div>
-                  <h4 style="margin:0 0 8px 0; font-size:0.92rem; color:var(--adm-text-primary); line-height:1.4;">${v.title}</h4>
-                  <div style="font-size:0.7rem; font-family:var(--adm-font-mono); color:var(--adm-text-muted); margin-bottom:12px;">
-                    ${v.resolution || '1080p'} • ${v.bitrate || 'Adaptive HLS'} • <span class="adm-badge adm-badge-published" style="font-size:0.6rem; padding:1px 6px;">${v.visibility || 'Published'}</span>
+                  <h4 style="margin:0 0 8px 0; font-size:0.95rem; font-weight:700; color:var(--adm-text-primary); line-height:1.4;">${v.title}</h4>
+                  <div style="font-size:0.72rem; font-family:var(--adm-font-mono); color:var(--adm-text-muted); margin-bottom:12px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                    <span>${v.resolution || '1080p'}</span>
+                    <span>•</span>
+                    <span>${isYouTube ? 'YouTube Stream' : (v.bitrate || 'Adaptive HLS')}</span>
+                    <span>•</span>
+                    <span class="adm-badge adm-badge-published" style="font-size:0.6rem; padding:1px 6px;">${v.visibility || 'Published'}</span>
                   </div>
                   <div style="margin-top:auto; padding-top:12px; border-top:1px solid var(--adm-border-subtle); display:flex; justify-content:space-between; gap:6px;">
-                    <button class="adm-btn adm-btn-sm adm-btn-secondary" onclick="NexvionAdminApp.previewVideoModal('${v.id}')">Preview</button>
-                    <button class="adm-btn adm-btn-sm adm-btn-secondary" onclick="NexvionAdminApp.openReplaceVideoModal('${v.id}')">Replace</button>
+                    <button class="adm-btn adm-btn-sm adm-btn-primary" onclick="NexvionAdminApp.previewVideoModal('${v.id}')">▶ Watch & Preview</button>
+                    <button class="adm-btn adm-btn-sm adm-btn-secondary" onclick="NexvionAdminApp.openReplaceVideoModal('${v.id}')">Edit Link</button>
                     <button class="adm-btn adm-btn-sm adm-btn-danger" onclick="NexvionAdminApp.archiveVideo('${v.id}')">Archive</button>
                   </div>
                 </div>
@@ -9883,30 +9914,127 @@
       AppState.videosView.currentPage = 1;
       renderVideosView();
     },
+    // YouTube ID Extraction Helper
+    extractYouTubeId: (url) => {
+      if (!url) return null;
+      const str = String(url).trim();
+      const regExp = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts|live)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+      const match = str.match(regExp);
+      if (match && match[1]) return match[1];
+      if (/^[a-zA-Z0-9_-]{11}$/.test(str)) return str;
+      return null;
+    },
+
+    switchVideoSourceMode: (mode) => {
+      const modeInput = document.getElementById('videoSourceMode');
+      if (modeInput) modeInput.value = mode;
+      const secYt = document.getElementById('sectionSourceYoutube');
+      const secUp = document.getElementById('sectionSourceUpload');
+      const btnYt = document.getElementById('btnTabSourceYoutube');
+      const btnUp = document.getElementById('btnTabSourceUpload');
+
+      if (mode === 'youtube') {
+        if (secYt) secYt.style.display = 'flex';
+        if (secUp) secUp.style.display = 'none';
+        if (btnYt) { btnYt.className = 'adm-btn adm-btn-sm'; btnYt.style.background = 'var(--adm-primary)'; btnYt.style.color = '#fff'; }
+        if (btnUp) { btnUp.className = 'adm-btn adm-btn-sm adm-btn-secondary'; btnUp.style.background = ''; btnUp.style.color = ''; }
+      } else {
+        if (secYt) secYt.style.display = 'none';
+        if (secUp) secUp.style.display = 'flex';
+        if (btnUp) { btnUp.className = 'adm-btn adm-btn-sm'; btnUp.style.background = 'var(--adm-primary)'; btnUp.style.color = '#fff'; }
+        if (btnYt) { btnYt.className = 'adm-btn adm-btn-sm adm-btn-secondary'; btnYt.style.background = ''; btnYt.style.color = ''; }
+      }
+    },
+
+    onYouTubeUrlInput: (val) => {
+      const ytId = NexvionAdminApp.extractYouTubeId(val);
+      const container = document.getElementById('ytLivePreviewContainer');
+      const thumb = document.getElementById('ytLiveThumbImg');
+      const code = document.getElementById('ytDetectedIdCode');
+
+      if (ytId) {
+        if (container) container.style.display = 'flex';
+        if (thumb) thumb.src = `https://img.youtube.com/vi/${ytId}/mqdefault.jpg`;
+        if (code) code.textContent = ytId;
+      } else {
+        if (container) container.style.display = 'none';
+      }
+    },
+
     openUploadVideoModal: async () => {
       const courses = await Data.getCourses();
 
       const bodyHtml = `
-        <form id="uploadVideoForm" style="display:flex; flex-direction:column; gap:14px;">
-          <!-- Visual Upload Drop Area -->
-          <div class="adm-upload-dropzone" style="border:2px dashed var(--adm-primary); background:rgba(127,82,255,0.04); padding:24px; text-align:center; border-radius:10px; cursor:pointer;" onclick="document.getElementById('simulatedVideoFile').click()">
-            <input type="file" id="simulatedVideoFile" accept="video/*" style="display:none;" onchange="
-              if (this.files && this.files[0]) {
-                document.getElementById('uploadFileNotice').innerText = 'Selected Master File: ' + this.files[0].name + ' (' + (this.files[0].size / (1024*1024)).toFixed(1) + ' MB)';
-                if (!document.getElementById('newVideoTitle').value) {
-                  document.getElementById('newVideoTitle').value = this.files[0].name.replace(/\\.[^/.]+$/, '').replace(/[-_]/g, ' ');
-                }
-              }
-            ">
-            <div style="font-size:2.2rem; margin-bottom:6px;">📤</div>
-            <div style="font-weight:700; color:var(--adm-text-primary); font-size:0.95rem;">Drag & drop raw recording master or click to browse</div>
-            <div id="uploadFileNotice" style="font-size:0.75rem; color:var(--adm-tertiary); font-family:var(--adm-font-mono); margin-top:4px;">Supports MP4, Apple ProRes, WebM, and HEVC masters up to 4K 60fps</div>
-            <div style="font-size:0.72rem; color:var(--adm-text-muted); margin-top:8px; line-height:1.4;">Video storage will be connected during backend integration (Google Cloud Storage / AWS S3).</div>
+        <form id="uploadVideoForm" onsubmit="event.preventDefault(); NexvionAdminApp.submitUploadVideo();" style="display:flex; flex-direction:column; gap:16px;">
+          <!-- Tab Switcher: YouTube Link vs Direct File Upload -->
+          <div style="display:flex; gap:8px; background:var(--adm-surface-ground); padding:5px; border-radius:10px; border:1px solid var(--adm-border);">
+            <button type="button" class="adm-btn adm-btn-sm" id="btnTabSourceYoutube" style="flex:1; background:var(--adm-primary); color:#fff; font-weight:700; border-radius:7px;" onclick="NexvionAdminApp.switchVideoSourceMode('youtube')">
+              🔴 Add YouTube Video Link (Recommended)
+            </button>
+            <button type="button" class="adm-btn adm-btn-sm adm-btn-secondary" id="btnTabSourceUpload" style="flex:1; font-weight:700; border-radius:7px;" onclick="NexvionAdminApp.switchVideoSourceMode('upload')">
+              📁 Upload Video File (MP4/HLS)
+            </button>
           </div>
 
+          <input type="hidden" id="videoSourceMode" value="youtube">
+
+          <!-- YouTube Input Section (Default) -->
+          <div id="sectionSourceYoutube" style="display:flex; flex-direction:column; gap:12px;">
+            <div class="adm-form-group">
+              <label class="adm-form-label">YouTube Video URL or Video ID <span class="adm-req-star">*</span></label>
+              <input type="text" class="adm-input" id="newVideoYoutubeUrl" placeholder="e.g. https://www.youtube.com/watch?v=dQw4w9WgXcQ or youtu.be/..." oninput="NexvionAdminApp.onYouTubeUrlInput(this.value)">
+              <div style="font-size:0.75rem; color:var(--adm-text-muted); margin-top:4px;">
+                Paste any YouTube URL (standard, shortened youtu.be, shorts, embed, or 11-character video ID).
+              </div>
+            </div>
+
+            <!-- Real-time Live YouTube Preview Banner -->
+            <div id="ytLivePreviewContainer" style="display:none; background:rgba(255,0,0,0.06); border:1px solid rgba(255,0,0,0.25); border-radius:10px; padding:12px; display:flex; gap:14px; align-items:center;">
+              <div style="width:140px; height:80px; border-radius:6px; overflow:hidden; background:#000; flex-shrink:0; position:relative; box-shadow:0 4px 12px rgba(0,0,0,0.5);">
+                <img id="ytLiveThumbImg" src="" alt="YouTube Thumbnail" style="width:100%; height:100%; object-fit:cover;">
+                <span style="position:absolute; bottom:4px; right:4px; background:rgba(0,0,0,0.85); color:#fff; font-size:0.65rem; font-weight:700; padding:1px 5px; border-radius:3px;">YouTube</span>
+              </div>
+              <div style="flex:1; min-width:0;">
+                <div style="font-size:0.85rem; font-weight:700; color:var(--adm-text-primary);" id="ytDetectedNotice">Valid YouTube Video Detected</div>
+                <div style="font-size:0.75rem; color:var(--adm-text-secondary); margin-top:3px;">
+                  Video ID: <code id="ytDetectedIdCode" style="color:#ef4444; font-weight:700; font-family:var(--adm-font-mono);"></code>
+                </div>
+                <div style="font-size:0.7rem; color:var(--adm-success); margin-top:3px;">✓ Ready to stream directly inside course player</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- File Upload Section (Alternative) -->
+          <div id="sectionSourceUpload" style="display:none; flex-direction:column; gap:12px;">
+            <div class="adm-upload-dropzone" style="border:2px dashed var(--adm-primary); background:rgba(127,82,255,0.04); padding:22px; text-align:center; border-radius:10px; cursor:pointer;" onclick="document.getElementById('simulatedVideoFile').click()">
+              <input type="file" id="simulatedVideoFile" accept="video/*" style="display:none;" onchange="
+                if (this.files && this.files[0]) {
+                  document.getElementById('uploadFileNotice').innerText = 'Selected Master File: ' + this.files[0].name + ' (' + (this.files[0].size / (1024*1024)).toFixed(1) + ' MB)';
+                  if (!document.getElementById('newVideoTitle').value) {
+                    document.getElementById('newVideoTitle').value = this.files[0].name.replace(/\\.[^/.]+$/, '').replace(/[-_]/g, ' ');
+                  }
+                }
+              ">
+              <div style="font-size:2.2rem; margin-bottom:6px;">📤</div>
+              <div style="font-weight:700; color:var(--adm-text-primary); font-size:0.95rem;">Drag & drop raw recording master or click to browse</div>
+              <div id="uploadFileNotice" style="font-size:0.75rem; color:var(--adm-tertiary); font-family:var(--adm-font-mono); margin-top:4px;">Supports MP4, Apple ProRes, WebM, and HEVC masters up to 4K 60fps</div>
+            </div>
+
+            <div class="adm-form-group">
+              <label class="adm-form-label">Target Transcoding Profile</label>
+              <select class="adm-select" id="newVideoProfile" style="width:100%;">
+                <option value="1080p 60fps • 6000 kbps" selected>1080p 60fps (Standard Master)</option>
+                <option value="2160p 60fps • 14000 kbps">4K 2160p UHD (Executive Tier)</option>
+                <option value="1440p 60fps • 9000 kbps">2K 1440p QHD</option>
+                <option value="720p 30fps • 2800 kbps">720p Low-Bandwidth</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Common Details -->
           <div class="adm-form-group">
             <label class="adm-form-label">Video Title <span class="adm-req-star">*</span></label>
-            <input type="text" class="adm-input" id="newVideoTitle" required placeholder="e.g. Master Lecture: Autonomous Tool Use & Reasoning Loops">
+            <input type="text" class="adm-input" id="newVideoTitle" required placeholder="e.g. Master Lecture: Transformer Architecture & Self-Attention">
           </div>
 
           <div class="adm-editor-grid">
@@ -9925,27 +10053,7 @@
           <div class="adm-editor-grid">
             <div class="adm-form-group">
               <label class="adm-form-label">Duration (MM:SS or HH:MM:SS)</label>
-              <input type="text" class="adm-input" id="newVideoDuration" value="45:00" placeholder="e.g. 52:18">
-            </div>
-            <div class="adm-form-group">
-              <label class="adm-form-label">Target Transcoding Profile</label>
-              <select class="adm-select" id="newVideoProfile" style="width:100%;">
-                <option value="1080p 60fps • 6000 kbps" selected>1080p 60fps (Standard Master)</option>
-                <option value="2160p 60fps • 14000 kbps">4K 2160p UHD (Executive Tier)</option>
-                <option value="1440p 60fps • 9000 kbps">2K 1440p QHD</option>
-                <option value="720p 30fps • 2800 kbps">720p Low-Bandwidth</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="adm-editor-grid">
-            <div class="adm-form-group">
-              <label class="adm-form-label">Pipeline Ingest State</label>
-              <select class="adm-select" id="newVideoStatus" style="width:100%;">
-                <option value="Ready" selected>Ready (Transcode Complete)</option>
-                <option value="Processing">Processing (Encoding HLS)</option>
-                <option value="Failed">Failed (Transcoder Error)</option>
-              </select>
+              <input type="text" class="adm-input" id="newVideoDuration" value="25:00" placeholder="e.g. 42:15">
             </div>
             <div class="adm-form-group">
               <label class="adm-form-label">Access Visibility</label>
@@ -9956,20 +10064,30 @@
               </select>
             </div>
           </div>
+
+          <div class="adm-form-group">
+            <label class="adm-form-label">Ingest / Status State</label>
+            <select class="adm-select" id="newVideoStatus" style="width:100%;">
+              <option value="Ready" selected>Ready (Available for Streaming)</option>
+              <option value="Processing">Processing (Encoding Queue)</option>
+              <option value="Failed">Failed (Error State)</option>
+            </select>
+          </div>
         </form>
       `;
       const footerHtml = `
         <button class="adm-btn adm-btn-secondary" onclick="NexvionAdminApp.closeModal()">Cancel</button>
-        <button class="adm-btn adm-btn-primary" onclick="NexvionAdminApp.submitUploadVideo()">Start Ingest & Transcode</button>
+        <button class="adm-btn adm-btn-primary" onclick="NexvionAdminApp.submitUploadVideo()">Save & Publish Video</button>
       `;
-      openModal('Upload Master Video Stream', bodyHtml, footerHtml);
+      openModal('Add Video Stream or YouTube Lesson', bodyHtml, footerHtml, 'adm-modal-lg');
     },
+
     submitUploadVideo: async () => {
+      const mode = document.getElementById('videoSourceMode')?.value || 'youtube';
       const title = document.getElementById('newVideoTitle')?.value.trim();
       const courseId = document.getElementById('newVideoCourse')?.value;
       const classTitle = document.getElementById('newVideoClass')?.value.trim() || 'Core Lecture';
-      const duration = document.getElementById('newVideoDuration')?.value.trim() || '45:00';
-      const profile = document.getElementById('newVideoProfile')?.value || '1080p';
+      const duration = document.getElementById('newVideoDuration')?.value.trim() || '25:00';
       const status = document.getElementById('newVideoStatus')?.value || 'Ready';
       const visibility = document.getElementById('newVideoVisibility')?.value || 'Published';
 
@@ -9977,101 +10095,140 @@
         alert('Please enter a video title.');
         return;
       }
+
       const courses = await Data.getCourses();
       const selectedCourse = courses.find(c => c.id === courseId);
+      const courseTitle = selectedCourse ? selectedCourse.title.split(':')[0] : 'Curriculum Course';
 
-      await Data.saveVideo({
-        title,
-        courseId,
-        courseTitle: selectedCourse ? selectedCourse.title.split(':')[0] : 'Curriculum Course',
-        classTitle,
-        duration,
-        resolution: profile.split('•')[0].trim(),
-        bitrate: profile.split('•')[1]?.trim() || 'Adaptive HLS',
-        status,
-        visibility,
-        hlsManifestUrl: `https://cdn.nexvion.ai/hls/vid-${Date.now()}/master.m3u8`
-      });
+      if (mode === 'youtube') {
+        const rawYtUrl = document.getElementById('newVideoYoutubeUrl')?.value.trim();
+        const ytId = NexvionAdminApp.extractYouTubeId(rawYtUrl);
+        if (!ytId) {
+          alert('Please enter a valid YouTube URL or 11-digit Video ID.');
+          return;
+        }
 
-      closeModal();
-      showToast('Video Ingest Initialized', 'Video storage will be connected during backend integration. Record added to library.', 'success');
-      renderRoute(AppState.currentRoute);
+        await Data.saveVideo({
+          title,
+          courseId,
+          courseTitle,
+          classTitle,
+          duration,
+          videoType: 'youtube',
+          youtubeUrl: rawYtUrl.startsWith('http') ? rawYtUrl : `https://www.youtube.com/watch?v=${ytId}`,
+          youtubeId: ytId,
+          thumbnailUrl: `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`,
+          embedUrl: `https://www.youtube-nocookie.com/embed/${ytId}`,
+          hlsManifestUrl: `https://www.youtube.com/watch?v=${ytId}`,
+          resolution: '1080p HD',
+          bitrate: 'YouTube Adaptive Stream',
+          status,
+          visibility
+        });
+
+        closeModal();
+        showToast('YouTube Video Added', `Successfully added "${title}" with direct YouTube streaming.`, 'success');
+        renderRoute(AppState.currentRoute);
+      } else {
+        const profile = document.getElementById('newVideoProfile')?.value || '1080p';
+        await Data.saveVideo({
+          title,
+          courseId,
+          courseTitle,
+          classTitle,
+          duration,
+          videoType: 'upload',
+          resolution: profile.split('•')[0].trim(),
+          bitrate: profile.split('•')[1]?.trim() || 'Adaptive HLS',
+          status,
+          visibility,
+          hlsManifestUrl: `https://cdn.nexvion.ai/hls/vid-${Date.now()}/master.m3u8`
+        });
+
+        closeModal();
+        showToast('Video Ingest Initialized', 'Master file added to video library.', 'success');
+        renderRoute(AppState.currentRoute);
+      }
     },
+
     openReplaceVideoModal: async (id) => {
       const v = await Data.getVideoById(id);
       if (!v) return;
 
       const bodyHtml = `
-        <form id="replaceVideoForm" style="display:flex; flex-direction:column; gap:14px;">
+        <form id="replaceVideoForm" onsubmit="event.preventDefault(); NexvionAdminApp.submitReplaceVideo('${id}');" style="display:flex; flex-direction:column; gap:16px;">
           <div style="background:rgba(245,158,11,0.06); border:1px solid rgba(245,158,11,0.25); border-radius:8px; padding:12px; font-size:0.8rem; color:var(--adm-text-secondary);">
-            Replacing master asset for <strong>${v.title}</strong>. Existing playback URLs will remain valid via rolling zero-downtime cache invalidation.
-          </div>
-
-          <div class="adm-upload-dropzone" style="border:2px dashed var(--adm-primary); background:rgba(127,82,255,0.04); padding:24px; text-align:center; border-radius:10px; cursor:pointer;" onclick="document.getElementById('replaceVideoFile').click()">
-            <input type="file" id="replaceVideoFile" accept="video/*" style="display:none;" onchange="
-              if (this.files && this.files[0]) {
-                document.getElementById('replaceFileNotice').innerText = 'Selected New Master: ' + this.files[0].name + ' (' + (this.files[0].size / (1024*1024)).toFixed(1) + ' MB)';
-              }
-            ">
-            <div style="font-size:2.2rem; margin-bottom:6px;">🔄</div>
-            <div style="font-weight:700; color:var(--adm-text-primary); font-size:0.95rem;">Select replacement master file</div>
-            <div id="replaceFileNotice" style="font-size:0.75rem; color:var(--adm-tertiary); font-family:var(--adm-font-mono); margin-top:4px;">MP4, ProRes, or WebM master</div>
-            <div style="font-size:0.72rem; color:var(--adm-text-muted); margin-top:8px;">Video storage will be connected during backend integration.</div>
+            Updating stream source for <strong>${v.title}</strong>. Enter a new YouTube link or adjust asset properties.
           </div>
 
           <div class="adm-form-group">
-            <label class="adm-form-label">Updated Video Duration</label>
-            <input type="text" class="adm-input" id="replaceVideoDuration" value="${v.duration || '45:00'}">
+            <label class="adm-form-label">YouTube URL or Video ID</label>
+            <input type="text" class="adm-input" id="replaceVideoYoutubeUrl" value="${v.youtubeUrl || (v.youtubeId ? 'https://www.youtube.com/watch?v=' + v.youtubeId : '')}" placeholder="e.g. https://www.youtube.com/watch?v=..." oninput="NexvionAdminApp.onYouTubeUrlInput(this.value)">
           </div>
 
           <div class="adm-form-group">
-            <label class="adm-form-label">Replacement Transcoding Profile</label>
-            <select class="adm-select" id="replaceVideoProfile" style="width:100%;">
-              <option value="1080p 60fps • 6000 kbps" selected>1080p 60fps (Standard Master)</option>
-              <option value="2160p 60fps • 14000 kbps">4K 2160p UHD (Executive Tier)</option>
-              <option value="1440p 60fps • 9000 kbps">2K 1440p QHD</option>
-            </select>
+            <label class="adm-form-label">Video Title</label>
+            <input type="text" class="adm-input" id="replaceVideoTitle" value="${v.title || ''}">
           </div>
 
-          <div class="adm-form-group">
-            <label class="adm-form-label">Post-Ingest State</label>
-            <select class="adm-select" id="replaceVideoStatus" style="width:100%;">
-              <option value="Ready" selected>Ready (Immediate Hot-Swap)</option>
-              <option value="Processing">Processing (Transcode Queue)</option>
-              <option value="Failed">Failed (Simulated Error)</option>
-            </select>
+          <div class="adm-editor-grid">
+            <div class="adm-form-group">
+              <label class="adm-form-label">Duration (MM:SS)</label>
+              <input type="text" class="adm-input" id="replaceVideoDuration" value="${v.duration || '25:00'}">
+            </div>
+            <div class="adm-form-group">
+              <label class="adm-form-label">Status</label>
+              <select class="adm-select" id="replaceVideoStatus" style="width:100%;">
+                <option value="Ready" ${v.status === 'Ready' ? 'selected' : ''}>Ready</option>
+                <option value="Processing" ${v.status === 'Processing' ? 'selected' : ''}>Processing</option>
+                <option value="Failed" ${v.status === 'Failed' ? 'selected' : ''}>Failed</option>
+              </select>
+            </div>
           </div>
         </form>
       `;
+
       const footerHtml = `
         <button class="adm-btn adm-btn-secondary" onclick="NexvionAdminApp.closeModal()">Cancel</button>
-        <button class="adm-btn adm-btn-primary" onclick="NexvionAdminApp.submitReplaceVideo('${id}')">Replace Video Master</button>
+        <button class="adm-btn adm-btn-primary" onclick="NexvionAdminApp.submitReplaceVideo('${id}')">Save Changes</button>
       `;
-      openModal(`Replace Video: ${v.title}`, bodyHtml, footerHtml);
+      openModal(`Edit Video Stream: ${v.title}`, bodyHtml, footerHtml, 'adm-modal-lg');
     },
+
     submitReplaceVideo: async (id) => {
       const v = await Data.getVideoById(id);
       if (!v) return;
 
+      const title = document.getElementById('replaceVideoTitle')?.value.trim() || v.title;
       const duration = document.getElementById('replaceVideoDuration')?.value.trim() || v.duration;
-      const profile = document.getElementById('replaceVideoProfile')?.value || '1080p';
-      const status = document.getElementById('replaceVideoStatus')?.value || 'Ready';
+      const status = document.getElementById('replaceVideoStatus')?.value || v.status;
+      const rawYt = document.getElementById('replaceVideoYoutubeUrl')?.value.trim();
 
-      await Data.saveVideo({
-        ...v,
-        duration,
-        resolution: profile.split('•')[0].trim(),
-        bitrate: profile.split('•')[1]?.trim() || 'Adaptive HLS',
-        status
-      });
+      let updated = { ...v, title, duration, status };
+      if (rawYt) {
+        const ytId = NexvionAdminApp.extractYouTubeId(rawYt);
+        if (ytId) {
+          updated.videoType = 'youtube';
+          updated.youtubeId = ytId;
+          updated.youtubeUrl = rawYt.startsWith('http') ? rawYt : `https://www.youtube.com/watch?v=${ytId}`;
+          updated.thumbnailUrl = `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
+          updated.embedUrl = `https://www.youtube-nocookie.com/embed/${ytId}`;
+          updated.bitrate = 'YouTube Adaptive Stream';
+        }
+      }
 
+      await Data.saveVideo(updated);
       closeModal();
-      showToast('Video Master Replaced', 'New master stream ingested. Video storage will be connected during backend integration.', 'success');
+      showToast('Video Updated', 'Video stream details updated successfully.', 'success');
       renderRoute(AppState.currentRoute);
     },
+
     previewVideoModal: async (id) => {
       const v = await Data.getVideoById(id);
       if (!v) return;
+
+      const isYouTube = v.videoType === 'youtube' || !!v.youtubeId;
+      const ytId = v.youtubeId || NexvionAdminApp.extractYouTubeId(v.youtubeUrl || v.url || v.hlsManifestUrl);
 
       let statusBadgeClass = 'adm-badge-ready';
       if (v.status === 'Processing') statusBadgeClass = 'adm-badge-processing';
@@ -10079,46 +10236,75 @@
 
       const bodyHtml = `
         <div style="display:flex; flex-direction:column; gap:16px;">
-          <!-- Simulated Video Player Monitor -->
-          <div style="background:#09090D; border-radius:10px; border:1px solid var(--adm-border); overflow:hidden; position:relative; min-height:220px; display:flex; flex-direction:column; justify-content:center; align-items:center;">
-            <div style="font-size:3.5rem; color:var(--adm-primary); filter:drop-shadow(0 0 16px rgba(127,82,255,0.4));">▶</div>
-            <div style="margin-top:12px; font-weight:600; color:#fff; font-size:1rem;">${v.title}</div>
-            <div style="font-size:0.75rem; color:var(--adm-text-secondary); font-family:var(--adm-font-mono); margin-top:4px;">
-              ${v.resolution || '1080p'} • ${v.duration || '00:00'} • ${v.bitrate || 'HLS Adaptive'}
-            </div>
-            
-            <!-- Video Player Controls Bar Simulation -->
-            <div style="position:absolute; bottom:0; left:0; right:0; background:rgba(18,18,24,0.85); backdrop-filter:blur(6px); padding:8px 14px; display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(255,255,255,0.08);">
-              <div style="display:flex; align-items:center; gap:10px; font-size:0.8rem; color:#fff;">
-                <span>▶ 00:00 / ${v.duration || '00:00'}</span>
+          <!-- Big Video Screen Monitor (16:9 Widescreen Cinema Display) -->
+          <div class="adm-video-screen">
+            ${isYouTube && ytId ? `
+              <iframe
+                class="adm-video-iframe"
+                src="https://www.youtube-nocookie.com/embed/${ytId}?autoplay=1&rel=0&modestbranding=1"
+                title="${v.title}"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen>
+              </iframe>
+            ` : (v.hlsManifestUrl && (v.hlsManifestUrl.endsWith('.mp4') || v.hlsManifestUrl.endsWith('.webm'))) ? `
+              <video src="${v.hlsManifestUrl}" controls autoplay style="width:100%; height:100%; object-fit:contain;"></video>
+            ` : `
+              <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:30px;">
+                <div style="font-size:4.2rem; color:var(--adm-primary); filter:drop-shadow(0 0 20px rgba(127,82,255,0.4));">▶</div>
+                <div style="margin-top:14px; font-weight:700; color:#fff; font-size:1.15rem;">${v.title}</div>
+                <div style="font-size:0.8rem; color:var(--adm-text-secondary); font-family:var(--adm-font-mono); margin-top:6px;">
+                  ${v.resolution || '1080p'} • ${v.duration || '00:00'} • ${v.bitrate || 'HLS Adaptive'}
+                </div>
+                <div style="margin-top:16px; display:inline-flex; align-items:center; gap:8px;">
+                  <span class="adm-badge adm-badge-published">MASTER STREAM</span>
+                  <span class="adm-badge ${statusBadgeClass}">${v.status || 'Ready'}</span>
+                </div>
               </div>
-              <div style="display:flex; align-items:center; gap:8px;">
-                <span class="adm-badge adm-badge-published" style="font-size:0.65rem;">HLS LIVE</span>
-                <span style="font-size:0.7rem; color:var(--adm-tertiary); font-family:var(--adm-font-mono);">1080p60</span>
-              </div>
-            </div>
+            `}
           </div>
 
-          <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px;">
             <div>
               <span style="font-size:0.75rem; color:var(--adm-tertiary); font-family:var(--adm-font-mono);">${v.courseTitle || 'Curriculum'} • ${v.classTitle || 'Lecture'}</span>
-              <h3 style="margin:4px 0 0 0; color:var(--adm-text-primary); font-size:1.25rem;">${v.title}</h3>
+              <h3 style="margin:4px 0 0 0; color:var(--adm-text-primary); font-size:1.3rem;">${v.title}</h3>
             </div>
-            <div><span class="adm-badge ${statusBadgeClass}">${v.status || 'Ready'}</span></div>
+            <div style="display:flex; gap:8px; align-items:center;">
+              ${isYouTube ? `<span class="adm-video-source-badge youtube" style="position:static;">▶ YouTube Video</span>` : ''}
+              <span class="adm-badge ${statusBadgeClass}">${v.status || 'Ready'}</span>
+            </div>
           </div>
 
-          <div style="background:var(--adm-surface-elevated); padding:12px; border-radius:8px; border:1px solid var(--adm-border); display:flex; flex-direction:column; gap:6px;">
-            <div style="font-size:0.75rem; color:var(--adm-text-muted); font-family:var(--adm-font-mono); text-transform:uppercase;">HLS Master Stream Manifest</div>
-            <code style="font-size:0.75rem; color:var(--adm-tertiary); word-break:break-all;">${v.hlsManifestUrl || `https://cdn.nexvion.ai/hls/${v.id}/master.m3u8`}</code>
-            <div style="font-size:0.7rem; color:var(--adm-text-secondary); margin-top:2px;">Video storage will be connected during backend integration. CDN distributed playback endpoint verified.</div>
+          <!-- Video Metadata & Link Box -->
+          <div style="background:var(--adm-surface-elevated); padding:14px 18px; border-radius:10px; border:1px solid var(--adm-border); display:flex; flex-direction:column; gap:8px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-size:0.75rem; color:var(--adm-text-muted); font-family:var(--adm-font-mono); text-transform:uppercase;">
+                ${isYouTube ? 'YouTube Streaming Endpoint' : 'HLS Master Stream Manifest'}
+              </span>
+              ${isYouTube && ytId ? `
+                <a href="https://www.youtube.com/watch?v=${ytId}" target="_blank" rel="noopener noreferrer" class="adm-btn adm-btn-sm adm-btn-secondary" style="font-size:0.72rem; padding:3px 10px; text-decoration:none;">
+                  Open on YouTube ↗
+                </a>
+              ` : ''}
+            </div>
+            <code style="font-size:0.78rem; color:var(--adm-tertiary); word-break:break-all; font-family:var(--adm-font-mono);">
+              ${v.youtubeUrl || v.hlsManifestUrl || `https://www.youtube.com/watch?v=${ytId || v.id}`}
+            </code>
+            <div style="font-size:0.72rem; color:var(--adm-text-secondary); margin-top:2px;">
+              ${isYouTube ? 'Direct embedded streaming powered by YouTube.' : 'Video storage connected via cloud distribution endpoint.'}
+            </div>
           </div>
         </div>
       `;
+
       const footerHtml = `
         <button class="adm-btn adm-btn-secondary" onclick="NexvionAdminApp.closeModal()">Close</button>
-        <button class="adm-btn adm-btn-secondary" onclick="NexvionAdminApp.closeModal(); NexvionAdminApp.openReplaceVideoModal('${v.id}')">Replace Master</button>
+        ${isYouTube && ytId ? `
+          <a href="https://www.youtube.com/watch?v=${ytId}" target="_blank" rel="noopener noreferrer" class="adm-btn adm-btn-secondary" style="text-decoration:none;">Open in YouTube Tab ↗</a>
+        ` : ''}
+        <button class="adm-btn adm-btn-secondary" onclick="NexvionAdminApp.closeModal(); NexvionAdminApp.openReplaceVideoModal('${v.id}')">Edit Link</button>
       `;
-      openModal(`Video Preview Monitor: ${v.title}`, bodyHtml, footerHtml);
+
+      openModal(`Video Preview Monitor: ${v.title}`, bodyHtml, footerHtml, 'adm-modal-xl');
     },
     archiveVideo: async (id) => {
       const v = await Data.getVideoById(id);
@@ -13788,13 +13974,15 @@
       });
     }
 
-    // Handle History popstate (Back/Forward)
-    window.addEventListener('popstate', () => {
+    // Handle History popstate & hashchange (Back/Forward)
+    const handleRouteTransition = () => {
       const path = parseCurrentPath();
       AppState.currentRoute = path;
       updateSidebarActiveState(path);
       renderRoute(path);
-    });
+    };
+    window.addEventListener('popstate', handleRouteTransition);
+    window.addEventListener('hashchange', handleRouteTransition);
 
     // Initial Route Render
     const initialPath = parseCurrentPath();
