@@ -923,12 +923,14 @@ p, .hero-lead, .card-desc, .project-card-desc, .faq-answer {
 .gradient-text {
   background: linear-gradient(135deg, var(--neutral-obsidian) 30%, var(--primary) 100%) !important;
   -webkit-background-clip: text !important;
+  background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
 }
 
 .gradient-text-alt {
   background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 50%, var(--tertiary) 100%) !important;
   -webkit-background-clip: text !important;
+  background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
 }
 

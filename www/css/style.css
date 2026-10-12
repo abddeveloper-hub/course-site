@@ -206,6 +206,7 @@ p {
 .gradient-text {
   background: linear-gradient(135deg, #FFFFFF 0%, #E2E8F0 30%, #C4B5FD 65%, #38BDF8 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   display: inline;
 }
@@ -213,6 +214,7 @@ p {
 .gradient-text-alt {
   background: linear-gradient(135deg, #38BDF8 0%, #818CF8 50%, #EC4899 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   display: inline;
 }
@@ -769,6 +771,7 @@ p {
   background: linear-gradient(135deg, #7F52FF 0%, #6835E7 35%, #C757BC 70%, #00D2B4 100%);
   background-size: 200% auto;
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: dynamicTextGradientFlow 5s linear infinite;
   display: inline;
@@ -796,6 +799,7 @@ p {
 .hero-title-line.line-3 {
   background: linear-gradient(135deg, var(--neutral-obsidian, #0B0C10) 30%, var(--primary, #7F52FF) 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
@@ -1434,6 +1438,7 @@ p {
   margin-bottom: 12px;
   background: linear-gradient(135deg, #FFFFFF 0%, #FDE68A 50%, #F59E0B 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
