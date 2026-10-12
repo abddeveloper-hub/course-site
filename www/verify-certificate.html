@@ -370,39 +370,63 @@
       document.getElementById('revokedState').style.display = 'none';
       document.getElementById('notFoundState').style.display = 'none';
 
-      try {
-        const resp = await fetch(`/api/certificates/verify?id=${encodeURIComponent(id)}`);
-        const data = await resp.json();
-        document.getElementById('loadingState').style.display = 'none';
-
-        if (data && data.valid === true) {
-          document.getElementById('certStudentName').textContent = data.studentName || 'Certified Graduate';
-          document.getElementById('certCourseName').textContent = data.courseName || '—';
-          document.getElementById('certTierName').textContent = data.tier || 'Standard';
-          document.getElementById('certIdValue').textContent = data.certificateId || id;
-          document.getElementById('certIssueDate').textContent = data.issueDate || '—';
-          document.getElementById('certGrade').textContent = data.grade || 'Certified';
-          document.getElementById('certIssuingOrg').textContent = data.issuingOrganization || 'NEXVION AI Academy';
-          document.getElementById('validState').style.display = 'block';
-        } else if (data && data.revoked === true) {
-          document.getElementById('revokedStudentName').textContent = data.studentName ? `${data.studentName} (Revoked)` : 'Credential Revoked';
-          document.getElementById('revokedIdValue').textContent = data.certificateId || id;
-          document.getElementById('revokedCourseName').textContent = data.courseName || '—';
-          document.getElementById('revokedDateValue').textContent = data.revocationDate || 'Recorded';
-          document.getElementById('revokedReasonValue').textContent = data.revocationReason || 'Administrative action';
-          document.getElementById('revokedState').style.display = 'block';
-        } else {
-          document.getElementById('notFoundState').style.display = 'block';
-          if (id) {
-            document.getElementById('certSearchInput').value = id;
-            document.getElementById('notFoundError').style.display = 'block';
+      let data = null;
+      if (window.location.port === '3000' || window.__ENABLE_LOCAL_API__) {
+        try {
+          const resp = await fetch(`/api/certificates/verify?id=${encodeURIComponent(id)}`);
+          if (resp.ok) {
+            data = await resp.json();
           }
+        } catch (err) {
+          console.warn('API certificate verification unavailable, checking local store:', err);
         }
-      } catch (err) {
-        document.getElementById('loadingState').style.display = 'none';
+      }
+
+      // Local storage / offline fallback
+      if (!data) {
+        try {
+          const localCerts = JSON.parse(localStorage.getItem('nexvion_issued_certificates') || '[]');
+          const match = localCerts.find(c => (c.certificateId || c.id || '').toLowerCase() === id.toLowerCase());
+          if (match) {
+            data = {
+              valid: match.revoked ? false : true,
+              revoked: !!match.revoked,
+              studentName: match.studentName || match.name,
+              courseName: match.courseName || 'Synthetic Systems Academy — AI Foundations',
+              tier: match.tier || 'Foundations',
+              certificateId: match.certificateId || match.id || id,
+              issueDate: match.issueDate || match.issuedAt || new Date().toISOString().slice(0, 10),
+              grade: match.grade || 'Certified Master Builder',
+              issuingOrganization: 'NEXVION AI Academy'
+            };
+          }
+        } catch (e) {}
+      }
+
+      document.getElementById('loadingState').style.display = 'none';
+
+      if (data && data.valid === true) {
+        document.getElementById('certStudentName').textContent = data.studentName || 'Certified Graduate';
+        document.getElementById('certCourseName').textContent = data.courseName || '—';
+        document.getElementById('certTierName').textContent = data.tier || 'Standard';
+        document.getElementById('certIdValue').textContent = data.certificateId || id;
+        document.getElementById('certIssueDate').textContent = data.issueDate || '—';
+        document.getElementById('certGrade').textContent = data.grade || 'Certified';
+        document.getElementById('certIssuingOrg').textContent = data.issuingOrganization || 'NEXVION AI Academy';
+        document.getElementById('validState').style.display = 'block';
+      } else if (data && data.revoked === true) {
+        document.getElementById('revokedStudentName').textContent = data.studentName ? `${data.studentName} (Revoked)` : 'Credential Revoked';
+        document.getElementById('revokedIdValue').textContent = data.certificateId || id;
+        document.getElementById('revokedCourseName').textContent = data.courseName || '—';
+        document.getElementById('revokedDateValue').textContent = data.revocationDate || 'Recorded';
+        document.getElementById('revokedReasonValue').textContent = data.revocationReason || 'Administrative action';
+        document.getElementById('revokedState').style.display = 'block';
+      } else {
         document.getElementById('notFoundState').style.display = 'block';
-        document.getElementById('notFoundError').textContent = 'Verification service temporarily unavailable.';
-        document.getElementById('notFoundError').style.display = 'block';
+        if (id) {
+          document.getElementById('certSearchInput').value = id;
+          document.getElementById('notFoundError').style.display = 'block';
+        }
       }
     }
 

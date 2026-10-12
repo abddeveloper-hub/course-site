@@ -694,7 +694,7 @@ async function renderNotifications() {
       if (Array.isArray(inbox) && inbox.length > 0) {
         notifications = [...inbox, ...notifications];
       }
-    } else {
+    } else if (typeof window !== 'undefined' && (window.location.port === '3000' || window.__ENABLE_LOCAL_API__)) {
       const resp = await fetch(`/api/notifications/inbox?userId=${encodeURIComponent(studentId)}`);
       if (resp.ok) {
         const data = await resp.json();

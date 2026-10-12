@@ -1451,7 +1451,7 @@
         }
 
         // 4. Asynchronously fetch backend telemetry from server.js
-        if (typeof window !== 'undefined' && window.fetch) {
+        if (typeof window !== 'undefined' && window.fetch && (window.location.port === '3000' || window.__ENABLE_LOCAL_API__)) {
           try {
             const stuRes = await Promise.race([
               fetch('/api/students'),

@@ -2,112 +2,264 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
   <meta name="theme-color" content="#101827">
-  <title>Privacy Policy — NEXVION AI Course</title>
-  <link rel="icon" type="image/png" href="icons/icon-192.png">
-  <link rel="stylesheet" href="css/style.css">
+  <title>Trust, Terms &amp; Privacy Policy — NEXVION AI Academy</title>
+  <link rel="icon" type="image/jpeg" href="Linocut_app_icon_logo_design_20261011091421.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=6.0">
+  <link rel="stylesheet" href="css/synthetic-systems.css?v=2.0">
   <style>
     body {
-      background-color: #0b0f19;
+      background-color: #08090d;
       color: #e2e8f0;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       line-height: 1.7;
       margin: 0;
       padding: 0;
+      overflow-x: hidden;
     }
-    .privacy-container {
-      max-width: 800px;
-      margin: 40px auto;
-      padding: 24px;
-      background: #111827;
-      border: 1px solid rgba(255, 255, 255, 0.08);
+    .legal-page-wrap {
+      max-width: 900px;
+      margin: 40px auto 80px auto;
+      padding: 0 20px;
+    }
+    .legal-nav-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 32px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: rgba(99, 102, 241, 0.12);
+      border: 1px solid rgba(99, 102, 241, 0.28);
+      color: #a5b4fc;
+      border-radius: 8px;
+      font-weight: 500;
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
+    }
+    .back-btn:hover {
+      background: rgba(99, 102, 241, 0.22);
+      color: #ffffff;
+      transform: translateX(-2px);
+    }
+    .legal-toc {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 40px;
+      padding: 16px;
+      background: rgba(17, 24, 39, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      backdrop-filter: blur(12px);
+    }
+    .legal-toc a {
+      color: #94a3b8;
+      font-size: 0.85rem;
+      padding: 6px 12px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.03);
+      text-decoration: none;
+      transition: all 0.2s ease;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .legal-toc a:hover {
+      color: #a5b4fc;
+      background: rgba(99, 102, 241, 0.15);
+    }
+    .legal-card {
+      background: #0f1117;
+      border: 1px solid rgba(255, 255, 255, 0.07);
       border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      padding: 32px;
+      margin-bottom: 32px;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4);
+      position: relative;
+    }
+    .legal-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #6366f1, #a855f7, transparent);
+      border-radius: 16px 16px 0 0;
     }
     h1 {
-      font-size: 2rem;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2.25rem;
+      font-weight: 700;
       color: #ffffff;
-      border-bottom: 2px solid #6366f1;
-      padding-bottom: 12px;
-      margin-bottom: 24px;
+      margin: 0 0 12px 0;
+      letter-spacing: -0.02em;
     }
     h2 {
-      font-size: 1.3rem;
-      color: #818cf8;
-      margin-top: 32px;
-      margin-bottom: 12px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.45rem;
+      font-weight: 600;
+      color: #ffffff;
+      margin: 0 0 16px 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-badge {
+      font-size: 0.72rem;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: rgba(99, 102, 241, 0.15);
+      color: #a5b4fc;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 500;
+      text-transform: uppercase;
     }
     p, li {
       color: #94a3b8;
-      font-size: 1rem;
+      font-size: 0.95rem;
+      line-height: 1.75;
     }
     ul {
       padding-left: 24px;
-    }
-    a {
-      color: #818cf8;
-      text-decoration: none;
-    }
-    a:hover {
-      text-decoration: underline;
-    }
-    .back-btn {
-      display: inline-block;
       margin-bottom: 20px;
-      padding: 8px 16px;
-      background: rgba(99, 102, 241, 0.15);
-      color: #818cf8;
-      border-radius: 8px;
-      font-weight: 500;
+    }
+    li {
+      margin-bottom: 8px;
+    }
+    strong {
+      color: #f1f5f9;
+    }
+    .callout-box {
+      background: rgba(99, 102, 241, 0.08);
+      border-left: 3px solid #6366f1;
+      padding: 16px 20px;
+      border-radius: 0 8px 8px 0;
+      margin: 20px 0;
+      font-size: 0.9rem;
+      color: #cbd5e1;
     }
   </style>
 </head>
 <body>
-  <div class="privacy-container">
-    <a href="index.html" class="back-btn">&larr; Back to NEXVION AI</a>
-    <h1>Privacy Policy</h1>
-    <p>Last updated: October 2026</p>
+  <div class="legal-page-wrap">
+    
+    <header class="legal-nav-header">
+      <a href="index.html" class="back-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+        <span>Back to NEXVION AI</span>
+      </a>
+      <div style="font-size: 0.8rem; color: #64748b; font-family: 'JetBrains Mono', monospace;">SPEC-2026 // LEGAL &amp; GOVERNANCE</div>
+    </header>
 
-    <p>Welcome to <strong>NEXVION AI Course</strong> ("we", "our", or "us"). We respect your privacy and are committed to protecting the personal data you share with us through our mobile application and web services.</p>
+    <div style="margin-bottom: 24px;">
+      <h1>Trust, Governance &amp; Policy Hub</h1>
+      <p>Institutional policies, student academic honor codes, cohort capacity guarantees, and cryptographic data protection standards.</p>
+    </div>
 
-    <h2>1. Information We Collect</h2>
-    <p>When you use the NEXVION AI Course application, we may collect the following information:</p>
-    <ul>
-      <li><strong>Account Information:</strong> Name, email address, and profile credentials provided during registration.</li>
-      <li><strong>Learning Progress:</strong> Course progression, quiz completions, assignment submissions, and certificate verifications.</li>
-      <li><strong>Device and Usage Information:</strong> Device model, operating system version, app performance analytics, and diagnostic logs to enhance stability.</li>
-    </ul>
+    <!-- Table of Contents -->
+    <nav class="legal-toc" aria-label="Policy Sections">
+      <a href="#privacy">01. Privacy Policy</a>
+      <a href="#terms">02. Terms &amp; Conditions</a>
+      <a href="#honor-code">03. Academic Honor Code</a>
+      <a href="#cohort-policy">04. 30-Seat Cohort Policy</a>
+      <a href="#security">05. Security Overview</a>
+    </nav>
 
-    <h2>2. How We Use Your Information</h2>
-    <p>We use the collected information solely for:</p>
-    <ul>
-      <li>Providing access to curriculum, courses, and interactive AI learning modules.</li>
-      <li>Issuing and verifying verified certificates of completion.</li>
-      <li>Sending essential course updates, security alerts, and administrative notifications.</li>
-      <li>Improving platform stability, security, and user experience.</li>
-    </ul>
+    <!-- 1. PRIVACY POLICY -->
+    <section class="legal-card" id="privacy">
+      <h2>
+        <span>01. Privacy Policy</span>
+        <span class="section-badge">Data Protection</span>
+      </h2>
+      <p>Last updated: October 2026. NEXVION AI Academy ("we", "our", or "us") respects your privacy and is dedicated to securing student data across mobile and web platforms.</p>
+      
+      <p><strong>Information Collected:</strong></p>
+      <ul>
+        <li><strong>Learner Identification:</strong> Name, authenticated email, and cohort badge IDs.</li>
+        <li><strong>Curriculum Progress:</strong> Real-time lesson completions, quiz outcomes, capstone repository links, and certificate verifications.</li>
+        <li><strong>Telemetry &amp; Audit Logs:</strong> Cryptographic token exchanges, device platform signatures, and access timestamps for academic verification.</li>
+      </ul>
 
-    <h2>3. Data Protection and Security</h2>
-    <p>We implement strict security measures, including HTTPS encryption and secure database controls via Firebase and Google Cloud infrastructure, to safeguard your personal data from unauthorized access, disclosure, or alteration.</p>
+      <p><strong>Information Usage:</strong> Student data is utilized exclusively for personalized learning roadmaps, peer capstone reviews, authenticated certificate issuance, and crucial cohort scheduling updates. We do not sell learner data.</p>
+    </section>
 
-    <h2>4. Third-Party Services</h2>
-    <p>Our application utilizes trusted third-party infrastructure providers:</p>
-    <ul>
-      <li><strong>Google Firebase:</strong> For secure authentication and encrypted cloud database management.</li>
-      <li><strong>Payment Gateways:</strong> For encrypted, PCI-DSS compliant checkout transactions. We never store payment card credentials on our servers.</li>
-    </ul>
+    <!-- 2. TERMS & CONDITIONS -->
+    <section class="legal-card" id="terms">
+      <h2>
+        <span>02. Terms &amp; Conditions</span>
+        <span class="section-badge">Student Agreement</span>
+      </h2>
+      <p>By registering, accessing curriculum repositories, or enrolling in any NEXVION AI tier, you agree to these Terms of Service.</p>
+      <ul>
+        <li><strong>Curriculum License:</strong> All proprietary course materials, prompt templates, agent frameworks, and video walkthroughs are licensed for individual learner education and may not be redistributed or resold.</li>
+        <li><strong>Account Integrity:</strong> Learner accounts and authentication credentials are non-transferable. Multiple simultaneous logins from disparate geographic regions trigger automated security audits.</li>
+        <li><strong>Cohort Access:</strong> Admission into advanced paid tiers (AI Builder, AI Creator, AI Architect) is granted on a per-batch basis and remains active through your enrolled session timeline and perpetual archived access.</li>
+      </ul>
+    </section>
 
-    <h2>5. Children's Privacy</h2>
-    <p>Our platform does not knowingly collect personal identifiable information from children under the age of 13 without verified parental consent.</p>
+    <!-- 3. ACADEMIC HONOR CODE -->
+    <section class="legal-card" id="honor-code">
+      <h2>
+        <span>03. Academic Honor Code</span>
+        <span class="section-badge">Authentic Engineering</span>
+      </h2>
+      <p>NEXVION AI teaches mastery of autonomous AI tools, modern language models, and agentic workflows. Ethical, transparent AI engineering is foundational to our community.</p>
+      
+      <div class="callout-box">
+        <strong>The NEXVION Builder Pledge:</strong> "I commit to understanding every line of code generated with AI assistance, architecting systems with transparency, and delivering capstone projects that represent my authentic understanding."
+      </div>
 
-    <h2>6. Your Rights</h2>
-    <p>You have the right to request access to your data, update inaccuracies, or request account deletion at any time by contacting our support team.</p>
+      <ul>
+        <li><strong>Attribution:</strong> Capstone submissions utilizing synthetic datasets, fine-tuned weights, or external open-source APIs must declare dependencies clearly in the project README.</li>
+        <li><strong>Peer Reviews:</strong> Learners participate in respectful, constructive peer critiques during weekly cohort code walks.</li>
+        <li><strong>Certificate Authenticity:</strong> Credentials issued by NEXVION AI attest to rigorous hands-on project completion. Falsifying submission artifacts results in immediate revocation.</li>
+      </ul>
+    </section>
 
-    <h2>7. Contact Us</h2>
-    <p>If you have any questions or concerns regarding this Privacy Policy, please contact us at:</p>
-    <p>Email: <a href="mailto:support@nexvion.ai">support@nexvion.ai</a><br>
-    Website: <a href="https://nexvion-ai.web.app" target="_blank">https://nexvion-ai.web.app</a></p>
+    <!-- 4. 30-SEAT COHORT POLICY -->
+    <section class="legal-card" id="cohort-policy">
+      <h2>
+        <span>04. 30-Seat Cohort Policy</span>
+        <span class="section-badge">Capacity Guarantee</span>
+      </h2>
+      <p>To preserve high-impact mentor interaction, code reviews, and live architectural design reviews, each learning batch is strictly capped at <strong>30 active learners</strong>.</p>
+      <ul>
+        <li><strong>Waitlist Prioritization:</strong> When an active batch reaches 30 seats, new enrollments are automatically routed to the prioritized waitlist for the subsequent cohort.</li>
+        <li><strong>Dedicated Mentorship Ratio:</strong> Capped batches guarantee that every student receives personalized code reviews on capstones from lead mentors.</li>
+        <li><strong>Seat Reservation:</strong> Priority reservations are held for 48 hours following batch unlock announcements before releasing to open waitlists.</li>
+      </ul>
+    </section>
+
+    <!-- 5. SECURITY OVERVIEW -->
+    <section class="legal-card" id="security">
+      <h2>
+        <span>05. Security Overview</span>
+        <span class="section-badge">Zero Trust Security</span>
+      </h2>
+      <p>NEXVION AI utilizes an enterprise-grade, defense-in-depth security infrastructure across all web, Android, and backend services.</p>
+      <ul>
+        <li><strong>End-to-End Encryption:</strong> All client-server communications operate strictly over TLS 1.3 / HTTPS encryption.</li>
+        <li><strong>Role-Based Access Control (RBAC):</strong> Administrative operations utilize granular role authorization (Owner, Super Admin, Academic Director, Student Manager) with complete immutable audit logs.</li>
+        <li><strong>Payment PCI-DSS Compliance:</strong> Payment processing is handled via tokenized secure gateways. No raw payment credentials ever touch our application databases.</li>
+        <li><strong>Credential Verification:</strong> Public certificate validation is verified against cryptographically stamped serial IDs to prevent credential tampering.</li>
+      </ul>
+    </section>
+
+    <footer style="text-align: center; color: #64748b; font-size: 0.85rem; padding: 20px 0;">
+      © 2026 NEXVION AI Academy. All rights reserved. • Inquiries: <a href="mailto:support@nexvion.ai" style="color: #818cf8; text-decoration: none;">support@nexvion.ai</a>
+    </footer>
+
   </div>
 </body>
 </html>

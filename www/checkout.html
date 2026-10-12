@@ -696,13 +696,15 @@
       };
 
       async function fetchPricingConfig() {
-        try {
-          const res = await fetch('/api/payments/config');
-          if (res.ok) {
-            return await res.json();
+        if (window.location.port === '3000' || window.__ENABLE_LOCAL_API__) {
+          try {
+            const res = await fetch('/api/payments/config');
+            if (res.ok) {
+              return await res.json();
+            }
+          } catch (e) {
+            console.warn('API config fallback to local repository:', e);
           }
-        } catch (e) {
-          console.warn('API config fallback to local repository:', e);
         }
         return {
           country: 'US',
@@ -1008,66 +1010,72 @@
         const btn = document.getElementById('btnInitiateCheckout');
         if (btn) btn.disabled = true;
 
-        try {
-          const res = await fetch('/api/payments/create-checkout-session', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              studentId: studentDetails.studentId,
-              studentName: studentDetails.studentName,
-              studentEmail: studentDetails.studentEmail,
-              tierId: selectedTierId,
-              courseId: selectedTierId
-            })
-          });
-
-          const data = await res.json();
-          if (data.freeTier) {
-            // Free enrollment succeeded without payment
-            currentState = 'success';
-            currentSessionData = data;
-            render();
-            return;
-          }
-
-          if (data.comingSoon) {
-            alert('Cohort seat reserved! Official fee schedule is coming soon.');
-            currentState = 'selection';
-            render();
-            return;
-          }
-
-          if (data.success) {
-            currentSessionData = data;
-            activeTx = data.transactionRef;
-            activeSessionId = data.sessionId;
-            currentState = 'session_active';
-            render();
-          } else {
-            alert('Checkout initialization failed: ' + (data.error || 'Server error'));
-            if (btn) btn.disabled = false;
-          }
-        } catch (e) {
-          console.warn('Backend createCheckoutSession error, using local Services:', e);
-          if (Services?.createCheckoutSession) {
-            const result = await Services.createCheckoutSession({
-              studentId: studentDetails.studentId,
-              studentName: studentDetails.studentName,
-              studentEmail: studentDetails.studentEmail,
-              tierId: selectedTierId,
-              courseId: selectedTierId
+        if (window.location.port === '3000' || window.__ENABLE_LOCAL_API__) {
+          try {
+            const res = await fetch('/api/payments/create-checkout-session', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                studentId: studentDetails.studentId,
+                studentName: studentDetails.studentName,
+                studentEmail: studentDetails.studentEmail,
+                tierId: selectedTierId,
+                courseId: selectedTierId
+              })
             });
-            if (result.freeTier) {
+
+            const data = await res.json();
+            if (data.freeTier) {
+              // Free enrollment succeeded without payment
               currentState = 'success';
-              currentSessionData = result;
-            } else if (result.comingSoon) {
-              alert('Cohort seat reserved! Official tuition price coming soon.');
-            } else {
-              currentSessionData = result;
-              currentState = 'session_active';
+              currentSessionData = data;
+              render();
+              return;
             }
-            render();
+
+            if (data.comingSoon) {
+              alert('Cohort seat reserved! Official fee schedule is coming soon.');
+              currentState = 'selection';
+              render();
+              return;
+            }
+
+            if (data.success) {
+              currentSessionData = data;
+              activeTx = data.transactionRef;
+              activeSessionId = data.sessionId;
+              currentState = 'session_active';
+              render();
+              return;
+            } else {
+              alert('Checkout initialization failed: ' + (data.error || 'Server error'));
+              if (btn) btn.disabled = false;
+              return;
+            }
+          } catch (e) {
+            console.warn('Backend createCheckoutSession error, using local Services:', e);
           }
+        }
+
+        // Direct local Services handling for static / client-side operation
+        if (Services?.createCheckoutSession) {
+          const result = await Services.createCheckoutSession({
+            studentId: studentDetails.studentId,
+            studentName: studentDetails.studentName,
+            studentEmail: studentDetails.studentEmail,
+            tierId: selectedTierId,
+            courseId: selectedTierId
+          });
+          if (result.freeTier) {
+            currentState = 'success';
+            currentSessionData = result;
+          } else if (result.comingSoon) {
+            alert('Cohort seat reserved! Official tuition price coming soon.');
+          } else {
+            currentSessionData = result;
+            currentState = 'session_active';
+          }
+          render();
         }
       }
 
@@ -1076,60 +1084,68 @@
         const btn = document.getElementById('btnSimulateSuccess');
         if (btn) btn.disabled = true;
 
-        try {
-          // Trusted Server-Side Verification Call
-          const res = await fetch('/api/payments/verify-payment', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              transactionRef: currentSessionData.transactionRef,
-              studentId: studentDetails.studentId,
-              amount: currentSessionData.amount,
-              currency: currentSessionData.currency
-            })
-          });
-
-          const data = await res.json();
-          if (data.verified) {
-            currentState = 'success';
-            render();
-          } else {
-            alert('Verification rejected by server: ' + (data.error || 'Check sum failed'));
-            currentState = 'failed';
-            render();
-          }
-        } catch (e) {
-          // Fallback to local services verifyPayment
-          if (Services?.verifyPayment) {
-            const vRes = await Services.verifyPayment({
-              transactionRef: currentSessionData.transactionRef,
-              studentId: studentDetails.studentId,
-              actualAmount: currentSessionData.amount
+        if (window.location.port === '3000' || window.__ENABLE_LOCAL_API__) {
+          try {
+            // Trusted Server-Side Verification Call
+            const res = await fetch('/api/payments/verify-payment', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                transactionRef: currentSessionData.transactionRef,
+                studentId: studentDetails.studentId,
+                amount: currentSessionData.amount,
+                currency: currentSessionData.currency
+              })
             });
-            if (vRes.verified) {
+
+            const data = await res.json();
+            if (data.verified) {
               currentState = 'success';
               render();
+              return;
+            } else {
+              alert('Verification rejected by server: ' + (data.error || 'Check sum failed'));
+              currentState = 'failed';
+              render();
+              return;
             }
+          } catch (e) {
+            console.warn('Server verify-payment failed, using local Services:', e);
+          }
+        }
+
+        // Fallback to local services verifyPayment
+        if (Services?.verifyPayment) {
+          const vRes = await Services.verifyPayment({
+            transactionRef: currentSessionData.transactionRef,
+            studentId: studentDetails.studentId,
+            actualAmount: currentSessionData.amount
+          });
+          if (vRes.verified) {
+            currentState = 'success';
+            render();
           }
         }
       }
 
       async function handleSimulateDecline() {
         if (!currentSessionData) return;
-        try {
-          await fetch('/api/payments/webhook', {
-            method: 'POST',
-            headers: { 
-              'Content-Type': 'application/json',
-              'x-nexvion-signature': 'sim_sig_decline'
-            },
-            body: JSON.stringify({
-              id: 'evt_decline_' + Date.now(),
-              type: 'payment.failed',
-              transactionRef: currentSessionData.transactionRef
-            })
-          });
-        } catch (e) {}
+        if (window.location.port === '3000' || window.__ENABLE_LOCAL_API__) {
+          try {
+            await fetch('/api/payments/webhook', {
+              method: 'POST',
+              headers: { 
+                'Content-Type': 'application/json',
+                'x-nexvion-signature': 'sim_sig_decline'
+              },
+              body: JSON.stringify({
+                id: 'evt_decline_' + Date.now(),
+                type: 'payment.failed',
+                transactionRef: currentSessionData.transactionRef
+              })
+            });
+          } catch (e) {}
+        }
 
         if (Services?.handleFailedPayment) {
           await Services.handleFailedPayment(currentSessionData.transactionRef, 'Simulated gateway decline');
@@ -1140,20 +1156,22 @@
 
       async function handleCancelSession() {
         if (!currentSessionData) return;
-        try {
-          await fetch('/api/payments/webhook', {
-            method: 'POST',
-            headers: { 
-              'Content-Type': 'application/json',
-              'x-nexvion-signature': 'sim_sig_cancel'
-            },
-            body: JSON.stringify({
-              id: 'evt_cancel_' + Date.now(),
-              type: 'payment.cancelled',
-              transactionRef: currentSessionData.transactionRef
-            })
-          });
-        } catch (e) {}
+        if (window.location.port === '3000' || window.__ENABLE_LOCAL_API__) {
+          try {
+            await fetch('/api/payments/webhook', {
+              method: 'POST',
+              headers: { 
+                'Content-Type': 'application/json',
+                'x-nexvion-signature': 'sim_sig_cancel'
+              },
+              body: JSON.stringify({
+                id: 'evt_cancel_' + Date.now(),
+                type: 'payment.cancelled',
+                transactionRef: currentSessionData.transactionRef
+              })
+            });
+          } catch (e) {}
+        }
 
         if (Services?.handleCancelledPayment) {
           await Services.handleCancelledPayment(currentSessionData.transactionRef, 'Student cancelled checkout session');
