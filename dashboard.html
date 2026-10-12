@@ -181,31 +181,31 @@
                 </div>
               </div>
               <!-- Web Push Notifications Enable Card -->
-              <div class="push-notif-card" style="padding: 10px 12px; margin-bottom: 8px; background: rgba(127, 82, 255, 0.08); border: 1px solid rgba(127, 82, 255, 0.2); border-radius: 8px; display: flex; flex-direction: column; gap: 8px;">
+              <div class="push-notif-card" style="padding: 10px 12px; margin-bottom: 8px; background: #F8FAFC; border: 1px solid rgba(127, 82, 255, 0.25); border-radius: 8px; display: flex; flex-direction: column; gap: 8px;">
                 <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px;">
                   <div style="min-width: 0; flex: 1;">
-                    <div style="font-size: 0.75rem; font-weight: 700; color: #FFFFFF; display: flex; align-items: center; gap: 5px;">
+                    <div style="font-size: 0.75rem; font-weight: 700; color: #0F172A; display: flex; align-items: center; gap: 5px;">
                       <span>⚡ Push Alerts (Windows / Mobile)</span>
                     </div>
-                    <p id="notificationStatus" role="status" style="margin: 2px 0 0; font-size: 0.6875rem; color: #94A3B8; line-height: 1.25;">
+                    <p id="notificationStatus" role="status" style="margin: 2px 0 0; font-size: 0.6875rem; color: #64748B; line-height: 1.25;">
                       Notifications are not enabled yet.
                     </p>
                   </div>
-                  <button id="enableNotifications" type="button" class="btn btn-primary" style="font-size: 0.7rem; padding: 5px 10px; white-space: nowrap; flex-shrink: 0;">
+                  <button id="enableNotifications" type="button" class="btn btn-primary" style="font-size: 0.7rem; padding: 5px 10px; white-space: nowrap; flex-shrink: 0; background: #7F52FF; color: #FFFFFF;">
                     Enable Notifications
                   </button>
                 </div>
                 <!-- Action Buttons: Immediate Test & 5s Countdown Test -->
-                <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; padding-top: 4px; border-top: 1px solid rgba(255,255,255,0.06);">
-                  <div style="display: flex; gap: 4px;">
-                    <button id="btnTestPushOutside" type="button" onclick="window.NexvionNotifications && window.NexvionNotifications.sendTestAlert(0)" class="btn btn-secondary" style="font-size: 0.65rem; padding: 3px 8px; white-space: nowrap; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #E2E8F0;" title="Triggers a desktop alert right away">
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; padding-top: 6px; border-top: 1px solid #E2E8F0;">
+                  <div style="display: flex; gap: 4px; flex-wrap: wrap;">
+                    <button id="btnTestPushOutside" type="button" onclick="window.NexvionNotifications && window.NexvionNotifications.sendTestAlert(0)" class="btn" style="font-size: 0.65rem; padding: 3px 8px; white-space: nowrap; background: #FFFFFF; border: 1px solid #CBD5E1; color: #334155; font-weight: 600;" title="Triggers a desktop alert right away">
                       🔔 Test Now
                     </button>
-                    <button id="btnTestPushDelayed" type="button" onclick="window.NexvionNotifications && window.NexvionNotifications.sendTestAlert(5)" class="btn btn-secondary" style="font-size: 0.65rem; padding: 3px 8px; white-space: nowrap; background: rgba(127,82,255,0.18); border: 1px solid rgba(127,82,255,0.35); color: #C4B5FD;" title="Fires in 5 seconds so you have time to minimize the window and see it pop up outside the browser">
+                    <button id="btnTestPushDelayed" type="button" onclick="window.NexvionNotifications && window.NexvionNotifications.sendTestAlert(5)" class="btn" style="font-size: 0.65rem; padding: 3px 8px; white-space: nowrap; background: rgba(127,82,255,0.1); border: 1px solid rgba(127,82,255,0.3); color: #6D28D9; font-weight: 600;" title="Fires in 5 seconds so you have time to minimize the window and see it pop up outside the browser">
                       ⏱️ Test in 5s (Minimize)
                     </button>
                   </div>
-                  <button type="button" onclick="window.NexvionNotifications && window.NexvionNotifications.showWindowsFixGuide()" style="background: none; border: none; font-size: 0.65rem; color: #94A3B8; text-decoration: underline; cursor: pointer; padding: 0;">
+                  <button type="button" onclick="window.NexvionNotifications && window.NexvionNotifications.showWindowsFixGuide()" style="background: none; border: none; font-size: 0.65rem; color: #7F52FF; font-weight: 600; text-decoration: underline; cursor: pointer; padding: 0;">
                     Windows fix?
                   </button>
                 </div>

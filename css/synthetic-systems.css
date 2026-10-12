@@ -2082,11 +2082,12 @@ p, .hero-lead, .card-desc, .project-card-desc, .faq-answer {
 
 .welcome-title {
   font-family: var(--font-display);
-  font-size: 22px;
+  font-size: clamp(17px, 4.5vw, 22px);
   font-weight: 700;
   color: var(--neutral-obsidian);
   margin: 0;
   letter-spacing: -0.015em;
+  line-height: 1.3;
 }
 
 .welcome-subtitle {
@@ -3993,10 +3994,12 @@ textarea.form-input:focus {
 
 @media (max-width: 640px) {
   .dash-realtime-banner {
-    top: 12px;
+    top: calc(64px + env(safe-area-inset-top, 0px));
     left: 12px;
     right: 12px;
     max-width: none;
+    box-shadow: 0 10px 32px rgba(0, 0, 0, 0.4);
+    z-index: 2100;
   }
 }
 
@@ -4347,11 +4350,6 @@ textarea.form-input:focus {
   margin-bottom: 24px;
   white-space: pre-wrap;
   word-break: break-word;
-}
-  align-items: center;
-  gap: 10px;
-  font-size: 13.5px;
-  color: var(--on-surface-variant);
 }
 
 .dash-toast {

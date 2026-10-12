@@ -1088,6 +1088,11 @@ function playNotificationChime() {
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
     if (!AudioCtx) return;
     const ctx = new AudioCtx();
+    if (ctx.state === 'suspended') {
+      // Audio autoplay policy on mobile requires prior user tap
+      ctx.close().catch(() => {});
+      return;
+    }
     const now = ctx.currentTime;
 
     // Chime Note 1: 880 Hz
