@@ -997,9 +997,12 @@ function initPwaServiceWorker() {
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       // Respect both root deployment and subpath deployments (/course-site/)
-      const swPath = window.location.pathname.startsWith('/course-site') ? '/course-site/sw.js' : 'sw.js';
-      navigator.serviceWorker.register(swPath).catch((err) => {
-        console.warn('PWA service worker registration skipped:', err);
+      // Unify on firebase-messaging-sw.js so PWA and FCM share a single authoritative Service Worker
+      const swPath = window.location.pathname.startsWith('/course-site')
+        ? '/course-site/firebase-messaging-sw.js'
+        : './firebase-messaging-sw.js';
+      navigator.serviceWorker.register(swPath, { scope: './' }).catch((err) => {
+        console.warn('Service worker registration skipped:', err);
       });
     });
   }

@@ -260,8 +260,13 @@ service cloud.firestore {
 
     match /notifications/{notificationId} {
       allow read: if true;
-      allow create, update: if isStudentManager() || isSuperAdmin();
+      allow create, update: if isStudentManager() || isSuperAdmin() || isOwner();
       allow delete: if false;
+    }
+
+    // Student Web Push Device Tokens (Step 6)
+    match /users/{userId}/devices/{deviceId} {
+      allow read, create, update, delete: if isAuthenticated() && request.auth.uid == userId;
     }
 
     match /deviceTokens/{tokenId} {

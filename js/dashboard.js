@@ -1129,6 +1129,34 @@ function triggerRealtimeNotificationAlert(item) {
   }
 
   showRealtimeBanner(item);
+
+  // CRITICAL FIX: Display outside-the-browser notification toast on Windows / Mac / Android
+  if (window.NexvionNotifications && typeof window.NexvionNotifications.displaySystemNotification === 'function') {
+    window.NexvionNotifications.displaySystemNotification(item.title || 'NEXVION AI', {
+      body: item.message || 'You have a new update from Academy.',
+      tag: 'rt-notif-' + (item.id || Date.now()),
+      data: { url: './dashboard.html', id: item.id }
+    });
+  } else if ('Notification' in window && Notification.permission === 'granted') {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.ready.then((reg) => {
+        reg.showNotification(item.title || 'NEXVION AI', {
+          body: item.message || 'You have a new update from Academy.',
+          icon: './icons/icon-192.png',
+          badge: './icons/icon-192.png',
+          requireInteraction: true,
+          tag: 'rt-notif-' + (item.id || Date.now())
+        });
+      }).catch(() => {});
+    } else {
+      try {
+        new Notification(item.title || 'NEXVION AI', {
+          body: item.message || 'You have a new update from Academy.',
+          icon: './icons/icon-192.png'
+        });
+      } catch(e) {}
+    }
+  }
 }
 
 let bannerTimeout = null;
