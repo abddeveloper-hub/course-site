@@ -836,6 +836,46 @@
   </div>
 
   <!-- =========================================================================
+       MODAL 5: VIDEO & CLASS PLAYER MODAL
+       ========================================================================= -->
+  <div class="dash-modal-backdrop" id="videoPlayerModalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalVideoPlayerTitle" style="padding: 12px; z-index: 1050;">
+    <div class="dash-modal-box video-player-modal-box" style="max-width: 860px; width: 100%; padding: 20px; background: #0F172A; color: #F8FAFC; border: 1px solid rgba(255,255,255,0.12); border-radius: 16px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.7);">
+      <button class="dash-modal-close" onclick="closeVideoPlayerModal()" aria-label="Close video player" style="color: #94A3B8; top: 14px; right: 14px; z-index: 10; font-size: 20px;">✕</button>
+      
+      <!-- Video Header -->
+      <div style="margin-bottom: 14px; padding-right: 32px;">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px; flex-wrap: wrap;">
+          <span class="video-badge" id="videoPlayerBadge" style="background: rgba(6, 182, 212, 0.15); color: #06B6D4; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 6px; letter-spacing: 0.05em; text-transform: uppercase;">🎥 AI FOUNDATIONS • CLASS 01</span>
+          <span id="videoPlayerDurationBadge" style="font-size: 11px; color: #94A3B8; background: rgba(255,255,255,0.06); padding: 3px 8px; border-radius: 6px;">25:00</span>
+          <span style="font-size: 11px; color: #10B981; font-weight: 600;">● 1080p HD</span>
+        </div>
+        <h3 id="modalVideoPlayerTitle" style="font-size: 1.25rem; font-weight: 700; color: #FFFFFF; margin: 0; line-height: 1.3;">SECTION 1 Introduction to AI</h3>
+      </div>
+
+      <!-- Responsive Video Player Container (16:9) -->
+      <div class="video-responsive-wrap" style="position: relative; width: 100%; padding-bottom: 56.25%; height: 0; border-radius: 12px; overflow: hidden; background: #000; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5);">
+        <iframe id="videoPlayerIframe" src="" title="Course Video Lesson" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"></iframe>
+      </div>
+
+      <!-- Video Controls & Metadata Bar -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px; flex-wrap: wrap; gap: 12px;">
+        <div>
+          <div id="videoPlayerCourseName" style="font-size: 0.8125rem; color: #94A3B8;">Course: <strong style="color: #F1F5F9;">AI Foundations</strong></div>
+          <div id="videoPlayerSubtitle" style="font-size: 0.75rem; color: #64748B; margin-top: 2px;">Official Lecture Recording • Synthetic Systems Academy</div>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <button type="button" class="btn btn-secondary" id="btnMarkVideoWatched" onclick="toggleCurrentVideoWatched()" style="font-size: 0.82rem; padding: 8px 14px; background: rgba(255,255,255,0.08); color: #F1F5F9; border: 1px solid rgba(255,255,255,0.15);">
+            <span id="btnMarkVideoWatchedText">✓ Mark as Completed</span>
+          </button>
+          <button type="button" class="btn btn-primary" onclick="closeVideoPlayerModal()" style="font-size: 0.82rem; padding: 8px 16px;">
+            Done Watching
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
        FLOATING TOAST NOTIFICATION
        ========================================================================= -->
   <div class="dash-toast" id="dashToast" role="status" aria-live="polite">

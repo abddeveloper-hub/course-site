@@ -263,6 +263,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderResources();
   renderNotifications();
   initRealtimeNotifications();
+  initRealtimeVideos();
   checkAndRegisterClientDevice();
   initUIInteractions();
 });
@@ -378,11 +379,30 @@ function renderCurrentCourse() {
   const nxtTitle = document.getElementById('continueClassTitle');
   const nxtDesc = document.getElementById('nextClassDesc');
   const nxtMeta = document.getElementById('nextClassMeta');
+  const btnContinue = document.getElementById('btnContinueClass');
 
   if (nxtTag) nxtTag.textContent = nxt.moduleTag;
   if (nxtTitle) nxtTitle.textContent = nxt.title;
   if (nxtDesc) nxtDesc.textContent = nxt.description;
   if (nxtMeta) nxtMeta.textContent = `${nxt.type} • ${nxt.duration}`;
+
+  if (btnContinue) {
+    if (nxt.video || nxt.videoId) {
+      btnContinue.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <polygon points="5 3 19 12 5 21 5 3"></polygon>
+        </svg>
+        <span>WATCH LESSON (${nxt.duration || '25:00'})</span>
+      `;
+    } else {
+      btnContinue.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <polygon points="5 3 19 12 5 21 5 3"></polygon>
+        </svg>
+        <span>CLASSES STARTING SOON</span>
+      `;
+    }
+  }
 
   // 4-Metrics Grid
   const mProgress = document.getElementById('metricCourseProgress');
@@ -474,11 +494,21 @@ function renderModules() {
 }
 
 /**
- * Render Recent Classes
+ * Render Recent Classes & Video Lectures
  */
 function renderRecentClasses() {
   const container = document.getElementById('recentClassesContainer');
   if (!container) return;
+
+  const countBadge = document.querySelector('#recentClassesSection .dash-section-header span');
+  if (countBadge) {
+    if (DASHBOARD_DATA.recentClasses && DASHBOARD_DATA.recentClasses.length > 0) {
+      const completedCount = DASHBOARD_DATA.recentClasses.filter(c => c.status === 'completed').length;
+      countBadge.textContent = `${completedCount} of ${DASHBOARD_DATA.recentClasses.length} Completed`;
+    } else {
+      countBadge.textContent = '0 Completed';
+    }
+  }
 
   if (!DASHBOARD_DATA.recentClasses || DASHBOARD_DATA.recentClasses.length === 0) {
     container.innerHTML = `
@@ -493,21 +523,38 @@ function renderRecentClasses() {
 
   container.innerHTML = DASHBOARD_DATA.recentClasses.map(cls => {
     const isCompleted = cls.status === 'completed';
-    const iconColor = isCompleted ? '#10B981' : 'var(--accent-purple-light)';
-    const statusText = isCompleted ? 'Completed' : 'In Progress';
+    const hasVideo = !!(cls.video || cls.videoId);
+    const clickAction = hasVideo
+      ? `openVideoPlayerModal('${escapeHtml(cls.videoId || cls.id)}')`
+      : `handleClassClick('${escapeHtml(cls.title)}', '${cls.status}')`;
 
     return `
-      <div class="recent-class-item" onclick="handleClassClick('${escapeHtml(cls.title)}', '${cls.status}')" style="cursor: pointer;" title="Click to view class details">
-        <div class="recent-class-left">
-          <span style="color: ${iconColor}; font-weight: 800; font-size: 0.875rem;">${cls.icon}</span>
-          <div>
-            <div class="recent-class-title">${escapeHtml(cls.title)}</div>
-            <div class="recent-class-meta">${cls.module} • ${cls.duration}</div>
+      <div class="recent-class-item" onclick="${clickAction}" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; gap: 12px;" title="${hasVideo ? 'Click to watch lesson: ' + escapeHtml(cls.title) : 'Click to view class details'}">
+        <div class="recent-class-left" style="display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0;">
+          ${cls.thumbnailUrl ? `
+            <div style="position: relative; width: 68px; height: 42px; flex-shrink: 0; border-radius: 6px; overflow: hidden; background: #0F172A; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+              <img src="${escapeHtml(cls.thumbnailUrl)}" alt="${escapeHtml(cls.title)}" style="width: 100%; height: 100%; object-fit: cover;">
+              <div style="position: absolute; inset: 0; background: rgba(0,0,0,0.35); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 11px;">▶</div>
+            </div>
+          ` : `
+            <div style="width: 38px; height: 38px; border-radius: 8px; background: rgba(127, 82, 255, 0.12); color: var(--primary, #7F52FF); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; flex-shrink: 0;">
+              ${cls.icon || '▶'}
+            </div>
+          `}
+          <div style="flex: 1; min-width: 0;">
+            <div class="recent-class-title" style="font-size: 0.84rem; font-weight: 600; color: var(--neutral-obsidian, #0F172A); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+              ${escapeHtml(cls.title)}
+            </div>
+            <div class="recent-class-meta" style="font-size: 0.72rem; color: var(--text-muted, #94A3B8); margin-top: 2px;">
+              ${escapeHtml(cls.module)} • ${escapeHtml(cls.duration || '25:00')} ${cls.resolution ? '• ' + escapeHtml(cls.resolution) : ''}
+            </div>
           </div>
         </div>
-        <span style="font-size: 0.6875rem; font-weight: 700; color: ${iconColor};">
-          ${statusText}
-        </span>
+        <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
+          <span class="mod-status-badge" style="font-size: 0.6875rem; padding: 4px 10px; border-radius: 6px; font-weight: 700; ${isCompleted ? 'background: rgba(16, 185, 129, 0.12); color: #10B981; border: 1px solid rgba(16, 185, 129, 0.25);' : 'background: rgba(6, 182, 212, 0.12); color: #06B6D4; border: 1px solid rgba(6, 182, 212, 0.25);'}">
+            ${isCompleted ? '✓ Completed' : '▶ Watch Video'}
+          </span>
+        </div>
       </div>
     `;
   }).join('');
@@ -1125,6 +1172,274 @@ window.handleRealtimeBannerClick = function() {
   dismissRealtimeBanner();
 };
 
+/* ==============================================================================
+   2.5 REAL-TIME COURSE VIDEOS & WORKBENCH PLAYER ENGINE
+   ============================================================================== */
+let COURSE_VIDEOS = [];
+let ACTIVE_PLAYING_VIDEO = null;
+
+function getWatchedVideoIds() {
+  try {
+    const raw = localStorage.getItem('nexvion_watched_videos');
+    if (raw) return new Set(JSON.parse(raw));
+  } catch (e) {}
+  return new Set();
+}
+
+function saveWatchedVideoId(id) {
+  try {
+    const s = getWatchedVideoIds();
+    s.add(String(id));
+    localStorage.setItem('nexvion_watched_videos', JSON.stringify([...s]));
+  } catch (e) {}
+}
+
+function removeWatchedVideoId(id) {
+  try {
+    const s = getWatchedVideoIds();
+    s.delete(String(id));
+    localStorage.setItem('nexvion_watched_videos', JSON.stringify([...s]));
+  } catch (e) {}
+}
+
+function parseFirestoreVideoDoc(doc) {
+  if (!doc) return null;
+  const data = { id: doc.name ? doc.name.split('/').pop() : '' };
+  if (doc.fields) {
+    for (const [key, val] of Object.entries(doc.fields)) {
+      if (val.stringValue !== undefined) data[key] = val.stringValue;
+      else if (val.integerValue !== undefined) data[key] = parseInt(val.integerValue, 10);
+      else if (val.booleanValue !== undefined) data[key] = val.booleanValue;
+      else if (val.timestampValue !== undefined) data[key] = val.timestampValue;
+    }
+  }
+  return data;
+}
+
+/**
+ * Initialize Real-Time Course Videos from Firestore & REST
+ */
+async function initRealtimeVideos() {
+  console.log('[Dashboard] Initializing real-time course videos stream...');
+  
+  // 1. Attempt Firestore live subscription
+  if (typeof firebase !== 'undefined') {
+    try {
+      let app;
+      try {
+        app = firebase.app();
+      } catch (noApp) {
+        app = firebase.initializeApp(window.firebaseConfig || {
+          apiKey: "AIzaSyCT5ieblE-Uj_fvBfeodPackWJ38M_RuF4",
+          authDomain: "nexvion-ai.firebaseapp.com",
+          projectId: "nexvion-ai",
+          storageBucket: "nexvion-ai.firebasestorage.app"
+        });
+      }
+      const db = app.firestore ? app.firestore() : firebase.firestore();
+      db.collection('videos').onSnapshot((snapshot) => {
+        const vids = [];
+        snapshot.forEach(doc => {
+          vids.push({ id: doc.id, ...doc.data() });
+        });
+        if (vids.length > 0) {
+          console.log('[Dashboard] Loaded', vids.length, 'videos via Firestore onSnapshot');
+          handleVideosLoaded(vids);
+        } else {
+          fetchVideosRestFallback();
+        }
+      }, (err) => {
+        console.warn('[Dashboard] Firestore videos onSnapshot notice:', err.message);
+        fetchVideosRestFallback();
+      });
+      return;
+    } catch (e) {
+      console.warn('[Dashboard] Firebase video listener notice:', e.message);
+    }
+  }
+
+  // 2. Direct REST Fallback
+  fetchVideosRestFallback();
+}
+
+async function fetchVideosRestFallback() {
+  try {
+    const res = await fetch('https://firestore.googleapis.com/v1/projects/nexvion-ai/databases/(default)/documents/videos');
+    if (!res.ok) return;
+    const json = await res.json();
+    if (json.documents && Array.isArray(json.documents)) {
+      const vids = json.documents.map(parseFirestoreVideoDoc).filter(Boolean);
+      console.log('[Dashboard] Loaded', vids.length, 'videos via Firestore REST API');
+      handleVideosLoaded(vids);
+    }
+  } catch (err) {
+    console.warn('[Dashboard] REST fetch videos notice:', err.message);
+  }
+}
+
+/**
+ * Hydrate Loaded Videos into Dashboard State & UI
+ */
+function handleVideosLoaded(vids) {
+  if (!Array.isArray(vids) || vids.length === 0) return;
+
+  const activeVids = vids.filter(v => v.visibility !== 'Archived' && v.status !== 'Archived');
+  if (activeVids.length === 0) return;
+
+  COURSE_VIDEOS = activeVids;
+  const watchedSet = getWatchedVideoIds();
+  const watchedCount = activeVids.filter(v => watchedSet.has(v.id)).length;
+
+  // Update total & completed classes metrics
+  DASHBOARD_DATA.course.totalClasses = Math.max(20, activeVids.length);
+  DASHBOARD_DATA.course.completedClasses = watchedCount;
+  DASHBOARD_DATA.course.progress = Math.round((watchedCount / DASHBOARD_DATA.course.totalClasses) * 100);
+
+  // Identify next unwatched video
+  const nextVideo = activeVids.find(v => !watchedSet.has(v.id)) || activeVids[0];
+
+  DASHBOARD_DATA.nextClass = {
+    videoId: nextVideo.id,
+    video: nextVideo,
+    moduleTag: `${(nextVideo.courseTitle || 'AI FOUNDATIONS').toUpperCase()} • ${(nextVideo.classTitle || 'CLASS 01').toUpperCase()}`,
+    title: nextVideo.title,
+    description: `Lecture ready to stream (${nextVideo.duration || '25:00'} • ${nextVideo.resolution || '1080p HD'}). Click below to watch on your workbench.`,
+    type: "Video Lecture",
+    duration: nextVideo.duration || "25:00",
+    videoUrl: nextVideo.embedUrl || nextVideo.youtubeUrl || ''
+  };
+
+  // Populate recent classes array
+  DASHBOARD_DATA.recentClasses = activeVids.map(v => {
+    const isDone = watchedSet.has(v.id);
+    let ytThumb = v.thumbnailUrl || '';
+    if (!ytThumb && v.youtubeId) {
+      ytThumb = `https://img.youtube.com/vi/${v.youtubeId}/hqdefault.jpg`;
+    }
+    return {
+      id: v.id,
+      videoId: v.id,
+      title: v.title,
+      module: v.classTitle || v.courseTitle || 'Core Class',
+      duration: v.duration || '25:00',
+      resolution: v.resolution || '1080p HD',
+      thumbnailUrl: ytThumb,
+      icon: isDone ? '✓' : '▶',
+      status: isDone ? 'completed' : 'in-progress',
+      video: v
+    };
+  });
+
+  // Re-render UI components
+  renderCurrentCourse();
+  renderRecentClasses();
+}
+
+/**
+ * Open Video Player Modal and begin stream
+ */
+window.openVideoPlayerModal = function(videoId) {
+  closeAllDropdowns();
+  if (typeof closeMobileProfileSheet === 'function') closeMobileProfileSheet();
+  const video = COURSE_VIDEOS.find(v => v.id === videoId) || (DASHBOARD_DATA.nextClass && DASHBOARD_DATA.nextClass.video);
+  if (!video) {
+    showToast('Video details loading...');
+    return;
+  }
+  ACTIVE_PLAYING_VIDEO = video;
+
+  const backdrop = document.getElementById('videoPlayerModalBackdrop');
+  const badge = document.getElementById('videoPlayerBadge');
+  const durationBadge = document.getElementById('videoPlayerDurationBadge');
+  const title = document.getElementById('modalVideoPlayerTitle');
+  const courseName = document.getElementById('videoPlayerCourseName');
+  const subtitle = document.getElementById('videoPlayerSubtitle');
+  const iframe = document.getElementById('videoPlayerIframe');
+  const btnWatched = document.getElementById('btnMarkVideoWatched');
+  const btnWatchedText = document.getElementById('btnMarkVideoWatchedText');
+
+  if (badge) badge.textContent = `🎥 ${(video.courseTitle || 'AI FOUNDATIONS').toUpperCase()} • ${(video.classTitle || 'CLASS 01').toUpperCase()}`;
+  if (durationBadge) durationBadge.textContent = video.duration || '25:00';
+  if (title) title.textContent = video.title || 'Course Lecture';
+  if (courseName) courseName.innerHTML = `Course: <strong style="color: #F1F5F9;">${escapeHtml(video.courseTitle || 'AI Foundations')}</strong>`;
+  if (subtitle) subtitle.textContent = `${video.classTitle || 'Class 01'} • ${video.resolution || '1080p HD'} • Official Academy Curriculum`;
+
+  // Determine embed URL
+  let embedUrl = video.embedUrl || '';
+  if (!embedUrl && video.youtubeId) {
+    embedUrl = `https://www.youtube-nocookie.com/embed/${video.youtubeId}?autoplay=1&rel=0`;
+  } else if (!embedUrl && video.youtubeUrl) {
+    const match = video.youtubeUrl.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([\w-]{11})/);
+    if (match && match[1]) {
+      embedUrl = `https://www.youtube-nocookie.com/embed/${match[1]}?autoplay=1&rel=0`;
+    }
+  }
+  if (embedUrl && !embedUrl.includes('autoplay=')) {
+    embedUrl += (embedUrl.includes('?') ? '&' : '?') + 'autoplay=1&rel=0';
+  }
+
+  if (iframe) {
+    iframe.src = embedUrl;
+  }
+
+  const watchedSet = getWatchedVideoIds();
+  const isWatched = watchedSet.has(video.id);
+  if (btnWatchedText) {
+    btnWatchedText.textContent = isWatched ? '✓ Completed (Click to undo)' : '✓ Mark as Completed';
+  }
+  if (btnWatched) {
+    btnWatched.style.background = isWatched ? 'rgba(16, 185, 129, 0.2)' : 'rgba(255,255,255,0.08)';
+    btnWatched.style.color = isWatched ? '#10B981' : '#F1F5F9';
+    btnWatched.style.borderColor = isWatched ? 'rgba(16, 185, 129, 0.4)' : 'rgba(255,255,255,0.15)';
+  }
+
+  if (backdrop) backdrop.classList.add('active');
+};
+
+/**
+ * Close Video Player Modal and stop stream
+ */
+window.closeVideoPlayerModal = function() {
+  const backdrop = document.getElementById('videoPlayerModalBackdrop');
+  const iframe = document.getElementById('videoPlayerIframe');
+  if (iframe) {
+    iframe.src = ''; // Instantly halt audio/video stream
+  }
+  if (backdrop) backdrop.classList.remove('active');
+  ACTIVE_PLAYING_VIDEO = null;
+};
+
+/**
+ * Toggle Watched Status for Currently Active Video
+ */
+window.toggleCurrentVideoWatched = function() {
+  if (!ACTIVE_PLAYING_VIDEO) return;
+  const vidId = ACTIVE_PLAYING_VIDEO.id;
+  const watchedSet = getWatchedVideoIds();
+  if (watchedSet.has(vidId)) {
+    removeWatchedVideoId(vidId);
+    showToast('Video marked as unfinished.');
+  } else {
+    saveWatchedVideoId(vidId);
+    showToast('Lesson marked as completed! Progress updated. 🎉');
+  }
+
+  const updatedSet = getWatchedVideoIds();
+  const isWatched = updatedSet.has(vidId);
+  const btnWatched = document.getElementById('btnMarkVideoWatched');
+  const btnWatchedText = document.getElementById('btnMarkVideoWatchedText');
+  if (btnWatchedText) {
+    btnWatchedText.textContent = isWatched ? '✓ Completed (Click to undo)' : '✓ Mark as Completed';
+  }
+  if (btnWatched) {
+    btnWatched.style.background = isWatched ? 'rgba(16, 185, 129, 0.2)' : 'rgba(255,255,255,0.08)';
+    btnWatched.style.color = isWatched ? '#10B981' : '#F1F5F9';
+    btnWatched.style.borderColor = isWatched ? 'rgba(16, 185, 129, 0.4)' : 'rgba(255,255,255,0.15)';
+  }
+
+  handleVideosLoaded(COURSE_VIDEOS);
+};
+
 /**
  * Toggle Mobile Notifications from Sheet
  */
@@ -1376,6 +1691,7 @@ function initUIInteractions() {
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       closeAllDropdowns();
+      if (typeof closeVideoPlayerModal === 'function') closeVideoPlayerModal();
       if (typeof closeNotificationDetailModal === 'function') closeNotificationDetailModal();
       if (typeof closeAccountDetailsModal === 'function') closeAccountDetailsModal();
       if (typeof closeCertModal === 'function') closeCertModal();
@@ -1422,6 +1738,14 @@ function closeAllDropdowns() {
  */
 function handleContinueClass() {
   const nxt = DASHBOARD_DATA.nextClass;
+  if (nxt && (nxt.videoId || nxt.video)) {
+    openVideoPlayerModal(nxt.videoId || (nxt.video && nxt.video.id));
+    return;
+  }
+  if (COURSE_VIDEOS && COURSE_VIDEOS.length > 0) {
+    openVideoPlayerModal(COURSE_VIDEOS[0].id);
+    return;
+  }
   if (DASHBOARD_DATA.course.progress === 0 || nxt.duration === 'Coming Soon') {
     showToast(`Classes have not started yet. Cohort orientation schedule will be announced soon!`);
     return;

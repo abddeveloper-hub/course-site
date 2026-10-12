@@ -638,28 +638,144 @@ function initModals() {
   // Handle Join Form Submission
   const joinForm = document.getElementById('join-course-form');
   if (joinForm) {
-    joinForm.addEventListener('submit', (e) => {
+    joinForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const submitBtn = joinForm.querySelector('button[type="submit"]');
       if (submitBtn) {
         submitBtn.disabled = true;
-        submitBtn.innerHTML = 'Securing Your Priority Spot...';
+        submitBtn.innerHTML = 'Securing Your Spot & Syncing to Cloud...';
       }
 
-      setTimeout(() => {
-        joinForm.innerHTML = `
-          <div style="text-align: center; padding: 20px 0;">
-            <div style="font-size: 2.5rem; margin-bottom: 12px;">🎉</div>
-            <h3 style="font-size: 1.3rem; color: #fff; margin-bottom: 8px;">Welcome to NEXVION AI!</h3>
-            <p style="color: #94A3B8; font-size: 0.9rem; margin-bottom: 20px;">
-              Your early registration has been confirmed. You will receive cohort start dates and curriculum onboarding details via email.
-            </p>
+      const nameInput = document.getElementById('join-name');
+      const emailInput = document.getElementById('join-email');
+      const roleInput = document.getElementById('join-role');
+
+      const name = nameInput ? nameInput.value.trim() : 'Enrolled Student';
+      const email = emailInput ? emailInput.value.trim().toLowerCase() : '';
+      const role = roleInput ? roleInput.value : 'student';
+      const studentId = 'NX-2026-' + Math.floor(10000 + Math.random() * 90000);
+      const enrollmentId = 'enr-' + Date.now();
+
+      const studentDoc = {
+        id: studentId,
+        studentId: studentId,
+        name: name,
+        fullName: name,
+        email: email,
+        role: role,
+        background: role,
+        enrolledCourse: 'AI Builder',
+        enrolledCourseTitle: 'AI Builder',
+        tierId: 'tier-builder',
+        tierName: 'AI Builder',
+        batchId: 'batch-01',
+        batchName: 'Batch 01',
+        cohort: 'Spring 2026',
+        enrollmentStatus: 'Enrolled',
+        paymentStatus: 'Approved',
+        progressPercent: 0,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        registeredVia: 'Priority Application Modal'
+      };
+
+      const enrollDoc = {
+        id: enrollmentId,
+        studentId: studentId,
+        studentName: name,
+        studentEmail: email,
+        courseId: 'ai-builder',
+        courseTitle: 'AI Builder',
+        tierId: 'tier-builder',
+        tierName: 'AI Builder',
+        batchId: 'batch-01',
+        batchName: 'Batch 01',
+        status: 'Active',
+        paymentStatus: 'Approved',
+        enrolledAt: new Date().toISOString()
+      };
+
+      // 1. Save to localStorage
+      try {
+        localStorage.setItem('nexvion_current_user', JSON.stringify({ ...studentDoc, syncedToFirebase: false }));
+        let regList = [];
+        const rawList = localStorage.getItem('nexvion_registered_users');
+        if (rawList) regList = JSON.parse(rawList);
+        if (!Array.isArray(regList)) regList = [];
+        regList.push(studentDoc);
+        localStorage.setItem('nexvion_registered_users', JSON.stringify(regList));
+      } catch (err) {}
+
+      // 2. Persist directly to Firebase Cloud Firestore
+      try {
+        if (typeof firebase !== 'undefined') {
+          let app;
+          try { app = firebase.app(); } catch (noApp) {
+            app = firebase.initializeApp(window.firebaseConfig || {
+              apiKey: "AIzaSyCT5ieblE-Uj_fvBfeodPackWJ38M_RuF4",
+              authDomain: "nexvion-ai.firebaseapp.com",
+              projectId: "nexvion-ai",
+              storageBucket: "nexvion-ai.firebasestorage.app"
+            });
+          }
+          const db = app.firestore ? app.firestore() : firebase.firestore();
+          await Promise.all([
+            db.collection('students').doc(studentId).set(studentDoc, { merge: true }),
+            db.collection('enrollments').doc(enrollmentId).set(enrollDoc, { merge: true })
+          ]);
+        } else {
+          // REST API fallback
+          fetch('https://firestore.googleapis.com/v1/projects/nexvion-ai/databases/(default)/documents/students?documentId=' + encodeURIComponent(studentId), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              fields: {
+                id: { stringValue: studentId },
+                name: { stringValue: name },
+                fullName: { stringValue: name },
+                email: { stringValue: email },
+                enrolledCourse: { stringValue: 'AI Builder' },
+                enrolledCourseTitle: { stringValue: 'AI Builder' },
+                enrollmentStatus: { stringValue: 'Enrolled' },
+                paymentStatus: { stringValue: 'Approved' },
+                batchName: { stringValue: 'Batch 01' },
+                createdAt: { stringValue: new Date().toISOString() }
+              }
+            })
+          }).catch(() => {});
+        }
+      } catch (cloudErr) {
+        console.warn('[JoinForm] Cloud write warning:', cloudErr.message);
+      }
+
+      // Trigger CloudSync if available
+      if (typeof window !== 'undefined' && window.NexvionCloudSync && window.NexvionCloudSync.syncNow) {
+        window.NexvionCloudSync.syncNow();
+      }
+
+      function escapeText(str) {
+        if (!str) return '';
+        return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      }
+
+      joinForm.innerHTML = `
+        <div style="text-align: center; padding: 20px 0;">
+          <div style="font-size: 2.5rem; margin-bottom: 12px;">🎉</div>
+          <h3 style="font-size: 1.3rem; color: #fff; margin-bottom: 8px;">Welcome to NEXVION AI, ${escapeText(name)}!</h3>
+          <p style="color: #94A3B8; font-size: 0.9rem; margin-bottom: 14px;">
+            Your registration is confirmed and saved to the academy cloud registry.<br>
+            <strong style="color: #38BDF8; font-family: monospace;">Student ID: ${studentId}</strong>
+          </p>
+          <div style="display: flex; justify-content: center; gap: 10px; margin-top: 16px;">
+            <a href="dashboard.html" class="btn btn-primary btn-sm" style="text-decoration: none;">
+              Open Student Workbench ↗
+            </a>
             <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('modal-join').classList.remove('active'); document.body.style.overflow='';">
               Close Window
             </button>
           </div>
-        `;
-      }, 900);
+        </div>
+      `;
     });
   }
 

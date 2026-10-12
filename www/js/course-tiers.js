@@ -303,28 +303,99 @@
     }
 
     if (waitlistForm) {
-      waitlistForm.addEventListener('submit', function (e) {
+      waitlistForm.addEventListener('submit', async function (e) {
         e.preventDefault();
         const submitBtn = waitlistForm.querySelector('button[type="submit"]');
         if (submitBtn) {
           submitBtn.disabled = true;
-          submitBtn.textContent = 'Securing Waitlist Spot...';
+          submitBtn.textContent = 'Securing Waitlist Spot & Syncing to Cloud...';
         }
 
-        setTimeout(function () {
-          waitlistForm.innerHTML = `
-            <div style="text-align: center; padding: 24px 10px;">
-              <div style="font-size: 2.2rem; margin-bottom: 12px; color: #10B981;">✓</div>
-              <h3 style="font-size: 1.25rem; color: #fff; margin-bottom: 8px;">You're on the Waitlist!</h3>
-              <p style="color: #94A3B8; font-size: 0.875rem; line-height: 1.5; margin-bottom: 20px;">
-                As soon as a seat opens in this batch or the next cohort schedule is confirmed, an invitation link will be dispatched to your email.
-              </p>
-              <button type="button" class="btn btn-secondary btn-sm modal-waitlist-close" onclick="document.getElementById('modal-waitlist').classList.remove('active'); document.body.style.overflow='';">
-                Close Window
-              </button>
-            </div>
-          `;
-        }, 700);
+        const nameInput = document.getElementById('waitlist-name');
+        const emailInput = document.getElementById('waitlist-email');
+        const courseIdInput = document.getElementById('waitlist-course-id');
+        const batchIdInput = document.getElementById('waitlist-batch-id');
+
+        const name = nameInput ? nameInput.value.trim() : 'Waitlisted Learner';
+        const email = emailInput ? emailInput.value.trim().toLowerCase() : '';
+        const courseId = courseIdInput ? courseIdInput.value : 'ai-creator';
+        const batchId = batchIdInput ? batchIdInput.value : 'creator-batch-01';
+        const studentId = 'NX-2026-' + Math.floor(10000 + Math.random() * 90000);
+        const enrollmentId = 'enr-' + Date.now();
+
+        const studentDoc = {
+          id: studentId,
+          studentId: studentId,
+          name: name,
+          fullName: name,
+          email: email,
+          enrolledCourse: courseId,
+          enrolledCourseTitle: courseId.replace('-', ' ').toUpperCase(),
+          tierId: courseId,
+          batchId: batchId,
+          enrollmentStatus: 'Waitlisted',
+          paymentStatus: 'Pending',
+          progressPercent: 0,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          registeredVia: 'Waitlist Form'
+        };
+
+        const enrollDoc = {
+          id: enrollmentId,
+          studentId: studentId,
+          studentName: name,
+          studentEmail: email,
+          courseId: courseId,
+          tierId: courseId,
+          batchId: batchId,
+          status: 'Waitlisted',
+          paymentStatus: 'Pending',
+          enrolledAt: new Date().toISOString()
+        };
+
+        try {
+          if (typeof firebase !== 'undefined') {
+            let app;
+            try { app = firebase.app(); } catch (noApp) {
+              app = firebase.initializeApp(window.firebaseConfig || {
+                apiKey: "AIzaSyCT5ieblE-Uj_fvBfeodPackWJ38M_RuF4",
+                authDomain: "nexvion-ai.firebaseapp.com",
+                projectId: "nexvion-ai",
+                storageBucket: "nexvion-ai.firebasestorage.app"
+              });
+            }
+            const db = app.firestore ? app.firestore() : firebase.firestore();
+            await Promise.all([
+              db.collection('students').doc(studentId).set(studentDoc, { merge: true }),
+              db.collection('enrollments').doc(enrollmentId).set(enrollDoc, { merge: true })
+            ]);
+          }
+        } catch (err) {
+          console.warn('[Waitlist] Firebase write notice:', err.message);
+        }
+
+        function escapeText(str) {
+          if (!str) return '';
+          return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        waitlistForm.innerHTML = `
+          <div style="text-align: center; padding: 24px 10px;">
+            <div style="font-size: 2.2rem; margin-bottom: 12px; color: #10B981;">✓</div>
+            <h3 style="font-size: 1.25rem; color: #fff; margin-bottom: 8px;">You're on the Waitlist, ${escapeText(name)}!</h3>
+            <p style="color: #94A3B8; font-size: 0.875rem; line-height: 1.5; margin-bottom: 14px;">
+              Your priority spot has been saved to the cloud registry.<br>
+              <strong style="color: #38BDF8; font-family: monospace;">Student ID: ${studentId}</strong>
+            </p>
+            <p style="color: #64748B; font-size: 0.78rem; margin-bottom: 20px;">
+              As soon as a seat opens in this batch or the next cohort unlocks, an invitation link will be dispatched to ${escapeText(email)}.
+            </p>
+            <button type="button" class="btn btn-secondary btn-sm modal-waitlist-close" onclick="document.getElementById('modal-waitlist').classList.remove('active'); document.body.style.overflow='';">
+              Close Window
+            </button>
+          </div>
+        `;
       });
     }
 
