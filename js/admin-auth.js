@@ -198,8 +198,20 @@
   // --------------------------------------------------------------------------
   // Boot sequence
   // --------------------------------------------------------------------------
-  // First, check if there is a valid demo session (instant, no network)
-  // If yes, allow portal immediately. If no, init Firebase auth.
+  // Always initialize Firebase app so Firestore services can connect immediately
+  try {
+    if (typeof firebase !== 'undefined' && firebase.initializeApp) {
+      try {
+        firebase.app();
+      } catch (noApp) {
+        firebase.initializeApp(FIREBASE_CONFIG);
+      }
+    }
+  } catch (initErr) {
+    console.warn('[NexvionAuth] Firebase auto-init notice:', initErr);
+  }
+
+  // Check authentication session
   if (checkDemoSession()) {
     // Already authenticated in demo mode
   } else {

@@ -814,11 +814,35 @@
     initFirestore() {
       try {
         if (typeof window !== 'undefined' && window.firebase) {
-          if (window.firebase.firestore) {
+          let app;
+          try {
+            app = window.firebase.app();
+          } catch (noApp) {
+            const cfg = window.firebaseConfig || {
+              apiKey: "AIzaSyCT5ieblE-Uj_fvBfeodPackWJ38M_RuF4",
+              authDomain: "nexvion-ai.firebaseapp.com",
+              projectId: "nexvion-ai",
+              storageBucket: "nexvion-ai.firebasestorage.app",
+              messagingSenderId: "916097030104",
+              appId: "1:916097030104:web:e9b393b7fa8c89a84b84ad",
+              measurementId: "G-Q09E6TX5XJ"
+            };
+            app = window.firebase.initializeApp(cfg);
+          }
+          if (app && app.firestore) {
+            this.db = app.firestore();
+            this.firestoreEnabled = true;
+          } else if (window.firebase.firestore) {
             this.db = window.firebase.firestore();
             this.firestoreEnabled = true;
           }
-          if (window.firebase.storage) {
+          if (app && app.storage) {
+            try {
+              this.storage = app.storage();
+            } catch (stErr) {
+              console.warn('ProductionDataStore: Storage init note:', stErr.message);
+            }
+          } else if (window.firebase.storage) {
             try {
               this.storage = window.firebase.storage();
             } catch (stErr) {
@@ -1402,9 +1426,25 @@
         }
 
         // 3b. Fetch all registered students & enrollments directly from Cloud Firestore
-        if (typeof window !== 'undefined' && window.firebase && window.firebase.firestore) {
+        if (typeof window !== 'undefined' && window.firebase) {
           try {
-            const db = window.firebase.firestore();
+            let app;
+            try {
+              app = window.firebase.app();
+            } catch (noApp) {
+              const cfg = window.firebaseConfig || {
+                apiKey: "AIzaSyCT5ieblE-Uj_fvBfeodPackWJ38M_RuF4",
+                authDomain: "nexvion-ai.firebaseapp.com",
+                projectId: "nexvion-ai",
+                storageBucket: "nexvion-ai.firebasestorage.app",
+                messagingSenderId: "916097030104",
+                appId: "1:916097030104:web:e9b393b7fa8c89a84b84ad",
+                measurementId: "G-Q09E6TX5XJ"
+              };
+              app = window.firebase.initializeApp(cfg);
+            }
+            const db = (app && app.firestore) ? app.firestore() : (window.firebase.firestore ? window.firebase.firestore() : null);
+            if (!db) throw new Error('Firestore not available');
             const studentsSnap = await Promise.race([
               db.collection('students').get(),
               new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 4000))
