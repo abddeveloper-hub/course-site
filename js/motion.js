@@ -273,6 +273,7 @@
      4. 3D tilt
      ========================================================================= */
   function attachTilt(el) {
+    if (isMobile() || isReduced() || !FINE_POINTER.matches) return;
     var raf = null;
     var rect = null;
 

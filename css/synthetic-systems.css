@@ -3083,7 +3083,6 @@ textarea.form-input:focus {
   .course-tier-grid,
   .tiers-grid,
   .progression-ladder-grid,
-  .dash-progress-metrics-grid,
   .learn-grid-6,
   .topics-grid,
   .roadmap-10-grid,
@@ -3093,8 +3092,74 @@ textarea.form-input:focus {
     grid-template-columns: 1fr !important;
   }
 
+  .dash-progress-metrics-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+
+  .dashboard-layout {
+    overflow-x: hidden !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+  }
+
   .dashboard-main {
-    padding: 20px 16px calc(76px + env(safe-area-inset-bottom, 0px)) 16px !important;
+    padding: 16px 14px calc(76px + env(safe-area-inset-bottom, 0px)) 14px !important;
+    overflow-x: hidden !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+    box-sizing: border-box !important;
+  }
+
+  .dash-topbar {
+    margin-bottom: 16px !important;
+    padding-bottom: 12px !important;
+  }
+
+  .dash-welcome-bar {
+    padding: 16px 14px !important;
+    margin-bottom: 16px !important;
+    border-radius: var(--rounded-md) !important;
+    box-sizing: border-box !important;
+  }
+
+  .dash-hero-grid {
+    gap: 14px !important;
+    margin-bottom: 16px !important;
+  }
+
+  .current-course-card,
+  .continue-class-card,
+  .dash-section-box,
+  .dash-cert-box {
+    padding: 16px !important;
+    border-radius: var(--rounded-md) !important;
+    box-sizing: border-box !important;
+    max-width: 100% !important;
+  }
+
+  .course-card-title {
+    font-size: 18px !important;
+    margin-bottom: 12px !important;
+  }
+
+  .continue-class-title {
+    font-size: 15px !important;
+  }
+
+  .metric-card {
+    padding: 12px 14px !important;
+    border-radius: var(--rounded-md) !important;
+    box-sizing: border-box !important;
+  }
+
+  .metric-label {
+    font-size: 0.6875rem !important;
+    margin-bottom: 4px !important;
+  }
+
+  .metric-value {
+    font-size: 1.35rem !important;
   }
 
   .register-card-grid {
@@ -3994,14 +4059,9 @@ textarea.form-input:focus {
   pointer-events: auto;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .dash-realtime-banner {
-    top: calc(64px + env(safe-area-inset-top, 0px));
-    left: 12px;
-    right: 12px;
-    max-width: none;
-    box-shadow: 0 10px 32px rgba(0, 0, 0, 0.4);
-    z-index: 2100;
+    display: none !important;
   }
 }
 
