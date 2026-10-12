@@ -1,5 +1,5 @@
 /**
- * NEXVION AI / Synthetic Systems Academy — Cloud Sync Engine
+ * NEXVION AI Academy — Cloud Sync Engine
  * Automatically recovers and synchronizes offline/previously saved mobile registrations
  * from localStorage directly to Cloud Firestore.
  */

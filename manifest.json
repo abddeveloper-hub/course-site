@@ -1,8 +1,8 @@
 {
   "id": "/course-site/",
-  "name": "NEXVION AI Course",
-  "short_name": "NEXVION",
-  "description": "Learn artificial intelligence with NEXVION AI Course.",
+  "name": "NEXVION AI Academy",
+  "short_name": "NEXVION AI",
+  "description": "Learn artificial intelligence, systems, and compilers with NEXVION AI Academy.",
   "start_url": "/course-site/",
   "scope": "/course-site/",
   "display": "standalone",

@@ -921,7 +921,7 @@
       if (successMsg) {
         successMsg.innerHTML = courseUpdated
           ? `Your course enrollment has been updated to <strong>${studentProfile.enrolledCourse}</strong>. You are already an authenticated Academy student (ID: <strong>${studentProfile.studentId || 'SSA-2026-ACTIVE'}</strong>) and do not need to register again.`
-          : `You have already completed your Synthetic Systems Academy registration (ID: <strong>${studentProfile.studentId || 'SSA-2026-ACTIVE'}</strong>). Your curriculum access for <strong>${studentProfile.enrolledCourse || 'Compiler Engineering'}</strong> is ready in your dashboard.`;
+          : `You have already completed your NEXVION AI Academy registration (ID: <strong>${studentProfile.studentId || 'SSA-2026-ACTIVE'}</strong>). Your curriculum access for <strong>${studentProfile.enrolledCourse || 'Compiler Engineering'}</strong> is ready in your dashboard.`;
       }
 
       // Mark all journey nodes completed

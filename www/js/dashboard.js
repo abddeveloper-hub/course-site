@@ -218,7 +218,7 @@ const DASHBOARD_DATA = {
     {
       id: "notif-orientation-2026",
       title: "Cohort 2026 Orientation & Curriculum Schedule",
-      message: "Welcome to Synthetic Systems Academy! Orientation begins this week. Live interactive classroom links, Discord cohort channels, and starter AI toolkits have been activated. Please review your module roadmap.",
+      message: "Welcome to NEXVION AI Academy! Orientation begins this week. Live interactive classroom links, Discord cohort channels, and starter AI toolkits have been activated. Please review your module roadmap.",
       type: "Announcement",
       sender: "Academic Director",
       deepLink: "course.html#curriculum",
@@ -884,7 +884,7 @@ window.openNotificationDetailModal = function(notifId) {
   }
 
   if (title) title.textContent = notif.title;
-  if (sender) sender.textContent = notif.sender || 'Synthetic Systems Academy';
+  if (sender) sender.textContent = notif.sender || 'NEXVION AI Academy';
   if (time) time.textContent = formatFullDateTime(notif.createdAt);
   if (body) body.textContent = notif.message || notif.title;
 
