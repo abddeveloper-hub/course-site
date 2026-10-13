@@ -707,9 +707,9 @@
         enrolledCourseTitle: 'AI Foundations: Zero to AI Native',
         tierId: 'ai-foundations',
         tierName: 'AI Foundations',
-        batchId: '',
-        batchName: 'Unassigned',
-        enrollmentStatus: 'Pending',
+        batchId: 'batch-free-foundations',
+        batchName: 'open free batch',
+        enrollmentStatus: 'Enrolled',
         progressPercent: 0,
         paymentStatus: 'Not required',
         certificateStatus: 'Not eligible',
@@ -730,17 +730,17 @@
         courseTitle: 'AI Foundations: Zero to AI Native',
         tierId: 'ai-foundations',
         tierName: 'AI Foundations',
-        batchId: '',
-        batchName: 'Unassigned',
-        status: 'Pending',
+        batchId: 'batch-free-foundations',
+        batchName: 'open free batch',
+        status: 'Enrolled',
         paymentStatus: 'Not required',
         submittedAt: new Date().toISOString(),
         history: [
           {
-            status: 'Pending',
+            status: 'Enrolled',
             timestamp: new Date().toISOString(),
-            actionBy: 'Self Registered',
-            note: 'Application received via student registration portal.'
+            actionBy: 'Auto Enrolled',
+            note: 'Free tier admission confirmed automatically.'
           }
         ]
       };

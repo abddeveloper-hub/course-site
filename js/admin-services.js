@@ -139,8 +139,8 @@
       instructor: 'Dr. Evelyn Vance & Faculty Team',
       coverImage: 'assets/course-foundations.jpg',
       duration: '4 Weeks',
-      modulesCount: 0,
-      classesCount: 0,
+      modulesCount: 4,
+      classesCount: 4,
       lessonsCount: 0,
       projectsCount: 0,
       assignmentsCount: 0,
@@ -175,8 +175,8 @@
       instructor: 'Marcus Chen & Sarah Al-Mansoor',
       coverImage: 'assets/course-builder.jpg',
       duration: '8 Weeks',
-      modulesCount: 0,
-      classesCount: 0,
+      modulesCount: 2,
+      classesCount: 1,
       lessonsCount: 0,
       projectsCount: 0,
       assignmentsCount: 0,
@@ -211,8 +211,8 @@
       instructor: 'Elena Rostova & David K. Osei',
       coverImage: 'assets/course-creator.jpg',
       duration: '10 Weeks',
-      modulesCount: 0,
-      classesCount: 0,
+      modulesCount: 2,
+      classesCount: 1,
       lessonsCount: 0,
       projectsCount: 0,
       assignmentsCount: 0,
@@ -247,7 +247,7 @@
       instructor: 'Chief AI Architect Dr. Kenneth Vance',
       coverImage: 'assets/course-architect.jpg',
       duration: '12 Weeks',
-      modulesCount: 0,
+      modulesCount: 1,
       classesCount: 0,
       lessonsCount: 0,
       projectsCount: 0,
@@ -278,9 +278,212 @@
 
   const defaultEnrollments = [];
 
-  const defaultClasses = [];
+  const defaultClasses = [
+    {
+      id: 'cls-foundations-101',
+      title: 'Class 01: The Modern AI Paradigm & Neural Mechanics',
+      courseId: 'ai-foundations',
+      courseTitle: 'AI Foundations',
+      moduleId: 'mod-foundations-01',
+      moduleTitle: 'AI Fundamentals & Neural Foundations',
+      instructor: 'Dr. Evelyn Vance',
+      duration: '60 min',
+      order: 1,
+      visibility: 'Published',
+      completionRequirement: 'Attend live cohort or stream >= 90% recorded playback',
+      relatedVideoId: 'vid-101',
+      videoStatus: 'Ready',
+      description: 'Orientation to generative artificial intelligence, neural networks, tokenization, and LLM architecture foundations.',
+      status: 'Published'
+    },
+    {
+      id: 'cls-foundations-102',
+      title: 'Class 02: Conversational Copilots & Workflow Integration',
+      courseId: 'ai-foundations',
+      courseTitle: 'AI Foundations',
+      moduleId: 'mod-foundations-02',
+      moduleTitle: 'Modern AI Tools & Conversational Workflows',
+      instructor: 'Dr. Evelyn Vance',
+      duration: '75 min',
+      order: 2,
+      visibility: 'Published',
+      completionRequirement: 'Complete interactive tool demonstration & quiz',
+      relatedVideoId: 'vid-101',
+      videoStatus: 'Ready',
+      description: 'Hands-on training with modern conversational models, multimodal inputs, productivity workflows, and system prompts.',
+      status: 'Published'
+    },
+    {
+      id: 'cls-foundations-103',
+      title: 'Class 03: Systematic Prompt Engineering Frameworks',
+      courseId: 'ai-foundations',
+      courseTitle: 'AI Foundations',
+      moduleId: 'mod-foundations-03',
+      moduleTitle: 'Prompt Engineering & Reasoning Frameworks',
+      instructor: 'Faculty Team',
+      duration: '90 min',
+      order: 3,
+      visibility: 'Published',
+      completionRequirement: 'Submit verified prompt engineering lab assignment',
+      relatedVideoId: 'vid-101',
+      videoStatus: 'Ready',
+      description: 'Zero-shot, few-shot, and Chain-of-Thought prompting methodologies to eliminate hallucinations and extract structured reasoning.',
+      status: 'Published'
+    },
+    {
+      id: 'cls-foundations-104',
+      title: 'Class 04: AI Ethics, Safety Standards & Platform Capstone',
+      courseId: 'ai-foundations',
+      courseTitle: 'AI Foundations',
+      moduleId: 'mod-foundations-04',
+      moduleTitle: 'AI Safety, Ethics & Platform Capstone',
+      instructor: 'Dr. Evelyn Vance & Faculty Team',
+      duration: '60 min',
+      order: 4,
+      visibility: 'Published',
+      completionRequirement: 'Complete final comprehension defense & certificate checkpoint',
+      relatedVideoId: 'vid-101',
+      videoStatus: 'Ready',
+      description: 'Safety guardrails, copyright and privacy principles, final evaluation criteria, and certificate accreditation.',
+      status: 'Published'
+    },
+    {
+      id: 'cls-builder-201',
+      title: 'Class 01: Full-Stack Scaffolding with AI Development Tools',
+      courseId: 'ai-builder',
+      courseTitle: 'AI Builder',
+      moduleId: 'mod-builder-01',
+      moduleTitle: 'AI-Assisted Full-Stack Architecture',
+      instructor: 'Marcus Chen',
+      duration: '90 min',
+      order: 1,
+      visibility: 'Published',
+      completionRequirement: 'Deploy full-stack interactive prototype',
+      relatedVideoId: 'vid-102',
+      videoStatus: 'Ready',
+      description: 'Accelerating frontend and backend development using modern AI coding companions and rapid scaffolding tools.',
+      status: 'Published'
+    },
+    {
+      id: 'cls-creator-301',
+      title: 'Class 01: Vector Embeddings & Semantic Search Pipelines',
+      courseId: 'ai-creator',
+      courseTitle: 'AI Creator',
+      moduleId: 'mod-creator-01',
+      moduleTitle: 'Vector Databases & Semantic Retrieval (RAG)',
+      instructor: 'Elena Rostova',
+      duration: '90 min',
+      order: 1,
+      visibility: 'Published',
+      completionRequirement: 'Index document corpus in vector store with semantic search',
+      relatedVideoId: 'vid-102',
+      videoStatus: 'Ready',
+      description: 'Constructing robust Retrieval-Augmented Generation (RAG) pipelines with vector embeddings and similarity queries.',
+      status: 'Published'
+    }
+  ];
 
-  const defaultModules = [];
+  const defaultModules = [
+    {
+      id: 'mod-foundations-01',
+      title: 'AI Fundamentals & Neural Foundations',
+      courseId: 'ai-foundations',
+      courseTitle: 'AI Foundations',
+      order: 1,
+      classesCount: 1,
+      completionRequirement: 'Attend live class and complete quiz',
+      description: 'Core concepts of Artificial Intelligence, transformer neural architecture, and modern model architectures.',
+      status: 'Published'
+    },
+    {
+      id: 'mod-foundations-02',
+      title: 'Modern AI Tools & Conversational Workflows',
+      courseId: 'ai-foundations',
+      courseTitle: 'AI Foundations',
+      order: 2,
+      classesCount: 1,
+      completionRequirement: 'Complete workflow demonstration',
+      description: 'Mastering modern conversational assistants, multimodal tools, document summarization, and daily automation.',
+      status: 'Published'
+    },
+    {
+      id: 'mod-foundations-03',
+      title: 'Prompt Engineering & Reasoning Frameworks',
+      courseId: 'ai-foundations',
+      courseTitle: 'AI Foundations',
+      order: 3,
+      classesCount: 1,
+      completionRequirement: 'Submit prompt portfolio',
+      description: 'Professional prompting: few-shot exemplars, structured schemas, Chain-of-Thought, and precision directives.',
+      status: 'Published'
+    },
+    {
+      id: 'mod-foundations-04',
+      title: 'AI Safety, Ethics & Platform Capstone',
+      courseId: 'ai-foundations',
+      courseTitle: 'AI Foundations',
+      order: 4,
+      classesCount: 1,
+      completionRequirement: 'Pass capstone evaluation',
+      description: 'Ethics, data privacy, hallucination controls, and verified graduation credential criteria.',
+      status: 'Published'
+    },
+    {
+      id: 'mod-builder-01',
+      title: 'AI-Assisted Full-Stack Architecture',
+      courseId: 'ai-builder',
+      courseTitle: 'AI Builder',
+      order: 1,
+      classesCount: 1,
+      completionRequirement: 'Scaffold application prototype',
+      description: 'Building modern web applications with cursor, copilot, and automated component generation.',
+      status: 'Published'
+    },
+    {
+      id: 'mod-builder-02',
+      title: 'LLM APIs, Structured Output & Tool Calling',
+      courseId: 'ai-builder',
+      courseTitle: 'AI Builder',
+      order: 2,
+      classesCount: 0,
+      completionRequirement: 'Integrate live API endpoints',
+      description: 'Connecting to OpenAI, Claude, and local models with JSON schemas and function calling hooks.',
+      status: 'Published'
+    },
+    {
+      id: 'mod-creator-01',
+      title: 'Vector Databases & Semantic Retrieval (RAG)',
+      courseId: 'ai-creator',
+      courseTitle: 'AI Creator',
+      order: 1,
+      classesCount: 1,
+      completionRequirement: 'Deploy vector search index',
+      description: 'Vector chunking, similarity search, semantic cache, and enterprise retrieval augmentation.',
+      status: 'Published'
+    },
+    {
+      id: 'mod-creator-02',
+      title: 'Autonomous Multi-Step AI Agent Systems',
+      courseId: 'ai-creator',
+      courseTitle: 'AI Creator',
+      order: 2,
+      classesCount: 0,
+      completionRequirement: 'Deploy multi-agent loop',
+      description: 'Multi-agent orchestration, tool use, loop guardrails, and persistent workflow automation.',
+      status: 'Published'
+    },
+    {
+      id: 'mod-architect-01',
+      title: 'Enterprise Fine-Tuning & Quantized Deployments',
+      courseId: 'ai-architect',
+      courseTitle: 'AI Architect',
+      order: 1,
+      classesCount: 0,
+      completionRequirement: 'Execute LoRA fine-tuning benchmark',
+      description: 'Domain fine-tuning, parameter-efficient adapters (LoRA/QLoRA), model quantization, and high-concurrency runtimes.',
+      status: 'Published'
+    }
+  ];
 
   const defaultLessons = [];
 
@@ -1250,15 +1453,33 @@
                 if (b.enrolledCount > 30) b.enrolledCount = 30;
               });
               if (!Array.isArray(parsed.batches)) parsed.batches = [];
-              if (!Array.isArray(parsed.classes)) parsed.classes = [];
-              if (!Array.isArray(parsed.modules)) parsed.modules = [];
+              if (!Array.isArray(parsed.classes) || parsed.classes.length === 0) {
+                parsed.classes = JSON.parse(JSON.stringify(defaultClasses));
+              }
+              if (!Array.isArray(parsed.modules) || parsed.modules.length === 0) {
+                parsed.modules = JSON.parse(JSON.stringify(defaultModules));
+              }
+              if (Array.isArray(parsed.courses)) {
+                parsed.courses.forEach(c => {
+                  const mCount = parsed.modules.filter(m => m.courseId === c.id).length;
+                  const cCount = parsed.classes.filter(cl => cl.courseId === c.id).length;
+                  if (mCount > 0) c.modulesCount = mCount;
+                  if (cCount > 0) c.classesCount = cCount;
+                });
+              }
               if (!Array.isArray(parsed.lessons)) parsed.lessons = [];
               if (!Array.isArray(parsed.videos)) parsed.videos = [];
               if (!Array.isArray(parsed.resources)) parsed.resources = [];
               if (!Array.isArray(parsed.projects)) parsed.projects = [];
               if (!Array.isArray(parsed.assignments)) parsed.assignments = [];
               if (!Array.isArray(parsed.students)) parsed.students = [];
+              else {
+                parsed.students = parsed.students.filter(s => s && s.email && s.email !== 'undefined' && s.name && s.name !== 'undefined');
+              }
               if (!Array.isArray(parsed.enrollments)) parsed.enrollments = [];
+              else {
+                parsed.enrollments = parsed.enrollments.filter(e => e && e.email && e.email !== 'undefined');
+              }
               if (!Array.isArray(parsed.submissions)) parsed.submissions = [];
               if (!Array.isArray(parsed.announcements)) parsed.announcements = [];
               if (!Array.isArray(parsed.notifications)) parsed.notifications = [];
@@ -1532,9 +1753,11 @@
         if (!Array.isArray(this.state.enrollments)) this.state.enrollments = [];
 
         registeredUsers.forEach(u => {
-          const email = u.email || `${(u.fullName || u.name || 'student').toLowerCase().replace(/\s+/g, '.')}@synthetic.nexus`;
+          if (!u || !u.email || u.email === 'undefined' || u.name === 'undefined') return;
+          const email = (u.email || '').toLowerCase().trim();
+          if (!email || email === 'undefined') return;
           const studentId = u.studentId || u.id || u.userId || `NX-2026-${Math.floor(10000 + Math.random() * 90000)}`;
-          const name = u.name || u.fullName || (u.email ? u.email.split('@')[0] : 'Registered Student');
+          const name = u.name || u.fullName || (email.split('@')[0]);
           const targetCourseId = u.enrolledCourseId || u.enrolledCourse || 'ai-foundations';
           const targetCourseTitle = targetCourseId.includes('builder') ? 'AI Builder: Intelligent Application Engineering'
             : targetCourseId.includes('creator') ? 'AI Creator: Multimodal Generative Systems'
@@ -1549,8 +1772,14 @@
             : targetTierId === 'ai-architect' ? 'AI Architect'
             : 'AI Foundations';
 
-          // Check if student exists in store
-          let existingStudent = this.state.students.find(s => (s.id && s.id === studentId) || (s.email && email && s.email.toLowerCase() === email.toLowerCase()));
+          // For AI Foundations (Free Tier) or already confirmed students, ensure active enrolled status
+          const isFreeOrEnrolled = targetTierId === 'ai-foundations' || u.enrollmentStatus === 'Enrolled';
+          const resolvedStatus = isFreeOrEnrolled ? 'Enrolled' : (u.enrollmentStatus || 'Pending');
+          const resolvedBatch = (u.batchName && u.batchName !== 'Unassigned') ? u.batchName : (isFreeOrEnrolled ? 'open free batch' : 'Unassigned');
+          const resolvedBatchId = (u.batchId && u.batchId !== '') ? u.batchId : (isFreeOrEnrolled ? 'batch-free-foundations' : '');
+
+          // Check if student exists in store by email
+          let existingStudent = this.state.students.find(s => s && s.email && s.email.toLowerCase().trim() === email);
           if (!existingStudent) {
             existingStudent = {
               id: studentId,
@@ -1568,9 +1797,9 @@
               enrolledCourseTitle: targetCourseTitle,
               tierId: targetTierId,
               tierName: targetTierName,
-              batchId: u.batchId || '',
-              batchName: u.batchName || 'Unassigned',
-              enrollmentStatus: u.enrollmentStatus || 'Pending',
+              batchId: resolvedBatchId,
+              batchName: resolvedBatch,
+              enrollmentStatus: resolvedStatus,
               progressPercent: u.progressPercent || 0,
               paymentStatus: u.paymentStatus || (targetTierId === 'ai-foundations' ? 'Not required' : 'Pending'),
               certificateStatus: u.certificateStatus || 'Not eligible',
@@ -1581,16 +1810,22 @@
             this.state.students.unshift(existingStudent);
             modified = true;
           } else {
-            // Ensure both name and fullName are always non-empty
+            // Update existing student with full name & ensure free tier is Enrolled
             if (!existingStudent.name || existingStudent.name === 'Registered Student') {
               existingStudent.name = name;
               existingStudent.fullName = name;
               modified = true;
             }
+            if (isFreeOrEnrolled && existingStudent.enrollmentStatus !== 'Enrolled') {
+              existingStudent.enrollmentStatus = 'Enrolled';
+              existingStudent.batchName = resolvedBatch;
+              existingStudent.batchId = resolvedBatchId;
+              modified = true;
+            }
           }
 
-          // Check if enrollment exists in store
-          let existingEnr = this.state.enrollments.find(e => (e.studentId && e.studentId === studentId) || (e.email && email && e.email.toLowerCase() === email.toLowerCase()));
+          // Check if enrollment exists in store by email
+          let existingEnr = this.state.enrollments.find(e => e && e.email && e.email.toLowerCase().trim() === email);
           if (!existingEnr) {
             const enrId = u.enrollmentId || `enr-${studentId.replace(/^NX-/, '').replace(/[^a-zA-Z0-9]/g, '')}`;
             const newEnr = {
@@ -1602,37 +1837,87 @@
               courseTitle: targetCourseTitle,
               tierId: targetTierId,
               tierName: targetTierName,
-              batchId: u.batchId || '',
-              batchName: u.batchName || 'Unassigned',
-              status: u.enrollmentStatus || 'Pending',
+              batchId: resolvedBatchId,
+              batchName: resolvedBatch,
+              status: resolvedStatus,
               paymentStatus: u.paymentStatus || (targetTierId === 'ai-foundations' ? 'Not required' : 'Pending'),
               submittedAt: u.createdAt || new Date().toISOString(),
               history: [
                 {
-                  status: 'Pending',
+                  status: resolvedStatus,
                   timestamp: u.createdAt || new Date().toISOString(),
-                  actionBy: 'Self Registered',
-                  note: 'Application received via student registration portal.'
+                  actionBy: isFreeOrEnrolled ? 'Auto Enrolled' : 'Self Registered',
+                  note: isFreeOrEnrolled ? 'Free tier admission confirmed automatically.' : 'Application received via student registration portal.'
                 }
               ]
             };
             this.state.enrollments.unshift(newEnr);
             modified = true;
           } else {
-            if (!existingEnr.studentName || existingEnr.studentName === 'Registered Student') {
-              existingEnr.studentName = name;
+            if (isFreeOrEnrolled && existingEnr.status !== 'Enrolled') {
+              existingEnr.status = 'Enrolled';
+              existingEnr.batchName = resolvedBatch;
+              existingEnr.batchId = resolvedBatchId;
               modified = true;
             }
           }
         });
 
+        // Deduplicate students array so no duplicate email records exist
+        const uniqueStudents = [];
+        const seenEmails = new Set();
+        this.state.students.forEach(s => {
+          if (!s || !s.email || s.email === 'undefined' || !s.name || s.name === 'undefined') {
+            modified = true;
+            return;
+          }
+          const em = s.email.toLowerCase().trim();
+          if (!seenEmails.has(em)) {
+            seenEmails.add(em);
+            uniqueStudents.push(s);
+          } else {
+            modified = true;
+            const prev = uniqueStudents.find(x => x.email.toLowerCase().trim() === em);
+            if (prev && s.enrollmentStatus === 'Enrolled') {
+              prev.enrollmentStatus = 'Enrolled';
+              prev.batchName = s.batchName || prev.batchName;
+              prev.batchId = s.batchId || prev.batchId;
+            }
+          }
+        });
+        this.state.students = uniqueStudents;
+
+        // Deduplicate enrollments array by email
+        const uniqueEnrs = [];
+        const seenEnrEmails = new Set();
+        this.state.enrollments.forEach(e => {
+          if (!e || !e.email || e.email === 'undefined') {
+            modified = true;
+            return;
+          }
+          const em = e.email.toLowerCase().trim();
+          if (!seenEnrEmails.has(em)) {
+            seenEnrEmails.add(em);
+            uniqueEnrs.push(e);
+          } else {
+            modified = true;
+            const prev = uniqueEnrs.find(x => x.email.toLowerCase().trim() === em);
+            if (prev && e.status === 'Enrolled') {
+              prev.status = 'Enrolled';
+              prev.batchName = e.batchName || prev.batchName;
+              prev.batchId = e.batchId || prev.batchId;
+            }
+          }
+        });
+        this.state.enrollments = uniqueEnrs;
+
         // Promote any approved enrollments with an assigned batch to Enrolled
         if (Array.isArray(this.state.enrollments)) {
           this.state.enrollments.forEach(en => {
-            if (en.batchId && en.batchId !== '' && en.batchId !== 'Unassigned' && en.status === 'Approved') {
+            if (en.batchId && en.batchId !== '' && en.batchId !== 'Unassigned' && (en.status === 'Approved' || en.tierId === 'ai-foundations')) {
               en.status = 'Enrolled';
               modified = true;
-              const stu = this.state.students.find(s => s.id === en.studentId || (s.email && en.email && s.email.toLowerCase() === en.email.toLowerCase()));
+              const stu = this.state.students.find(s => s && s.email && en.email && s.email.toLowerCase() === en.email.toLowerCase());
               if (stu) {
                 stu.batchId = en.batchId;
                 stu.batchName = en.batchName;

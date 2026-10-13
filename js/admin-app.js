@@ -1502,6 +1502,9 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             Export Student List
           </button>
+          <button class="adm-btn adm-btn-secondary" style="border-color:var(--adm-tertiary); color:var(--adm-tertiary); font-weight:600;" onclick="NexvionAdminApp.enrollAllPendingStudents()" title="Auto-enroll all pending applicants into active cohort">
+            ⚡ Enroll All Pending
+          </button>
           <button class="adm-btn adm-btn-primary" onclick="NexvionAdminApp.openAddStudentModal()">
             + Add Student Record
           </button>
@@ -7868,39 +7871,221 @@
       const course = await Data.getCourseById(courseId);
       if (!course) return;
 
+      const priceDisplay = course.priceDisplay || (course.tierType === 'free' ? 'FREE' : 'PRICE COMING SOON');
+      const numericPrice = course.priceNumeric !== undefined ? course.priceNumeric : (course.tierType === 'free' ? 0 : 49);
+      const currency = course.currency || 'USD';
+      const batchCap = course.maxBatchCapacity || 30;
+      const maxStudents = course.maxTotalCapacity || (course.tierType === 'free' ? 500 : 30);
+      const waitlistCap = course.waitlistCap || 30;
+      const instructor = course.instructor || 'Dr. Evelyn Vance & Faculty Team';
+      const duration = course.duration || '4 Weeks';
+      const outcomesText = Array.isArray(course.learningOutcomes) ? course.learningOutcomes.join('\n') : '';
+
       const bodyHtml = `
-        <div class="adm-form-group">
-          <label class="adm-form-label">Course Title</label>
-          <input type="text" class="adm-input" id="editCourseTitle" value="${course.title}">
-        </div>
-        <div class="adm-form-group">
-          <label class="adm-form-label">Course Status</label>
-          <select class="adm-select" id="editCourseStatus" style="width:100%;">
-            <option ${course.status === 'Published' ? 'selected' : ''}>Published</option>
-            <option ${course.status === 'Draft' ? 'selected' : ''}>Draft</option>
-            <option ${course.status === 'Archived' ? 'selected' : ''}>Archived</option>
-            <option ${course.status === 'Coming Soon' ? 'selected' : ''}>Coming Soon</option>
-          </select>
-        </div>
-        <div class="adm-form-group">
-          <label class="adm-form-label">Short Description</label>
-          <textarea class="adm-textarea" id="editCourseShortDesc">${course.shortDescription}</textarea>
+        <div style="display:flex; flex-direction:column; gap:16px; max-height:70vh; overflow-y:auto; padding-right:4px;">
+          
+          <!-- Section 1: Course Identity & Faculty -->
+          <div style="background:var(--adm-surface-elevated); padding:14px; border-radius:8px; border:1px solid var(--adm-border-subtle);">
+            <div style="font-weight:700; font-size:0.85rem; color:var(--adm-tertiary); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:10px;">Course Identity & Scheduling</div>
+            <div class="adm-form-group">
+              <label class="adm-form-label">Course Title <span class="adm-req-star">*</span></label>
+              <input type="text" class="adm-input" id="editCourseTitle" value="${course.title}">
+            </div>
+            <div class="adm-editor-grid">
+              <div class="adm-form-group">
+                <label class="adm-form-label">Lead Faculty / Instructor</label>
+                <input type="text" class="adm-input" id="editCourseInstructor" value="${instructor}">
+              </div>
+              <div class="adm-form-group">
+                <label class="adm-form-label">Duration & Commitment</label>
+                <input type="text" class="adm-input" id="editCourseDuration" value="${duration}" placeholder="e.g. 4 Weeks, 8 Weeks">
+              </div>
+            </div>
+            <div class="adm-editor-grid">
+              <div class="adm-form-group">
+                <label class="adm-form-label">Publishing Status</label>
+                <select class="adm-select" id="editCourseStatus" style="width:100%;">
+                  <option value="Published" ${course.status === 'Published' ? 'selected' : ''}>Published (Active)</option>
+                  <option value="Draft" ${course.status === 'Draft' ? 'selected' : ''}>Draft (Internal Only)</option>
+                  <option value="Coming Soon" ${course.status === 'Coming Soon' ? 'selected' : ''}>Coming Soon</option>
+                  <option value="Archived" ${course.status === 'Archived' ? 'selected' : ''}>Archived</option>
+                </select>
+              </div>
+              <div class="adm-form-group">
+                <label class="adm-form-label">Associated Tier</label>
+                <input type="text" class="adm-input" id="editCourseTierName" value="${course.tierName || 'AI Tier'}" readonly style="opacity:0.75; cursor:not-allowed;">
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 2: Pricing & Tuition Specifications -->
+          <div style="background:var(--adm-surface-elevated); padding:14px; border-radius:8px; border:1px solid var(--adm-border-subtle);">
+            <div style="font-weight:700; font-size:0.85rem; color:var(--adm-tertiary); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:10px;">Pricing & Tuition Configuration</div>
+            <div class="adm-editor-grid">
+              <div class="adm-form-group">
+                <label class="adm-form-label">Pricing Model</label>
+                <select class="adm-select" id="editCoursePriceType" style="width:100%;" onchange="NexvionAdminApp.onEditPriceTypeChange(this.value)">
+                  <option value="free" ${course.tierType === 'free' ? 'selected' : ''}>Free Tier ($0 Tuition)</option>
+                  <option value="paid" ${course.tierType === 'paid' ? 'selected' : ''}>Fixed Tuition Fee (Paid)</option>
+                  <option value="coming-soon" ${course.tierType === 'coming-soon' || priceDisplay.includes('COMING SOON') ? 'selected' : ''}>Price Coming Soon (Waitlist Open)</option>
+                </select>
+              </div>
+              <div class="adm-form-group">
+                <label class="adm-form-label">Public Price Display Label <span class="adm-req-star">*</span></label>
+                <input type="text" class="adm-input" id="editCoursePriceDisplay" value="${priceDisplay}" placeholder="e.g. FREE, $49, $99, PRICE COMING SOON">
+              </div>
+            </div>
+            <div class="adm-editor-grid">
+              <div class="adm-form-group">
+                <label class="adm-form-label">Numeric Tuition Amount</label>
+                <input type="number" class="adm-input" id="editCoursePriceNumeric" value="${numericPrice}" min="0" step="1" placeholder="0">
+              </div>
+              <div class="adm-form-group">
+                <label class="adm-form-label">Currency Code</label>
+                <select class="adm-select" id="editCourseCurrency" style="width:100%;">
+                  <option value="USD" ${currency === 'USD' ? 'selected' : ''}>USD ($ - US Dollar)</option>
+                  <option value="INR" ${currency === 'INR' ? 'selected' : ''}>INR (₹ - Indian Rupee)</option>
+                  <option value="EUR" ${currency === 'EUR' ? 'selected' : ''}>EUR (€ - Euro)</option>
+                  <option value="GBP" ${currency === 'GBP' ? 'selected' : ''}>GBP (£ - British Pound)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 3: Student Limitation & Cohort Capacity -->
+          <div style="background:var(--adm-surface-elevated); padding:14px; border-radius:8px; border:1px solid var(--adm-border-subtle);">
+            <div style="font-weight:700; font-size:0.85rem; color:var(--adm-tertiary); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:10px;">Student Limitations & Cohort Capacity</div>
+            <div class="adm-editor-grid">
+              <div class="adm-form-group">
+                <label class="adm-form-label">Batch Seat Capacity (Strict Invariant)</label>
+                <input type="number" class="adm-input" id="editCourseBatchCap" value="${batchCap}" min="5" max="100" placeholder="30">
+                <span style="font-size:0.68rem; color:var(--adm-text-muted);">Standard cohort size is strictly capped at 30 learners.</span>
+              </div>
+              <div class="adm-form-group">
+                <label class="adm-form-label">Maximum Total Enrollment Cap</label>
+                <input type="number" class="adm-input" id="editCourseMaxCapacity" value="${maxStudents}" min="10" placeholder="e.g. 500 (Leave blank for unlimited)">
+                <span style="font-size:0.68rem; color:var(--adm-text-muted);">Total maximum admissions permitted across all batches.</span>
+              </div>
+            </div>
+            <div class="adm-editor-grid">
+              <div class="adm-form-group">
+                <label class="adm-form-label">Waitlist Overflow Threshold</label>
+                <input type="number" class="adm-input" id="editCourseWaitlistCap" value="${waitlistCap}" min="0" placeholder="30">
+              </div>
+              <div class="adm-form-group">
+                <label class="adm-form-label">Enrollment Approval Policy</label>
+                <select class="adm-select" id="editCourseApprovalPolicy" style="width:100%;">
+                  <option value="auto" ${course.tierType === 'free' ? 'selected' : ''}>Instant Auto-Enrollment upon Signup</option>
+                  <option value="manual" ${course.tierType !== 'free' ? 'selected' : ''}>Manual Admin Approval Required</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 4: Curriculum Syllabus & Learning Outcomes -->
+          <div style="background:var(--adm-surface-elevated); padding:14px; border-radius:8px; border:1px solid var(--adm-border-subtle);">
+            <div style="font-weight:700; font-size:0.85rem; color:var(--adm-tertiary); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:10px;">Curriculum & Learning Outcomes</div>
+            <div class="adm-form-group">
+              <label class="adm-form-label">Short Description</label>
+              <textarea class="adm-textarea" id="editCourseShortDesc" style="min-height:55px;">${course.shortDescription || ''}</textarea>
+            </div>
+            <div class="adm-form-group">
+              <label class="adm-form-label">Full Syllabus Overview</label>
+              <textarea class="adm-textarea" id="editCourseFullDesc" style="min-height:75px;">${course.fullDescription || ''}</textarea>
+            </div>
+            <div class="adm-form-group">
+              <label class="adm-form-label">Included Curriculum Features & Outcomes (One per line)</label>
+              <textarea class="adm-textarea" id="editCourseOutcomes" style="min-height:90px;" placeholder="Feature 1&#10;Feature 2&#10;Feature 3">${outcomesText}</textarea>
+            </div>
+          </div>
+
         </div>
       `;
       const footerHtml = `
         <button class="adm-btn adm-btn-secondary" onclick="NexvionAdminApp.closeModal()">Cancel</button>
-        <button class="adm-btn adm-btn-primary" onclick="NexvionAdminApp.submitEditCourse('${course.id}')">Save Changes</button>
+        <button class="adm-btn adm-btn-primary" onclick="NexvionAdminApp.submitEditCourse('${course.id}')">Save All Changes</button>
       `;
-      openModal(`Edit: ${course.title}`, bodyHtml, footerHtml);
+      openModal(`Configure Course & Tier: ${course.title}`, bodyHtml, footerHtml);
+    },
+
+    onEditPriceTypeChange: (val) => {
+      const priceDisplayInput = document.getElementById('editCoursePriceDisplay');
+      const numericInput = document.getElementById('editCoursePriceNumeric');
+      if (!priceDisplayInput) return;
+      if (val === 'free') {
+        priceDisplayInput.value = 'FREE';
+        if (numericInput) numericInput.value = 0;
+      } else if (val === 'coming-soon') {
+        priceDisplayInput.value = 'PRICE COMING SOON';
+      } else if (val === 'paid') {
+        if (priceDisplayInput.value === 'FREE' || priceDisplayInput.value === 'PRICE COMING SOON') {
+          priceDisplayInput.value = '$49';
+          if (numericInput) numericInput.value = 49;
+        }
+      }
     },
 
     submitEditCourse: async (courseId) => {
-      const title = document.getElementById('editCourseTitle')?.value;
-      const status = document.getElementById('editCourseStatus')?.value;
-      const shortDesc = document.getElementById('editCourseShortDesc')?.value;
-      await Data.saveCourse({ id: courseId, title, status, shortDescription: shortDesc });
+      const title = document.getElementById('editCourseTitle')?.value.trim();
+      const instructor = document.getElementById('editCourseInstructor')?.value.trim() || 'NEXVION Faculty';
+      const duration = document.getElementById('editCourseDuration')?.value.trim() || '4 Weeks';
+      const status = document.getElementById('editCourseStatus')?.value || 'Published';
+      const priceType = document.getElementById('editCoursePriceType')?.value || 'paid';
+      const priceDisplay = document.getElementById('editCoursePriceDisplay')?.value.trim() || (priceType === 'free' ? 'FREE' : 'PRICE COMING SOON');
+      const priceNumeric = parseFloat(document.getElementById('editCoursePriceNumeric')?.value || '0');
+      const currency = document.getElementById('editCourseCurrency')?.value || 'USD';
+      const maxBatchCapacity = parseInt(document.getElementById('editCourseBatchCap')?.value || '30', 10);
+      const maxTotalCapacity = parseInt(document.getElementById('editCourseMaxCapacity')?.value || '300', 10);
+      const waitlistCap = parseInt(document.getElementById('editCourseWaitlistCap')?.value || '30', 10);
+      const approvalPolicy = document.getElementById('editCourseApprovalPolicy')?.value || 'auto';
+      const shortDesc = document.getElementById('editCourseShortDesc')?.value.trim() || '';
+      const fullDesc = document.getElementById('editCourseFullDesc')?.value.trim() || shortDesc;
+      const outcomesRaw = document.getElementById('editCourseOutcomes')?.value || '';
+      const learningOutcomes = outcomesRaw.split('\n').map(s => s.trim()).filter(Boolean);
+
+      if (!title) {
+        alert('Course Title is required.');
+        return;
+      }
+
+      // Update course
+      const updatedCourse = await Data.saveCourse({
+        id: courseId,
+        title,
+        instructor,
+        duration,
+        status,
+        tierType: priceType,
+        priceDisplay,
+        priceNumeric,
+        currency,
+        maxBatchCapacity,
+        maxTotalCapacity,
+        waitlistCap,
+        approvalPolicy,
+        shortDescription: shortDesc,
+        fullDescription: fullDesc,
+        learningOutcomes: learningOutcomes.length ? learningOutcomes : ['Comprehensive curriculum']
+      });
+
+      // Synchronize associated tier
+      try {
+        const tiers = await Data.getTiers();
+        const matchingTier = tiers.find(t => t.id === courseId || t.id === (updatedCourse && updatedCourse.tierId));
+        if (matchingTier) {
+          await Services.tierRepository.update(matchingTier.id, {
+            priceDisplay,
+            tierType: priceType,
+            description: shortDesc || matchingTier.description,
+            features: learningOutcomes.length ? learningOutcomes : matchingTier.features
+          });
+        }
+      } catch (tierErr) {
+        console.warn('Tier sync notice:', tierErr);
+      }
+
       closeModal();
-      showToast('Course Updated', 'Course details updated successfully.', 'success');
+      showToast('Course & Tier Updated', `Updated "${title}" — prices and capacity limits saved.`, 'success');
       renderRoute(AppState.currentRoute);
     },
 
@@ -8175,6 +8360,24 @@
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
       showToast('Export Generated', `Exported ${students.length} student records to CSV.`, 'success');
+    },
+    enrollAllPendingStudents: async () => {
+      const students = await Data.getStudents();
+      const pendings = students.filter(s => s && s.enrollmentStatus === 'Pending');
+      if (pendings.length === 0) {
+        showToast('All Enrolled', 'No pending students found. All registered learners are already enrolled.', 'info');
+        return;
+      }
+      for (const s of pendings) {
+        s.enrollmentStatus = 'Enrolled';
+        if (!s.batchName || s.batchName === 'Unassigned') {
+          s.batchName = 'open free batch';
+          s.batchId = 'batch-free-foundations';
+        }
+        await Data.saveStudent(s);
+      }
+      showToast('All Enrolled', `Successfully enrolled ${pendings.length} pending learners into active cohort.`, 'success');
+      renderRoute(AppState.currentRoute);
     },
     openAddStudentModal: async () => {
       const tiers = await Data.getTiers();
@@ -11579,11 +11782,9 @@
       }
     },
 
-    // --- Forward-Compatible Action Stubs ---
+    // --- Operational Actions & Tier Configuration ---
     openEditBatchModal: (batchId) => NexvionAdminApp.openBatchDetailDrawer(batchId),
-    openEditTierModal: () => showToast('Tier Configuration', 'Tier specifications are defined at platform level.', 'info'),
-    openCreateClassModal: () => showToast('Class Management', 'Class scheduling enabled in Phase 3.', 'info'),
-    openCreateModuleModal: () => showToast('Curriculum Management', 'Module creator enabled in Phase 3.', 'info'),
+    openEditTierModal: (tierId) => NexvionAdminApp.openEditCourseModal(tierId || 'ai-foundations'),
     openCreateAnnouncementModal: () => NexvionAdminApp.navigateTo('/admin/announcements/new'),
     saveSettingsForm: () => showToast('Settings Saved', 'Platform configuration updated.', 'success'),
 
