@@ -1,5 +1,5 @@
 // NEXVION AI Course — Unified Service Worker (PWA Caching + Firebase Cloud Messaging Push)
-const CACHE_NAME = 'nexvion-ai-v5';
+const CACHE_NAME = 'nexvion-ai-v8-hard-fresh';
 const PRECACHE_ASSETS = [
   './manifest.json',
   './manifest.webmanifest',
@@ -48,8 +48,8 @@ self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET' || !req.url.startsWith('http')) return;
 
-  // API calls & Firebase/Firestore always bypass Service Worker
-  if (req.url.includes('/api/') || req.url.includes('firestore.googleapis.com') || req.url.includes('firebase')) {
+  // Admin portal assets, API calls & Firebase/Firestore always bypass Service Worker
+  if (req.url.includes('admin') || req.url.includes('/api/') || req.url.includes('firestore.googleapis.com') || req.url.includes('firebase')) {
     return;
   }
 

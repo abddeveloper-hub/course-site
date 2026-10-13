@@ -1150,33 +1150,128 @@
               if (collectionName === 'settings') {
                 this.state.settings = { ...this.state.settings, ...remoteDocs[0] };
               } else if (collectionName === 'students') {
-                const merged = [...remoteDocs];
+                const rawList = [...remoteDocs];
                 (Array.isArray(this.state.students) ? this.state.students : []).forEach(localSt => {
-                  if (!merged.some(m => (m.id && localSt.id && m.id === localSt.id) || (m.email && localSt.email && m.email.toLowerCase() === localSt.email.toLowerCase()))) {
-                    merged.push(localSt);
+                  if (!rawList.some(m => (m.id && localSt.id && m.id === localSt.id) || (m.email && localSt.email && m.email.toLowerCase().trim() === localSt.email.toLowerCase().trim()))) {
+                    rawList.push(localSt);
                   }
                 });
-                this.state.students = merged;
+
+                // Sanitize and normalize every student record
+                const normalized = [];
+                rawList.forEach(raw => {
+                  if (!raw) return;
+                  const email = (raw.email || '').toLowerCase().trim();
+                  if (!email || email === 'undefined') return; // Exclude empty/ghost entries
+
+                  const name = raw.name || raw.fullName || (email.split('@')[0]);
+                  const sId = raw.studentId || raw.id || `NX-2026-${Math.floor(10000 + Math.random() * 90000)}`;
+                  const tierName = (raw.tierName && raw.tierName !== 'undefined' && raw.tierName !== 'UNDEFINED') ? raw.tierName : 'AI Foundations';
+                  const tierId = (raw.tierId && raw.tierId !== 'undefined' && raw.tierId !== 'UNDEFINED') ? raw.tierId : 'ai-foundations';
+                  const courseTitle = (raw.enrolledCourseTitle && raw.enrolledCourseTitle !== 'undefined') ? raw.enrolledCourseTitle : 'AI Foundations: Zero to AI Native';
+                  const courseId = (raw.enrolledCourseId && raw.enrolledCourseId !== 'undefined') ? raw.enrolledCourseId : 'ai-foundations';
+                  
+                  // Status: Normalize Active, Approved, or undefined to Enrolled
+                  let status = raw.enrollmentStatus || raw.status;
+                  if (!status || status === 'undefined' || status === 'UNDEFINED' || status === 'Active' || status === 'Approved') {
+                    status = 'Enrolled';
+                  }
+
+                  const batchName = (raw.batchName && raw.batchName !== 'undefined' && raw.batchName !== 'UNDEFINED' && raw.batchName !== 'Unassigned') 
+                    ? raw.batchName 
+                    : (status === 'Enrolled' ? 'open free batch' : 'Unassigned');
+                  const batchId = (raw.batchId && raw.batchId !== 'undefined' && raw.batchId !== '') 
+                    ? raw.batchId 
+                    : (status === 'Enrolled' ? 'batch-free-foundations' : '');
+
+                  normalized.push({
+                    ...raw,
+                    id: sId,
+                    studentId: sId,
+                    name: name,
+                    fullName: name,
+                    email: email,
+                    tierName: tierName,
+                    tierId: tierId,
+                    enrolledCourseTitle: courseTitle,
+                    enrolledCourseId: courseId,
+                    enrollmentStatus: status,
+                    batchName: batchName,
+                    batchId: batchId,
+                    paymentStatus: raw.paymentStatus || (tierId === 'ai-foundations' ? 'Not required' : 'Pending'),
+                    certificateStatus: raw.certificateStatus || 'Not eligible',
+                    progressPercent: raw.progressPercent || 0
+                  });
+                });
+
+                // Deduplicate by email — ALWAYS prioritize 'Enrolled' over any rejected or stale record!
+                normalized.sort((a, b) => {
+                  if (a.enrollmentStatus === 'Enrolled' && b.enrollmentStatus !== 'Enrolled') return -1;
+                  if (b.enrollmentStatus === 'Enrolled' && a.enrollmentStatus !== 'Enrolled') return 1;
+                  return 0;
+                });
+
+                const uniqueStudents = [];
+                const seenEmails = new Set();
+                normalized.forEach(s => {
+                  if (!seenEmails.has(s.email)) {
+                    seenEmails.add(s.email);
+                    uniqueStudents.push(s);
+                  }
+                });
+
+                this.state.students = uniqueStudents;
               } else if (collectionName === 'enrollments') {
-                const merged = [...remoteDocs];
+                const rawEnrs = [...remoteDocs];
                 (Array.isArray(this.state.enrollments) ? this.state.enrollments : []).forEach(localEn => {
-                  const existing = merged.find(m => (m.id && localEn.id && m.id === localEn.id) || (m.email && localEn.email && m.email.toLowerCase() === localEn.email.toLowerCase()));
-                  if (!existing) {
-                    merged.push(localEn);
-                  } else {
-                    if (!existing.batchId && localEn.batchId) {
-                      existing.batchId = localEn.batchId;
-                      existing.batchName = localEn.batchName;
-                    }
-                    if (existing.batchId && existing.status === 'Approved') {
-                      existing.status = 'Enrolled';
-                    }
+                  if (!rawEnrs.some(m => (m.id && localEn.id && m.id === localEn.id) || (m.email && localEn.email && m.email.toLowerCase().trim() === localEn.email.toLowerCase().trim()))) {
+                    rawEnrs.push(localEn);
                   }
                 });
-                merged.forEach(en => {
-                  if (en.batchId && en.status === 'Approved') en.status = 'Enrolled';
+
+                const normalizedEnrs = [];
+                rawEnrs.forEach(en => {
+                  if (!en) return;
+                  const email = (en.email || '').toLowerCase().trim();
+                  if (!email || email === 'undefined') return;
+
+                  let status = en.status;
+                  if (!status || status === 'undefined' || status === 'UNDEFINED' || status === 'Active' || status === 'Approved') {
+                    status = 'Enrolled';
+                  }
+
+                  const batchName = (en.batchName && en.batchName !== 'undefined' && en.batchName !== 'Unassigned') 
+                    ? en.batchName 
+                    : (status === 'Enrolled' ? 'open free batch' : 'Unassigned');
+                  const batchId = (en.batchId && en.batchId !== '') 
+                    ? en.batchId 
+                    : (status === 'Enrolled' ? 'batch-free-foundations' : '');
+
+                  normalizedEnrs.push({
+                    ...en,
+                    email: email,
+                    status: status,
+                    batchName: batchName,
+                    batchId: batchId
+                  });
                 });
-                this.state.enrollments = merged;
+
+                normalizedEnrs.sort((a, b) => {
+                  if (a.status === 'Enrolled' && b.status !== 'Enrolled') return -1;
+                  if (b.status === 'Enrolled' && a.status !== 'Enrolled') return 1;
+                  return 0;
+                });
+
+                const uniqueEnrs = [];
+                const seenEnrEmails = new Set();
+                normalizedEnrs.forEach(e => {
+                  if (!seenEnrEmails.has(e.email)) {
+                    seenEnrEmails.add(e.email);
+                    uniqueEnrs.push(e);
+                  }
+                });
+
+                this.state.enrollments = uniqueEnrs;
               } else {
                 this.state[collectionName] = remoteDocs;
               }
@@ -2683,23 +2778,53 @@
     },
     delete: async (id) => {
       const idx = store.state.students.findIndex(s => s.id === id || s.studentId === id);
+      let remEmail = '';
       if (idx !== -1) {
         const removed = store.state.students.splice(idx, 1)[0];
-        const remEmail = (removed.email || '').toLowerCase().trim();
+        remEmail = (removed.email || '').toLowerCase().trim();
         store.state.enrollments = store.state.enrollments.filter(e => e.studentId !== id && (!remEmail || !e.email || e.email.toLowerCase().trim() !== remEmail));
         store.saveState();
         auditRepository.log('Deleted Student Record', 'Student', removed.name || id);
-        return true;
       }
-      return false;
+      if (store.db) {
+        try {
+          await store.db.collection('students').doc(id).delete();
+          if (remEmail) {
+            const snap = await store.db.collection('students').where('email', '==', remEmail).get();
+            snap.forEach(d => d.ref.delete());
+            const snapEn = await store.db.collection('enrollments').where('email', '==', remEmail).get();
+            snapEn.forEach(d => d.ref.delete());
+          }
+        } catch (e) {}
+      }
+      return true;
     },
     purgeRejected: async () => {
       const initialCount = store.state.students.length;
+      const rejectedEmails = store.state.students.filter(s => s.enrollmentStatus === 'Rejected').map(s => (s.email || '').toLowerCase().trim());
       store.state.students = store.state.students.filter(s => s.enrollmentStatus !== 'Rejected');
       store.state.enrollments = store.state.enrollments.filter(e => e.status !== 'Rejected');
       store.saveState();
       const purged = initialCount - store.state.students.length;
       auditRepository.log('Purged Rejected Students', 'Student', `Removed ${purged} rejected records`);
+
+      if (store.db) {
+        try {
+          const snap = await store.db.collection('students').where('status', '==', 'Rejected').get();
+          snap.forEach(d => d.ref.delete());
+          const snap2 = await store.db.collection('students').where('enrollmentStatus', '==', 'Rejected').get();
+          snap2.forEach(d => d.ref.delete());
+          for (const remEmail of rejectedEmails) {
+            if (remEmail) {
+              const snapEm = await store.db.collection('students').where('email', '==', remEmail).get();
+              snapEm.forEach(d => {
+                const dt = d.data();
+                if (dt.status === 'Rejected' || dt.enrollmentStatus === 'Rejected') d.ref.delete();
+              });
+            }
+          }
+        } catch (e) {}
+      }
       return purged;
     }
   };
