@@ -29,7 +29,7 @@
 })(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  const STORAGE_KEY = 'nexvion_admin_production_data_v10_pristine_clean';
+  const STORAGE_KEY = 'nexvion_admin_production_data_v12_active_suite';
 
   // --------------------------------------------------------------------------
   // 1. DEFAULT PRODUCTION DATA MODELS
@@ -1475,10 +1475,49 @@
               if (!Array.isArray(parsed.students)) parsed.students = [];
               else {
                 parsed.students = parsed.students.filter(s => s && s.email && s.email !== 'undefined' && s.name && s.name !== 'undefined');
+                parsed.students.forEach(s => {
+                  if (!s.tierName || s.tierName === 'undefined' || s.tierName === 'UNDEFINED') s.tierName = 'AI Foundations';
+                  if (!s.tierId || s.tierId === 'undefined') s.tierId = 'ai-foundations';
+                  if (!s.enrollmentStatus || s.enrollmentStatus === 'undefined' || s.enrollmentStatus === 'UNDEFINED') s.enrollmentStatus = 'Enrolled';
+                  if (!s.batchName || s.batchName === 'undefined' || s.batchName === 'UNDEFINED') s.batchName = 'open free batch';
+                  if (!s.enrolledCourseTitle || s.enrolledCourseTitle === 'undefined') s.enrolledCourseTitle = 'AI Foundations: Zero to AI Native';
+                });
+                const deduplicatedStudents = [];
+                const seenEmails = new Set();
+                const sorted = [...parsed.students].sort((a, b) => {
+                  if (a.enrollmentStatus === 'Enrolled' && b.enrollmentStatus !== 'Enrolled') return -1;
+                  if (b.enrollmentStatus === 'Enrolled' && a.enrollmentStatus !== 'Enrolled') return 1;
+                  return 0;
+                });
+                sorted.forEach(s => {
+                  const em = (s.email || '').toLowerCase().trim();
+                  if (!em || em === 'undefined') return;
+                  if (!seenEmails.has(em)) {
+                    seenEmails.add(em);
+                    deduplicatedStudents.push(s);
+                  }
+                });
+                parsed.students = deduplicatedStudents;
               }
               if (!Array.isArray(parsed.enrollments)) parsed.enrollments = [];
               else {
                 parsed.enrollments = parsed.enrollments.filter(e => e && e.email && e.email !== 'undefined');
+                const deduplicatedEnrs = [];
+                const seenEnrEmails = new Set();
+                const sortedEnr = [...parsed.enrollments].sort((a, b) => {
+                  if (a.status === 'Enrolled' && b.status !== 'Enrolled') return -1;
+                  if (b.status === 'Enrolled' && a.status !== 'Enrolled') return 1;
+                  return 0;
+                });
+                sortedEnr.forEach(e => {
+                  const em = (e.email || '').toLowerCase().trim();
+                  if (!em || em === 'undefined') return;
+                  if (!seenEnrEmails.has(em)) {
+                    seenEnrEmails.add(em);
+                    deduplicatedEnrs.push(e);
+                  }
+                });
+                parsed.enrollments = deduplicatedEnrs;
               }
               if (!Array.isArray(parsed.submissions)) parsed.submissions = [];
               if (!Array.isArray(parsed.announcements)) parsed.announcements = [];
@@ -1866,10 +1905,35 @@
         // Deduplicate students array so no duplicate email records exist
         const uniqueStudents = [];
         const seenEmails = new Set();
-        this.state.students.forEach(s => {
+        const sortedStudents = [...this.state.students].sort((a, b) => {
+          if (a.enrollmentStatus === 'Enrolled' && b.enrollmentStatus !== 'Enrolled') return -1;
+          if (b.enrollmentStatus === 'Enrolled' && a.enrollmentStatus !== 'Enrolled') return 1;
+          return 0;
+        });
+        sortedStudents.forEach(s => {
           if (!s || !s.email || s.email === 'undefined' || !s.name || s.name === 'undefined') {
             modified = true;
             return;
+          }
+          if (!s.tierName || s.tierName === 'undefined' || s.tierName === 'UNDEFINED') {
+            s.tierName = 'AI Foundations';
+            modified = true;
+          }
+          if (!s.tierId || s.tierId === 'undefined') {
+            s.tierId = 'ai-foundations';
+            modified = true;
+          }
+          if (!s.enrollmentStatus || s.enrollmentStatus === 'undefined' || s.enrollmentStatus === 'UNDEFINED') {
+            s.enrollmentStatus = 'Enrolled';
+            modified = true;
+          }
+          if (!s.batchName || s.batchName === 'undefined' || s.batchName === 'UNDEFINED') {
+            s.batchName = 'open free batch';
+            modified = true;
+          }
+          if (!s.enrolledCourseTitle || s.enrolledCourseTitle === 'undefined') {
+            s.enrolledCourseTitle = 'AI Foundations: Zero to AI Native';
+            modified = true;
           }
           const em = s.email.toLowerCase().trim();
           if (!seenEmails.has(em)) {
@@ -1877,12 +1941,6 @@
             uniqueStudents.push(s);
           } else {
             modified = true;
-            const prev = uniqueStudents.find(x => x.email.toLowerCase().trim() === em);
-            if (prev && s.enrollmentStatus === 'Enrolled') {
-              prev.enrollmentStatus = 'Enrolled';
-              prev.batchName = s.batchName || prev.batchName;
-              prev.batchId = s.batchId || prev.batchId;
-            }
           }
         });
         this.state.students = uniqueStudents;
@@ -1890,7 +1948,12 @@
         // Deduplicate enrollments array by email
         const uniqueEnrs = [];
         const seenEnrEmails = new Set();
-        this.state.enrollments.forEach(e => {
+        const sortedEnrs = [...this.state.enrollments].sort((a, b) => {
+          if (a.status === 'Enrolled' && b.status !== 'Enrolled') return -1;
+          if (b.status === 'Enrolled' && a.status !== 'Enrolled') return 1;
+          return 0;
+        });
+        sortedEnrs.forEach(e => {
           if (!e || !e.email || e.email === 'undefined') {
             modified = true;
             return;
@@ -1901,12 +1964,6 @@
             uniqueEnrs.push(e);
           } else {
             modified = true;
-            const prev = uniqueEnrs.find(x => x.email.toLowerCase().trim() === em);
-            if (prev && e.status === 'Enrolled') {
-              prev.status = 'Enrolled';
-              prev.batchName = e.batchName || prev.batchName;
-              prev.batchId = e.batchId || prev.batchId;
-            }
           }
         });
         this.state.enrollments = uniqueEnrs;
@@ -2623,6 +2680,27 @@
 
       events.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
       return events;
+    },
+    delete: async (id) => {
+      const idx = store.state.students.findIndex(s => s.id === id || s.studentId === id);
+      if (idx !== -1) {
+        const removed = store.state.students.splice(idx, 1)[0];
+        const remEmail = (removed.email || '').toLowerCase().trim();
+        store.state.enrollments = store.state.enrollments.filter(e => e.studentId !== id && (!remEmail || !e.email || e.email.toLowerCase().trim() !== remEmail));
+        store.saveState();
+        auditRepository.log('Deleted Student Record', 'Student', removed.name || id);
+        return true;
+      }
+      return false;
+    },
+    purgeRejected: async () => {
+      const initialCount = store.state.students.length;
+      store.state.students = store.state.students.filter(s => s.enrollmentStatus !== 'Rejected');
+      store.state.enrollments = store.state.enrollments.filter(e => e.status !== 'Rejected');
+      store.saveState();
+      const purged = initialCount - store.state.students.length;
+      auditRepository.log('Purged Rejected Students', 'Student', `Removed ${purged} rejected records`);
+      return purged;
     }
   };
 
@@ -6558,6 +6636,8 @@
     getStudents: () => studentRepository.findAll(),
     getStudentById: (id) => studentRepository.findById(id),
     saveStudent: (data) => data.id ? studentRepository.update(data.id, data) : studentRepository.create(data),
+    deleteStudent: (id) => studentRepository.delete(id),
+    purgeRejectedStudents: () => studentRepository.purgeRejected(),
     addStudentNote: (id, note, author, priority) => studentRepository.addNote(id, note, author, priority),
     getStudentEnrollments: (id) => studentRepository.getEnrollments(id),
     getStudentClasses: (id) => studentRepository.getClasses(id),

@@ -521,7 +521,8 @@
 
     // 5. StatusBadge
     StatusBadge: ({ status }) => {
-      const s = String(status || '').toUpperCase();
+      const displayStatus = (status && String(status).toLowerCase() !== 'undefined') ? status : 'Enrolled';
+      const s = String(displayStatus).toUpperCase();
       let badgeClass = 'adm-badge-draft';
       if (['OPEN', 'ACTIVE', 'PUBLISHED', 'PAID', 'ELIGIBLE', 'ENROLLED', 'REQUIRED', 'ISSUED'].includes(s)) badgeClass = 'adm-badge-published';
       else if (['FULL'].includes(s)) badgeClass = 'adm-badge-full';
@@ -550,7 +551,7 @@
       else if (s === 'FREE') badgeClass = 'adm-badge-open';
       else if (s.includes('COMING SOON')) badgeClass = 'adm-badge-price-coming-soon';
 
-      return `<span class="adm-badge ${badgeClass}"><span class="adm-badge-dot"></span>${status}</span>`;
+      return `<span class="adm-badge ${badgeClass}"><span class="adm-badge-dot"></span>${displayStatus}</span>`;
     },
 
     PriorityBadge: ({ priority }) => {
@@ -1505,6 +1506,9 @@
           <button class="adm-btn adm-btn-secondary" style="border-color:var(--adm-tertiary); color:var(--adm-tertiary); font-weight:600;" onclick="NexvionAdminApp.enrollAllPendingStudents()" title="Auto-enroll all pending applicants into active cohort">
             ⚡ Enroll All Pending
           </button>
+          <button class="adm-btn adm-btn-secondary" style="border-color:#EF4444; color:#EF4444; font-weight:600;" onclick="NexvionAdminApp.purgeRejectedStudents()" title="Permanently remove all rejected student applications">
+            🗑️ Purge Rejected
+          </button>
           <button class="adm-btn adm-btn-primary" onclick="NexvionAdminApp.openAddStudentModal()">
             + Add Student Record
           </button>
@@ -1590,6 +1594,9 @@
               const displayName = s.name || s.fullName || (s.email ? s.email.split('@')[0] : 'Registered Learner');
               const displayId = (s.id || s.studentId || 'NX-STUDENT').toUpperCase();
               const initials = (displayName.trim().split(/\s+/).map(n => n[0]).join('').slice(0, 2) || 'ST').toUpperCase();
+              const safeTier = (s.tierName && s.tierName !== 'undefined' && s.tierName !== 'UNDEFINED') ? s.tierName : 'AI Foundations';
+              const safeStatus = (s.enrollmentStatus && s.enrollmentStatus !== 'undefined' && s.enrollmentStatus !== 'UNDEFINED') ? s.enrollmentStatus : 'Enrolled';
+              const safeBatch = (s.batchName && s.batchName !== 'undefined' && s.batchName !== 'UNDEFINED') ? s.batchName : 'open free batch';
               return `
                 <tr>
                   <td>
@@ -1607,19 +1614,19 @@
                     <span style="font-size:0.8rem; color:var(--adm-text-secondary); font-family:var(--adm-font-mono);">${s.email}</span>
                   </td>
                   <td>
-                    <div style="font-weight:500; font-size:0.82rem;">${(s.enrolledCourseTitle || '').split(':')[0]}</div>
+                    <div style="font-weight:500; font-size:0.82rem;">${(s.enrolledCourseTitle || 'AI Foundations: Zero to AI Native').split(':')[0]}</div>
                   </td>
                   <td>
-                    <span class="adm-badge ${s.tierId === 'ai-foundations' ? 'adm-badge-open' : 'adm-badge-published'}">${s.tierName || s.tierId}</span>
+                    <span class="adm-badge ${s.tierId === 'ai-foundations' ? 'adm-badge-open' : 'adm-badge-published'}">${safeTier}</span>
                   </td>
                   <td>
                     <div>
-                      <strong style="font-size:0.8rem; color:var(--adm-text-primary);">${s.batchName || 'Unassigned'}</strong>
+                      <strong style="font-size:0.8rem; color:var(--adm-text-primary);">${safeBatch}</strong>
                       <div style="font-size:0.68rem; font-family:var(--adm-font-mono); color:var(--adm-tertiary);">30 Seat Capacity</div>
                     </div>
                   </td>
                   <td>
-                    ${AdminComponents.StatusBadge({ status: s.enrollmentStatus })}
+                    ${AdminComponents.StatusBadge({ status: safeStatus })}
                   </td>
                   <td>
                     <div style="display:flex; align-items:center; gap:8px;">
@@ -1631,12 +1638,12 @@
                   </td>
                   <td>
                     <span class="adm-badge ${s.paymentStatus === 'Paid' ? 'adm-badge-paid' : s.paymentStatus === 'Not required' ? 'adm-badge-open' : 'adm-badge-waitlist'}">
-                      ${s.paymentStatus}
+                      ${s.paymentStatus || 'Not required'}
                     </span>
                   </td>
                   <td>
                     <span class="adm-badge ${s.certificateStatus === 'Issued' ? 'adm-badge-published' : s.certificateStatus === 'Eligible' ? 'adm-badge-open' : 'adm-badge-draft'}">
-                      ${s.certificateStatus}
+                      ${s.certificateStatus || 'Not eligible'}
                     </span>
                   </td>
                   <td>
@@ -1646,9 +1653,10 @@
                   </td>
                   <td style="text-align:right;">
                     <div style="display:inline-flex; gap:6px;">
-                      <button class="adm-btn adm-btn-sm adm-btn-secondary" onclick="NexvionAdminApp.navigateTo('/admin/students/${s.id}')">View</button>
-                      <button class="adm-btn adm-btn-sm adm-btn-secondary" onclick="NexvionAdminApp.openStudentStatusModal('${s.id}')">Status</button>
-                      <button class="adm-btn adm-btn-sm adm-btn-secondary" onclick="NexvionAdminApp.openAddNoteModal('${s.id}')">Note</button>
+                      <button class="adm-btn adm-btn-sm adm-btn-secondary" onclick="NexvionAdminApp.navigateTo('/admin/students/${s.id || s.studentId}')">View</button>
+                      <button class="adm-btn adm-btn-sm adm-btn-secondary" onclick="NexvionAdminApp.openStudentStatusModal('${s.id || s.studentId}')">Status</button>
+                      <button class="adm-btn adm-btn-sm adm-btn-secondary" onclick="NexvionAdminApp.openAddNoteModal('${s.id || s.studentId}')">Note</button>
+                      <button class="adm-btn adm-btn-sm adm-btn-danger" onclick="NexvionAdminApp.deleteStudentRecord('${s.id || s.studentId}')" title="Permanently delete learner record">Delete</button>
                     </div>
                   </td>
                 </tr>
@@ -8378,6 +8386,30 @@
       }
       showToast('All Enrolled', `Successfully enrolled ${pendings.length} pending learners into active cohort.`, 'success');
       renderRoute(AppState.currentRoute);
+    },
+    deleteStudentRecord: async (studentId) => {
+      if (!confirm('Are you sure you want to permanently delete this student record? This action cannot be undone.')) return;
+      try {
+        const ok = await Data.deleteStudent(studentId);
+        if (ok) {
+          showToast('Learner Deleted', 'Student record removed from directory.', 'success');
+        } else {
+          showToast('Learner Removed', 'Student record deleted.', 'info');
+        }
+        renderRoute(AppState.currentRoute);
+      } catch (err) {
+        showToast('Error', err.message || 'Could not delete student record.', 'error');
+      }
+    },
+    purgeRejectedStudents: async () => {
+      if (!confirm('Permanently remove all rejected applications and learner records? This cannot be undone.')) return;
+      try {
+        const count = await Data.purgeRejectedStudents();
+        showToast('Purge Complete', `Successfully removed ${count} rejected records.`, 'success');
+        renderRoute(AppState.currentRoute);
+      } catch (err) {
+        showToast('Error', err.message || 'Could not purge rejected students.', 'error');
+      }
     },
     openAddStudentModal: async () => {
       const tiers = await Data.getTiers();
